@@ -82,8 +82,8 @@ importers:
         specifier: ^2.167.1
         version: 2.167.1(constructs@10.4.2)
       cdk-nag:
-        specifier: ^2.34.2
-        version: 2.34.2(aws-cdk-lib@2.167.1(constructs@10.4.2))(constructs@10.4.2)
+        specifier: ^2.35.27
+        version: 2.35.27(aws-cdk-lib@2.167.1(constructs@10.4.2))(constructs@10.4.2)
       constructs:
         specifier: ^10.4.2
         version: 10.4.2
@@ -906,8 +906,8 @@ packages:
   caniuse-lite@1.0.30001680:
     resolution: {integrity: sha512-rPQy70G6AGUMnbwS1z6Xg+RkHYPAi18ihs47GH0jcxIG7wArmPgY3XbS2sRdBbxJljp3thdT8BIqv9ccCypiPA==}
 
-  cdk-nag@2.34.2:
-    resolution: {integrity: sha512-A46DCvM/G1WjXZn5Dl/0H9ckjpqN/D6RLxDaK9tveImRfZ11pWN2aK7nG7sMyy8lI8oigJNenQBlZtxQmQNw/g==}
+  cdk-nag@2.35.27:
+    resolution: {integrity: sha512-RnPG3kzD1+04qHrVdYwzI5NRPJSHgsPQ8irqTr8mg7dtmJL5sJERN1ZADzDQd23sTce1vYxlrSS75MB5gqs+1Q==}
     peerDependencies:
       aws-cdk-lib: ^2.156.0
       constructs: ^10.0.5
@@ -1331,8 +1331,8 @@ packages:
     resolution: {integrity: sha512-CYcENa+FtcUKLmhhqyctpclsq7QF38pKjZHsGNiSQF5r4FtoKDWabFDl3hzaEQMvT1LHEysw5twgLvpYYb4vbw==}
     engines: {node: ^10.12.0 || >=12.0.0}
 
-  flatted@3.3.2:
-    resolution: {integrity: sha512-AiwGJM8YcNOaobumgtng+6NHuOqC3A7MixFeDafM3X9cIUM+xUXoS5Vfgf+OihAYe20fxqNM9yPBXJzRtZ/4eA==}
+  flatted@3.3.3:
+    resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
 
   for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -3519,7 +3519,7 @@ snapshots:
 
   caniuse-lite@1.0.30001680: {}
 
-  cdk-nag@2.34.2(aws-cdk-lib@2.167.1(constructs@10.4.2))(constructs@10.4.2):
+  cdk-nag@2.35.27(aws-cdk-lib@2.167.1(constructs@10.4.2))(constructs@10.4.2):
     dependencies:
       aws-cdk-lib: 2.167.1(constructs@10.4.2)
       constructs: 10.4.2
@@ -4055,11 +4055,11 @@ snapshots:
 
   flat-cache@3.2.0:
     dependencies:
-      flatted: 3.3.2
+      flatted: 3.3.3
       keyv: 4.5.4
       rimraf: 3.0.2
 
-  flatted@3.3.2: {}
+  flatted@3.3.3: {}
 
   for-each@0.3.3:
     dependencies:
