@@ -38,7 +38,11 @@ defmodule Passwordless.Action do
   Preload associations.
   """
   def preload_actor(query \\ __MODULE__) do
-    from q in query, preload: [:actor]
+    actor_query =
+      from a in Actor,
+        select: struct(a, [:id, :first_name, :last_name])
+
+    from q in query, preload: [actor: ^actor_query]
   end
 
   @doc """

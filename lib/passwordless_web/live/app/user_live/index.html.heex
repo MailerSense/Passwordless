@@ -76,8 +76,8 @@
       <:col :let={actor} field={:name} sortable>
         <.avatar_entry title={Actor.name(actor)}></.avatar_entry>
       </:col>
-      <:col field={:email} />
-      <:col field={:phone} />
+      <:col field={:email} sortable />
+      <:col field={:phone} sortable />
       <:col field={:state} sortable switchable filterable={[:==]} />
       <:col :let={user} label={gettext("Added")} field={:inserted_at} sortable>
         <span class="line-clamp-1 break-all">

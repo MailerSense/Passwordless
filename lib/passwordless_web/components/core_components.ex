@@ -197,28 +197,20 @@ defmodule PasswordlessWeb.CoreComponents do
   """
   attr :current_user, :map, default: nil
   attr :current_page, :any, required: true
-  attr :current_section, :atom, required: true
-  attr :current_subpage, :atom, default: nil
-
   attr :project_menu_items, :list
-  attr :org_menu_items, :list
   attr :user_menu_items, :list
   attr :main_menu_items, :list
-  attr :public_menu_items, :list
-  attr :section_menu_items, :list
-
   attr :home_path, :string
+
   slot :inner_block
 
   def layout(assigns) do
     assigns =
       assigns
       |> assign_new(:home_path, fn -> home_path(assigns[:current_user]) end)
-      |> assign_new(:org_menu_items, fn -> org_menu_items(assigns[:current_user]) end)
       |> assign_new(:project_menu_items, fn -> project_menu_items(assigns[:current_user]) end)
       |> assign_new(:user_menu_items, fn -> user_menu_items(assigns[:current_user]) end)
       |> assign_new(:main_menu_items, fn -> main_menu_items(assigns[:current_section], assigns[:current_user]) end)
-      |> assign_new(:section_menu_items, fn -> section_menu_items(assigns[:current_user]) end)
 
     assigns =
       update(assigns, :current_page, fn
@@ -226,48 +218,18 @@ defmodule PasswordlessWeb.CoreComponents do
         page when is_binary(page) -> map_active_path_to_menu_item(assigns[:main_menu_items], page)
       end)
 
-    dropdown_type =
-      cond do
-        assigns[:current_page] in [:agents, :data, :blueprints, :integrations] ->
-          :project
-
-        assigns[:current_page] in [:billing] ->
-          :org
-
-        assigns[:current_subpage] in [:members, :auth_tokens, :edit_org, :edit_projects] ->
-          :org
-
-        true ->
-          :global
-      end
-
-    assigns = assign(assigns, dropdown_type: dropdown_type)
-
     ~H"""
     <.stacked_layout
       current_user={@current_user}
       current_page={@current_page}
-      current_section={@current_section}
-      current_subpage={@current_subpage}
       project_menu_items={@project_menu_items}
-      org_menu_items={@org_menu_items}
       user_menu_items={@user_menu_items}
       main_menu_items={@main_menu_items}
-      section_menu_items={@section_menu_items}
       home_path={@home_path}
     >
       <:logo>
         <.logo class="h-6" />
       </:logo>
-
-      <:dropdown>
-        <.topbar_dropdown
-          current_user={@current_user}
-          project_menu_items={@project_menu_items}
-          org_menu_items={@org_menu_items}
-          dropdown_type={@dropdown_type}
-        />
-      </:dropdown>
 
       {render_slot(@inner_block)}
     </.stacked_layout>
@@ -466,69 +428,5 @@ defmodule PasswordlessWeb.CoreComponents do
       {path, "/" = to} -> String.equivalent?(path, to)
       {path, to} -> String.starts_with?(path, to)
     end
-  end
-
-  attr :current_user, :map, default: nil
-
-  attr :project_menu_items, :list, required: false
-  attr :org_menu_items, :list, required: false
-  attr :dropdown_type, :atom, required: true, values: [:project, :org, :global]
-
-  defp topbar_dropdown(%{dropdown_type: :project} = assigns) do
-    ~H"""
-    <.dropdown
-      label={PasswordlessWeb.Helpers.user_project_name(@current_user)}
-      label_icon="remix-instance-line"
-      placement="right"
-    >
-      <.dropdown_menu_item link_type="live_redirect" to={~p"/app/project/new"}>
-        <.icon name="remix-add-line" class="w-5 h-5" />
-        {gettext("New Project")}
-      </.dropdown_menu_item>
-      <.form
-        :for={project <- @project_menu_items}
-        for={nil}
-        action={~p"/app/project/switch"}
-        method="post"
-      >
-        <.input type="hidden" name="project_id" value={project.id} />
-        <button class="pc-dropdown__menu-item">
-          <.icon name="remix-instance-line" class="w-5 h-5" />
-          <span class="line-clamp-1">{project.name}</span>
-        </button>
-      </.form>
-    </.dropdown>
-    """
-  end
-
-  defp topbar_dropdown(%{dropdown_type: :org} = assigns) do
-    ~H"""
-    <.dropdown
-      label={PasswordlessWeb.Helpers.user_org_name(@current_user)}
-      label_icon="remix-building-line"
-      placement="right"
-    >
-      <.dropdown_menu_item link_type="live_redirect" to={~p"/app/organization/new"}>
-        <.icon name="remix-add-line" class="w-5 h-5" />
-        {gettext("New Organization")}
-      </.dropdown_menu_item>
-      <.form :for={org <- @org_menu_items} for={nil} action={~p"/app/org/switch"} method="post">
-        <.input type="hidden" name="org_id" value={org.id} />
-        <button class="pc-dropdown__menu-item">
-          <.icon name="remix-building-line" class="w-5 h-5" />
-          <span class="line-clamp-1">{org.name}</span>
-        </button>
-      </.form>
-    </.dropdown>
-    """
-  end
-
-  defp topbar_dropdown(%{dropdown_type: :global} = assigns) do
-    ~H"""
-    <span class="pc-dropdown__trigger-button--with-label--md h-[42px] select-none cursor-not-allowed">
-      <.icon name="remix-global-line" class="pc-dropdown__icon" />
-      <span>{gettext("Global")}</span>
-    </span>
-    """
   end
 end

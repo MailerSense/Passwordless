@@ -16,33 +16,13 @@ defmodule PasswordlessWeb.Components.StackedLayout do
   import PasswordlessWeb.Components.UserTopbarMenu
   import PasswordlessWeb.Helpers
 
-  attr :collapsible, :boolean,
-    default: false,
-    doc:
-      "The sidebar can be collapsed to display icon-only menu items. False by default. Requires the Alpine Persist plugin."
-
-  attr :default_collapsed, :boolean,
-    default: false,
-    doc:
-      "The sidebar will render as collapsed by default, if it is not already set in localStorage. False by default. Requires `:collapsible` to be true."
-
   attr :current_user, :map, default: nil
 
   attr :current_page, :atom,
     required: true,
     doc: "The current page. This will be used to highlight the current page in the menu."
 
-  attr :current_section, :atom,
-    required: true,
-    doc: "The current section. This will be used to highlight the current section in the side menu."
-
-  attr :current_subpage, :atom, default: nil
-
   attr :project_menu_items, :list,
-    default: [],
-    doc: "The items that will be displayed in the main menu in the sidebar."
-
-  attr :org_menu_items, :list,
     default: [],
     doc: "The items that will be displayed in the main menu in the sidebar."
 
@@ -54,24 +34,10 @@ defmodule PasswordlessWeb.Components.StackedLayout do
     default: [],
     doc: "The items that will be displayed in the user menu."
 
-  attr :section_menu_items, :list,
-    default: [],
-    doc: "The items that will be displayed in the main menu in the sidebar."
-
-  attr :sidebar_title, :string,
-    default: nil,
-    doc: "This will be displayed at the top of the sidebar."
-
   attr :home_path, :string,
     default: "/",
     doc: "The path to the home page. When a user clicks the logo, they will be taken to this path."
 
-  attr :sidebar_lg_width_class, :string,
-    default: "w-64",
-    doc: "The width of the sidebar. Must have the lg: prefix."
-
-  attr :sidebar_bg_class, :string, default: "bg-slate-100 dark:bg-slate-700/30"
-  attr :sidebar_border_class, :string, default: "border-slate-200 dark:border-slate-700"
   attr :header_bg_class, :string, default: "bg-white/50 dark:bg-slate-900/50 backdrop-blur-md shadow-m2"
   attr :header_border_class, :string, default: "border-slate-200 dark:border-slate-700"
 
@@ -79,13 +45,6 @@ defmodule PasswordlessWeb.Components.StackedLayout do
 
   slot :logo,
     doc: "Your logo. This will automatically sit within a link to the home_path attribute."
-
-  slot :dropdown,
-    doc: "Your logo. This will automatically sit within a link to the home_path attribute."
-
-  attr :show_usage_box, :boolean,
-    default: true,
-    doc: "Whether to show the usage box."
 
   def stacked_layout(assigns) do
     ~H"""
@@ -176,7 +135,6 @@ defmodule PasswordlessWeb.Components.StackedLayout do
                 :for={menu_item <- @main_menu_items}
                 menu_item={menu_item}
                 current_page={@current_page}
-                hide_active_menu_item_border={false}
               />
             </nav>
             <!-- Topbar menu -->
@@ -247,7 +205,6 @@ defmodule PasswordlessWeb.Components.StackedLayout do
 
   attr :current_page, :string, required: true
   attr :menu_item, :map, required: true
-  attr :hide_active_menu_item_border, :boolean, default: false
 
   def main_menu_item(assigns) do
     assigns =
@@ -258,14 +215,11 @@ defmodule PasswordlessWeb.Components.StackedLayout do
       :if={!@menu_item[:menu_items]}
       to={@menu_item[:path]}
       label={@menu_item.label}
-      class={main_menu_item_class(@active?, @hide_active_menu_item_border)}
+      class={main_menu_item_class(@active?)}
       link_type="live_redirect"
     />
 
-    <div
-      :if={@menu_item[:menu_items]}
-      class={main_menu_item_class(@active?, @hide_active_menu_item_border) <> " relative"}
-    >
+    <div :if={@menu_item[:menu_items]} class={["relative", main_menu_item_class(@active?)]}>
       <.dropdown placement="right">
         <:trigger_element>
           <div class="inline-flex items-center justify-center w-full focus:outline-none">
@@ -300,16 +254,16 @@ defmodule PasswordlessWeb.Components.StackedLayout do
   defp dropdown_item_class(true), do: "bg-slate-100 dark:bg-slate-700"
   defp dropdown_item_class(false), do: ""
 
-  defp main_menu_item_base_class(hide_active_menu_item_border),
+  defp main_menu_item_base_class,
     do: "inline-flex items-center px-1 text-sm font-medium leading-5 transition duration-150 ease-in-out top-menu-item"
 
-  defp main_menu_item_class(true, hide_active_menu_item_border),
-    do: main_menu_item_base_class(hide_active_menu_item_border) <> " active text-slate-900 dark:text-slate-100"
+  defp main_menu_item_class(true), do: ["active text-slate-900 dark:text-slate-100", main_menu_item_base_class()]
 
-  defp main_menu_item_class(false, hide_active_menu_item_border),
-    do:
-      main_menu_item_base_class(hide_active_menu_item_border) <>
-        " text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 dark:focus:text-slate-300 dark:text-slate-400"
+  defp main_menu_item_class(false),
+    do: [
+      "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 dark:focus:text-slate-300 dark:text-slate-400",
+      main_menu_item_base_class()
+    ]
 
   defp mobile_menu_item_class(page, page),
     do:

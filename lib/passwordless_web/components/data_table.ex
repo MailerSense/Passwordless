@@ -11,7 +11,6 @@ defmodule PasswordlessWeb.Components.DataTable do
   import PasswordlessWeb.Components.Pagination
   import PasswordlessWeb.Components.Table
   import PasswordlessWeb.Components.Tabs
-  import PasswordlessWeb.Components.Typography
 
   alias PasswordlessWeb.Components.DataTable.Cell
   alias PasswordlessWeb.Components.DataTable.Filter
@@ -88,96 +87,93 @@ defmodule PasswordlessWeb.Components.DataTable do
       |> assign_new(:id, fn -> "data-table-#{:rand.uniform(10_000_000) + 1}" end)
 
     ~H"""
-    <div>
-      <.form
-        :let={filter_form}
-        id="data-table-form"
-        as={:filters}
-        for={@filter_changeset}
-        phx-change="update_filters"
-        phx-submit="update_filters"
-        {form_assigns(@form_target)}
-      >
-        <.table_search_bar
-          :if={@search_field || @switch_field}
-          form={filter_form}
-          switch_field={@switch_field}
-          search_field={@search_field}
-          switch_items={@switch_items}
-        />
-        <div :if={Util.present?(@info)} class="mb-6">{render_slot(@info)}</div>
-        <div class={[get_wrapper_class(@variant), @class]}>
-          <.table_header :if={@title} title={@title} />
-          <.table>
-            <thead class="pc-table__thead-striped">
-              <.tr>
-                <%= for col <- @col do %>
-                  <%= if col[:actions] && @actions do %>
-                    <.th class={[col[:class], "pc-table__th-#{@size}"]}>
-                      <div class="flex justify-end gap-1" />
-                    </.th>
-                  <% else %>
-                    <Header.render
-                      meta={@meta}
-                      column={col}
-                      class={"pc-table__th--#{@size}"}
-                      actions={@actions}
-                      no_results?={@items == []}
-                      base_url_params={@base_url_params}
-                    />
-                  <% end %>
+    <.form
+      :let={filter_form}
+      id="data-table-form"
+      as={:filters}
+      for={@filter_changeset}
+      phx-change="update_filters"
+      phx-submit="update_filters"
+      {form_assigns(@form_target)}
+    >
+      <.table_search_bar
+        :if={@search_field || @switch_field}
+        form={filter_form}
+        switch_field={@switch_field}
+        search_field={@search_field}
+        switch_items={@switch_items}
+      />
+      <div :if={Util.present?(@info)} class="mb-6">{render_slot(@info)}</div>
+      <div class={["pc-table__wrapper", @class]}>
+        <.table_header :if={@title} title={@title} />
+        <.table>
+          <thead class="pc-table__thead-striped">
+            <.tr>
+              <%= for col <- @col do %>
+                <%= if col[:actions] && @actions do %>
+                  <.th class={[col[:class], "pc-table__th-#{@size}"]}>
+                    <div class="flex justify-end gap-1" />
+                  </.th>
+                <% else %>
+                  <Header.render
+                    meta={@meta}
+                    column={col}
+                    class={"pc-table__th--#{@size}"}
+                    actions={@actions}
+                    no_results?={@items == []}
+                    base_url_params={@base_url_params}
+                  />
                 <% end %>
-              </.tr>
-            </thead>
-            <tbody>
-              <%= if @items == [] do %>
-                <.tr>
-                  <td class="pc-table__td--only" colspan={length(@col)}>
-                    {if Util.present?(@if_empty), do: render_slot(@if_empty), else: "No results"}
-                  </td>
-                </.tr>
               <% end %>
-
-              <.tr :for={item <- @items} class="pc-table__tr-striped">
-                <.td
-                  :for={col <- @col}
-                  class={[
-                    "pc-table__td--#{@size}",
-                    if(col[:align_right], do: "text-right"),
-                    if(col[:actions], do: "flex justify-end gap-1"),
-                    col[:body_class]
-                  ]}
-                >
-                  <%= cond do %>
-                    <% col[:actions] && @actions -> %>
-                      {render_slot(@actions, item)}
-                    <% col[:inner_block] -> %>
-                      {render_slot(col, item)}
-                    <% true -> %>
-                      <Cell.render column={col} item={item} />
-                  <% end %>
-                </.td>
+            </.tr>
+          </thead>
+          <tbody>
+            <%= if @items == [] do %>
+              <.tr>
+                <td class="pc-table__td--only" colspan={length(@col)}>
+                  {if Util.present?(@if_empty), do: render_slot(@if_empty), else: "No results"}
+                </td>
               </.tr>
-            </tbody>
-          </.table>
+            <% end %>
 
-          <%= if @meta.total_pages > 1 do %>
-            <div class="px-6 py-4 border-t border-slate-200 dark:border-slate-700">
-              <.pagination
-                path={
-                  @meta
-                  |> build_url_query(Map.merge(@base_url_params, %{page: ":page"}))
-                  |> String.replace("%3Apage", ":page")
-                }
-                link_type="live_patch"
-                total_pages={@meta.total_pages}
-                current_page={@meta.current_page}
-              />
-            </div>
-          <% end %>
-        </div>
-      </.form>
-    </div>
+            <.tr :for={item <- @items}>
+              <.td
+                :for={col <- @col}
+                class={[
+                  if(col[:align_right], do: "text-right"),
+                  if(col[:actions], do: "flex justify-end gap-1"),
+                  col[:body_class]
+                ]}
+              >
+                <%= cond do %>
+                  <% col[:actions] && @actions -> %>
+                    {render_slot(@actions, item)}
+                  <% col[:inner_block] -> %>
+                    {render_slot(col, item)}
+                  <% true -> %>
+                    <Cell.render column={col} item={item} />
+                <% end %>
+              </.td>
+            </.tr>
+          </tbody>
+        </.table>
+
+        <%= if @meta.total_pages > 1 do %>
+          <div class="px-6 py-4 border-t border-slate-200 dark:border-slate-700">
+            <.pagination
+              path={
+                @meta
+                |> build_url_query(Map.merge(@base_url_params, %{page: ":page"}))
+                |> String.replace("%3Apage", ":page")
+              }
+              link_type="live_patch"
+              total_pages={@meta.total_pages}
+              current_page={@meta.current_page}
+            />
+          </div>
+        <% end %>
+      </div>
+    </.form>
     """
   end
 
@@ -185,33 +181,19 @@ defmodule PasswordlessWeb.Components.DataTable do
     "?" <> Plug.Conn.Query.encode(build_params(meta, query_params))
   end
 
-  attr :size, :string, default: "md", values: ["xs", "sm", "md", "lg", "xl", "wide"], doc: "table sizes"
+  attr :id, :string, required: true
+  attr :size, :string, default: "md", values: ["sm", "md", "lg"], doc: "table sizes"
   attr :meta, Flop.Meta, required: true
   attr :items, :any, required: true
   attr :title, :string, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :loading, :boolean, default: false
   attr :finished, :boolean, default: false
-  attr :base_url_params, :map, required: false
-
-  attr :form_target, :string,
-    default: nil,
-    doc:
-      "form_target allows you to target a specific live component for the close event to go to. eg: form_target={@myself}"
-
-  attr :variant, :string,
-    default: "solid",
-    values: ["solid", "outline"],
-    doc: "table variant"
 
   slot :col, required: true do
     attr :label, :string
     attr :class, :string
     attr :body_class, :string
     attr :field, :atom
-    attr :sortable, :boolean
-    attr :searchable, :boolean
-    attr :droppable, :boolean
     attr :filterable, :list
     attr :date_format, :string
     attr :step, :float
@@ -224,18 +206,12 @@ defmodule PasswordlessWeb.Components.DataTable do
     attr :align_right, :boolean, doc: "Aligns the column to the right"
   end
 
-  slot :info, required: false
   slot :actions, required: false
   slot :if_empty, required: false
 
   def stream_table(assigns) do
-    assigns =
-      assigns
-      |> assign(:col, Enum.reject(assigns.col, fn col -> col[:searchable] end))
-      |> assign_new(:id, fn -> "stream-table-#{:rand.uniform(10_000_000) + 1}" end)
-
     ~H"""
-    <div class={[get_wrapper_class(@variant), @class]}>
+    <div class={["pc-table__wrapper", @class]}>
       <.table_header :if={@title} title={@title} />
       <.table>
         <thead class="pc-table__thead-striped">
@@ -273,7 +249,6 @@ defmodule PasswordlessWeb.Components.DataTable do
               :for={{col, idx} <- Enum.with_index(@col)}
               id={"#{id}-#{idx}"}
               class={[
-                "pc-table__td--#{@size}",
                 if(col[:align_right], do: "text-right"),
                 if(col[:actions], do: "flex justify-end gap-1"),
                 col[:body_class]
@@ -485,9 +460,6 @@ defmodule PasswordlessWeb.Components.DataTable do
   end
 
   # Private
-
-  defp get_wrapper_class("solid"), do: "pc-table__wrapper"
-  defp get_wrapper_class(variant), do: "pc-table__wrapper--#{variant}"
 
   defp form_assigns(nil), do: %{}
   defp form_assigns(target), do: %{"phx-target": target}
