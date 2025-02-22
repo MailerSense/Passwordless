@@ -15,7 +15,7 @@ defmodule PasswordlessWeb.Components.Container do
 
   def container(assigns) do
     ~H"""
-    <div
+    <section
       {@rest}
       class={[
         "pc-container pc-container--#{@max_width}",
@@ -24,7 +24,7 @@ defmodule PasswordlessWeb.Components.Container do
       ]}
     >
       {render_slot(@inner_block)}
-    </div>
+    </section>
     """
   end
 end

@@ -10,7 +10,6 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
 
   import PasswordlessWeb.Components.SidebarMenu
   import PasswordlessWeb.Components.ThemeSwitch
-  import PasswordlessWeb.Components.UsageBox
   import PasswordlessWeb.Components.UserTopbarMenu
 
   attr :collapsible, :boolean,
@@ -80,10 +79,6 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
   slot :dropdown,
     doc: "Your logo. This will automatically sit within a link to the home_path attribute."
 
-  attr :show_usage_box, :boolean,
-    default: true,
-    doc: "Whether to show the usage box."
-
   def sidebar_layout(assigns) do
     ~H"""
     <div
@@ -115,18 +110,6 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
           </div>
 
           <div class="flex flex-col gap-6 mt-auto p-3">
-            <.usage_box
-              :if={@show_usage_box}
-              plan={gettext("Business")}
-              limits={[
-                %{
-                  name: gettext("Usage"),
-                  unit: gettext("credits"),
-                  current: 5000,
-                  max: 15000
-                }
-              ]}
-            />
             <.wide_theme_switch />
           </div>
         </aside>
