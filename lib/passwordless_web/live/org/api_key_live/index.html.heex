@@ -1,0 +1,118 @@
+<.tabbed_settings_layout current_user={@current_user} current_page={:auth_tokens}>
+  <:action>
+    <div class="flex gap-3">
+      <.button
+        to={~p"/app/auth-tokens/new"}
+        icon="remix-add-circle-line"
+        label={gettext("Create token")}
+        link_type="live_redirect"
+      />
+    </div>
+  </:action>
+
+  <.data_table meta={@meta} items={@auth_tokens}>
+    <:if_empty>{gettext("No %{models} found", models: gettext("auth tokens"))}</:if_empty>
+    <:col :let={auth_token} field={:name}>
+      <.avatar_entry title={auth_token.name}></.avatar_entry>
+    </:col>
+    <:col :let={auth_token} field={:signature} label={gettext("Signature")}>
+      <.auth_token_id value={auth_token.signature} />
+    </:col>
+    <:col :let={auth_token} field={:state} label={gettext("Status")} sortable>
+      <.state_badge state={auth_token.state} />
+    </:col>
+    <:col :let={auth_token} field={:inserted_at} label={gettext("Created")} sortable>
+      {format_date_time(auth_token.inserted_at)}
+    </:col>
+    <:col actions></:col>
+    <:actions :let={auth_token}>
+      <.icon_button
+        to={apply_filters(@filters, @meta, ~p"/app/auth-tokens/#{auth_token}/revoke")}
+        icon="custom-trash"
+        title={gettext("Delete")}
+        size="sm"
+        color="light"
+        link_type="live_patch"
+        disabled={auth_token.state == :revoked}
+      />
+      <.icon_button
+        to={apply_filters(@filters, @meta, ~p"/app/auth-tokens/#{auth_token}")}
+        size="sm"
+        title={gettext("Edit")}
+        icon="custom-edit"
+        color="light"
+        link_type="live_patch"
+      />
+    </:actions>
+  </.data_table>
+</.tabbed_settings_layout>
+
+<%= case @live_action do %>
+  <% :new -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      module={PasswordlessWeb.Org.AuthTokenLive.FormComponent}
+      auth_token={Ecto.build_assoc(@current_org, :auth_tokens)}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_user={@current_user}
+      return_to={~p"/app/auth-tokens"}
+    />
+  <% :edit -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      module={PasswordlessWeb.Org.AuthTokenLive.FormComponent}
+      auth_token={@auth_token}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_user={@current_user}
+      return_to={apply_filters(@filters, @meta, ~p"/app/auth-tokens")}
+    />
+  <% :reveal -> %>
+    <.modal max_width="lg" title={@page_title} subtitle={@page_subtitle}>
+      <.live_component
+        id={@live_action}
+        module={PasswordlessWeb.Org.AuthTokenLive.RevealComponent}
+        auth_token={@auth_token}
+        live_action={@live_action}
+        return_to={~p"/app/auth-tokens"}
+      />
+    </.modal>
+  <% :revoke -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light-flat"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Revoke \"%{key}\"", key: @auth_token.name)}
+          color="danger"
+          phx-click="revoke_auth_token"
+        />
+      </div>
+    </.modal>
+  <% :revoked -> %>
+    <.modal max_width="lg" title={@page_title} subtitle={@page_subtitle}>
+      <.live_component
+        id={@live_action}
+        module={PasswordlessWeb.Org.AuthTokenLive.RevokedComponent}
+        current_org={@current_org}
+        current_user={@current_user}
+        return_to={~p"/app/auth-tokens"}
+      />
+    </.modal>
+  <% _ -> %>
+<% end %>

@@ -1,0 +1,108 @@
+<.layout current_user={@current_user} current_page={:users} current_section={:app}>
+  <.page_header title={gettext("Users")}>
+    <div class="flex gap-3">
+      <.button
+        to={~p"/app/import"}
+        size="md"
+        color="light"
+        label={gettext("Import")}
+        icon="remix-download-line"
+        link_type="live_patch"
+      />
+      <.button
+        to={~p"/app/new"}
+        size="md"
+        color="primary"
+        label={gettext("Create")}
+        icon="remix-add-circle-line"
+        link_type="live_patch"
+      />
+    </div>
+  </.page_header>
+
+  <div class="flex flex-col gap-6 mb-12">
+    <.data_table
+      meta={@meta}
+      items={@actors}
+      switch_items={[
+        %{name: :all, label: gettext("All"), clear: true},
+        %{name: :healthy, label: gettext("Healthy")},
+        %{name: :warning, label: gettext("Warning")},
+        %{name: :locked, label: gettext("Locked")}
+      ]}
+    >
+      <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
+      <:info>
+        <.action_stat
+          legend={[
+            %{color: "bg-blue-500", label: gettext("Magic Link")},
+            %{color: "bg-pink-500", label: gettext("SMS")},
+            %{color: "bg-purple-500", label: gettext("Email")},
+            %{color: "bg-cyan-500", label: gettext("Authenticator")},
+            %{color: "bg-emerald-500", label: gettext("WhatsApp")},
+            %{color: "bg-amber-500", label: gettext("Passkey")}
+          ]}
+          items={[
+            %{
+              name: "Magic Link",
+              value: 21323,
+              progress: %{max: 100, value: 80, color: "info"},
+              to: ~p"/app/reports"
+            },
+            %{
+              name: "SMS",
+              value: 11323,
+              progress: %{max: 100, value: 30, color: "pink"},
+              to: ~p"/app/reports"
+            },
+            %{
+              name: "Other",
+              value: 1323,
+              progress: %{
+                max: 100,
+                items: [
+                  %{value: 20, color: "purple"},
+                  %{value: 20, color: "emerald"},
+                  %{value: 10, color: "amber"},
+                  %{value: 50, color: "neutral"}
+                ]
+              },
+              to: ~p"/app/reports"
+            }
+          ]}
+        />
+      </:info>
+      <:col field={:search} searchable filterable={[:==]} />
+      <:col :let={actor} field={:name} sortable>
+        <.avatar_entry title={Actor.name(actor)}></.avatar_entry>
+      </:col>
+      <:col field={:email} />
+      <:col field={:phone} />
+      <:col field={:state} sortable switchable filterable={[:==]} />
+      <:col :let={user} label={gettext("Added")} field={:inserted_at} sortable>
+        <span class="line-clamp-1 break-all">
+          {format_date_time(user.inserted_at)}
+        </span>
+      </:col>
+      <:col actions></:col>
+      <:actions :let={user}>
+        <.icon_button
+          icon="custom-trash"
+          size="sm"
+          color="light"
+          title={gettext("Remove")}
+          link_type="live_patch"
+          to={apply_filters(@filters, @meta, ~p"/app/users/#{user}/delete")}
+        />
+        <.icon_button
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+          to={apply_filters(@filters, @meta, ~p"/app/users/#{user}/edit")}
+        />
+      </:actions>
+    </.data_table>
+  </div>
+</.layout>

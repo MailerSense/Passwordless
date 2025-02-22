@@ -1,0 +1,19 @@
+<.layout current_user={@current_user} current_page={:methods} current_section={:app}>
+  <.page_header title={gettext("Methods")}></.page_header>
+
+  <div class="flex flex-col gap-6">
+    <div class="flex">
+      <.tab_menu menu_items={method_menu_items()} current_tab={:magic_link} variant="buttons" />
+    </div>
+    <.box>
+      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+          {gettext("Enabled")}
+        </h3>
+
+        <.field type="switch" label="" name="test" value={true} />
+      </div>
+      <div class="p-6">test</div>
+    </.box>
+  </div>
+</.layout>

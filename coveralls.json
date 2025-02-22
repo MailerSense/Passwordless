@@ -1,0 +1,13 @@
+{
+  "skip_files": [
+    "test/support",
+    "lib/passwordless_web/endpoint.ex",
+    "lib/passwordless_web/gettext.ex"
+  ],
+  "terminal_options": {
+    "file_column_width": 80
+  },
+  "coverage_options": {
+    "minimum_coverage": 72.4
+  }
+}

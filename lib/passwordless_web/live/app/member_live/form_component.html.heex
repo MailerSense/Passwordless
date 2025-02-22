@@ -1,0 +1,82 @@
+<div>
+  <% origin = "right" %>
+  <.slide_over title={@title} origin={origin}>
+    <div class="flex flex-col gap-8">
+      <.form
+        id="member-update-form"
+        for={@form}
+        phx-submit="save"
+        phx-change="validate"
+        phx-target={@myself}
+      >
+        <.field field={@form[:name]} readonly />
+        <.field type="email" field={@form[:email]} readonly />
+        <.badge_select
+          field={@form[:role]}
+          options={@roles}
+          required
+          placeholder={gettext("Select user role...")}
+          disabled={not Guard.permit(AccountsPolicy, @current_user, :update_role, @membership)}
+          help_text={
+            if Guard.permit(AccountsPolicy, @current_user, :update_role, @membership),
+              do:
+                gettext(
+                  "This user joined your team on %{joined}. They are %{state} and have their %{security}",
+                  joined: format_date(@membership.inserted_at),
+                  state:
+                    if(User.active?(@membership.user),
+                      do: gettext("active"),
+                      else: gettext("inactive")
+                    ),
+                  security:
+                    if(Accounts.two_factor_auth_enabled?(@membership.user),
+                      do: gettext("2FA enabled"),
+                      else: gettext("2FA disabled")
+                    )
+                ),
+              else: gettext("You cannot change this role")
+          }
+        />
+      </.form>
+    </div>
+
+    <:actions>
+      <.button
+        size="wide"
+        type="submit"
+        color="light-flat"
+        label={gettext("Cancel")}
+        phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+      />
+      <%= if Guard.permit(AccountsPolicy, @current_user, :update_role, @membership) do %>
+        <.button
+          id="member-update-form-submit"
+          size="wide"
+          type="submit"
+          form="member-update-form"
+          label={gettext("Save")}
+        />
+      <% else %>
+        <div
+          id="member-update-form-submit"
+          phx-hook="TippyHook"
+          class="flex grow"
+          data-tippy-content={
+            if not Guard.permit(AccountsPolicy, @current_user, :update_role, @membership),
+              do: gettext("You cannot edit this teammate"),
+              else: nil
+          }
+        >
+          <.button
+            id="member-update-form-submit"
+            size="wide"
+            type="submit"
+            form="member-update-form"
+            label={gettext("Save")}
+            disabled={not Guard.permit(AccountsPolicy, @current_user, :update_role, @membership)}
+          />
+        </div>
+      <% end %>
+    </:actions>
+  </.slide_over>
+</div>

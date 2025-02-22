@@ -1,0 +1,10 @@
+<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g id="Check circle 1">
+        <path id="Vector"
+            d="M27.3608 15.9995C27.3608 9.54829 22.1316 4.31909 15.6804 4.31909C9.2292 4.31909 4 9.54829 4 15.9995C4 22.4507 9.2292 27.6799 15.6804 27.6799C22.1316 27.6799 27.3608 22.4507 27.3608 15.9995Z"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path id="Vector_2"
+            d="M28.0014 7.2019C21.6242 10.7719 17.6675 16.5407 15.7879 20.0718C14.4996 17.9094 12.8665 15.9869 10.8804 14.3095"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+</svg>

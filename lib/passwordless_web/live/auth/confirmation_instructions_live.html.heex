@@ -1,0 +1,36 @@
+<.auth_layout title={gettext("Confirm your email")}>
+  <.auth_header
+    title={gettext("Confirm your email")}
+    subtitle={
+      gettext(
+        "A confirmation email should be in your inbox. If you can't find it then try clicking the button below."
+      )
+    }
+  />
+
+  <.form for={@form} id="resend_confirmation_form" phx-submit="send_instructions" class="mt-5">
+    <%= if @current_user do %>
+      <.field type="hidden" field={@form[:email]} value={@current_user.email} />
+    <% else %>
+      <.field
+        type="email"
+        field={@form[:email]}
+        label={gettext("Email")}
+        placeholder={gettext("eg. john@gmail.com")}
+      />
+    <% end %>
+
+    <.button size="lg" type="submit" class="w-full" with_icon>
+      <.icon name="remix-reset-right-fill" />
+      {gettext("Resend Confirmation Email")}
+    </.button>
+  </.form>
+
+  <%= if Passwordless.config(:env) == :dev do %>
+    <div class="fixed mt-10 left-10 bottom-10">
+      <.alert color="warning">
+        DEV ONLY: <.link href="/dev/mailbox" class="underline">Go to mailbox</.link>
+      </.alert>
+    </div>
+  <% end %>
+</.auth_layout>

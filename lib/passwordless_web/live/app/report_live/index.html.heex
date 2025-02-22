@@ -1,0 +1,47 @@
+<.layout current_user={@current_user} current_page={:reports} current_section={:app}>
+  <.page_header title={gettext("Reports")}>
+    <.dropdown size="lg" label="Last 30 days" placement="right">
+      <.dropdown_menu_item
+        :for={day <- ["Last 30 days", "Last 7 days", "Last 24 hours"]}
+        label={day}
+        phx-click="change_agent"
+        phx-value-day={day}
+      />
+    </.dropdown>
+  </.page_header>
+
+  <div class="flex flex-col gap-6 mb-12">
+    <.box class="flex flex-col">
+      <div class="flex items-center justify-between p-6 pb-6">
+        <h4 class="text-slate-900 dark:text-white text-2xl font-bold ">
+          {gettext("User actions")}
+        </h4>
+
+        <.dropdown size="sm" label="By action kind" placement="right">
+          <.dropdown_menu_item
+            :for={day <- ["By action kind", "By action outcome", "By authentication method"]}
+            label={day}
+            phx-click="change_agent"
+            phx-value-day={day}
+          />
+        </.dropdown>
+      </div>
+      <div id="chart" phx-hook="ChartHook" class="pl-2 pr-4"></div>
+    </.box>
+    <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <.change_stat label={gettext("Sign in")} value={10} change={5} color_class="bg-success-500" />
+      <.change_stat
+        label={gettext("Withdraw")}
+        value={10}
+        change={5}
+        color_class="bg-success-500"
+      />
+      <.change_stat
+        label={gettext("Authenticate")}
+        value={10}
+        change={5}
+        color_class="bg-success-500"
+      />
+    </div>
+  </div>
+</.layout>

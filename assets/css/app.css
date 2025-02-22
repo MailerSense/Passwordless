@@ -1,0 +1,92 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import "petal_components.css";
+@import "tippy.js/dist/tippy.css";
+
+.dark {
+  color-scheme: dark;
+}
+
+.tippy-box[data-theme~="light"] {
+  @apply rounded-lg shadow-4 bg-white dark:bg-slate-900 dark:border dark:border-slate-900;
+}
+
+.tippy-box[data-theme~="tomato"] {
+  @apply bg-slate-900 text-white px-2 py-1.5 text-sm font-semibold border border-slate-900;
+}
+.tippy-box[data-theme~="tomato"] > .tippy-arrow::before {
+  transform: scale(1.5);
+}
+.tippy-box[data-theme~="tomato"][data-placement^="top"] > .tippy-arrow::before {
+  @apply border-t-slate-900;
+}
+.tippy-box[data-theme~="tomato"][data-placement^="bottom"]
+  > .tippy-arrow::before {
+  @apply border-b-slate-900;
+}
+.tippy-box[data-theme~="tomato"][data-placement^="left"]
+  > .tippy-arrow::before {
+  @apply border-l-slate-900;
+}
+.tippy-box[data-theme~="tomato"][data-placement^="right"]
+  > .tippy-arrow::before {
+  @apply border-r-slate-900;
+}
+
+@layer base {
+  .top-menu-item {
+    @apply relative;
+  }
+
+  .top-menu-item.active::before {
+    position: absolute;
+    content: "";
+    display: block;
+    height: 2px;
+    bottom: 0;
+    @apply bg-primary-500 dark:bg-primary-400 w-full transform left-1/2 -translate-x-1/2 rounded-full;
+  }
+}
+
+@layer components {
+}
+
+@layer utilities {
+}
+
+@keyframes slidesUp {
+  0% {
+    transform: translateY(0);
+  }
+  10% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-100%);
+  }
+  30% {
+    transform: translateY(-100%);
+  }
+  40% {
+    transform: translateY(-200%);
+  }
+  50% {
+    transform: translateY(-200%);
+  }
+  60% {
+    transform: translateY(-300%);
+  }
+  70% {
+    transform: translateY(-300%);
+  }
+  80% {
+    transform: translateY(-400%);
+  }
+  90% {
+    transform: translateY(-400%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

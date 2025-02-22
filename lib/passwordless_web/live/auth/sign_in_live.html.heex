@@ -1,0 +1,41 @@
+<.auth_layout title={gettext("Sign in")}>
+  <:logo>
+    <.logo_icon class="w-20 h-20" />
+  </:logo>
+
+  <:top_links>
+    {gettext("Not yet registered?")}
+    <.link class="text-blue-600 underline dark:text-blue-400" navigate={~p"/auth/sign-up"}>
+      {gettext("Register")}
+    </.link>
+  </:top_links>
+
+  <.form for={@form} phx-update="ignore" id="sign_in_form" action={~p"/auth/sign-in"} class="mb-4">
+    <.field
+      type="email"
+      field={@form[:email]}
+      required
+      required_asterix={false}
+      autocomplete="email"
+    />
+    <.field
+      type="password"
+      field={@form[:password]}
+      required
+      required_asterix={false}
+      autocomplete="current-password"
+    />
+
+    <div class="flex mt-6">
+      <.button label={gettext("Sign in")} class="flex flex-1" />
+    </div>
+  </.form>
+
+  <.auth_providers mode={:sign_in} conn_or_socket={@socket} />
+
+  <:bottom_links>
+    <.a class="text-sm text-slate-500 underline dark:text-slate-400" to={~p"/auth/reset-password"}>
+      {gettext("Forgot your password?")}
+    </.a>
+  </:bottom_links>
+</.auth_layout>

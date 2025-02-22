@@ -1,0 +1,180 @@
+<.tabbed_settings_layout current_user={@current_user} current_page={:members}>
+  <:action>
+    <div class="flex gap-3">
+      <.button
+        to={~p"/app/members/invitations"}
+        icon="remix-mail-open-line"
+        label={gettext("Invitations")}
+        color="light"
+        link_type="live_redirect"
+      />
+      <.button
+        link_type="live_redirect"
+        to={~p"/app/members/invite"}
+        icon="remix-user-add-line"
+        label={gettext("Add member")}
+      />
+    </div>
+  </:action>
+
+  <.data_table meta={@meta} items={@memberships}>
+    <:if_empty>{gettext("No %{models} found", models: gettext("members"))}</:if_empty>
+    <:col :let={membership} field={:name}>
+      <.avatar_entry title={user_name(membership.user)} subtitle={user_email(membership.user)}>
+        <.avatar name={user_name(membership.user)} />
+      </.avatar_entry>
+    </:col>
+    <:col
+      :let={membership}
+      field={:role}
+      class="hidden lg:table-cell"
+      body_class="hidden lg:table-cell"
+    >
+      <div class="flex gap-1 items-center">
+        <span class="break-all line-clamp-1">{user_role(membership)}</span>
+      </div>
+    </:col>
+    <:col
+      :let={membership}
+      field={:security}
+      label={gettext("MFA")}
+      class="hidden lg:table-cell"
+      body_class="hidden lg:table-cell"
+    >
+      <.badge
+        size="sm"
+        label={
+          if user_2fa_enabled(membership.user),
+            do: gettext("Enabled"),
+            else: gettext("Disabled")
+        }
+        color={if user_2fa_enabled(membership.user), do: "success", else: "danger"}
+        variant="status"
+        with_dot
+      />
+    </:col>
+    <:col :let={membership} field={:inserted_at} label={gettext("Joined")} sortable>
+      <div class="flex gap-1 items-center">
+        <span class="break-all line-clamp-1">{format_date_time(membership.inserted_at)}</span>
+      </div>
+    </:col>
+    <:col actions></:col>
+    <:actions :let={membership}>
+      <.icon_button
+        id={"delete-member-#{membership.id}"}
+        icon="custom-trash"
+        size="sm"
+        color="light"
+        title={gettext("Remove")}
+        link_type="live_patch"
+        phx-hook="TippyHook"
+        disabled={not Guard.permit(AccountsPolicy, @current_user, :delete, membership)}
+        data-tippy-content={
+          if not Guard.permit(AccountsPolicy, @current_user, :delete, membership),
+            do: gettext("You cannot remove this teammate"),
+            else: nil
+        }
+        data-tippy-placement="left"
+        to={apply_filters(@filters, @meta, ~p"/app/members/#{membership}/delete")}
+      />
+      <.icon_button
+        size="sm"
+        icon="custom-edit"
+        color="light"
+        title={gettext("Edit")}
+        link_type="live_patch"
+        to={apply_filters(@filters, @meta, ~p"/app/members/#{membership}/edit")}
+      />
+    </:actions>
+  </.data_table>
+</.tabbed_settings_layout>
+
+<%= case @live_action do %>
+  <% :edit -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      module={PasswordlessWeb.Org.MemberLive.FormComponent}
+      membership={@membership}
+      current_org={@current_org}
+      current_user={@current_user}
+      current_membership={@current_membership}
+      return_to={apply_filters(@filters, @meta, ~p"/app/members")}
+    />
+  <% :invite -> %>
+    <% origin = "right" %>
+    <.slide_over title={@page_title} origin={origin}>
+      <div class="flex flex-col gap-8">
+        <.form
+          id="form-invite"
+          for={@form}
+          phx-submit="submit_invitation"
+          phx-change="validate_invitation"
+        >
+          <.field
+            type="email"
+            field={@form[:email]}
+            label={gettext("Email")}
+            required
+            placeholder={gettext("eg. john@gmail.com")}
+            autocomplete="email"
+            phx-debounce="blur"
+            {alpine_autofocus()}
+          />
+        </.form>
+      </div>
+
+      <:actions>
+        <.button
+          size="wide"
+          type="submit"
+          color="light-flat"
+          label={gettext("Cancel")}
+          phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+        />
+        <.button
+          id="form-invite-submit"
+          size="wide"
+          type="submit"
+          form="form-invite"
+          label={gettext("Invite")}
+        />
+      </:actions>
+    </.slide_over>
+  <% :delete -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light-flat"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Remove %{user}", user: user_name(@membership.user))}
+          color="danger"
+          phx-click="delete_member"
+          phx-value-id={@membership.id}
+        />
+      </div>
+    </.modal>
+  <% :invitations -> %>
+    <.modal max_width="lg" title={@page_title} subtitle={@page_subtitle}>
+      <.live_component
+        id={@live_action}
+        module={PasswordlessWeb.Org.MemberLive.InvitationsComponent}
+        current_org={@current_org}
+        current_user={@current_user}
+        return_to={~p"/app/members"}
+      />
+    </.modal>
+  <% _ -> %>
+<% end %>

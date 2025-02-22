@@ -1,0 +1,13 @@
+<main>
+  <LiveToast.toast_group
+    flash={@flash}
+    corner={:top_right}
+    connected={assigns[:socket] != nil}
+    toast_class_fn={&PasswordlessWeb.Toast.toast_class_fn/1}
+  />
+  <.layout current_user={@current_user} current_page={@current_url} current_section={:admin}>
+    <div class="px-6 xl:px-8 py-6">
+      {@inner_content}
+    </div>
+  </.layout>
+</main>

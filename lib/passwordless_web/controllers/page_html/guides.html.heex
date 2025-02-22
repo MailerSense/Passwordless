@@ -1,0 +1,22 @@
+<%!-- This should match max_width in `public.html.heex`. Options: ["sm", "md", "lg", "xl", "full"] --%>
+<% max_width = "xl" %>
+<.hero_header
+  badge={gettext("Resources")}
+  title={gettext("Guides and Tutorials")}
+  subtitle={
+    gettext("Dive into advanced guides on monitoring, testing, and Passwordless use cases")
+  }
+/>
+<.hero_image_header
+  image_src={~p"/images/landing_page/status_page_setup.webp"}
+  image_title={gettext("Passwordless Status Page Editor")}
+  image_alt={gettext("Create and customize your status page with Passwordless")}
+  image_width={968}
+  image_height={689}
+  max_width={max_width}
+/>
+<.area pad_top={false} container={true}>
+  <div class="py-20"></div>
+</.area>
+<.benefits_cta />
+<.testimonials testimonials={PasswordlessWeb.Product.testimonials()} />

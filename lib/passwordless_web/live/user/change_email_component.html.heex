@@ -1,0 +1,29 @@
+<div>
+  <.form
+    id="change-email-form"
+    for={@form}
+    phx-submit="submit"
+    phx-change="validate"
+    phx-target={@myself}
+  >
+    <.field
+      type="email"
+      field={@form[:email]}
+      label={gettext("Email")}
+      placeholder={gettext("eg. john@gmail.com")}
+      phx-debounce="blur"
+      autocomplete="email"
+      {alpine_autofocus()}
+    />
+
+    <div class="flex justify-end gap-3">
+      <.button
+        size="md"
+        label="Cancel"
+        color="light-flat"
+        phx-click={JS.exec("data-cancel", to: "#modal")}
+      />
+      <.button icon="remix-mail-open-line" label={gettext("Change Email")} />
+    </div>
+  </.form>
+</div>

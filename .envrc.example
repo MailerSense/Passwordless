@@ -1,0 +1,46 @@
+# ----- REQUIRED IN PRODUCTION -----
+# export PHX_HOST="some_domain.com"
+
+# Allow search engines in or not. You usually only want this on in production
+# export ALLOW_ROBOTS="true|false"
+
+# If using Amazon SES for emailing you'll need these
+# export AWS_ACCESS_KEY=""
+# export AWS_SECRET=""
+# export AWS_REGION=""
+
+
+# ----- OPTIONAL -----
+# export PORT="4000"
+# export HTTPS_PORT="4001"
+# export POOL_SIZE="10"
+
+# If using MailBluster for marketing emails:
+# export MAIL_BLUSTER_API_KEY=""
+
+# If using the Slack API (see slack.ex)
+# export SLACK_OAUTH_TOKEN=""
+
+# If using oauth providers
+# export GOOGLE_OAUTH_CLIENT_ID=""
+# export GOOGLE_OAUTH_SECRET=""
+# export GITHUB_OAUTH_CLIENT_ID=""
+# export GITHUB_OAUTH_SECRET=""
+
+# If using Cloudinary for image uploads:
+# export CLOUDINARY_CLOUD_NAME=""
+# export CLOUDINARY_API_KEY=""
+# export CLOUDINARY_API_SECRET=""
+# export CLOUDINARY_FOLDER=""
+
+# If using Amazon S3 for file uploads:
+# (if you want to reuse the SES credentials above you can remove the first 3)
+# export AWS_REGION=""
+# export AWS_ACCESS_KEY=""
+# export AWS_SECRET=""
+# export S3_FILE_UPLOAD_BUCKET=""
+
+# If using Stripe for payments:
+# export STRIPE_SECRET=""
+# export STRIPE_WEBHOOK_SECRET=""
+# export STRIPE_PRODUCTION_MODE="false"

@@ -1,0 +1,67 @@
+<%!-- This should match max_width in `landing_page.html.heex`. Options: ["sm", "md", "lg", "xl", "full"] --%>
+<% max_width = "xl" %>
+
+<header
+  id="main-page-header"
+  phx-hook="ResetColorSchemeHook"
+  x-data="{mobile: false}"
+  class="z-30 w-full bg-slate-900"
+>
+  <.container max_width={max_width}>
+    <div class="flex flex-wrap items-center justify-between sm:gap-10 lg:gap-20 py-5 md:py-0 md:h-[96px] lg:h-[124px] relative">
+      <.link href="/" title={Passwordless.config(:app_name)}>
+        <.logo class="h-5 lg:h-6" variant="light" />
+      </.link>
+
+      <nav class="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+        <ul class="items-center gap-4 lg:gap-8 flex justify-center">
+          <.list_menu_items
+            a_class="text-lg text-white font-medium"
+            menu_items={public_menu_items()}
+          />
+        </ul>
+      </nav>
+
+      <div class="flex items-center">
+        <div class="hidden md:flex gap-3 items-center">
+          <.button title={gettext("Go to Homepage")} to={~p"/"} link_type="a" />
+        </div>
+
+        <div @click="mobile = !mobile" class="cursor-pointer md:hidden z-10">
+          <.icon
+            name="remix-menu-5-line"
+            class="w-7 h-7 text-white"
+            x-bind:class="{ 'opacity-1' : !mobile, 'hidden' : mobile }"
+          />
+
+          <.icon
+            name="remix-close-large-line"
+            class="w-7 h-7 text-white"
+            x-cloak
+            x-bind:class="{ 'hidden' : !mobile }"
+          />
+        </div>
+      </div>
+    </div>
+
+    <nav x-bind:class="{ 'block' : mobile, 'hidden' : !mobile }" class="hidden">
+      <ul class="bg-slate-950 py-6 rounded-lg">
+        <.list_menu_items
+          li_class="mb-6 last:mb-0 text-center"
+          a_class="inline-block text-lg font-medium capitalize menu-item items-center text-white"
+          menu_items={public_mobile_menu_items(nil)}
+        />
+      </ul>
+    </nav>
+  </.container>
+</header>
+
+<main>
+  <section class="bg-slate-900">
+    {@inner_content}
+  </section>
+
+  <.hero_error max_width={max_width} />
+</main>
+
+<PasswordlessWeb.CoreComponents.footer max_width={max_width} />

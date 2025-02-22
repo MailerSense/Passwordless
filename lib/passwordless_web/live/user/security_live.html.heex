@@ -1,0 +1,20 @@
+<.tabbed_settings_layout current_page={:edit_totp} current_user={@current_user}>
+  <.backup_codes :if={@backup_codes} backup_codes={@backup_codes} editing_totp={@editing_totp} />
+
+  <%= if @editing_totp do %>
+    <.totp_form
+      totp_form={@totp_form}
+      current_totp={@current_totp}
+      secret_display={@secret_display}
+      qrcode_uri={@qrcode_uri}
+      editing_totp={@editing_totp}
+    />
+  <% else %>
+    <.enable_form
+      current_totp={@current_totp}
+      current_password={@current_password}
+      has_password={@has_password}
+      user_form={@user_form}
+    />
+  <% end %>
+</.tabbed_settings_layout>

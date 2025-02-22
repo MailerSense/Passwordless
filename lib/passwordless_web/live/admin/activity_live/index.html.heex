@@ -1,0 +1,58 @@
+<.layout current_user={@current_user} current_page={:activity_admin} current_section={:admin}>
+  <div class="px-6 xl:px-8 py-6">
+    <.page_header title={gettext("Activity")} />
+    <.stream_table meta={@meta} items={@streams.logs} finished={@finished}>
+      <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+      <:col field={:search} searchable filterable={[:==]} />
+      <:col :let={log} field={:event}>
+        <% action_text = Atom.to_string(log.action) %>
+        <% action_icon_name = action_icon(Atom.to_string(log.action)) %>
+        <.avatar_entry title={log.action} subtitle={log.domain}>
+          <.avatar name={action_icon_name} color={action_color(action_text)} />
+        </.avatar_entry>
+      </:col>
+      <:col
+        :let={log}
+        field={:details}
+        class="hidden xl:table-cell"
+        body_class="hidden xl:table-cell"
+      >
+        <%= if Util.present?(log.metadata) do %>
+          <code class="line-clamp-1 break-all">
+            {Util.to_truncated_json(log.metadata)}
+          </code>
+        <% else %>
+          {gettext("-")}
+        <% end %>
+      </:col>
+      <:col :let={log} field={:person}>
+        <%= case Log.full_recipient_parts(log) do %>
+          <% {:user, recipient_name, recipient} when is_binary(recipient_name) and is_binary(recipient) -> %>
+            <span class="line-clamp-1 flex items-center gap-1">
+              <.icon name="remix-building-line" class="w-4 h-4 text-slate-900 dark:text-white" />
+              <span class="text-slate-900 dark:text-white font-medium shrink-0">
+                {recipient_name}
+              </span>
+              <span>{"<#{recipient}>"}</span>
+            </span>
+          <% _ -> %>
+            {gettext("-")}
+        <% end %>
+      </:col>
+      <:col :let={log} label={gettext("Happened")} field={:id}>
+        <span class="line-clamp-1 break-all">{Timex.from_now(log.inserted_at)}</span>
+      </:col>
+      <:col label="Actions" actions></:col>
+      <:actions :let={log}>
+        <.icon_button
+          to={apply_filters(@filters, @meta, ~p"/admin/activity/#{log}")}
+          size="sm"
+          color="light"
+          icon="remix-eye-line"
+          title={gettext("View")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.stream_table>
+  </div>
+</.layout>

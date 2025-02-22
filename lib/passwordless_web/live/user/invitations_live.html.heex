@@ -1,0 +1,59 @@
+<.tabbed_settings_layout current_page={:org_invitations} current_user={@current_user}>
+  <%= if @current_user.confirmed_at do %>
+    <%= if Util.blank?(@invitations) do %>
+      <.p>
+        {gettext("You have no pending invitations.")}
+      </.p>
+    <% else %>
+      <div class="grid grid-cols-1 mt-6 md:grid-cols-2">
+        <%= for invitation <- @invitations do %>
+          <.box padded id={"invitation-#{invitation.id}"}>
+            <div>
+              <div class="flex items-center justify-center w-12 h-12 mx-auto bg-primary-100 rounded-full">
+                <.icon name="remix-mail-open-line" class="w-6 h-6 text-primary-600" />
+              </div>
+              <div class="mt-3 text-center sm:mt-5">
+                <div class="text-lg font-medium leading-6 text-slate-900 dark:text-white">
+                  {gettext("Invitation")}
+                </div>
+                <div class="mt-2">
+                  <div class="text-sm text-slate-500 dark:text-slate-400">
+                    {gettext("You have been invited to join %{org_name}",
+                      org_name: invitation.org.name
+                    )}.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-5 sm:mt-6">
+              <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                <.button
+                  phx-click="reject_invitation"
+                  phx-value-id={invitation.id}
+                  label={gettext("Reject")}
+                  data-confirm={gettext("Are you sure you want to reject this invitation?")}
+                  color="light"
+                />
+                <.button
+                  phx-click="accept_invitation"
+                  phx-value-id={invitation.id}
+                  label={gettext("Accept")}
+                  color="primary"
+                />
+              </div>
+            </div>
+          </.box>
+        <% end %>
+      </div>
+    <% end %>
+  <% else %>
+    <.alert color="warning" class="my-5" heading={gettext("Unconfirmed account")}>
+      {gettext(
+        "You may have pending invitations. To see them please confirm your account by clicking the link in the e-mail we sent you. If you didn't receive an e-mail,"
+      )}
+      <a href="#" phx-click="confirmation_resend" class="underline">
+        {gettext("click here to resend it")}.
+      </a>
+    </.alert>
+  <% end %>
+</.tabbed_settings_layout>

@@ -1,0 +1,116 @@
+<head>
+  <%= if public_page?(@conn) do %>
+    <!-- Start of Iubenda -->
+    <script type="text/javascript">
+      var _iub = _iub || [];
+      _iub.csConfiguration = {"siteId":3786301,"cookiePolicyId":23101660,"lang":"en","storage":{"useSiteId":true}};
+    </script>
+    <script type="text/javascript" src="https://cs.iubenda.com/autoblocking/3786301.js">
+    </script>
+    <script type="text/javascript" src="//cdn.iubenda.com/cs/gpp/stub.js">
+    </script>
+    <script type="text/javascript" src="//cdn.iubenda.com/cs/iubenda_cs.js" charset="UTF-8" async>
+    </script>
+    <!-- End of Iubenda -->
+    <!-- Start of Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y0YPHLP184">
+    </script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-Y0YPHLP184');
+    </script>
+    <!-- End of Google tag (gtag.js) -->
+  <% end %>
+  <meta name="csrf-token" content={get_csrf_token()} />
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index,follow" />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href={static_url(@conn, ~p"/images/apple-touch-icon.png")}
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href={static_url(@conn, ~p"/images/favicon-32x32.png")}
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href={static_url(@conn, ~p"/images/favicon-16x16.png")}
+  />
+  <link rel="canonical" href={canonical_url(@conn)} />
+  <SEO.juice conn={@conn} config={PasswordlessWeb.SEO.config()} page_title={title(@conn)} />
+  <PasswordlessWeb.SchemaMarkup.site
+    :if={home_page?(@conn)}
+    url={canonical_url(@conn)}
+    site_name={Passwordless.config(:app_name)}
+  />
+  <PasswordlessWeb.SchemaMarkup.page
+    associated_headline={title(@conn)}
+    associated_abstract={
+      get_in(@conn.assigns, [Access.key(:page_description, Passwordless.config(:seo_description))])
+    }
+    associated_related_link={url(@conn, ~p"/product")}
+    associated_significant_links={[url(@conn, ~p"/"), url(@conn, ~p"/product")]}
+    associated_keywords={Passwordless.config(:keywords)}
+  />
+  <PasswordlessWeb.SchemaMarkup.organization
+    url={canonical_url(@conn)}
+    name={Passwordless.config(:app_name)}
+    logo={static_url(@conn, ~p"/images/logo_icon.webp")}
+    image="https://cdn.datatrawler.com/public-sharing/twitter-card.webp"
+    legal_name={Passwordless.config(:business_name)}
+    description={Passwordless.config(:description)}
+    same_as={[
+      Passwordless.config(:twitter_url),
+      Passwordless.config(:facebook_url),
+      Passwordless.config(:linkedin_url),
+      Passwordless.config(:github_url)
+    ]}
+    contact_type={gettext("Customer Support")}
+    contact_email={Passwordless.config(:support_email)}
+  />
+  <!-- Start of Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap"
+    rel="stylesheet"
+  />
+  <!-- End of Google Fonts -->
+  <!-- Start of Inter -->
+  <link rel="preconnect" href="https://rsms.me/" />
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  <!-- End of Inter -->
+  <link
+    async
+    defer
+    phx-track-static
+    rel="stylesheet"
+    href={static_url(@conn, ~p"/assets/app.css")}
+  />
+  <%= if admin_page?(@conn) do %>
+    <link
+      async
+      defer
+      phx-track-static
+      rel="stylesheet"
+      href={static_url(@conn, ~p"/assets/backpex.css")}
+    />
+  <% end %>
+  <script
+    defer
+    phx-track-static
+    type="text/javascript"
+    src={static_url(@conn, ~p"/assets/app.js")}
+  >
+  </script>
+</head>

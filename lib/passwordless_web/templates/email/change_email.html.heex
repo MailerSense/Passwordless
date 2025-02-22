@@ -1,0 +1,22 @@
+<h1>Change your email</h1>
+
+<p>Click the button below to change your email.</p>
+
+<EmailComponents.button_centered to={@url}>
+  Change email
+</EmailComponents.button_centered>
+
+<EmailComponents.small_text>
+  <div style="font-size: 12px; margin: 0">
+    If you can't click the button above, copy and paste the link below into your browser:
+  </div>
+  <a href={@url} style="font-size: 12px; margin: 0">
+    {@url}
+  </a>
+</EmailComponents.small_text>
+
+<EmailComponents.small_text>
+  <div style="font-size: 12px;">
+    If you didn't request this change, please ignore this.
+  </div>
+</EmailComponents.small_text>

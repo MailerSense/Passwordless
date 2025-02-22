@@ -1,0 +1,166 @@
+name: Check
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+env:
+  MIX_ENV: test
+  DEPLOYMENT_ENV: ${{ vars.DEPLOYMENT_ENV }}
+  OBAN_PRO_AUTH_KEY: ${{ secrets.OBAN_PRO_AUTH_KEY }}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    services:
+      db:
+        image: postgres
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB_NAME: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    name: Test on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    runs-on: ubuntu-24-arm64
+    strategy:
+      matrix:
+        otp: ["27.2"]
+        elixir: ["1.18.2"]
+    environment: ${{ (github.event.pull_request.base.ref == 'main' && 'main') || 'dev' }}
+    steps:
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache deps
+        id: cache-deps
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-elixir-deps
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-${{ env.cache-name }}-
+
+      - name: Cache compiled build
+        id: cache-build
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-compiled-build
+        with:
+          path: _build
+          key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-${{ env.cache-name }}-
+            ${{ runner.os }}-mix-
+
+      - name: Setup private repo
+        run: |
+          mix hex.repo add oban https://getoban.pro/repo \
+            --fetch-public-key SHA256:4/OSKi0NRF91QVVXlGAhb/BIMLnK8NHcx/EWs+aIWPc \
+            --auth-key ${{ secrets.OBAN_PRO_AUTH_KEY }}
+
+      - name: Install deps
+        run: mix deps.get
+
+      - name: Compile
+        run: mix compile
+
+      - name: Format
+        run: mix format --check-formatted
+
+      - name: Test
+        run: mix test
+  cdk:
+    name: Diff CDK on Node ${{matrix.node-version}}
+    runs-on: ubuntu-24-arm64
+    environment: ${{ (github.event.pull_request.base.ref == 'main' && 'main') || 'dev' }}
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
+    strategy:
+      matrix:
+        node-version: [22]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: ${{ matrix.node-version }}
+
+      - name: PNPM install
+        run: pnpm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          audience: sts.amazonaws.com
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_DEPLOYER_ROLE }}
+          role-duration-seconds: 14400 # 60 * 60 * 4
+
+      - name: Diff
+        id: diff
+        continue-on-error: true
+        env:
+          AWS_DEFAULT_REGION: us-east-1
+        run: set -euo pipefail && pnpm --prefix cdk exec cdk diff 2>&1 2>&1 | tee output.log
+
+      - name: Output diff results
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const diff = require("fs").readFileSync("output.log", {encoding: "utf8"});
+            const result = `${{ steps.diff.outcome }}` == 'success';
+            const output = `## ${result ? "✅ Success" : "❌ Failure"}
+            #### CDK Diff 📖\`${{ steps.diff.outcome }}\`
+
+            <details><summary>Diff</summary>
+
+            \`\`\`cfn
+            ${diff}
+            \`\`\`
+
+            </details>
+
+            **Pusher**: @${{ github.actor }}
+            **Action**: ${{ github.event_name }}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
+
+      - name: Diff status
+        if: steps.diff.outcome == 'failure'
+        run: exit 1

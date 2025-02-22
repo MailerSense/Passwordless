@@ -1,0 +1,43 @@
+<.layout current_user={@current_user} current_page={:integrations} current_section={:app}>
+  <.page_header title={gettext("Embed & API")}></.page_header>
+
+  <div class="flex flex-col gap-6">
+    <.box class="flex flex-col gap-6 p-6">
+      <p class="text-gray-500 dark:text-slate-400">
+        {gettext("Use these values to authenticate your app with Passwordless.")}
+      </p>
+      <div class="grid grid-cols-2 gap-4">
+        <.field
+          name="test"
+          value="lololololo"
+          label="App ID"
+          readonly
+          copyable={true}
+          wrapper_class="!mb-0"
+        />
+        <.field
+          name="test2"
+          value="lololololo"
+          label="App Secret"
+          type="password"
+          readonly
+          viewable={true}
+          wrapper_class="!mb-0"
+        />
+      </div>
+    </.box>
+
+    <div class="flex items-start gap-4">
+      <div class="flex flex-col w-80 xl:w-[400px]">
+        <.box padded>
+          <div>
+            <.form_header title="Branding" />
+          </div>
+        </.box>
+      </div>
+      <div class="flex flex-col grow">
+        <.box padded>test</.box>
+      </div>
+    </div>
+  </div>
+</.layout>

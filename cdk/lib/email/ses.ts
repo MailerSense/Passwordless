@@ -1,0 +1,189 @@
+import { CfnOutput, RemovalPolicy, aws_ses as ses, Stack } from "aws-cdk-lib";
+import {
+  CnameRecord,
+  IHostedZone,
+  MxRecord,
+  TxtRecord,
+} from "aws-cdk-lib/aws-route53";
+import { EmailSendingEvent, IConfigurationSet } from "aws-cdk-lib/aws-ses";
+import { Topic } from "aws-cdk-lib/aws-sns";
+import { SqsSubscription } from "aws-cdk-lib/aws-sns-subscriptions";
+import { Queue } from "aws-cdk-lib/aws-sqs";
+import { Construct } from "constructs";
+
+import { MessageQueue } from "../message/message-queue";
+
+export interface SESProps {
+  name: string;
+  zone: IHostedZone;
+  domains: DomainIdentity[];
+}
+
+export interface DomainIdentity {
+  domain: string;
+  subDomain: string;
+  domainFromPrefix: string;
+  ruaEmail?: string;
+  rufEmail?: string;
+}
+
+const allowedEventTypes: EmailSendingEvent[] = [
+  EmailSendingEvent.SEND,
+  EmailSendingEvent.REJECT,
+  EmailSendingEvent.BOUNCE,
+  EmailSendingEvent.COMPLAINT,
+  EmailSendingEvent.DELIVERY,
+  EmailSendingEvent.RENDERING_FAILURE,
+  EmailSendingEvent.DELIVERY_DELAY,
+  EmailSendingEvent.SUBSCRIPTION,
+];
+
+export class SES extends Construct {
+  public readonly configSet: ses.ConfigurationSet;
+  public readonly eventQueue: Queue;
+  public readonly domainIdentities: ses.IEmailIdentity[];
+
+  public constructor(scope: Construct, id: string, props: Readonly<SESProps>) {
+    super(scope, id);
+
+    const { name } = props;
+
+    // Create the configuration set (add pool once we have it)
+    const configSetName = `${name}-config-set`;
+    this.configSet = new ses.ConfigurationSet(this, configSetName, {
+      configurationSetName: configSetName,
+      reputationMetrics: true,
+      tlsPolicy: ses.ConfigurationSetTlsPolicy.REQUIRE,
+      sendingEnabled: true,
+      suppressionReasons: ses.SuppressionReasons.BOUNCES_AND_COMPLAINTS,
+    });
+
+    // Create default domain identities
+    this.domainIdentities = props.domains.map((identity) =>
+      this.createDomainIdentity(identity, props.zone, this.configSet),
+    );
+
+    // Create the event topic name
+    const eventTopicName = `${name}-email-notifications`;
+    const eventTopic = new Topic(this, eventTopicName, {
+      topicName: eventTopicName,
+      displayName: "SES Email Notifications",
+    });
+
+    // Bind it to the configuration set
+    const eventDestinationName = `${name}-notification-destination`;
+    const _eventDestination = new ses.ConfigurationSetEventDestination(
+      this,
+      eventDestinationName,
+      {
+        events: allowedEventTypes,
+        destination: ses.EventDestination.snsTopic(eventTopic),
+        configurationSet: this.configSet,
+        configurationSetEventDestinationName: eventDestinationName,
+      },
+    );
+
+    // Create the SQS queue for notifications
+    const notificationQueue = new MessageQueue(this, `${name}-notification`, {
+      name: name,
+      designation: "email-notifications",
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // Subscribe the queue to the topic
+    eventTopic.addSubscription(new SqsSubscription(notificationQueue.queue));
+
+    this.eventQueue = notificationQueue.queue;
+  }
+
+  private createDomainIdentity(
+    {
+      domain: domain,
+      subDomain: subDomain,
+      domainFromPrefix: domainFromPrefix,
+      ruaEmail: ruaEmail,
+      rufEmail: rufEmail,
+    }: DomainIdentity,
+    hostedZone: IHostedZone,
+    configurationSet: IConfigurationSet,
+  ): ses.IEmailIdentity {
+    const slugify = (str: string): string =>
+      String(str)
+        .normalize("NFKD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9 -]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+
+    const emailDomain = `${subDomain}.${domain}`;
+    const domainSlug = slugify(emailDomain);
+    const domainIdentityName = `${domainSlug}-identity`;
+    const identity = new ses.EmailIdentity(this, domainIdentityName, {
+      identity: ses.Identity.domain(emailDomain),
+      mailFromDomain: `${domainFromPrefix}.${emailDomain}`,
+      configurationSet,
+      mailFromBehaviorOnMxFailure:
+        ses.MailFromBehaviorOnMxFailure.REJECT_MESSAGE,
+    });
+
+    const dkimTokens = [
+      [identity.dkimDnsTokenName1, identity.dkimDnsTokenValue1],
+      [identity.dkimDnsTokenName2, identity.dkimDnsTokenValue2],
+      [identity.dkimDnsTokenName3, identity.dkimDnsTokenValue3],
+    ];
+
+    dkimTokens.forEach(([tokenName, tokenValue], i) => {
+      const recordName = `${tokenName}.`;
+      const domainName = tokenValue;
+      const _record = new CnameRecord(
+        this,
+        `${domainSlug}-dkim-token-${i + 1}`,
+        {
+          recordName,
+          domainName,
+          comment: `SES DKIM Record ${i + 1} for ${domain}`,
+          zone: hostedZone,
+        },
+      );
+
+      new CfnOutput(this, `${domainSlug}-dkim-token-value-${i + 1}`, {
+        description: `SES DKIM CNAME Record ${i + 1}`,
+        value: `${recordName} CNAME ${tokenValue}.dkim.amazonses.com`,
+      });
+    });
+
+    const spfValue = "v=spf1 include:amazonses.com ~all";
+    let dmarcValue = "v=DMARC1; p=none; ";
+
+    if (ruaEmail) {
+      dmarcValue += `rua=mailto:${ruaEmail}; `;
+    }
+
+    if (rufEmail) {
+      dmarcValue += `ruf=mailto:${rufEmail}; `;
+    }
+
+    dmarcValue = dmarcValue.trim();
+
+    const _txtRecord = new TxtRecord(this, `${domainSlug}-txt-recordset`, {
+      recordName: `${domainFromPrefix}.${subDomain}`,
+      values: [spfValue, dmarcValue],
+      zone: hostedZone,
+    });
+
+    const _mxRecord = new MxRecord(this, `${domainSlug}-mx-recordset`, {
+      recordName: `${domainFromPrefix}.${subDomain}`,
+      values: [
+        {
+          priority: 10,
+          hostName: `feedback-smtp.${Stack.of(this).region}.amazonses.com`,
+        },
+      ],
+      zone: hostedZone,
+    });
+
+    return identity;
+  }
+}

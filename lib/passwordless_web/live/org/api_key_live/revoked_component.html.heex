@@ -1,0 +1,19 @@
+<div>
+  <.data_table meta={@meta} items={@auth_tokens} variant="outline">
+    <:if_empty>{gettext("No %{models} found", models: gettext("auth tokens"))}</:if_empty>
+    <:col :let={auth_token} field={:name}>
+      <.avatar_entry title={auth_token.name}>
+        <.avatar name="🔑" color="primary" />
+      </.avatar_entry>
+    </:col>
+    <:col
+      :let={auth_token}
+      field={:kid}
+      label={gettext("Signature")}
+      class="hidden xl:table-cell"
+      body_class="hidden xl:table-cell"
+    >
+      <.auth_token_id value={auth_token.signature} />
+    </:col>
+  </.data_table>
+</div>

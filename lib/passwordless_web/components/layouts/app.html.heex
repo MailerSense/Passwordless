@@ -1,0 +1,9 @@
+<main>
+  <LiveToast.toast_group
+    flash={@flash}
+    corner={:top_right}
+    connected={assigns[:socket] != nil}
+    toast_class_fn={&PasswordlessWeb.Toast.toast_class_fn/1}
+  />
+  {@inner_content}
+</main>
