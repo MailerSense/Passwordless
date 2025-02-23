@@ -1,5 +1,23 @@
 <div class="flex flex-col">
   <.tabbed_settings_layout current_page={:edit_org} current_user={@current_user}>
+    <:action>
+      <.dropdown
+        label={PasswordlessWeb.Helpers.user_org_name(@current_user)}
+        label_icon="remix-building-line"
+      >
+        <.dropdown_menu_item link_type="live_redirect" to={~p"/app/organization/new"}>
+          <.icon name="remix-add-line" class="w-5 h-5" />
+          {gettext("Create organization")}
+        </.dropdown_menu_item>
+        <.form :for={org <- @org_menu_items} for={nil} action={~p"/app/org/switch"} method="post">
+          <.input type="hidden" name="org_id" value={org.id} />
+          <button class="pc-dropdown__menu-item">
+            <.icon name="remix-building-line" class="w-5 h-5" />
+            <span class="line-clamp-1">{org.name}</span>
+          </button>
+        </.form>
+      </.dropdown>
+    </:action>
     <.live_component
       id={:edit}
       org={@current_org}

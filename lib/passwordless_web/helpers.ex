@@ -10,6 +10,7 @@ defmodule PasswordlessWeb.Helpers do
   alias Passwordless.Action
   alias Passwordless.Activity.Log
   alias Passwordless.Actor
+  alias Passwordless.Organizations
   alias Passwordless.Organizations.AuthToken
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
@@ -85,8 +86,9 @@ defmodule PasswordlessWeb.Helpers do
     ]
   end
 
-  def org_menu_items(%User{all_orgs: [_ | _] = orgs} = user) do
-    orgs
+  def org_menu_items(%User{} = user) do
+    user
+    |> Organizations.list_orgs()
     |> Enum.sort_by(& &1.name, :desc)
     |> Enum.reject(fn %Org{id: id} ->
       case user.current_org do
@@ -98,8 +100,9 @@ defmodule PasswordlessWeb.Helpers do
 
   def org_menu_items(_user), do: []
 
-  def project_menu_items(%User{current_org: %Org{} = org, all_projects: [_ | _] = projects} = user) do
-    projects
+  def project_menu_items(%User{current_org: %Org{} = org} = user) do
+    org
+    |> Organizations.list_projects()
     |> Enum.sort_by(& &1.name, :desc)
     |> Enum.reject(fn %Project{id: id} ->
       case user.current_project do

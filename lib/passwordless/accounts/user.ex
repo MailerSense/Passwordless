@@ -34,8 +34,6 @@ defmodule Passwordless.Accounts.User do
     field :current_project, :map, virtual: true
     field :current_membership, :map, virtual: true
     field :current_impersonator, :map, virtual: true
-    field :all_orgs, :map, virtual: true
-    field :all_projects, :map, virtual: true
     field :two_factor_enabled, :boolean, virtual: true, default: false
     field :is_online, :boolean, virtual: true, default: false
 

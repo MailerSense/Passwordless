@@ -67,7 +67,11 @@
         color="light"
         title={gettext("Remove")}
         link_type="live_patch"
-        phx-hook="TippyHook"
+        phx-hook={
+          if not Guard.permit(AccountsPolicy, @current_user, :delete, membership),
+            do: "TippyHook",
+            else: nil
+        }
         disabled={not Guard.permit(AccountsPolicy, @current_user, :delete, membership)}
         data-tippy-content={
           if not Guard.permit(AccountsPolicy, @current_user, :delete, membership),

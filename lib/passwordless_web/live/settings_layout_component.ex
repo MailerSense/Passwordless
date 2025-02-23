@@ -40,7 +40,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
   # Private
 
   defp menu_items(%User{current_membership: %Membership{}} = user) do
-    org_routes = [:members, :edit_projects, :edit_org]
+    org_routes = [:members, :projects, :edit_org]
 
     user_routes = [
       :edit_profile,

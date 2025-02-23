@@ -1,4 +1,4 @@
-<.tabbed_settings_layout current_user={@current_user} current_page={:edit_projects}>
+<.tabbed_settings_layout current_user={@current_user} current_page={:projects}>
   <:action>
     <div class="flex gap-3">
       <.button
@@ -28,7 +28,11 @@
         to={apply_filters(@filters, @meta, ~p"/app/projects/#{project}/delete")}
         disabled={is_current_project?(@current_project, project)}
         id={"delete-project-#{project.id}"}
-        phx-hook="TippyHook"
+        phx-hook={
+          if is_current_project?(@current_project, project),
+            do: "TippyHook",
+            else: nil
+        }
         data-tippy-content={
           if is_current_project?(@current_project, project),
             do: gettext("You cannot delete the project you're viewing"),

@@ -22,7 +22,6 @@ defmodule PasswordlessWeb.Org.Hooks do
       |> assign_current_membership(session)
       |> assign_current_org()
       |> assign_current_org_user()
-      |> assign_orgs()
 
     {:cont, socket}
   end
@@ -98,13 +97,6 @@ defmodule PasswordlessWeb.Org.Hooks do
   end
 
   defp assign_current_org_user(socket), do: socket
-
-  defp assign_orgs(%{assigns: %{current_user: %User{} = user}} = socket) do
-    socket = assign_new(socket, :orgs, fn -> Organizations.list_cached_orgs(user) end)
-    update(socket, :current_user, fn current_user -> %User{current_user | all_orgs: socket.assigns[:orgs]} end)
-  end
-
-  defp assign_orgs(socket), do: socket
 
   defp require_minimal_org_role(socket, role) when is_atom(role) do
     with %Membership{} = membership <- socket.assigns[:current_membership],

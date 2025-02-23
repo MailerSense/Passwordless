@@ -31,11 +31,7 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
     <div {@rest} class={["flex items-center gap-3", @class]}>
       <.theme_switch />
 
-      <.dropdown
-        label={PasswordlessWeb.Helpers.user_project_name(@current_user)}
-        variant="outline"
-        placement="right"
-      >
+      <.dropdown label={PasswordlessWeb.Helpers.user_project_name(@current_user)} variant="outline">
         <.dropdown_menu_item link_type="live_redirect" to={~p"/app/project/new"}>
           <.icon name="remix-add-line" class="w-5 h-5" />
           {gettext("Create project")}

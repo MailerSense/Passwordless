@@ -13,8 +13,6 @@ defmodule Passwordless do
   alias Passwordless.Project
   alias Passwordless.Repo
 
-  @batch 1000
-
   @doc """
   Looks up `Application` config or raises if keyspace is not configured.
   ## Examples

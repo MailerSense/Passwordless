@@ -18,7 +18,6 @@ defmodule PasswordlessWeb.Project.Hooks do
       socket
       |> assign_current_project(session)
       |> assign_current_project_user()
-      |> assign_org_projects()
 
     {:cont, socket}
   end
@@ -33,14 +32,6 @@ defmodule PasswordlessWeb.Project.Hooks do
       end
     end)
   end
-
-  defp assign_org_projects(%{assigns: %{current_org: %Org{} = org}} = socket) do
-    socket = assign_new(socket, :org_projects, fn -> Organizations.list_cached_projects(org) end)
-
-    update(socket, :current_user, fn current_user -> %User{current_user | all_projects: socket.assigns[:org_projects]} end)
-  end
-
-  defp assign_org_projects(socket), do: socket
 
   defp assign_current_project_user(
          %{assigns: %{current_user: %User{}, current_project: %Project{} = current_project}} = socket

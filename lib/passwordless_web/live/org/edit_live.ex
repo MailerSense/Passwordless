@@ -12,6 +12,16 @@ defmodule PasswordlessWeb.Org.EditLive do
   end
 
   @impl true
+  def handle_params(_params, _url, socket) do
+    current_user = socket.assigns.current_user
+
+    {:noreply,
+     socket
+     |> assign_new(:org_menu_items, fn -> PasswordlessWeb.Helpers.org_menu_items(current_user) end)
+     |> apply_action(socket.assigns.live_action)}
+  end
+
+  @impl true
   def handle_event("close_modal", _params, socket) do
     {:noreply, push_patch(socket, to: ~p"/app/organization")}
   end
