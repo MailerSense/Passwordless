@@ -171,7 +171,7 @@ defmodule PasswordlessWeb.CheckComponents do
       </div>
       <div class="flex p-6 gap-6 items-center">
         <div :for={item <- @legend} class="flex gap-2 items-center">
-          <div class={["w-4 h-2 rounded-full", item.color]}></div>
+          <span class={["w-4 h-2 rounded-full", item.color]}></span>
           <p class="text-gray-600 dark:text-gray-300 text-xs font-semibold">{item.label}</p>
         </div>
       </div>

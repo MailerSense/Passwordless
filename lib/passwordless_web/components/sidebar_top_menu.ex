@@ -63,31 +63,26 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
           <% end %>
         </:trigger_element>
         <%= for child_item <- @user_menu_items do %>
-          <%= case child_item do %>
-            <% %{separator: true} -> %>
-              <.dropdown_separator />
-            <% _ -> %>
-              <.dropdown_menu_item
-                to={child_item.path}
-                label={child_item.label}
-                method={if child_item[:method], do: child_item[:method], else: nil}
-                link_type={child_item[:link_type] || "a"}
-              >
-                <.icon
-                  :if={child_item[:icon]}
-                  name={child_item[:icon]}
-                  class={[
-                    "w-5 h-5",
-                    if(child_item[:color] == :red, do: "text-danger-700 dark:text-danger-400")
-                  ]}
-                />
-                <span class={[
-                  if(child_item[:color] == :red, do: "text-danger-700 dark:text-danger-400")
-                ]}>
-                  {child_item.label}
-                </span>
-              </.dropdown_menu_item>
-          <% end %>
+          <.dropdown_menu_item
+            to={child_item.path}
+            label={child_item.label}
+            method={if child_item[:method], do: child_item[:method], else: nil}
+            link_type={child_item[:link_type] || "a"}
+          >
+            <.icon
+              :if={child_item[:icon]}
+              name={child_item[:icon]}
+              class={[
+                "w-5 h-5",
+                if(child_item[:color] == :red, do: "text-danger-700 dark:text-danger-400")
+              ]}
+            />
+            <span class={[
+              if(child_item[:color] == :red, do: "text-danger-700 dark:text-danger-400")
+            ]}>
+              {child_item.label}
+            </span>
+          </.dropdown_menu_item>
         <% end %>
       </.dropdown>
     </div>
