@@ -6,14 +6,14 @@
       <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
         {gettext("App config")}
       </h4>
-      <p class="text-gray-500 dark:text-slate-400">
+      <p class="text-slate-500 dark:text-slate-400">
         Use the
         <code class="font-code text-sm text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 py-0.5 px-1.5 rounded-lg">
           App ID
         </code>
         to embed the login & authentication guards in your frontend apps. Never publish your
         <code class="font-code text-sm text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 py-0.5 px-1.5 rounded-lg">
-          App secret
+          App Secret
         </code>
         , use it only when calling Passwordless API from your backend. If your secret is compromised, you can regenerate it at any time.
       </p>
@@ -30,7 +30,7 @@
         <.field
           name="test2"
           value="lololololo"
-          label="App secret"
+          label="App Secret"
           type="password"
           readonly
           viewable={true}
@@ -42,21 +42,21 @@
 
     <.box padded>
       <.form_header title="Login page" />
-      <p class="text-gray-500 dark:text-slate-400">
+      <p class="text-slate-500 dark:text-slate-400">
         Allow your users to sign in with passwordless authentication. Just copy and paste the code below into your app.
       </p>
     </.box>
 
     <.box padded>
       <.form_header title="Auth guard" />
-      <p class="text-gray-500 dark:text-slate-400">
+      <p class="text-slate-500 dark:text-slate-400">
         Ensure your users are authenticated before accessing certain pages in your app. Just copy and paste the code below into your app.
       </p>
     </.box>
 
     <.box padded>
       <.form_header title="API integration" />
-      <p class="text-gray-500 dark:text-slate-400">
+      <p class="text-slate-500 dark:text-slate-400">
         If you want to e.g. send magic links or OTP codes from your backend, you can use the following code snippets.
       </p>
     </.box>

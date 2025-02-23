@@ -44,7 +44,7 @@ defmodule PasswordlessWeb.Menus do
     ]
 
   def main_menu_items(:app, %User{} = current_user),
-    do: build_menu([:home, :users, :methods, :embed, :billing, :settings], current_user)
+    do: build_menu([:home, :users, :methods, :embed, :settings], current_user)
 
   def main_menu_items(:knowledge, %User{} = current_user), do: build_menu([:blog, :guides, :docs], current_user)
 
@@ -73,7 +73,7 @@ defmodule PasswordlessWeb.Menus do
   def main_menu_items(_section, _user), do: []
 
   def user_menu_items(%User{current_org: %Org{}} = current_user),
-    do: build_menu([:members, :projects, :edit_org, :sign_out], current_user)
+    do: build_menu([:billing, :team, :projects, :organization, :sign_out], current_user)
 
   def user_menu_items(_user), do: []
 
@@ -426,7 +426,7 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
-  def get_link(:edit_org = name, _user) do
+  def get_link(:organization = name, _user) do
     %{
       name: name,
       label: gettext("Organization"),
@@ -436,11 +436,11 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
-  def get_link(:members = name, _user) do
+  def get_link(:team = name, _user) do
     %{
       name: name,
       label: gettext("Team"),
-      path: ~p"/app/members",
+      path: ~p"/app/team",
       icon: "remix-group-line",
       link_type: "live_patch"
     }

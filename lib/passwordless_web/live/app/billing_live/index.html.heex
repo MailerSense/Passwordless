@@ -1,5 +1,5 @@
-<.layout current_user={@current_user} current_page={:billing} current_section={:app}>
-  <.page_header title={gettext("Billing")}>
+<.tabbed_settings_layout current_user={@current_user} current_page={:billing}>
+  <:action>
     <div class="flex gap-3">
       <.button
         to={"mailto:#{Passwordless.config(:sales_email)}"}
@@ -18,7 +18,7 @@
         link_type="a"
       />
     </div>
-  </.page_header>
+  </:action>
 
   <div class="flex flex-col gap-6">
     <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -51,4 +51,4 @@
       </:actions>
     </.data_table>
   </div>
-</.layout>
+</.tabbed_settings_layout>

@@ -33,7 +33,7 @@ defmodule PasswordlessWeb.Helpers do
     do:
       {Phoenix.Naming.humanize(action.outcome),
        case action.outcome do
-         :pass -> "success"
+         :allow -> "success"
          :timeout -> "warning"
          :block -> "danger"
          _ -> "gray"

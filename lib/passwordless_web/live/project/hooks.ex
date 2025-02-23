@@ -9,7 +9,6 @@ defmodule PasswordlessWeb.Project.Hooks do
   import Phoenix.Component
 
   alias Passwordless.Accounts.User
-  alias Passwordless.Organizations
   alias Passwordless.Organizations.Org
   alias Passwordless.Project
 

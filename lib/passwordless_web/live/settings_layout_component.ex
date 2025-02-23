@@ -11,7 +11,6 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
   attr :current_user, :map, required: true
   attr :current_page, :atom
   slot :action, required: false
-  slot :heading
   slot :inner_block
 
   def tabbed_settings_layout(assigns) do
@@ -25,9 +24,6 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
       current_subpage={@current_page}
     >
       <.tabbed_layout current_page={@current_page} menu_items={@menu_items}>
-        <%= if @heading do %>
-          {render_slot(@heading)}
-        <% end %>
         <.page_header title={PasswordlessWeb.Menus.translate_item(@current_page, @current_user)}>
           {render_slot(@action)}
         </.page_header>
@@ -40,7 +36,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
   # Private
 
   defp menu_items(%User{current_membership: %Membership{}} = user) do
-    org_routes = [:members, :projects, :edit_org]
+    org_routes = [:billing, :team, :projects, :organization]
 
     user_routes = [
       :edit_profile,
@@ -55,9 +51,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
         else: user_routes
 
     PasswordlessWeb.Menus.build_menu(
-      [
-        %{title: "", items: user_routes ++ org_routes}
-      ],
+      user_routes ++ org_routes,
       user
     )
   end

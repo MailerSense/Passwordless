@@ -1,8 +1,8 @@
-<.tabbed_settings_layout current_user={@current_user} current_page={:members}>
+<.tabbed_settings_layout current_user={@current_user} current_page={:team}>
   <:action>
     <div class="flex gap-3">
       <.button
-        to={~p"/app/members/invitations"}
+        to={~p"/app/team/invitations"}
         icon="remix-mail-open-line"
         label={gettext("Invitations")}
         color="light"
@@ -10,7 +10,7 @@
       />
       <.button
         link_type="live_redirect"
-        to={~p"/app/members/invite"}
+        to={~p"/app/team/invite"}
         icon="remix-user-add-line"
         label={gettext("Invite teammate")}
       />
@@ -79,7 +79,7 @@
             else: nil
         }
         data-tippy-placement="left"
-        to={apply_filters(@filters, @meta, ~p"/app/members/#{membership}/delete")}
+        to={apply_filters(@filters, @meta, ~p"/app/team/#{membership}/delete")}
       />
       <.icon_button
         size="sm"
@@ -87,7 +87,7 @@
         color="light"
         title={gettext("Edit")}
         link_type="live_patch"
-        to={apply_filters(@filters, @meta, ~p"/app/members/#{membership}/edit")}
+        to={apply_filters(@filters, @meta, ~p"/app/team/#{membership}/edit")}
       />
     </:actions>
   </.data_table>
@@ -103,7 +103,7 @@
       current_org={@current_org}
       current_user={@current_user}
       current_membership={@current_membership}
-      return_to={apply_filters(@filters, @meta, ~p"/app/members")}
+      return_to={apply_filters(@filters, @meta, ~p"/app/team")}
     />
   <% :invite -> %>
     <% origin = "right" %>
@@ -177,7 +177,7 @@
         module={PasswordlessWeb.Org.MemberLive.InvitationsComponent}
         current_org={@current_org}
         current_user={@current_user}
-        return_to={~p"/app/members"}
+        return_to={~p"/app/team"}
       />
     </.modal>
   <% _ -> %>

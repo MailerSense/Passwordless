@@ -182,7 +182,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
         </.container>
       </header>
 
-      <.container max_width={@max_width}>
+      <.container max_width={@max_width} class="pb-12">
         {render_slot(@inner_block)}
       </.container>
     </div>
@@ -190,22 +190,6 @@ defmodule PasswordlessWeb.Components.StackedLayout do
   end
 
   # Private
-
-  attr :class, :string, default: "", doc: "CSS class"
-  attr :version, :string, required: true, doc: "App version"
-
-  defp version_number(assigns) do
-    ~H"""
-    <div class={[
-      "px-2 py-1 rounded-lg border border-slate-700 justify-center items-center gap-2.5 inline-flex",
-      @class
-    ]}>
-      <div class="text-slate-400 text-xs font-medium">
-        {@version}
-      </div>
-    </div>
-    """
-  end
 
   attr :current_page, :string, required: true
   attr :menu_item, :map, required: true

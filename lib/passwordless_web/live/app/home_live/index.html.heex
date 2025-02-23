@@ -13,17 +13,17 @@
         to={~p"/app/methods"}
         size="md"
         color="primary"
-        label={gettext("Setup MFA")}
+        label={gettext("Setup methods")}
         icon="remix-shield-user-line"
         link_type="live_patch"
       />
     </div>
   </.page_header>
 
-  <div class="flex flex-col gap-6 mb-12">
+  <div class="flex flex-col gap-6">
     <.action_stat
       legend={[
-        %{color: "bg-success-500", label: gettext("Pass")},
+        %{color: "bg-success-500", label: gettext("Allow")},
         %{color: "bg-warning-500", label: gettext("Timeout")},
         %{color: "bg-danger-500", label: gettext("Block")}
       ]}
@@ -70,8 +70,7 @@
       ]}
     />
     <.stream_table id="actions" meta={@meta} items={@streams.actions} finished={@finished}>
-      <:if_empty>{gettext("No %{models} found", models: gettext("actions"))}</:if_empty>
-
+      <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
       <:col
         :let={action}
         label={gettext("Action")}
@@ -83,7 +82,11 @@
       <:col :let={action} label={gettext("Details")} field={:details}>
         User requested a Magic Link
       </:col>
-      <:col :let={action} label={gettext("User")} field={:user}>
+      <:col :let={action} label={gettext("Outcome")} field={:outcome}>
+        <% {badge_label, badge_color} = action_state_badge(action) %>
+        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+      </:col>
+      <:col :let={action} label={gettext("Who")} field={:user}>
         <.a
           to={~p"/app/users/#{action.actor}/edit"}
           class="text-info-700 dark:text-info-200"
@@ -91,24 +94,18 @@
           link_type="live_redirect"
         />
       </:col>
-      <:col :let={action} label={gettext("Outcome")} field={:outcome}>
-        <% {badge_label, badge_color} = action_state_badge(action) %>
-        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+
+      <:col :let={action} label={gettext("Where")} field={:location}>
+        <div class="flex items-center gap-2">
+          <.icon
+            name="flag-us"
+            class="h-[15px] w-5 outline outline-1 outline-offset-[-1px] outline-black/10"
+          /> New Jersey
+        </div>
       </:col>
-      <:col :let={user} label={gettext("Time")} field={:inserted_at}>
-        {format_date_time(user.inserted_at)}
+      <:col :let={action} label={gettext("When")} field={:inserted_at}>
+        {Timex.from_now(action.inserted_at)}
       </:col>
-      <:col actions></:col>
-      <:actions :let={action}>
-        <.icon_button
-          to={~p"/app/actions/#{action}"}
-          size="sm"
-          color="light"
-          icon="custom-more-dots"
-          title={gettext("View")}
-          link_type="live_patch"
-        />
-      </:actions>
     </.stream_table>
   </div>
 </.layout>

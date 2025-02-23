@@ -7,50 +7,6 @@ defmodule PasswordlessWeb.CoreComponents do
 
   import PasswordlessWeb.Helpers
 
-  @doc """
-  Provides a container with a sidebar on the left and main content on the right. Useful for things like user settings.
-
-  ---------------------------------
-  | Sidebar | Main                |
-  |         |                     |
-  |         |                     |
-  |         |                     |
-  ---------------------------------
-  """
-
-  attr :current_page, :atom
-
-  attr :menu_items, :list,
-    required: true,
-    doc: "list of maps with keys :name, :path, :label, :icon (atom)"
-
-  slot(:inner_block)
-
-  def tabbed_container(assigns) do
-    ~H"""
-    <.box class="flex flex-col divide-y divide-slate-200 dark:divide-slate-700 md:divide-y-0 md:divide-x md:flex-row">
-      <div class="flex-shrink-0 py-6 w-56 xl:w-64">
-        <%= if menu_items_grouped?(@menu_items) do %>
-          <div class="flex flex-col divide-y divide-slate-200 dark:divide-slate-700 select-none">
-            <.tabbed_menu_group
-              :for={menu_group <- @menu_items}
-              title={menu_group[:title]}
-              menu_items={menu_group.menu_items}
-              current_page={@current_page}
-            />
-          </div>
-        <% else %>
-          <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
-        <% end %>
-      </div>
-
-      <div class="flex-grow px-3 py-6 sm:p-6">
-        {render_slot(@inner_block)}
-      </div>
-    </.box>
-    """
-  end
-
   attr :current_page, :atom
 
   attr :menu_items, :list,
@@ -62,7 +18,7 @@ defmodule PasswordlessWeb.CoreComponents do
   def tabbed_layout(assigns) do
     ~H"""
     <div class="flex h-full">
-      <aside class="py-12 w-56 lg:w-64 z-20 flex flex-col gap-6 select-none pr-6">
+      <aside class="py-12 w-56 z-20 flex flex-col select-none pr-6">
         <%= if menu_items_grouped?(@menu_items) do %>
           <.tabbed_menu_group
             :for={menu_group <- @menu_items}
@@ -98,24 +54,6 @@ defmodule PasswordlessWeb.CoreComponents do
 
       <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
     </nav>
-    """
-  end
-
-  attr :icon, :atom, required: true
-  attr :label, :string, required: true
-
-  def upload_area(assigns) do
-    ~H"""
-    <div class="block w-full p-12 text-center text-slate-500 border-2 border-slate-300 border-dashed rounded-lg dark:border-slate-700 hover:border-slate-400 dark:hover:text-slate-300 dark:hover:border-slate-600 hover:text-slate-900 dark:text-slate-400 transition duration-100 ease-in-out">
-      <div class="flex justify-center items-center h-full w-full">
-        <div>
-          <.icon name={@icon} class="w-12 h-12 mx-auto" />
-          <span class="block mt-2 text-sm font-medium ">
-            {@label}
-          </span>
-        </div>
-      </div>
-    </div>
     """
   end
 
@@ -208,9 +146,9 @@ defmodule PasswordlessWeb.CoreComponents do
     assigns =
       assigns
       |> assign_new(:home_path, fn -> home_path(assigns[:current_user]) end)
-      |> assign_new(:project_menu_items, fn -> project_menu_items(assigns[:current_user]) end)
       |> assign_new(:user_menu_items, fn -> user_menu_items(assigns[:current_user]) end)
       |> assign_new(:main_menu_items, fn -> main_menu_items(assigns[:current_section], assigns[:current_user]) end)
+      |> assign_new(:project_menu_items, fn -> project_menu_items(assigns[:current_user]) end)
 
     assigns =
       update(assigns, :current_page, fn
@@ -220,12 +158,12 @@ defmodule PasswordlessWeb.CoreComponents do
 
     ~H"""
     <.stacked_layout
+      home_path={@home_path}
       current_user={@current_user}
       current_page={@current_page}
       project_menu_items={@project_menu_items}
       user_menu_items={@user_menu_items}
       main_menu_items={@main_menu_items}
-      home_path={@home_path}
     >
       <:logo>
         <.logo class="h-6" />

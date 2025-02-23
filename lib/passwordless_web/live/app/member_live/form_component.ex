@@ -40,8 +40,6 @@ defmodule PasswordlessWeb.Org.MemberLive.FormComponent do
   def handle_event("save", %{"membership" => params}, %{assigns: %{membership: membership}} = socket) do
     case Organizations.update_membership(membership, params) do
       {:ok, membership} ->
-        Organizations.clear_cached_orgs(%User{id: membership.user_id})
-
         Activity.log(:org, :"org.update_member", %{
           org: socket.assigns.current_org,
           user: socket.assigns.current_user,

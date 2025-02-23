@@ -52,7 +52,7 @@ defmodule PasswordlessWeb.App.MemberLive.Index do
   @impl true
   def handle_event("update_filters", %{"filters" => filter_params}, socket) do
     query_params = DataTable.build_filter_params(socket.assigns.meta, filter_params)
-    {:noreply, push_patch(socket, to: ~p"/app/members?#{query_params}")}
+    {:noreply, push_patch(socket, to: ~p"/app/team?#{query_params}")}
   end
 
   @impl true
@@ -87,7 +87,7 @@ defmodule PasswordlessWeb.App.MemberLive.Index do
         {:noreply,
          socket
          |> put_flash(:info, gettext("Invitation sent successfully."))
-         |> push_patch(to: ~p"/app/members")}
+         |> push_patch(to: ~p"/app/team")}
 
       {:error, changeset} ->
         {:noreply, assign_form(socket, changeset)}
@@ -110,20 +110,19 @@ defmodule PasswordlessWeb.App.MemberLive.Index do
            )
            |> push_navigate(to: PasswordlessWeb.Helpers.home_path(socket.assigns.current_user))}
         else
-          Organizations.clear_cached_orgs(membership.user)
           PasswordlessWeb.UserAuth.disconnect_user_liveviews(membership.user)
 
           {:noreply,
            socket
            |> LiveToast.put_toast(:info, gettext("Member deleted successfully."))
-           |> push_patch(to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/members"))}
+           |> push_patch(to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/team"))}
         end
 
       {:error, _changeset} ->
         {:noreply,
          socket
          |> LiveToast.put_toast(:error, gettext("Failed to delete member!"))
-         |> push_patch(to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/members"))}
+         |> push_patch(to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/team"))}
     end
   end
 
@@ -131,7 +130,7 @@ defmodule PasswordlessWeb.App.MemberLive.Index do
   def handle_event("close_slide_over", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/members")
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/team")
      )}
   end
 
@@ -139,7 +138,7 @@ defmodule PasswordlessWeb.App.MemberLive.Index do
   def handle_event("close_modal", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/members")
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/team")
      )}
   end
 

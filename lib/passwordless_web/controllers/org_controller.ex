@@ -23,7 +23,6 @@ defmodule PasswordlessWeb.OrgController do
 
   def accept_invitation(conn, %{"invitation_id" => invitation_id}, user) do
     membership = Organizations.accept_invitation!(user, invitation_id)
-    Organizations.clear_cached_orgs(user)
 
     conn
     |> assign(:current_org, membership.org)

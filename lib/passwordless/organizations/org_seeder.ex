@@ -22,32 +22,6 @@ defmodule Passwordless.Organizations.OrgSeeder do
                  |> Stream.take(10_000)
                  |> Enum.to_list()
 
-  @schedules [
-    %{
-      kind: :interval,
-      schedule: :every_30_minutes
-    },
-    %{
-      kind: :interval,
-      schedule: :every_hour
-    },
-    %{
-      kind: :interval,
-      schedule: :every_2_hours
-    }
-  ]
-
-  @variables [
-    %{
-      key: "MY_VAR",
-      value: "Demo Value"
-    },
-    %{
-      key: "MY_SECOND_VAR",
-      value: "Demo Value 2"
-    }
-  ]
-
   def root_org(%User{} = user, attrs \\ %{}) do
     attrs = Map.merge(random_org_attributes(), attrs)
     attrs = Map.put(attrs, :name, "Passwordless GmbH")

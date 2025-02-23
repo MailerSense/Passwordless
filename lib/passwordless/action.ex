@@ -10,7 +10,7 @@ defmodule Passwordless.Action do
   alias Passwordless.Actor
   alias Passwordless.Project
 
-  @outcomes ~w(pass timeout block pending)a
+  @outcomes ~w(allow timeout block challenge)a
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]

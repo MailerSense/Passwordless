@@ -58,7 +58,6 @@ defmodule PasswordlessWeb.Org.FormComponent do
   defp save_org(socket, :new, org_params) do
     case Organizations.create_org_with_owner(socket.assigns.current_user, org_params) do
       {:ok, _org, _membership} ->
-        Organizations.clear_cached_orgs(socket.assigns.current_user)
         {:noreply, LiveToast.put_toast(socket, :info, gettext("Organization created successfully."))}
 
       {:error, %Ecto.Changeset{} = changeset} ->

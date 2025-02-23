@@ -415,11 +415,11 @@ defmodule PasswordlessWeb.Components.DataTable do
               class={[
                 "h-[44px]",
                 "bg-white dark:bg-transparent select-none",
-                "text-sm font-semibold text-gray-700 dark:text-gray-200",
+                "text-sm font-semibold text-slate-700 dark:text-slate-200",
                 "flex items-center rounded-lg px-4 py-2.5 bg-white",
-                "border border-gray-300 dark:border-gray-600 gap-2 shadow-m2",
+                "border border-slate-300 dark:border-slate-600 gap-2 shadow-m2",
                 "transition duration-150 ease-in-out",
-                "hover:text-gray-900 hover:bg-gray-50 focus:bg-gray-100 focus:text-gray-900 active:bg-gray-200 dark:bg-background-900 dark:text-white dark:hover:bg-background-800 dark:active:bg-background-900"
+                "hover:text-slate-900 hover:bg-slate-50 focus:bg-slate-100 focus:text-slate-900 active:bg-slate-200 dark:bg-background-900 dark:text-white dark:hover:bg-background-800 dark:active:bg-background-900"
               ]}
               type="button"
               phx-click="clear_filters"

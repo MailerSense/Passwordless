@@ -3,7 +3,6 @@ defmodule PasswordlessWeb.App.ProjectLive.FormComponent do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.Activity
-  alias Passwordless.Organizations
 
   @impl true
   def update(%{project: project} = assigns, socket) do
@@ -50,8 +49,6 @@ defmodule PasswordlessWeb.App.ProjectLive.FormComponent do
   defp save_project(socket, :new, project_params) do
     case Passwordless.create_project(socket.assigns.current_org, project_params) do
       {:ok, _project} ->
-        Organizations.clear_cached_projects(socket.assigns.current_org)
-
         {:noreply,
          socket
          |> put_flash(:info, gettext("Project created."))

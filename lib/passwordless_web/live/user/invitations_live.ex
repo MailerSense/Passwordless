@@ -19,7 +19,6 @@ defmodule PasswordlessWeb.User.InvitationsLive do
   @impl true
   def handle_event("accept_invitation", %{"id" => id}, socket) do
     membership = Organizations.accept_invitation!(socket.assigns.current_user, id)
-    Organizations.clear_cached_orgs(socket.assigns.current_user)
 
     Activity.log(:org, :"org.accept_invitation", %{
       user: socket.assigns.current_user,

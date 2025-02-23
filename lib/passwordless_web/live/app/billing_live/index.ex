@@ -3,6 +3,8 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
   use PasswordlessWeb, :live_view
   use Gettext, backend: PasswordlessWeb.Gettext
 
+  import PasswordlessWeb.SettingsLayoutComponent
+
   alias Passwordless.Activity.Log
   alias Passwordless.Billing
   alias Passwordless.Organizations.Org

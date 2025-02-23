@@ -166,22 +166,6 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
 
   # Private
 
-  attr :class, :string, default: "", doc: "CSS class"
-  attr :version, :string, required: true, doc: "App version"
-
-  defp version_number(assigns) do
-    ~H"""
-    <div class={[
-      "px-2 py-1 rounded-lg border border-slate-700 justify-center items-center gap-2.5 inline-flex",
-      @class
-    ]}>
-      <div class="text-slate-400 text-xs font-medium">
-        {@version}
-      </div>
-    </div>
-    """
-  end
-
   # We load Alpine state dynamically in this way because we need to persist the sidebar isCollapsed state
   # across page reloads when it's togglable. This requires the Alpine Persist plugin, and throws a JS error
   # if the plugin is missing, so this reduces that impact as much as possible.

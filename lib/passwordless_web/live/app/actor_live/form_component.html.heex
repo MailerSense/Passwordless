@@ -30,6 +30,9 @@
           required
           required_asterix={false}
         />
+        <.form_header title={gettext("Verification")} />
+        <.field type="checkbox" field={@form[:email_verified]} />
+        <.field type="checkbox" field={@form[:phone_verified]} />
         <div :if={@live_action == :edit} class="pc-form-field-wrapper">
           <.form_header title={gettext("Credentials")} />
           <.simple_table items={[]}>

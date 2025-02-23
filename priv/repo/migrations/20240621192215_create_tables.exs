@@ -209,7 +209,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:actors, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :email, :citext, null: false
+      add :email_verified, :boolean, null: false, default: false
       add :phone, :citext
+      add :phone_verified, :boolean, null: false, default: false
       add :state, :string, null: false
       add :country, :string, null: false
       add :first_name, :string

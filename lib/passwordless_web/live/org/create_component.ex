@@ -55,8 +55,6 @@ defmodule PasswordlessWeb.Org.CreateComponent do
   defp save_org(socket, :new, org_params) do
     case Organizations.create_org_with_owner(socket.assigns.current_user, org_params) do
       {:ok, _org, _membership} ->
-        Organizations.clear_cached_orgs(socket.assigns.current_user)
-
         {:noreply,
          socket
          |> put_flash(:info, gettext("Organization created."))

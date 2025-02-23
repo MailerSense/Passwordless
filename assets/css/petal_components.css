@@ -273,10 +273,10 @@
   @apply bg-danger-500 dark:bg-danger-400;
 }
 .pc-badge__dot--light {
-  @apply bg-gray-500 dark:bg-gray-400;
+  @apply bg-slate-500 dark:bg-slate-400;
 }
 .pc-badge__dot--light-muted {
-  @apply bg-gray-500 dark:bg-gray-400;
+  @apply bg-slate-500 dark:bg-slate-400;
 }
 .pc-badge__dot--info {
   @apply bg-blue-500 dark:bg-blue-400;
@@ -285,7 +285,7 @@
   @apply bg-warning-500 dark:bg-warning-400;
 }
 .pc-badge__dot--gray {
-  @apply bg-gray-500 dark:bg-gray-400;
+  @apply bg-slate-500 dark:bg-slate-400;
 }
 .pc-badge__dot--indigo {
   @apply bg-indigo-500 dark:bg-indigo-400;
@@ -344,10 +344,10 @@
   @apply text-blue-800 dark:text-blue-50 bg-blue-100 dark:bg-blue-900;
 }
 .pc-badge--gray {
-  @apply text-gray-800 dark:text-gray-50 bg-gray-100 dark:bg-gray-900;
+  @apply text-slate-800 dark:text-slate-50 bg-slate-100 dark:bg-slate-700;
 }
 .pc-badge--light-muted {
-  @apply text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-900;
+  @apply text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900;
 }
 .pc-badge--indigo {
   @apply text-indigo-800 bg-indigo-100 dark:text-indigo-50 dark:bg-indigo-900;
@@ -513,7 +513,7 @@
 }
 
 .pc-checkbox-label {
-  @apply inline-flex items-center gap-2 text-sm font-normal leading-tight text-slate-700 cursor-pointer dark:text-slate-200;
+  @apply inline-flex items-center gap-2 text-sm font-normal leading-tight text-slate-900 cursor-pointer dark:text-white;
 }
 .pc-label {
   @apply block mb-1.5 text-sm font-medium leading-tight text-slate-900 dark:text-white;
@@ -686,7 +686,7 @@
   @apply w-full border-slate-300 cursor-pointer dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600;
 }
 .pc-checkbox {
-  @apply w-4 h-4 transition-all duration-150 ease-linear border-slate-300 rounded cursor-pointer text-slate-900 focus:ring-primary-500 dark:bg-slate-800 dark:border-slate-600 disabled:bg-slate-300 dark:disabled:bg-slate-600 disabled:cursor-not-allowed;
+  @apply w-4 h-4 transition-all duration-150 ease-linear border-slate-300 rounded cursor-pointer focus:ring-primary-500 dark:bg-slate-800 dark:border-slate-600 disabled:bg-slate-300 dark:disabled:bg-slate-600 disabled:cursor-not-allowed;
 }
 .pc-checkbox-group {
   @apply pt-2;
@@ -927,7 +927,7 @@
   @apply w-48;
 }
 .pc-dropdown__menu-items-wrapper-size--md {
-  @apply w-56;
+  @apply w-48;
 }
 .pc-dropdown__menu-items-wrapper-size--lg {
   @apply w-64;

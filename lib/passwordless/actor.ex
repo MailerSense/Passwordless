@@ -12,7 +12,7 @@ defmodule Passwordless.Actor do
   alias Passwordless.Locale
   alias Passwordless.Project
 
-  @states ~w(healthy warning locked)a
+  @states ~w(active stale)a
   @derive {
     Flop.Schema,
     filterable: [:id, :search, :state],
@@ -30,8 +30,10 @@ defmodule Passwordless.Actor do
   schema "actors" do
     field :name, :string, virtual: true
     field :email, :string
+    field :email_verified, :boolean, default: false
     field :phone, :string
-    field :state, Ecto.Enum, values: @states, default: :healthy
+    field :phone_verified, :boolean, default: false
+    field :state, Ecto.Enum, values: @states, default: :active
     field :country, Ecto.Enum, values: Locale.country_codes(), default: :us
     field :first_name, :string
     field :last_name, :string
@@ -83,7 +85,9 @@ defmodule Passwordless.Actor do
 
   @fields ~w(
     email
+    email_verified
     phone
+    phone_verified
     state
     country
     first_name
@@ -128,18 +132,6 @@ defmodule Passwordless.Actor do
         ilike(c.email, ^value) or
         ilike(c.phone, ^value) or
         ilike(c.user_id, ^value)
-    )
-  end
-
-  def unified_search(query \\ __MODULE__, value) do
-    value = "%#{value}%"
-
-    where(
-      query,
-      [c],
-      ilike(fragment("concat(?, ' ', ?)", c.first_name, c.last_name), ^value) or
-        ilike(c.email, ^value) or
-        ilike(c.phone, ^value)
     )
   end
 

@@ -66,56 +66,10 @@ defmodule Passwordless.Organizations do
   end
 
   @doc """
-  List all orgs for a user, possibly cached.
-  """
-  def list_cached_orgs(%User{} = user) do
-    key = user_cache_key(user)
-
-    case Cache.get(key) do
-      orgs when is_list(orgs) ->
-        orgs
-
-      _ ->
-        orgs = list_orgs(user)
-        Cache.put(key, orgs, ttl: @cache_ttl)
-        orgs
-    end
-  end
-
-  def clear_cached_orgs(%User{} = user) do
-    Cache.delete(user_cache_key(user))
-  end
-
-  def user_cache_key(%User{} = user), do: "user:#{user.id}:orgs"
-
-  def project_cache_key(%Org{} = org), do: "org:#{org.id}:projects"
-
-  @doc """
   List all projects for an org.
   """
   def list_projects(%Org{} = org) do
     Repo.preload(org, :projects).projects
-  end
-
-  @doc """
-  List all projects for an org, possibly cached.
-  """
-  def list_cached_projects(%Org{} = org) do
-    key = project_cache_key(org)
-
-    case Cache.get(key) do
-      projects when is_list(projects) ->
-        projects
-
-      _ ->
-        projects = list_projects(org)
-        Cache.put(key, projects, ttl: @cache_ttl)
-        projects
-    end
-  end
-
-  def clear_cached_projects(%Org{} = org) do
-    Cache.delete(project_cache_key(org))
   end
 
   @doc """

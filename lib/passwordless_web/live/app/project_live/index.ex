@@ -4,7 +4,6 @@ defmodule PasswordlessWeb.App.ProjectLive.Index do
 
   import PasswordlessWeb.SettingsLayoutComponent
 
-  alias Passwordless.Organizations
   alias Passwordless.Organizations.Org
   alias Passwordless.Project
   alias PasswordlessWeb.Components.DataTable
@@ -64,8 +63,6 @@ defmodule PasswordlessWeb.App.ProjectLive.Index do
       _ ->
         case Passwordless.delete_project(project) do
           {:ok, _project} ->
-            Organizations.clear_cached_projects(socket.assigns.current_org)
-
             {:noreply,
              socket
              |> put_flash(:info, gettext("Project deleted successfully."))

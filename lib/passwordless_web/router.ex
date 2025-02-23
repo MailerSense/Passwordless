@@ -140,11 +140,11 @@ defmodule PasswordlessWeb.Router do
       live "/embed", App.EmbedLive.Index, :index
 
       # Team
-      live "/members", App.MemberLive.Index, :index
-      live "/members/invite", App.MemberLive.Index, :invite
-      live "/members/invitations", App.MemberLive.Index, :invitations
-      live "/members/:id/edit", App.MemberLive.Index, :edit
-      live "/members/:id/delete", App.MemberLive.Index, :delete
+      live "/team", App.MemberLive.Index, :index
+      live "/team/invite", App.MemberLive.Index, :invite
+      live "/team/invitations", App.MemberLive.Index, :invitations
+      live "/team/:id/edit", App.MemberLive.Index, :edit
+      live "/team/:id/delete", App.MemberLive.Index, :delete
 
       # Project
       live "/projects", App.ProjectLive.Index, :index

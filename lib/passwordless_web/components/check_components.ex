@@ -82,7 +82,7 @@ defmodule PasswordlessWeb.CheckComponents do
     <.a
       to={@to}
       class={[
-        "p-6 bg-white dark:bg-gray-800",
+        "p-6 bg-white dark:bg-slate-800",
         "flex rounded-lg shadow-m2 justify-between",
         "hover:shadow-2 active:shadow-3 select-none",
         "transition duration-150 ease-in-out",
@@ -106,7 +106,7 @@ defmodule PasswordlessWeb.CheckComponents do
             cy="18"
             r="16"
             fill="none"
-            class="stroke-current text-gray-100 dark:text-gray-700"
+            class="stroke-current text-slate-100 dark:text-slate-700"
             stroke-width="3.5"
           >
           </circle>
@@ -169,10 +169,10 @@ defmodule PasswordlessWeb.CheckComponents do
           <% end %>
         </.a>
       </div>
-      <div class="flex p-6 gap-6 items-center">
+      <div class="flex p-6 gap-6 items-center flex-wrap">
         <div :for={item <- @legend} class="flex gap-2 items-center">
           <span class={["w-4 h-2 rounded-full", item.color]}></span>
-          <p class="text-gray-600 dark:text-gray-300 text-xs font-semibold">{item.label}</p>
+          <p class="text-slate-600 dark:text-slate-300 text-xs font-semibold">{item.label}</p>
         </div>
       </div>
     </.box>
@@ -209,7 +209,7 @@ defmodule PasswordlessWeb.CheckComponents do
           <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
             {@label}
           </badge>
-          <h3 class="text-gray-900 dark:text-white text-2xl font-bold leading-6">
+          <h3 class="text-slate-900 dark:text-white text-2xl font-bold leading-6">
             {@value}
           </h3>
         </div>
@@ -217,7 +217,7 @@ defmodule PasswordlessWeb.CheckComponents do
       <div class="flex items-center gap-1">
         <.icon name="custom-rise-line" class={["w-4 h-4", @change_class, @change_icon_class]} />
         <span class={["text-xs font-bold", @change_class]}>{"#{@change_symbol}#{@change}"}</span>
-        <span class="text-gray-500 dark:text-gray-400 text-xs font-normal">
+        <span class="text-slate-500 dark:text-slate-400 text-xs font-normal">
           change since last period
         </span>
       </div>
