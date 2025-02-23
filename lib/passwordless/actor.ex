@@ -16,7 +16,7 @@ defmodule Passwordless.Actor do
   @derive {
     Flop.Schema,
     filterable: [:id, :search, :state],
-    sortable: [:id, :name, :state, :email, :phone, :locale, :inserted_at],
+    sortable: [:id, :name, :state, :email, :phone, :country, :inserted_at],
     custom_fields: [
       search: [
         filter: {__MODULE__, :unified_search_filter, []},
@@ -32,11 +32,10 @@ defmodule Passwordless.Actor do
     field :email, :string
     field :phone, :string
     field :state, Ecto.Enum, values: @states, default: :healthy
-    field :locale, Ecto.Enum, values: Locale.language_keys(), default: :us
+    field :country, Ecto.Enum, values: Locale.country_codes(), default: :us
     field :first_name, :string
     field :last_name, :string
-    field :custom_id, :string
-    field :custom_properties, :map
+    field :user_id, :string
 
     has_many :actions, Action
 
@@ -49,13 +48,24 @@ defmodule Passwordless.Actor do
   def states, do: @states
 
   @doc """
-  Get the full name of the contact.
+  Get the full name of the actor.
   """
   def name(%__MODULE__{first_name: f, last_name: l}) when is_binary(f) and is_binary(l), do: "#{f} #{l}"
-
   def name(%__MODULE__{first_name: f, last_name: nil}) when is_binary(f), do: f
   def name(%__MODULE__{first_name: nil, last_name: l}) when is_binary(l), do: l
   def name(%__MODULE__{}), do: nil
+
+  @doc """
+  Get the handle of the actor.
+  """
+  def handle(%__MODULE__{email: email, phone: phone} = actor) do
+    cond do
+      name = name(actor) -> name
+      email -> email
+      phone -> phone
+      true -> nil
+    end
+  end
 
   @doc """
   Get all contacts for an organization.
@@ -75,16 +85,16 @@ defmodule Passwordless.Actor do
     email
     phone
     state
-    locale
+    country
     first_name
     last_name
-    custom_id
-    custom_properties
+    user_id
     project_id
   )a
   @required_fields ~w(
+    email
     state
-    locale
+    country
     project_id
   )a
 
@@ -98,14 +108,13 @@ defmodule Passwordless.Actor do
     |> validate_name()
     |> validate_email()
     |> validate_phone()
-    |> validate_custom_id()
-    |> validate_custom_properties()
+    |> validate_user_id()
     |> unique_constraint([:project_id, :email], error_key: :email)
     |> unique_constraint([:project_id, :phone], error_key: :phone)
-    |> unique_constraint([:project_id, :custom_id], error_key: :custom_id)
+    |> unique_constraint([:project_id, :user_id], error_key: :user_id)
     |> unsafe_validate_unique([:project_id, :email], Passwordless.Repo, error_key: :email)
     |> unsafe_validate_unique([:project_id, :phone], Passwordless.Repo, error_key: :phone)
-    |> unsafe_validate_unique([:project_id, :custom_id], Passwordless.Repo, error_key: :email)
+    |> unsafe_validate_unique([:project_id, :user_id], Passwordless.Repo, error_key: :email)
     |> assoc_constraint(:project)
   end
 
@@ -118,8 +127,7 @@ defmodule Passwordless.Actor do
       ilike(fragment("concat(?, ' ', ?)", c.first_name, c.last_name), ^value) or
         ilike(c.email, ^value) or
         ilike(c.phone, ^value) or
-        ilike(c.custom_id, ^value) or
-        ilike(fragment("?::text", c.custom_properties), ^value)
+        ilike(c.user_id, ^value)
     )
   end
 
@@ -155,23 +163,9 @@ defmodule Passwordless.Actor do
     ChangesetExt.validate_email(changeset, :email)
   end
 
-  defp validate_custom_id(changeset) do
+  defp validate_user_id(changeset) do
     changeset
-    |> ChangesetExt.ensure_trimmed(:custom_id)
-    |> validate_length(:custom_id, max: 512)
-  end
-
-  defp validate_custom_properties(changeset) do
-    changeset
-    |> update_change(:custom_properties, fn
-      custom_properties when is_map(custom_properties) ->
-        (changeset.data.custom_properties || %{})
-        |> Map.merge(custom_properties)
-        |> Util.cast_property_map()
-
-      custom_properties ->
-        custom_properties
-    end)
-    |> ChangesetExt.validate_property_map(:custom_properties)
+    |> ChangesetExt.ensure_trimmed(:user_id)
+    |> validate_length(:user_id, max: 512)
   end
 end

@@ -16,24 +16,25 @@
         <.field type="email" field={@form[:email]} autocomplete="email" required />
         <.field type="text" field={@form[:phone]} autocomplete="tel" />
         <.field
-          field={@form[:custom_id]}
+          field={@form[:user_id]}
           icon="remix-id-card-line"
           label={gettext("User ID")}
-          placeholder={gettext("User ID from your own system")}
+          placeholder={gettext("User ID from your internal system")}
         />
         <.field
           type="select"
-          field={@form[:locale]}
+          field={@form[:country]}
           options={@locales}
           icon_mapping={@icon_mapping}
           icon_class="pc-select-input__flag"
           required
+          required_asterix={false}
         />
         <div :if={@live_action == :edit} class="pc-form-field-wrapper">
-          <.form_header title={gettext("Authenticators")} />
+          <.form_header title={gettext("Credentials")} />
           <.simple_table items={[]}>
             <:if_empty>
-              {gettext("No %{models} found", models: gettext("methods"))}
+              {gettext("No %{models} found", models: gettext("credentials"))}
             </:if_empty>
             <:col field={:name} />
           </.simple_table>

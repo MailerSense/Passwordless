@@ -342,7 +342,7 @@ config :passwordless, :browser,
   no_sandbox: true,
   debug_browser_protocol: true
 
-config :passwordless, :languages,
+config :passwordless, :countries,
   af: "Afghanistan",
   ax: "Aland Islands",
   al: "Albania",

@@ -21,7 +21,6 @@ defmodule PasswordlessWeb.Components do
       import PasswordlessWeb.Components.Link
       import PasswordlessWeb.Components.Loading
       import PasswordlessWeb.Components.Logo
-      import PasswordlessWeb.Components.Menu
       import PasswordlessWeb.Components.Modal
       import PasswordlessWeb.Components.PageComponents
       import PasswordlessWeb.Components.Pagination

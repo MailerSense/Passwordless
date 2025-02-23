@@ -516,7 +516,7 @@
   @apply inline-flex items-center gap-2 text-sm font-normal leading-tight text-slate-700 cursor-pointer dark:text-slate-200;
 }
 .pc-label {
-  @apply block mb-1.5 text-sm font-medium leading-tight text-slate-700 dark:text-slate-200;
+  @apply block mb-1.5 text-sm font-medium leading-tight text-slate-900 dark:text-white;
 }
 .pc-label--for-checkbox {
   @apply !mb-0 font-normal;
@@ -1462,10 +1462,16 @@
   @apply min-w-full table-auto;
 }
 .pc-table__wrapper {
-  @apply rounded-lg shadow-m2 border border-slate-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-700/30;
+  @apply rounded-lg shadow-m2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-700/30;
 }
-.pc-table__wrapper--outline {
-  @apply rounded-lg shadow-none border border-slate-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-700/30;
+.pc-data-table {
+  @apply overflow-x-scroll;
+}
+.pc-data-table__wrapper {
+  @apply overflow-x-scroll;
+}
+.pc-stream-table__wrapper {
+  @apply overflow-hidden;
 }
 .pc-table__th {
   @apply text-xs text-left font-medium select-none text-slate-600 dark:text-slate-300;
@@ -1489,7 +1495,7 @@
   @apply hover:bg-slate-50 dark:hover:bg-slate-800;
 }
 .pc-table__td {
-  @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-4 text-sm font-normal text-slate-600 dark:text-slate-300;
+  @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-4 text-sm font-normal text-slate-600 dark:text-slate-300 whitespace-nowrap;
 }
 .pc-table__td--sm {
   @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-2 text-sm font-normal text-slate-600 dark:text-slate-300;
@@ -1514,6 +1520,9 @@
 }
 .pc-table__thead-striped {
   @apply text-slate-600 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-800 tracking-wide;
+}
+.pc-table__pagination {
+  @apply px-6 py-4 border-t border-slate-200 dark:border-slate-700;
 }
 
 /* Accordion */
@@ -1564,7 +1573,7 @@
   @apply fixed inset-0 z-50 flex items-center justify-center my-4 overflow-hidden transform;
 }
 .pc-modal__box {
-  @apply w-full max-h-full overflow-auto bg-white shadow-2 rounded-lg dark:bg-slate-900;
+  @apply w-full max-h-full overflow-auto bg-white shadow-2 rounded-lg dark:bg-slate-900 mx-4 sm:mx-6;
 }
 .pc-modal__box--sm {
   @apply max-w-sm;
@@ -1654,7 +1663,7 @@
   @apply fixed inset-0 z-50 flex overflow-hidden;
 }
 .pc-slideover__box {
-  @apply w-full max-h-full bg-white shadow-2 dark:bg-slate-900 rounded-l-xl;
+  @apply w-full max-h-full bg-white shadow-2 dark:bg-slate-900 max-w-full md:rounded-l-xl;
 }
 .pc-slideover__container {
   @apply h-screen flex flex-col;
@@ -1663,22 +1672,22 @@
   @apply overflow-y-auto grow;
 }
 .pc-slideover__box--sm {
-  @apply max-w-[420px];
+  @apply md:max-w-[420px];
 }
 .pc-slideover__box--md {
-  @apply max-w-xl;
+  @apply md:max-w-xl;
 }
 .pc-slideover__box--lg {
-  @apply max-w-3xl;
+  @apply md:max-w-3xl;
 }
 .pc-slideover__box--xl {
-  @apply max-w-5xl;
+  @apply md:max-w-5xl;
 }
 .pc-slideover__box--2xl {
-  @apply max-w-7xl;
+  @apply md:max-w-7xl;
 }
 .pc-slideover__box--full {
-  @apply max-w-full;
+  @apply md:max-w-full;
 }
 .pc-slideover__header {
   @apply px-8 py-12;
@@ -1717,83 +1726,6 @@
   @apply w-5 h-5 fill-slate-400 dark:fill-slate-500;
 }
 
-/* Menu */
-
-.pc-vertical-menu {
-  @apply flex flex-col gap-5;
-}
-
-.pc-vertical-menu-item__icon {
-  @apply flex-shrink-0 w-5 h-5;
-}
-
-.pc-vertical-menu-item {
-  @apply flex items-center w-full gap-3 px-3 py-2 text-sm font-semibold leading-none transition duration-200 rounded-md;
-}
-
-.pc-vertical-menu-item--active {
-  @apply text-primary-700 dark:text-primary-400 bg-slate-50 dark:bg-slate-800;
-}
-
-.pc-vertical-menu-item--inactive {
-  @apply text-slate-700 hover:bg-slate-50 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white dark:hover:bg-slate-700;
-}
-
-.pc-vertical-menu__menu-group__wrapper {
-  @apply divide-y divide-slate-300;
-}
-
-.pc-vertical-menu__menu-group {
-  @apply space-y-1;
-}
-
-.pc-vertical-menu__menu-group__title {
-  @apply pl-3 mb-3 text-xs font-semibold leading-6 text-slate-400 uppercase;
-}
-
-.pc-vertical-menu-item__label {
-  @apply flex-1;
-}
-
-.pc-vertical-menu-item__toggle-label {
-  @apply flex-1 text-left;
-}
-
-.pc-vertical-menu-item__toggle-chevron__icon {
-  @apply w-3 h-3 ml-2 transition duration-200 transform;
-}
-
-.pc-vertical-menu-item__toggle-chevron__wrapper {
-  @apply relative inline-block;
-}
-
-.pc-vertical-menu-item__submenu-wrapper {
-  @apply mt-1 ml-3 space-y-1;
-}
-
-.pc-vertical-menu-item__icon--active {
-  @apply flex-shrink-0 w-5 h-5;
-}
-
-.pc-vertical-menu-item__icon--inactive {
-  @apply flex-shrink-0 w-5 h-5;
-}
-
-/* Legend */
-
-.pc-legend--blue {
-  @apply bg-blue-500;
-}
-.pc-legend--pink {
-  @apply bg-pink-500;
-}
-.pc-legend--gray {
-  @apply bg-slate-500;
-}
-.pc-legend--indigo {
-  @apply bg-purple-500;
-}
-
 /* Editor */
 
 .pc-editor-field-icon {
@@ -1817,6 +1749,7 @@
 .pc-editor-field-emoji {
   @apply w-6 h-6 text-slate-500 dark:text-slate-300 absolute start-0 flex items-center pe-3 pointer-events-none;
 }
+
 /* Other */
 
 /* This is for selects inside of a group of selects. Phoenix doesn't provide a way to add a class to these. */

@@ -60,7 +60,7 @@ defmodule PasswordlessWeb.Components.Pagination do
                 <Icon.icon
                   name="remix-arrow-left-line"
                   class="pc-pagination__item__previous__chevron"
-                />{gettext("Previous")}
+                /><span class="hidden md:block">{gettext("Previous")}</span>
               </Link.a>
             </li>
             <li class="grow"></li>
@@ -105,10 +105,8 @@ defmodule PasswordlessWeb.Components.Pagination do
                 class="pc-pagination__item__next"
                 disabled={!item.enabled?}
               >
-                {gettext("Next")}<Icon.icon
-                  name="remix-arrow-right-line"
-                  class="pc-pagination__item__next__chevron"
-                />
+                <span class="hidden md:block">{gettext("Next")}</span>
+                <Icon.icon name="remix-arrow-right-line" class="pc-pagination__item__next__chevron" />
               </Link.a>
             </li>
           <% end %>

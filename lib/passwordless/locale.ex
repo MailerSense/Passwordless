@@ -15,9 +15,9 @@ defmodule Passwordless.Locale do
     precompile_transliterations: [{:latn, :arab}, {:thai, :latn}],
     json_library: Jason
 
-  @languages Application.compile_env!(:passwordless, :languages)
-  @language_keys Keyword.keys(@languages)
+  @countries Application.compile_env!(:passwordless, :countries)
+  @country_codes Keyword.keys(@countries)
 
-  def languages, do: @languages
-  def language_keys, do: @language_keys
+  def countries, do: @countries
+  def country_codes, do: @country_codes
 end

@@ -10,13 +10,13 @@ defmodule Passwordless.Action do
   alias Passwordless.Actor
   alias Passwordless.Project
 
-  @outcomes ~w(success timeout fail progress)a
+  @outcomes ~w(pass timeout block pending)a
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
   schema "actions" do
-    field :outcome, Ecto.Enum, values: @outcomes, default: :success
+    field :outcome, Ecto.Enum, values: @outcomes
 
     belongs_to :actor, Actor, type: :binary_id
 
@@ -31,7 +31,7 @@ defmodule Passwordless.Action do
   def get_by_project(query \\ __MODULE__, %Project{} = project) do
     from q in query,
       left_join: a in assoc(q, :actor),
-      where: a.project_id == ^project.id
+      where: a.project_id == ^project.id and is_nil(a.deleted_at)
   end
 
   @doc """
@@ -40,7 +40,7 @@ defmodule Passwordless.Action do
   def preload_actor(query \\ __MODULE__) do
     actor_query =
       from a in Actor,
-        select: struct(a, [:id, :first_name, :last_name])
+        select: struct(a, [:id, :first_name, :last_name, :email])
 
     from q in query, preload: [actor: ^actor_query]
   end

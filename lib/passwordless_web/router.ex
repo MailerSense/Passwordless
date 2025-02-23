@@ -136,8 +136,8 @@ defmodule PasswordlessWeb.Router do
       # Reports
       live "/reports", App.ReportLive.Index, :index
 
-      # Integrations
-      live "/integrations", App.IntegrationLive.Index, :index
+      # Embed & API
+      live "/embed", App.EmbedLive.Index, :index
 
       # Team
       live "/members", App.MemberLive.Index, :index

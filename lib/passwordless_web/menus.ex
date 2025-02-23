@@ -44,10 +44,9 @@ defmodule PasswordlessWeb.Menus do
     ]
 
   def main_menu_items(:app, %User{} = current_user),
-    do: build_menu([:home, :users, :methods, :integrations, :billing, :settings], current_user)
+    do: build_menu([:home, :users, :methods, :embed, :billing, :settings], current_user)
 
-  def main_menu_items(:knowledge, %User{} = current_user),
-    do: build_menu([:blog, :guides, :docs], current_user)
+  def main_menu_items(:knowledge, %User{} = current_user), do: build_menu([:blog, :guides, :docs], current_user)
 
   def main_menu_items(:admin, %User{} = current_user),
     do:
@@ -467,11 +466,11 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
-  def get_link(:integrations = name, _user) do
+  def get_link(:embed = name, _user) do
     %{
       name: name,
       label: gettext("Embed & API"),
-      path: ~p"/app/integrations",
+      path: ~p"/app/embed",
       icon: "remix-plug-line",
       link_type: "live_patch"
     }

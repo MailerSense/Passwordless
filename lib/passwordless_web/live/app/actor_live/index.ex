@@ -84,6 +84,25 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   end
 
   @impl true
+  def handle_event("delete_actor", %{"id" => id}, socket) do
+    actor = Passwordless.get_actor!(socket.assigns.current_project, id)
+
+    case Passwordless.delete_actor(actor) do
+      {:ok, _actor} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, gettext("User deleted successfully."))
+         |> push_navigate(to: ~p"/app/users")}
+
+      {:error, _} ->
+        {:noreply,
+         socket
+         |> LiveToast.put_toast(:error, gettext("Failed to delete user!"))
+         |> push_patch(to: ~p"/app/users")}
+    end
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
@@ -123,7 +142,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
       page_title: gettext("Delete user"),
       page_subtitle:
         gettext(
-          "Are you sure you want to delete %{name}? This action is irreversible.",
+          "Are you sure you want to delete user \"%{name}\"? This action is irreversible.",
           name: Actor.name(actor)
         )
     )

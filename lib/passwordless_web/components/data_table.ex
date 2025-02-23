@@ -104,62 +104,64 @@ defmodule PasswordlessWeb.Components.DataTable do
         switch_items={@switch_items}
       />
       <div :if={Util.present?(@info)} class="mb-6">{render_slot(@info)}</div>
-      <div class={["pc-table__wrapper", @class]}>
+      <div class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
         <.table_header :if={@title} title={@title} />
-        <.table>
-          <thead class="pc-table__thead-striped">
-            <.tr>
-              <%= for col <- @col do %>
-                <%= if col[:actions] && @actions do %>
-                  <.th class={[col[:class], "pc-table__th-#{@size}"]}>
-                    <div class="flex justify-end gap-1" />
-                  </.th>
-                <% else %>
-                  <Header.render
-                    meta={@meta}
-                    column={col}
-                    class={"pc-table__th--#{@size}"}
-                    actions={@actions}
-                    no_results?={@items == []}
-                    base_url_params={@base_url_params}
-                  />
-                <% end %>
-              <% end %>
-            </.tr>
-          </thead>
-          <tbody>
-            <%= if @items == [] do %>
+        <div class="pc-data-table">
+          <.table>
+            <thead class="pc-table__thead-striped">
               <.tr>
-                <td class="pc-table__td--only" colspan={length(@col)}>
-                  {if Util.present?(@if_empty), do: render_slot(@if_empty), else: "No results"}
-                </td>
-              </.tr>
-            <% end %>
-
-            <.tr :for={item <- @items}>
-              <.td
-                :for={col <- @col}
-                class={[
-                  if(col[:align_right], do: "text-right"),
-                  if(col[:actions], do: "flex justify-end gap-1"),
-                  col[:body_class]
-                ]}
-              >
-                <%= cond do %>
-                  <% col[:actions] && @actions -> %>
-                    {render_slot(@actions, item)}
-                  <% col[:inner_block] -> %>
-                    {render_slot(col, item)}
-                  <% true -> %>
-                    <Cell.render column={col} item={item} />
+                <%= for col <- @col do %>
+                  <%= if col[:actions] && @actions do %>
+                    <.th class={[col[:class], "pc-table__th-#{@size}"]}>
+                      <div class="flex justify-end gap-1" />
+                    </.th>
+                  <% else %>
+                    <Header.render
+                      meta={@meta}
+                      column={col}
+                      class={"pc-table__th--#{@size}"}
+                      actions={@actions}
+                      no_results?={@items == []}
+                      base_url_params={@base_url_params}
+                    />
+                  <% end %>
                 <% end %>
-              </.td>
-            </.tr>
-          </tbody>
-        </.table>
+              </.tr>
+            </thead>
+            <tbody>
+              <%= if @items == [] do %>
+                <.tr>
+                  <td class="pc-table__td--only" colspan={length(@col)}>
+                    {if Util.present?(@if_empty), do: render_slot(@if_empty), else: "No results"}
+                  </td>
+                </.tr>
+              <% end %>
+
+              <.tr :for={item <- @items}>
+                <.td
+                  :for={col <- @col}
+                  class={[
+                    if(col[:align_right], do: "text-right"),
+                    if(col[:actions], do: "flex justify-end gap-1"),
+                    col[:body_class]
+                  ]}
+                >
+                  <%= cond do %>
+                    <% col[:actions] && @actions -> %>
+                      {render_slot(@actions, item)}
+                    <% col[:inner_block] -> %>
+                      {render_slot(col, item)}
+                    <% true -> %>
+                      <Cell.render column={col} item={item} />
+                  <% end %>
+                </.td>
+              </.tr>
+            </tbody>
+          </.table>
+        </div>
 
         <%= if @meta.total_pages > 1 do %>
-          <div class="px-6 py-4 border-t border-slate-200 dark:border-slate-700">
+          <div class="pc-table__pagination">
             <.pagination
               path={
                 @meta
@@ -211,7 +213,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   def stream_table(assigns) do
     ~H"""
-    <div class={["pc-table__wrapper", @class]}>
+    <div class={["pc-table__wrapper", "pc-stream-table__wrapper", @class]}>
       <.table_header :if={@title} title={@title} />
       <.table>
         <thead class="pc-table__thead-striped">
@@ -302,9 +304,9 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   def simple_table(assigns) do
     ~H"""
-    <div class={["pc-table__wrapper", @class]}>
+    <div class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
       <.table_header :if={@title} title={@title} />
-      <.table>
+      <.table class="pc-data-table">
         <thead class="pc-table__thead-striped">
           <.tr>
             <%= for col <- @col do %>
@@ -402,7 +404,7 @@ defmodule PasswordlessWeb.Components.DataTable do
             <.field
               icon="custom-search"
               field={f2[:value]}
-              class="sm:min-w-64 xl:min-w-[400px]"
+              class=" xl:min-w-[400px]"
               label=""
               phx-debounce="100"
               wrapper_class="!mb-0"

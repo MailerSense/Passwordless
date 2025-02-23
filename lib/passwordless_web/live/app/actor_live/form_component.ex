@@ -8,7 +8,7 @@ defmodule PasswordlessWeb.App.ActorLive.FormComponent do
   def update(%{actor: %Actor{} = actor} = assigns, socket) do
     changeset = Passwordless.change_actor(actor, %{})
 
-    locales = Enum.map(Passwordless.Locale.languages(), fn {code, name} -> {name, code} end)
+    locales = Enum.map(Passwordless.Locale.countries(), fn {code, name} -> {name, code} end)
 
     icon_mapping = fn
       k when is_atom(k) -> "flag-#{k}"

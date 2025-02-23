@@ -23,9 +23,9 @@
   <div class="flex flex-col gap-6 mb-12">
     <.action_stat
       legend={[
-        %{color: "bg-success-500", label: gettext("Success")},
+        %{color: "bg-success-500", label: gettext("Pass")},
         %{color: "bg-warning-500", label: gettext("Timeout")},
-        %{color: "bg-danger-500", label: gettext("Fail")}
+        %{color: "bg-danger-500", label: gettext("Block")}
       ]}
       items={[
         %{
@@ -87,7 +87,7 @@
         <.a
           to={~p"/app/users/#{action.actor}/edit"}
           class="text-info-700 dark:text-info-200"
-          label={Actor.name(action.actor)}
+          label={Actor.handle(action.actor)}
           link_type="live_redirect"
         />
       </:col>

@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.IntegrationLive.Index do
+defmodule PasswordlessWeb.App.EmbedLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
@@ -19,7 +19,7 @@ defmodule PasswordlessWeb.App.IntegrationLive.Index do
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/integrations")}
+    {:noreply, push_patch(socket, to: ~p"/app/embed")}
   end
 
   @impl true
@@ -31,7 +31,7 @@ defmodule PasswordlessWeb.App.IntegrationLive.Index do
 
   defp apply_action(socket, :index) do
     assign(socket,
-      page_title: gettext("Integrations"),
+      page_title: gettext("Embed & API"),
       page_subtitle: gettext("Manage your integrations")
     )
   end

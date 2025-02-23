@@ -211,11 +211,10 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :email, :citext, null: false
       add :phone, :citext
       add :state, :string, null: false
-      add :locale, :string, null: false
+      add :country, :string, null: false
       add :first_name, :string
       add :last_name, :string
-      add :custom_id, :string
-      add :custom_properties, :map
+      add :user_id, :string
 
       add :project_id, references(:projects, type: :uuid, on_delete: :delete_all), null: false
 
@@ -227,7 +226,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create index(:actors, [:state], where: "deleted_at is null")
     create unique_index(:actors, [:project_id, :email], where: "deleted_at is null")
     create unique_index(:actors, [:project_id, :phone], where: "deleted_at is null")
-    create unique_index(:actors, [:project_id, :custom_id], where: "deleted_at is null")
+    create unique_index(:actors, [:project_id, :user_id], where: "deleted_at is null")
 
     create table(:actions, primary_key: false) do
       add :id, :uuid, primary_key: true

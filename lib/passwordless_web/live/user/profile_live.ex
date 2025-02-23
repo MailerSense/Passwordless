@@ -12,12 +12,17 @@ defmodule PasswordlessWeb.User.ProfileLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    {:ok, apply_action(socket, socket.assigns.live_action)}
+  end
+
+  @impl true
+  def handle_params(_params, _url, socket) do
     socket =
       socket
       |> assign_form(User.profile_changeset(socket.assigns.current_user))
       |> apply_action(socket.assigns.live_action)
 
-    {:ok, socket}
+    {:noreply, socket}
   end
 
   @impl true
@@ -83,15 +88,14 @@ defmodule PasswordlessWeb.User.ProfileLive do
 
   defp apply_action(socket, :change_email) do
     assign(socket,
-      page_title: gettext("Change your Email"),
+      page_title: gettext("Change your email"),
       page_subtitle: gettext("Update your account email address. We'll send a confirmation link to the new address.")
     )
   end
 
   defp apply_action(socket, _) do
     assign(socket,
-      page_title: gettext("Profile"),
-      page_subtitle: gettext("Update your profile information")
+      page_title: gettext("Profile")
     )
   end
 end

@@ -114,6 +114,10 @@ defmodule Passwordless do
     |> Repo.update()
   end
 
+  def delete_actor(%Actor{} = actor) do
+    Repo.soft_delete(actor)
+  end
+
   # Action
 
   def create_action(%Actor{} = actor, attrs \\ %{}) do

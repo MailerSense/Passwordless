@@ -17,7 +17,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
   def page_header(assigns) do
     ~H"""
     <div class={["my-6 flex justify-between items-center h-24", @class]}>
-      <h1 class="font-display text-4xl lg:text-5xl font-bold text-slate-950 dark:text-white lg:leading-[60px] tracking-tight">
+      <h1 class="font-display text-4xl md:text-5xl font-bold text-slate-950 dark:text-white  tracking-tight">
         {@title}
       </h1>
       <%= if @inner_block do %>
