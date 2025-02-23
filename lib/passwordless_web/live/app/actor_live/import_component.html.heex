@@ -1,0 +1,23 @@
+<div>
+  <% origin = "right" %>
+  <.slide_over title={@title} origin={origin}>
+    <div class="flex flex-col gap-8"></div>
+
+    <:actions>
+      <.button
+        size="wide"
+        type="submit"
+        color="light-flat"
+        label={gettext("Close")}
+        phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+      />
+      <.button
+        id="import-form-submit"
+        size="wide"
+        type="submit"
+        form="import-form"
+        label={gettext("Import")}
+      />
+    </:actions>
+  </.slide_over>
+</div>

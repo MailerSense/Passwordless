@@ -38,7 +38,7 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
       >
         <.dropdown_menu_item link_type="live_redirect" to={~p"/app/project/new"}>
           <.icon name="remix-add-line" class="w-5 h-5" />
-          {gettext("New Project")}
+          {gettext("Create project")}
         </.dropdown_menu_item>
         <.form
           :for={project <- @project_menu_items}

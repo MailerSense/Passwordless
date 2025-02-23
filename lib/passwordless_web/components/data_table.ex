@@ -246,8 +246,7 @@ defmodule PasswordlessWeb.Components.DataTable do
             }
           >
             <.td
-              :for={{col, idx} <- Enum.with_index(@col)}
-              id={"#{id}-#{idx}"}
+              :for={col <- @col}
               class={[
                 if(col[:align_right], do: "text-right"),
                 if(col[:actions], do: "flex justify-end gap-1"),
@@ -264,11 +263,95 @@ defmodule PasswordlessWeb.Components.DataTable do
               <% end %>
             </.td>
           </.tr>
-          <tr id="songs-empty" class="only:block hidden">
+          <.tr class="only:block hidden">
             <td class="pc-table__td--only" colspan={length(@col)}>
               {if Util.present?(@if_empty), do: render_slot(@if_empty), else: "No results"}
             </td>
-          </tr>
+          </.tr>
+        </tbody>
+      </.table>
+    </div>
+    """
+  end
+
+  attr :id, :string, required: true
+  attr :size, :string, default: "md", values: ["sm", "md", "lg"], doc: "table sizes"
+  attr :items, :any, required: true
+  attr :title, :string, default: nil
+  attr :class, :string, default: nil, doc: "CSS class to add to the table"
+
+  slot :col, required: true do
+    attr :label, :string
+    attr :class, :string
+    attr :body_class, :string
+    attr :field, :atom
+    attr :filterable, :list
+    attr :date_format, :string
+    attr :step, :float
+
+    attr :renderer, :atom,
+      values: [:plaintext, :checkbox, :date, :datetime, :money],
+      doc: "How do you want your value to be rendered?"
+
+    attr :actions, :boolean, doc: "Whether this is the actions column"
+    attr :align_right, :boolean, doc: "Aligns the column to the right"
+  end
+
+  slot :actions, required: false
+  slot :if_empty, required: false
+
+  def simple_table(assigns) do
+    ~H"""
+    <div class={["pc-table__wrapper", @class]}>
+      <.table_header :if={@title} title={@title} />
+      <.table>
+        <thead class="pc-table__thead-striped">
+          <.tr>
+            <%= for col <- @col do %>
+              <%= if col[:actions] && @actions do %>
+                <.th class={col[:class]}>
+                  <div class="flex justify-end gap-1" />
+                </.th>
+              <% else %>
+                <Header.render
+                  meta={%Flop.Meta{}}
+                  class={"pc-table__th--#{@size}"}
+                  column={col}
+                  actions={@actions}
+                  base_url_params={nil}
+                />
+              <% end %>
+            <% end %>
+          </.tr>
+        </thead>
+        <tbody>
+          <%= if @items == [] do %>
+            <.tr>
+              <td class="pc-table__td--only" colspan={length(@col)}>
+                {if Util.present?(@if_empty), do: render_slot(@if_empty), else: "No results"}
+              </td>
+            </.tr>
+          <% end %>
+
+          <.tr :for={item <- @items}>
+            <.td
+              :for={col <- @col}
+              class={[
+                if(col[:align_right], do: "text-right"),
+                if(col[:actions], do: "flex justify-end gap-1"),
+                col[:body_class]
+              ]}
+            >
+              <%= cond do %>
+                <% col[:actions] && @actions -> %>
+                  {render_slot(@actions, item)}
+                <% col[:inner_block] -> %>
+                  {render_slot(col, item)}
+                <% true -> %>
+                  <Cell.render column={col} item={item} />
+              <% end %>
+            </.td>
+          </.tr>
         </tbody>
       </.table>
     </div>
@@ -336,6 +419,7 @@ defmodule PasswordlessWeb.Components.DataTable do
                 "transition duration-150 ease-in-out",
                 "hover:text-gray-900 hover:bg-gray-50 focus:bg-gray-100 focus:text-gray-900 active:bg-gray-200 dark:bg-background-900 dark:text-white dark:hover:bg-background-800 dark:active:bg-background-900"
               ]}
+              type="button"
               phx-click="clear_filters"
             >
               <.icon name="remix-filter-3-line" class="w-5 h-5" />

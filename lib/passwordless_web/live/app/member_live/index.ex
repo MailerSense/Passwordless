@@ -104,7 +104,10 @@ defmodule PasswordlessWeb.App.MemberLive.Index do
         if membership.user_id == socket.assigns.current_user.id do
           {:noreply,
            socket
-           |> LiveToast.put_toast(:info, gettext("You have left %{org_name}!", org_name: org.name))
+           |> LiveToast.put_toast(
+             :info,
+             gettext("You have left %{org_name}!", org_name: org.name)
+           )
            |> push_navigate(to: PasswordlessWeb.Helpers.home_path(socket.assigns.current_user))}
         else
           Organizations.clear_cached_orgs(membership.user)
@@ -126,12 +129,18 @@ defmodule PasswordlessWeb.App.MemberLive.Index do
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/members"))}
+    {:noreply,
+     push_patch(socket,
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/members")
+     )}
   end
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/members"))}
+    {:noreply,
+     push_patch(socket,
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/members")
+     )}
   end
 
   @impl true
@@ -143,7 +152,7 @@ defmodule PasswordlessWeb.App.MemberLive.Index do
 
   defp apply_action(socket, :edit, _params) do
     assign(socket,
-      page_title: gettext("Teammate"),
+      page_title: gettext("Edit teammate"),
       page_subtitle: gettext("View member details and edit their role within your organization")
     )
   end
@@ -161,14 +170,14 @@ defmodule PasswordlessWeb.App.MemberLive.Index do
 
   defp apply_action(socket, :index, _params) do
     assign(socket,
-      page_title: gettext("Team members"),
+      page_title: gettext("Team"),
       page_subtitle: gettext("View members of your organization")
     )
   end
 
   defp apply_action(socket, :invite, _params) do
     assign(socket,
-      page_title: gettext("Add teammate"),
+      page_title: gettext("Invite teammate"),
       page_subtitle: gettext("Invite a new user to join your organization")
     )
   end

@@ -62,7 +62,10 @@ defmodule Passwordless.Organizations.OrgSeeder do
     Logger.info(auth_token)
 
     {:ok, project} =
-      Passwordless.create_project(org, %{"name" => "Demo Project", "description" => "Demo Project Description"})
+      Passwordless.create_project(org, %{
+        "name" => "Demo Project",
+        "description" => "Demo Project Description"
+      })
 
     org
   end
@@ -81,7 +84,10 @@ defmodule Passwordless.Organizations.OrgSeeder do
     Logger.info(auth_token)
 
     {:ok, project} =
-      Passwordless.create_project(org, %{"name" => "Demo Project", "description" => "Demo Project Description"})
+      Passwordless.create_project(org, %{
+        "name" => "Demo Project",
+        "description" => "Demo Project Description"
+      })
 
     for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1000) do
       {:ok, actor} =
@@ -93,7 +99,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
           state: Enum.random(Actor.states())
         })
 
-      for _ <- 1..100 do
+      for _ <- 1..1 do
         {:ok, _action} =
           Passwordless.create_action(actor, %{
             outcome: Enum.random(Action.outcomes())

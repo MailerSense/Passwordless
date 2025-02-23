@@ -82,12 +82,18 @@ defmodule PasswordlessWeb.App.ProjectLive.Index do
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/projects"))}
+    {:noreply,
+     push_patch(socket,
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/projects")
+     )}
   end
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/projects"))}
+    {:noreply,
+     push_patch(socket,
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/projects")
+     )}
   end
 
   @impl true
@@ -105,13 +111,13 @@ defmodule PasswordlessWeb.App.ProjectLive.Index do
 
   defp apply_action(socket, :new, _params) do
     assign(socket,
-      page_title: gettext("New Project")
+      page_title: gettext("Create project")
     )
   end
 
   defp apply_action(socket, :edit, _params) do
     assign(socket,
-      page_title: gettext("Project")
+      page_title: gettext("Edit project")
     )
   end
 

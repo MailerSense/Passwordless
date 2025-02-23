@@ -133,7 +133,7 @@ defmodule PasswordlessWeb.Components.SlideOver do
       |> JS.remove_class(to: "body")
       |> JS.hide(
         transition: {
-          "ease-in duration-200",
+          "ease-in duration-150",
           "opacity-100",
           "opacity-0"
         },
@@ -141,7 +141,7 @@ defmodule PasswordlessWeb.Components.SlideOver do
       )
       |> JS.hide(
         transition: {
-          "ease-in duration-200",
+          "ease-in duration-150",
           start_class,
           end_class
         },

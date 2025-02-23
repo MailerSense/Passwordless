@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.UserLive.Index do
+defmodule PasswordlessWeb.App.ActorLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
@@ -16,7 +16,19 @@ defmodule PasswordlessWeb.App.UserLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, apply_action(socket, socket.assigns.live_action)}
+    {:ok, socket}
+  end
+
+  @impl true
+  def handle_params(%{"id" => id} = params, _url, socket) do
+    actor = Passwordless.get_actor!(socket.assigns.current_project, id)
+
+    {:noreply,
+     socket
+     |> assign(actor: actor)
+     |> assign_filters(params)
+     |> assign_actors(params)
+     |> apply_action(socket.assigns.live_action, actor)}
   end
 
   @impl true
@@ -25,17 +37,23 @@ defmodule PasswordlessWeb.App.UserLive.Index do
      socket
      |> assign_filters(params)
      |> assign_actors(params)
-     |> apply_action(socket.assigns.live_action)}
+     |> apply_action(socket.assigns.live_action, nil)}
   end
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/users")}
+    {:noreply,
+     push_patch(socket,
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/users")
+     )}
   end
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/users")}
+    {:noreply,
+     push_patch(socket,
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/users")
+     )}
   end
 
   @impl true
@@ -72,10 +90,42 @@ defmodule PasswordlessWeb.App.UserLive.Index do
 
   # Private
 
-  defp apply_action(socket, :index) do
+  defp apply_action(socket, :index, _) do
     assign(socket,
       page_title: gettext("Users"),
       page_subtitle: gettext("Manage your users")
+    )
+  end
+
+  defp apply_action(socket, :new, _) do
+    assign(socket,
+      page_title: gettext("Create user"),
+      page_subtitle: gettext("Manage your users")
+    )
+  end
+
+  defp apply_action(socket, :edit, _) do
+    assign(socket,
+      page_title: gettext("Edit user"),
+      page_subtitle: gettext("Manage your users")
+    )
+  end
+
+  defp apply_action(socket, :import, _) do
+    assign(socket,
+      page_title: gettext("Import users"),
+      page_subtitle: gettext("Manage your users")
+    )
+  end
+
+  defp apply_action(socket, :delete, %Actor{} = actor) do
+    assign(socket,
+      page_title: gettext("Delete user"),
+      page_subtitle:
+        gettext(
+          "Are you sure you want to delete %{name}? This action is irreversible.",
+          name: Actor.name(actor)
+        )
     )
   end
 
@@ -91,17 +141,13 @@ defmodule PasswordlessWeb.App.UserLive.Index do
   end
 
   defp assign_actors(socket, params) when is_map(params) do
-    case socket.assigns[:current_project] do
-      %Project{} = project ->
-        query =
-          Actor.get_by_project(project)
+    query =
+      case socket.assigns[:current_project] do
+        %Project{} = project -> Actor.get_by_project(project)
+        _ -> Actor.get_none()
+      end
 
-        {actors, meta} = DataTable.search(query, params, @data_table_opts)
-        assign(socket, actors: actors, meta: meta)
-
-      _ ->
-        {actors, meta} = DataTable.search(Actor.get_none(), params, @data_table_opts)
-        assign(socket, actors: actors, meta: meta)
-    end
+    {actors, meta} = DataTable.search(query, params, @data_table_opts)
+    assign(socket, actors: actors, meta: meta)
   end
 end

@@ -1,7 +1,7 @@
 /* Container */
 
 .pc-container {
-  @apply w-full mx-auto sm:px-6 lg:px-8;
+  @apply w-full mx-auto px-4 sm:px-6 lg:px-8;
 }
 .pc-container--sm {
   @apply max-w-3xl;
@@ -17,9 +17,6 @@
 }
 .pc-container--full {
   @apply max-w-full;
-}
-.pc-container--mobile-padded {
-  @apply px-4;
 }
 
 /* Buttons */
@@ -241,14 +238,7 @@
 /* Badges */
 
 .pc-badge {
-  @apply inline-flex items-center justify-center rounded whitespace-nowrap;
-}
-
-.pc-badge--condition {
-  @apply rounded;
-}
-.pc-badge--status {
-  @apply rounded-full;
+  @apply inline-flex items-center justify-center rounded-full whitespace-nowrap;
 }
 
 /* Badges - with icon */
@@ -323,24 +313,14 @@
 }
 /* Badges - sizes */
 
-.pc-badge--status-sm {
+.pc-badge--sm {
   @apply text-xs font-medium px-2 py-0.5;
 }
-.pc-badge--status-md {
+.pc-badge--md {
   @apply text-sm px-2 font-normal py-1.5;
 }
-.pc-badge--status-lg {
+.pc-badge--lg {
   @apply text-lg font-medium p-2.5 rounded-lg leading-7;
-}
-
-.pc-badge--condition-sm {
-  @apply text-xs font-semibold px-3 py-0.5 uppercase;
-}
-.pc-badge--condition-md {
-  @apply text-xs font-semibold px-3 py-0.5 uppercase;
-}
-.pc-badge--condition-lg {
-  @apply text-xs font-semibold px-3 py-0.5 uppercase;
 }
 
 /* Badges - colors */
@@ -685,6 +665,7 @@
 }
 .pc-select-input__flag {
   @apply w-5 h-[15px] absolute left-3 top-1/2 transform -translate-y-1/2;
+  @apply outline outline-1 outline-offset-[-1px] outline-black/10;
 }
 .pc-select-input__icon {
   @apply w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2;
@@ -1682,7 +1663,7 @@
   @apply overflow-y-auto grow;
 }
 .pc-slideover__box--sm {
-  @apply max-w-[400px];
+  @apply max-w-[420px];
 }
 .pc-slideover__box--md {
   @apply max-w-xl;

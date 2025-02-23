@@ -170,6 +170,7 @@ defmodule PasswordlessWeb.Helpers do
   def user_org_name(_), do: nil
 
   def user_project_name(%User{current_project: %Project{name: name}}) when is_binary(name), do: name
+
   def user_project_name(_), do: gettext("No Project")
 
   def user_impersonated?(%User{current_impersonator: %User{}}), do: true
@@ -196,9 +197,11 @@ defmodule PasswordlessWeb.Helpers do
   end
 
   def user_role(%Membership{role: role}) when is_atom(role), do: String.capitalize(Atom.to_string(role))
+
   def user_role(%Membership{}), do: "-"
 
   def user_added(%Membership{inserted_at: %DateTime{} = inserted_at}), do: format_date_time(inserted_at)
+
   def user_added(%Membership{}), do: ""
 
   def is_admin?(%User{} = user), do: User.is_admin?(user)

@@ -41,7 +41,7 @@ defmodule PasswordlessWeb.Org.EditLive do
 
   defp apply_action(socket, :new) do
     assign(socket,
-      page_title: gettext("New Organization"),
+      page_title: gettext("Create organization"),
       page_subtitle:
         gettext(
           "Organizations represent the top level in your hierarchy. You'll be able to bundle a collection of teams within an organization as well as give organization-wide permissions to users."

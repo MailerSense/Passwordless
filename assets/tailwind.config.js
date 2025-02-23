@@ -193,7 +193,7 @@ const alabaster = {
 
 module.exports = {
   safelist: [
-    "flag-us",
+    { pattern: /^flag-.+/ },
     { pattern: /^bg-streetlight-\d+/ },
     { pattern: /^from-streetlight-\d+/ },
     { pattern: /^to-streetlight-\d+/ },

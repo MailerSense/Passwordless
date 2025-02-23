@@ -5,7 +5,6 @@ defmodule PasswordlessWeb.Components.Badge do
   import PasswordlessWeb.Components.Icon
 
   attr(:size, :string, default: "md", values: ["sm", "md", "lg"])
-  attr(:variant, :string, default: "status", values: ["status", "condition"])
 
   attr(:color, :string,
     default: "primary",
@@ -41,8 +40,7 @@ defmodule PasswordlessWeb.Components.Badge do
       class={[
         "pc-badge",
         "pc-badge--#{@color}",
-        "pc-badge--#{@variant}",
-        "pc-badge--#{@variant}-#{@size}",
+        "pc-badge--#{@size}",
         @with_dot && "pc-badge--with-dot",
         @with_icon && "pc-badge--with-icon",
         @class

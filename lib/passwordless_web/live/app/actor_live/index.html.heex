@@ -2,7 +2,7 @@
   <.page_header title={gettext("Users")}>
     <div class="flex gap-3">
       <.button
-        to={~p"/app/import"}
+        to={~p"/app/users/import"}
         size="md"
         color="light"
         label={gettext("Import")}
@@ -10,7 +10,7 @@
         link_type="live_patch"
       />
       <.button
-        to={~p"/app/new"}
+        to={~p"/app/users/new"}
         size="md"
         color="primary"
         label={gettext("Create")}
@@ -73,26 +73,31 @@
         />
       </:info>
       <:col field={:search} searchable filterable={[:==]} />
-      <:col :let={actor} field={:name} sortable>
-        <.avatar_entry title={Actor.name(actor)}></.avatar_entry>
+      <:col
+        :let={actor}
+        field={:name}
+        sortable
+        body_class="!font-medium !text-slate-900 dark:!text-white"
+      >
+        {Actor.name(actor)}
       </:col>
       <:col field={:email} sortable />
       <:col field={:phone} sortable />
-      <:col field={:state} sortable switchable filterable={[:==]} />
-      <:col :let={user} label={gettext("Added")} field={:inserted_at} sortable>
-        <span class="line-clamp-1 break-all">
-          {format_date_time(user.inserted_at)}
-        </span>
+      <:col :let={actor} field={:state} sortable switchable filterable={[:==]}>
+        {Phoenix.Naming.humanize(actor.state)}
+      </:col>
+      <:col :let={actor} label={gettext("Added")} field={:inserted_at} sortable>
+        {format_date_time(actor.inserted_at)}
       </:col>
       <:col actions></:col>
-      <:actions :let={user}>
+      <:actions :let={actor}>
         <.icon_button
           icon="custom-trash"
           size="sm"
           color="light"
           title={gettext("Remove")}
           link_type="live_patch"
-          to={apply_filters(@filters, @meta, ~p"/app/users/#{user}/delete")}
+          to={apply_filters(@filters, @meta, ~p"/app/users/#{actor}/delete")}
         />
         <.icon_button
           size="sm"
@@ -100,9 +105,70 @@
           color="light"
           title={gettext("Edit")}
           link_type="live_patch"
-          to={apply_filters(@filters, @meta, ~p"/app/users/#{user}/edit")}
+          to={apply_filters(@filters, @meta, ~p"/app/users/#{actor}/edit")}
         />
       </:actions>
     </.data_table>
   </div>
 </.layout>
+
+<%= case @live_action do %>
+  <% :new -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      module={PasswordlessWeb.App.ActorLive.FormComponent}
+      actor={Ecto.build_assoc(@current_project, :actors)}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_user={@current_user}
+      return_to={apply_filters(@filters, @meta, ~p"/app/users")}
+    />
+  <% :edit -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      module={PasswordlessWeb.App.ActorLive.FormComponent}
+      actor={@actor}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_user={@current_user}
+      return_to={apply_filters(@filters, @meta, ~p"/app/users")}
+    />
+  <% :delete -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Delete \"%{actor}\"", actor: Actor.name(@actor))}
+          color="danger"
+          phx-click="delete_actor"
+          phx-value-id={@actor.id}
+        />
+      </div>
+    </.modal>
+  <% :import -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      module={PasswordlessWeb.App.ActorLive.ImportComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_user={@current_user}
+      return_to={apply_filters(@filters, @meta, ~p"/app/users")}
+    />
+  <% _ -> %>
+<% end %>

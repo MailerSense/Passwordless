@@ -16,6 +16,11 @@ defmodule PasswordlessWeb.Components.StackedLayout do
   import PasswordlessWeb.Components.UserTopbarMenu
   import PasswordlessWeb.Helpers
 
+  attr :max_width, :string,
+    default: "lg",
+    values: ["sm", "md", "lg", "xl", "full"],
+    doc: "sets container max-width"
+
   attr :current_user, :map, default: nil
 
   attr :current_page, :atom,
@@ -39,7 +44,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
     doc: "The path to the home page. When a user clicks the logo, they will be taken to this path."
 
   attr :header_bg_class, :string, default: "bg-white/50 dark:bg-slate-900/50 backdrop-blur-md shadow-m2"
-  attr :header_border_class, :string, default: "border-slate-200 dark:border-slate-700"
+  attr :header_border_class, :string, default: "border-b border-slate-200 dark:border-slate-700"
 
   slot :inner_block, required: true, doc: "The main content of the page."
 
@@ -51,14 +56,13 @@ defmodule PasswordlessWeb.Components.StackedLayout do
     <div class="h-screen overflow-y-auto bg-slate-100 dark:bg-slate-900">
       <header
         class={[
-          "border-b",
           @header_bg_class,
           @header_border_class,
           "sticky top-0 z-30"
         ]}
         x-data="{mobileMenuOpen: false}"
       >
-        <.container max_width="lg" class="relative flex h-16 w-full">
+        <.container max_width={@max_width} class="relative flex h-16 w-full">
           <%!-- mobile menu --%>
           <div
             class={[
@@ -178,7 +182,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
         </.container>
       </header>
 
-      <.container max_width="lg">
+      <.container max_width={@max_width}>
         {render_slot(@inner_block)}
       </.container>
     </div>

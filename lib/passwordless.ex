@@ -87,11 +87,31 @@ defmodule Passwordless do
 
   # Actor
 
+  def get_actor!(%Project{} = project, id) when is_binary(id) do
+    project
+    |> Ecto.assoc(:actors)
+    |> Repo.get!(id)
+  end
+
   def create_actor(%Project{} = project, attrs \\ %{}) do
     project
     |> Ecto.build_assoc(:actors)
     |> Actor.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def change_actor(%Actor{} = actor, attrs \\ %{}) do
+    if Ecto.get_meta(actor, :state) == :loaded do
+      Actor.changeset(actor, attrs)
+    else
+      Actor.changeset(actor, attrs)
+    end
+  end
+
+  def update_actor(%Actor{} = actor, attrs) do
+    actor
+    |> Actor.changeset(attrs)
+    |> Repo.update()
   end
 
   # Action

@@ -16,7 +16,7 @@ defmodule Passwordless.Actor do
   @derive {
     Flop.Schema,
     filterable: [:id, :search, :state],
-    sortable: [:id, :name, :email, :phone, :locale, :inserted_at],
+    sortable: [:id, :name, :state, :email, :phone, :locale, :inserted_at],
     custom_fields: [
       search: [
         filter: {__MODULE__, :unified_search_filter, []},
@@ -32,7 +32,7 @@ defmodule Passwordless.Actor do
     field :email, :string
     field :phone, :string
     field :state, Ecto.Enum, values: @states, default: :healthy
-    field :locale, Ecto.Enum, values: Locale.language_keys(), default: :en
+    field :locale, Ecto.Enum, values: Locale.language_keys(), default: :us
     field :first_name, :string
     field :last_name, :string
     field :custom_id, :string
@@ -52,6 +52,7 @@ defmodule Passwordless.Actor do
   Get the full name of the contact.
   """
   def name(%__MODULE__{first_name: f, last_name: l}) when is_binary(f) and is_binary(l), do: "#{f} #{l}"
+
   def name(%__MODULE__{first_name: f, last_name: nil}) when is_binary(f), do: f
   def name(%__MODULE__{first_name: nil, last_name: l}) when is_binary(l), do: l
   def name(%__MODULE__{}), do: nil
