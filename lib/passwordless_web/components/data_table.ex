@@ -276,7 +276,7 @@ defmodule PasswordlessWeb.Components.DataTable do
     """
   end
 
-  attr :id, :string, required: true
+  attr :id, :string
   attr :size, :string, default: "md", values: ["sm", "md", "lg"], doc: "table sizes"
   attr :items, :any, required: true
   attr :title, :string, default: nil
@@ -303,6 +303,9 @@ defmodule PasswordlessWeb.Components.DataTable do
   slot :if_empty, required: false
 
   def simple_table(assigns) do
+    assigns =
+      assign_new(assigns, :id, fn -> "simple-table-#{:rand.uniform(10_000_000) + 1}" end)
+
     ~H"""
     <div class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
       <.table_header :if={@title} title={@title} />

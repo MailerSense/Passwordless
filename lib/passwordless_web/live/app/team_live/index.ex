@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.MemberLive.Index do
+defmodule PasswordlessWeb.App.TeamLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 

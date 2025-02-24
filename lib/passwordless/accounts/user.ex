@@ -31,7 +31,7 @@ defmodule Passwordless.Accounts.User do
     field :role, Ecto.Enum, values: Roles.org_roles(), virtual: true
     field :full_name, :string, virtual: true
     field :current_org, :map, virtual: true
-    field :current_project, :map, virtual: true
+    field :current_app, :map, virtual: true
     field :current_membership, :map, virtual: true
     field :current_impersonator, :map, virtual: true
     field :two_factor_enabled, :boolean, virtual: true, default: false

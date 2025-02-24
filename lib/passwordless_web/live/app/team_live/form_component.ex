@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.Org.MemberLive.FormComponent do
+defmodule PasswordlessWeb.Org.TeamLive.FormComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 

@@ -77,7 +77,7 @@
       sortable
       body_class="!font-medium !text-slate-900 dark:!text-white"
     >
-      {Actor.name(actor)}
+      {Actor.handle(actor)}
     </:col>
     <:col field={:email} sortable />
     <:col field={:phone} sortable />
@@ -115,7 +115,7 @@
       id={@live_action}
       title={@page_title}
       module={PasswordlessWeb.App.ActorLive.FormComponent}
-      actor={Ecto.build_assoc(@current_project, :actors)}
+      actor={Ecto.build_assoc(@current_app, :actors)}
       live_action={@live_action}
       current_org={@current_org}
       current_user={@current_user}
@@ -150,7 +150,7 @@
         <.button
           icon="remix-delete-bin-line"
           size="md"
-          label={gettext("Yes, Delete \"%{actor}\"", actor: Actor.name(@actor))}
+          label={gettext("Yes, Delete \"%{actor}\"", actor: Actor.handle(@actor))}
           color="danger"
           phx-click="delete_actor"
           phx-value-id={@actor.id}

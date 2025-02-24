@@ -9,8 +9,8 @@ defmodule Passwordless do
 
   alias Passwordless.Action
   alias Passwordless.Actor
+  alias Passwordless.App
   alias Passwordless.Organizations.Org
-  alias Passwordless.Project
   alias Passwordless.Repo
 
   @doc """
@@ -38,61 +38,65 @@ defmodule Passwordless do
     Application.get_env(:passwordless, key, default)
   end
 
-  ## Projects
+  ## Methods
 
-  def get_project(%Org{} = org, id) when is_binary(id) do
+  def methods, do: ~w(magic_link email_otp sms_otp push security_key passkey)a
+
+  ## Apps
+
+  def get_app(%Org{} = org, id) when is_binary(id) do
     org
-    |> Ecto.assoc(:projects)
+    |> Ecto.assoc(:apps)
     |> Repo.get(id)
   end
 
-  def get_project!(%Org{} = org, id) when is_binary(id) do
+  def get_app!(%Org{} = org, id) when is_binary(id) do
     org
-    |> Ecto.assoc(:projects)
+    |> Ecto.assoc(:apps)
     |> Repo.get!(id)
   end
 
-  def get_project_by_slug!(%Org{} = org, slug) when is_binary(slug) do
+  def get_app_by_slug!(%Org{} = org, slug) when is_binary(slug) do
     org
-    |> Ecto.assoc(:projects)
+    |> Ecto.assoc(:apps)
     |> Repo.get_by!(slug: slug)
   end
 
-  def create_project(%Org{} = org, attrs \\ %{}) do
+  def create_app(%Org{} = org, attrs \\ %{}) do
     org
-    |> Ecto.build_assoc(:projects)
-    |> Project.insert_changeset(attrs)
+    |> Ecto.build_assoc(:apps)
+    |> App.insert_changeset(attrs)
     |> Repo.insert()
   end
 
-  def update_project(%Project{} = project, attrs) do
-    project
-    |> Project.changeset(attrs)
+  def update_app(%App{} = app, attrs) do
+    app
+    |> App.changeset(attrs)
     |> Repo.update()
   end
 
-  def change_project(%Project{} = project, attrs \\ %{}) do
-    if Ecto.get_meta(project, :state) == :loaded do
-      Project.changeset(project, attrs)
+  def change_app(%App{} = app, attrs \\ %{}) do
+    if Ecto.get_meta(app, :state) == :loaded do
+      App.changeset(app, attrs)
     else
-      Project.insert_changeset(project, attrs)
+      App.insert_changeset(app, attrs)
     end
   end
 
-  def delete_project(%Project{} = project) do
-    Repo.soft_delete(project)
+  def delete_app(%App{} = app) do
+    Repo.soft_delete(app)
   end
 
   # Actor
 
-  def get_actor!(%Project{} = project, id) when is_binary(id) do
-    project
+  def get_actor!(%App{} = app, id) when is_binary(id) do
+    app
     |> Ecto.assoc(:actors)
     |> Repo.get!(id)
   end
 
-  def create_actor(%Project{} = project, attrs \\ %{}) do
-    project
+  def create_actor(%App{} = app, attrs \\ %{}) do
+    app
     |> Ecto.build_assoc(:actors)
     |> Actor.changeset(attrs)
     |> Repo.insert()

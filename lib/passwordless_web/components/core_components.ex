@@ -135,7 +135,7 @@ defmodule PasswordlessWeb.CoreComponents do
   """
   attr :current_user, :map, default: nil
   attr :current_page, :any, required: true
-  attr :project_menu_items, :list
+  attr :app_menu_items, :list
   attr :user_menu_items, :list
   attr :main_menu_items, :list
   attr :home_path, :string
@@ -148,7 +148,7 @@ defmodule PasswordlessWeb.CoreComponents do
       |> assign_new(:home_path, fn -> home_path(assigns[:current_user]) end)
       |> assign_new(:user_menu_items, fn -> user_menu_items(assigns[:current_user]) end)
       |> assign_new(:main_menu_items, fn -> main_menu_items(assigns[:current_section], assigns[:current_user]) end)
-      |> assign_new(:project_menu_items, fn -> project_menu_items(assigns[:current_user]) end)
+      |> assign_new(:app_menu_items, fn -> app_menu_items(assigns[:current_user]) end)
 
     assigns =
       update(assigns, :current_page, fn
@@ -161,7 +161,7 @@ defmodule PasswordlessWeb.CoreComponents do
       home_path={@home_path}
       current_user={@current_user}
       current_page={@current_page}
-      project_menu_items={@project_menu_items}
+      app_menu_items={@app_menu_items}
       user_menu_items={@user_menu_items}
       main_menu_items={@main_menu_items}
     >

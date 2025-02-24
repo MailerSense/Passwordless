@@ -3,7 +3,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   use PasswordlessWeb, :live_view
 
   alias Passwordless.Actor
-  alias Passwordless.Project
+  alias Passwordless.App
   alias PasswordlessWeb.Components.DataTable
 
   @data_table_opts [
@@ -21,7 +21,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    actor = Passwordless.get_actor!(socket.assigns.current_project, id)
+    actor = Passwordless.get_actor!(socket.assigns.current_app, id)
 
     {:noreply,
      socket
@@ -85,7 +85,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   @impl true
   def handle_event("delete_actor", %{"id" => id}, socket) do
-    actor = Passwordless.get_actor!(socket.assigns.current_project, id)
+    actor = Passwordless.get_actor!(socket.assigns.current_app, id)
 
     case Passwordless.delete_actor(actor) do
       {:ok, _actor} ->
@@ -143,7 +143,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
       page_subtitle:
         gettext(
           "Are you sure you want to delete user \"%{name}\"? This action is irreversible.",
-          name: Actor.name(actor)
+          name: Actor.handle(actor)
         )
     )
   end
@@ -161,8 +161,8 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   defp assign_actors(socket, params) when is_map(params) do
     query =
-      case socket.assigns[:current_project] do
-        %Project{} = project -> Actor.get_by_project(project)
+      case socket.assigns[:current_app] do
+        %App{} = app -> Actor.get_by_app(app)
         _ -> Actor.get_none()
       end
 

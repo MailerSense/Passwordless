@@ -4,6 +4,8 @@ defmodule Database.QueryExt do
   """
   import Ecto.Query
 
+  alias Passwordless.App
+
   @doc """
   Limit a the number of results from a query. Can be compined with other queryables
   UserQuery.text_search("Matt") |> QueryExt.limit(query, 5)
@@ -55,6 +57,20 @@ defmodule Database.QueryExt do
     from(x in query,
       order_by: [asc: x.inserted_at, asc: x.id]
     )
+  end
+
+  @doc """
+  Get all entities by app.
+  """
+  def get_by_app(query, %App{} = app) do
+    from q in query, where: q.app_id == ^app.id
+  end
+
+  @doc """
+  Get none.
+  """
+  def get_none(query) do
+    from q in query, where: false
   end
 
   @doc """

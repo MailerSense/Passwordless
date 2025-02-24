@@ -11,8 +11,6 @@ defmodule Passwordless.Organizations do
   alias Passwordless.Organizations.Org
   alias Passwordless.Repo
 
-  @cache_ttl :timer.minutes(3 * 60)
-
   ## Orgs
 
   @doc """
@@ -66,10 +64,10 @@ defmodule Passwordless.Organizations do
   end
 
   @doc """
-  List all projects for an org.
+  List all apps for an org.
   """
-  def list_projects(%Org{} = org) do
-    Repo.preload(org, :projects).projects
+  def list_apps(%Org{} = org) do
+    Repo.preload(org, :apps).apps
   end
 
   @doc """
@@ -285,7 +283,7 @@ defmodule Passwordless.Organizations do
 
   ## Projects
 
-  def preload_projects(%Org{} = org) do
-    Repo.preload(org, :projects)
+  def preload_apps(%Org{} = org) do
+    Repo.preload(org, :apps)
   end
 end

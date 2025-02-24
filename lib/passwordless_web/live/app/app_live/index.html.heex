@@ -1,41 +1,41 @@
-<.tabbed_settings_layout current_user={@current_user} current_page={:projects}>
+<.tabbed_settings_layout current_user={@current_user} current_page={:apps}>
   <:action>
     <div class="flex gap-3">
       <.button
         link_type="live_redirect"
-        to={~p"/app/projects/new"}
+        to={~p"/app/apps/new"}
         icon="remix-add-circle-line"
-        label={gettext("Create project")}
+        label={gettext("Create app")}
       />
     </div>
   </:action>
 
-  <.data_table meta={@meta} items={@projects}>
-    <:if_empty>{gettext("No %{models} found", models: gettext("projects"))}</:if_empty>
-    <:col :let={project} field={:name}>
-      <.avatar_entry title={project.name} subtitle={project.description}>
+  <.data_table meta={@meta} items={@apps}>
+    <:if_empty>{gettext("No %{models} found", models: gettext("apps"))}</:if_empty>
+    <:col :let={app} field={:name}>
+      <.avatar_entry title={app.name} subtitle={app.description}>
         <.avatar icon="remix-instance-line" />
       </.avatar_entry>
     </:col>
     <:col actions></:col>
-    <:actions :let={project}>
+    <:actions :let={app}>
       <.icon_button
         icon="custom-trash"
         size="sm"
         color="light"
         title={gettext("Remove")}
         link_type="live_patch"
-        to={apply_filters(@filters, @meta, ~p"/app/projects/#{project}/delete")}
-        disabled={is_current_project?(@current_project, project)}
-        id={"delete-project-#{project.id}"}
+        to={apply_filters(@filters, @meta, ~p"/app/apps/#{app}/delete")}
+        disabled={is_current_app?(@current_app, app)}
+        id={"delete-app-#{app.id}"}
         phx-hook={
-          if is_current_project?(@current_project, project),
+          if is_current_app?(@current_app, app),
             do: "TippyHook",
             else: nil
         }
         data-tippy-content={
-          if is_current_project?(@current_project, project),
-            do: gettext("You cannot delete the project you're viewing"),
+          if is_current_app?(@current_app, app),
+            do: gettext("You cannot delete the app you're viewing"),
             else: nil
         }
         data-tippy-placement="left"
@@ -46,7 +46,7 @@
         color="light"
         title={gettext("Edit")}
         link_type="live_patch"
-        to={apply_filters(@filters, @meta, ~p"/app/projects/#{project}/edit")}
+        to={apply_filters(@filters, @meta, ~p"/app/apps/#{app}/edit")}
       />
     </:actions>
   </.data_table>
@@ -57,9 +57,9 @@
     <.live_component
       id={@live_action}
       title={@page_title}
-      project={Ecto.build_assoc(@current_org, :projects)}
-      module={PasswordlessWeb.App.ProjectLive.FormComponent}
-      return_to={apply_filters(@filters, @meta, ~p"/app/projects")}
+      app={Ecto.build_assoc(@current_org, :apps)}
+      module={PasswordlessWeb.App.AppLive.FormComponent}
+      return_to={apply_filters(@filters, @meta, ~p"/app/apps")}
       live_action={@live_action}
       current_org={@current_org}
       current_user={@current_user}
@@ -68,9 +68,9 @@
     <.live_component
       id={@live_action}
       title={@page_title}
-      project={@project}
-      module={PasswordlessWeb.App.ProjectLive.FormComponent}
-      return_to={apply_filters(@filters, @meta, ~p"/app/projects")}
+      app={@app}
+      module={PasswordlessWeb.App.AppLive.FormComponent}
+      return_to={apply_filters(@filters, @meta, ~p"/app/apps")}
       live_action={@live_action}
       current_org={@current_org}
       current_user={@current_user}
@@ -93,10 +93,10 @@
         <.button
           icon="remix-delete-bin-line"
           size="md"
-          label={gettext("Yes, Delete \"%{project}\"", project: @project.name)}
+          label={gettext("Yes, Delete \"%{app}\"", app: @app.name)}
           color="danger"
-          phx-click="delete_project"
-          phx-value-id={@project.id}
+          phx-click="delete_app"
+          phx-value-id={@app.id}
         />
       </div>
     </.modal>

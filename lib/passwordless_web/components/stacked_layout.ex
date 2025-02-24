@@ -27,7 +27,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
     required: true,
     doc: "The current page. This will be used to highlight the current page in the menu."
 
-  attr :project_menu_items, :list,
+  attr :app_menu_items, :list,
     default: [],
     doc: "The items that will be displayed in the main menu in the sidebar."
 
@@ -145,7 +145,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
             <.user_topbar_menu
               current_user={@current_user}
               user_menu_items={@user_menu_items}
-              project_menu_items={@project_menu_items}
+              app_menu_items={@app_menu_items}
               class="hidden lg:flex"
             />
           </div>

@@ -3,28 +3,26 @@
   <.slide_over title={@title} origin={origin}>
     <div class="flex flex-col gap-8">
       <.form
-        id="auth-token-update-form"
+        id="edit-project-form"
         for={@form}
+        phx-target={@myself}
         phx-submit="save"
         phx-change="validate"
-        phx-target={@myself}
       >
-        <.field field={@form[:name]} placeholder={gettext("eg. Github Actions Runner")} required />
         <.field
-          :if={@live_action == :edit}
-          field={@form[:signature]}
-          label={gettext("Signature")}
-          class="font-mono"
-          readonly
-          copyable={true}
-        />
-        <.field
-          type="checkbox-group"
-          field={@form[:scopes]}
-          options={@scopes}
-          placeholder={gettext("Select API scopes...")}
-          group_layout="col"
+          field={@form[:name]}
+          placeholder={gettext("e.g. YourSite")}
+          autocomplete="organization"
           required
+          {alpine_autofocus()}
+        />
+        <.field field={@form[:description]} placeholder={gettext("e.g. my awesome site")} />
+        <.field
+          field={@form[:slug]}
+          placeholder={gettext("your-site")}
+          icon="remix-id-card-line"
+          label={gettext("App ID")}
+          readonly
         />
       </.form>
     </div>
@@ -38,10 +36,10 @@
         phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
       />
       <.button
-        id="auth-token-update-form-submit"
+        id="edit-project-form-submit"
         size="wide"
         type="submit"
-        form="auth-token-update-form"
+        form="edit-project-form"
         disabled={not @form.source.valid?}
         label={
           if @live_action == :new,

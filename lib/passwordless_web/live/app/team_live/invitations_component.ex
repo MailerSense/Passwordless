@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.Org.MemberLive.InvitationsComponent do
+defmodule PasswordlessWeb.Org.TeamLive.InvitationsComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 

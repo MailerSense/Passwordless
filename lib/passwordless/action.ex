@@ -8,7 +8,8 @@ defmodule Passwordless.Action do
   import Ecto.Query
 
   alias Passwordless.Actor
-  alias Passwordless.Project
+  alias Passwordless.App
+  alias Passwordless.Challenge
 
   @outcomes ~w(allow timeout block challenge)a
   @derive {
@@ -16,23 +17,19 @@ defmodule Passwordless.Action do
     filterable: [:id], sortable: [:id]
   }
   schema "actions" do
+    field :name, :string
+    field :method, Ecto.Enum, values: Passwordless.methods()
     field :outcome, Ecto.Enum, values: @outcomes
 
+    has_one :challenge, Challenge
+
+    belongs_to :app, App, type: :binary_id
     belongs_to :actor, Actor, type: :binary_id
 
-    timestamps(updated_at: false)
+    timestamps()
   end
 
   def outcomes, do: @outcomes
-
-  @doc """
-  Get all actions for a project.
-  """
-  def get_by_project(query \\ __MODULE__, %Project{} = project) do
-    from q in query,
-      left_join: a in assoc(q, :actor),
-      where: a.project_id == ^project.id and is_nil(a.deleted_at)
-  end
 
   @doc """
   Preload associations.
@@ -40,20 +37,16 @@ defmodule Passwordless.Action do
   def preload_actor(query \\ __MODULE__) do
     actor_query =
       from a in Actor,
-        select: struct(a, [:id, :first_name, :last_name, :email])
+        select: struct(a, [:id, :name])
 
     from q in query, preload: [actor: ^actor_query]
   end
 
-  @doc """
-  Get none.
-  """
-  def get_none(query \\ __MODULE__) do
-    from q in query, where: false
-  end
-
   @fields ~w(
+    name
+    method
     outcome
+    app_id
     actor_id
   )a
   @required_fields @fields
@@ -65,6 +58,7 @@ defmodule Passwordless.Action do
     action
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> assoc_constraint(:app)
     |> assoc_constraint(:actor)
   end
 end

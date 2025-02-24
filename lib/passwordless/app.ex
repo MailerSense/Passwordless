@@ -1,6 +1,6 @@
-defmodule Passwordless.Project do
+defmodule Passwordless.App do
   @moduledoc """
-  An project is a group of checks.
+  An app contains passwordless resources.
   """
 
   use Passwordless.Schema
@@ -17,7 +17,7 @@ defmodule Passwordless.Project do
     filterable: [], sortable: [:id]
   }
   @derive {Phoenix.Param, key: :slug}
-  schema "projects" do
+  schema "apps" do
     field :slug, :string
     field :name, :string
     field :description, :string

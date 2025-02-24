@@ -10,9 +10,9 @@ defmodule Passwordless.Activity.Log do
   alias Passwordless.Accounts
   alias Passwordless.Accounts.User
   alias Passwordless.Activity.Filter, as: ActivityFilter
+  alias Passwordless.App
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Org
-  alias Passwordless.Project
 
   @domains ~w(org user)a
   @domain_actions [
@@ -83,8 +83,8 @@ defmodule Passwordless.Activity.Log do
     belongs_to :auth_token, Passwordless.Organizations.AuthToken, type: :binary_id
     belongs_to :target_user, Passwordless.Accounts.User, type: :binary_id
 
-    # Project
-    belongs_to :project, Passwordless.Project, type: :binary_id
+    # App
+    belongs_to :app, Passwordless.App, type: :binary_id
 
     # Billing
     belongs_to :billing_customer, Passwordless.Billing.Customer, type: :binary_id
@@ -107,10 +107,10 @@ defmodule Passwordless.Activity.Log do
   end
 
   @doc """
-  Get by project.
+  Get by app.
   """
-  def get_by_project(query \\ __MODULE__, %Project{} = project) do
-    from q in query, where: q.project_id == ^project.id
+  def get_by_app(query \\ __MODULE__, %App{} = app) do
+    from q in query, where: q.app_id == ^app.id
   end
 
   def get_within(query, %Date{} = start_date, %Date{} = end_date) do
@@ -201,7 +201,7 @@ defmodule Passwordless.Activity.Log do
     user_id
     auth_token_id
     target_user_id
-    project_id
+    app_id
     billing_customer_id
     billing_subscription_id
   )a
@@ -224,7 +224,7 @@ defmodule Passwordless.Activity.Log do
     |> assoc_constraint(:user)
     |> assoc_constraint(:auth_token)
     |> assoc_constraint(:target_user)
-    |> assoc_constraint(:project)
+    |> assoc_constraint(:app)
   end
 
   @doc """

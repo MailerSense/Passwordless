@@ -23,25 +23,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
                  |> Enum.to_list()
 
   def root_org(%User{} = user, attrs \\ %{}) do
-    attrs = Map.merge(random_org_attributes(), attrs)
-    attrs = Map.put(attrs, :name, "Passwordless GmbH")
-    attrs = Map.put(attrs, :tags, [:admin])
-
-    {:ok, org, _membership} = Organizations.create_org_with_owner(user, attrs)
-
-    {:ok, auth_token, _signed_auth_token} =
-      Organizations.create_auth_token(org, %{"name" => "Github Actions", "scopes" => [:sync]})
-
-    Logger.info("----------- AUTH TOKEN ------------")
-    Logger.info(auth_token)
-
-    {:ok, project} =
-      Passwordless.create_project(org, %{
-        "name" => "Demo Project",
-        "description" => "Demo Project Description"
-      })
-
-    org
+    root_org_local(user, attrs)
   end
 
   def root_org_local(%User{} = user, attrs \\ %{}) do
@@ -51,21 +33,15 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
     {:ok, org, _membership} = Organizations.create_org_with_owner(user, attrs)
 
-    {:ok, auth_token, _signed_auth_token} =
-      Organizations.create_auth_token(org, %{"name" => "Github Actions", "scopes" => [:sync]})
-
-    Logger.info("----------- AUTH TOKEN ------------")
-    Logger.info(auth_token)
-
-    {:ok, project} =
-      Passwordless.create_project(org, %{
-        "name" => "Demo Project",
-        "description" => "Demo Project Description"
+    {:ok, app} =
+      Passwordless.create_app(org, %{
+        "name" => "Demo App",
+        "description" => "Demo App Description"
       })
 
     for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1000) do
       {:ok, actor} =
-        Passwordless.create_actor(project, %{
+        Passwordless.create_actor(app, %{
           first_name: Faker.Person.first_name(),
           last_name: Faker.Person.last_name(),
           email: email,
@@ -86,23 +62,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
   # Private
 
-  defp random_check_attributes do
-    %{
-      name: "Check " <> Faker.Pokemon.name(),
-      state: Enum.random(for(_ <- 1..10, do: :online) ++ ~w(warning down)a)
-    }
-  end
-
   defp random_org_attributes do
-    %{
-      name: Faker.Company.name(),
-      email: Enum.random(@random_emails)
-    }
-  end
-
-  defp random_data_entry_schema do
-    Faker.App.name() |> Slug.slugify() |> String.replace(~r/-/, "_") |> String.to_atom()
-
     %{
       name: Faker.Company.name(),
       email: Enum.random(@random_emails)

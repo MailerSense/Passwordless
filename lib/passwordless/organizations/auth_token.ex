@@ -13,7 +13,7 @@ defmodule Passwordless.Organizations.AuthToken do
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
 
-  @size 16
+  @size 32
   @states ~w(active revoked)a
   @derive {
     Flop.Schema,

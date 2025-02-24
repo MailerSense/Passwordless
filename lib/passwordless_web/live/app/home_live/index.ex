@@ -2,6 +2,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
+  alias Database.QueryExt
   alias Passwordless.Action
   alias Passwordless.Actor
   alias PasswordlessWeb.Components.DataTable
@@ -44,8 +45,8 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
       {:noreply, socket}
     else
       query =
-        socket.assigns.current_project
-        |> Action.get_by_project()
+        socket.assigns.current_app
+        |> QueryExt.get_by_app()
         |> Action.preload_actor()
 
       assigns = Map.take(socket.assigns, ~w(cursor)a)
@@ -91,8 +92,8 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   defp assign_actions(socket, params) do
     query =
-      socket.assigns.current_project
-      |> Action.get_by_project()
+      socket.assigns.current_app
+      |> QueryExt.get_by_app()
       |> Action.preload_actor()
 
     params = Map.take(params, ~w(filters order_by order_directions))

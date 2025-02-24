@@ -1,9 +1,9 @@
 defmodule PasswordlessWeb.Router do
   use PasswordlessWeb, :router
 
+  import PasswordlessWeb.Plugs.App
   import PasswordlessWeb.Plugs.Org
   import PasswordlessWeb.Plugs.ParseIP
-  import PasswordlessWeb.Plugs.Project
   import PasswordlessWeb.UserAuth
 
   pipeline :browser do
@@ -37,13 +37,13 @@ defmodule PasswordlessWeb.Router do
     plug :require_authenticated_user
     plug :require_onboarded_user
     plug :fetch_current_org
-    plug :fetch_current_project
+    plug :fetch_current_app
   end
 
   pipeline :authenticated_only do
     plug :require_authenticated_user
     plug :fetch_current_org
-    plug :fetch_current_project
+    plug :fetch_current_app
   end
 
   pipeline :public_browser do
@@ -71,9 +71,6 @@ defmodule PasswordlessWeb.Router do
     get "/terms", PageController, :terms
     get "/privacy", PageController, :privacy
     get "/sitemap.xml", SitemapController, :index
-
-    # Contact
-    post "/contact/submit-form", ContactController, :submit_form
   end
 
   scope "/app", PasswordlessWeb do
@@ -99,7 +96,7 @@ defmodule PasswordlessWeb.Router do
     post "/org/switch", OrgController, :switch
 
     # Project switcher
-    post "/project/switch", ProjectController, :switch
+    post "/apps/switch", ProjectController, :switch
 
     # Billing
     get "/billing/checkout/:plan_id", BillingController, :checkout
@@ -108,7 +105,7 @@ defmodule PasswordlessWeb.Router do
       on_mount: [
         {PasswordlessWeb.User.Hooks, :require_authenticated_user},
         {PasswordlessWeb.Org.Hooks, :fetch_current_org},
-        {PasswordlessWeb.Project.Hooks, :fetch_current_project}
+        {PasswordlessWeb.App.Hooks, :fetch_current_app}
       ] do
       live "/onboarding", User.OnboardingLive
     end
@@ -118,7 +115,7 @@ defmodule PasswordlessWeb.Router do
         {PasswordlessWeb.User.Hooks, :require_authenticated_user},
         {PasswordlessWeb.Org.Hooks, :fetch_current_org},
         {PasswordlessWeb.Org.Hooks, :require_current_org},
-        {PasswordlessWeb.Project.Hooks, :fetch_current_project}
+        {PasswordlessWeb.App.Hooks, :fetch_current_app}
       ] do
       # Home
       live "/home", App.HomeLive.Index, :index
@@ -140,17 +137,17 @@ defmodule PasswordlessWeb.Router do
       live "/embed", App.EmbedLive.Index, :index
 
       # Team
-      live "/team", App.MemberLive.Index, :index
-      live "/team/invite", App.MemberLive.Index, :invite
-      live "/team/invitations", App.MemberLive.Index, :invitations
-      live "/team/:id/edit", App.MemberLive.Index, :edit
-      live "/team/:id/delete", App.MemberLive.Index, :delete
+      live "/team", App.TeamLive.Index, :index
+      live "/team/invite", App.TeamLive.Index, :invite
+      live "/team/invitations", App.TeamLive.Index, :invitations
+      live "/team/:id/edit", App.TeamLive.Index, :edit
+      live "/team/:id/delete", App.TeamLive.Index, :delete
 
-      # Project
-      live "/projects", App.ProjectLive.Index, :index
-      live "/projects/new", App.ProjectLive.Index, :new
-      live "/projects/:id/edit", App.ProjectLive.Index, :edit
-      live "/projects/:id/delete", App.ProjectLive.Index, :delete
+      # App
+      live "/apps", App.AppLive.Index, :index
+      live "/apps/new", App.AppLive.Index, :new
+      live "/apps/:id/edit", App.AppLive.Index, :edit
+      live "/apps/:id/delete", App.AppLive.Index, :delete
 
       # Billing
       live "/billing", App.BillingLive.Index, :index
@@ -171,17 +168,9 @@ defmodule PasswordlessWeb.Router do
       live "/organization", Org.EditLive, :index
       live "/organization/new", Org.EditLive, :new
 
-      # Org
-      live "/project", App.ProjectLive.Index, :index
-      live "/project/new", App.ProjectLive.Index, :new
-
-      # API Keys
-      live "/auth-tokens", Org.AuthTokenLive.Index, :index
-      live "/auth-tokens/new", Org.AuthTokenLive.Index, :new
-      live "/auth-tokens/revoked", Org.AuthTokenLive.Index, :revoked
-      live "/auth-tokens/:id", Org.AuthTokenLive.Index, :edit
-      live "/auth-tokens/:id/revoke", Org.AuthTokenLive.Index, :revoke
-      live "/auth-tokens/:id/reveal", Org.AuthTokenLive.Index, :reveal
+      # Apps
+      live "/apps", App.AppLive.Index, :index
+      live "/apps/new", App.AppLive.Index, :new
 
       # Knowledge
       live "/blog", Knowledge.BlogLive, :index

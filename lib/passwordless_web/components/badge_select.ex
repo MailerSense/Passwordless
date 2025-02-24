@@ -109,7 +109,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
       >
         <%= if @selected do %>
           <span class="flex items-center gap-2">
-            <Badge.badge size="sm" label={@selected.label} color={@selected.color} variant="status" />
+            <Badge.badge size="sm" label={@selected.label} color={@selected.color} />
             <span :if={Util.present?(@selected[:name])} class="block truncate pe-4">
               {@selected[:name]}
             </span>
@@ -158,7 +158,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
           {li_assigns(idx)}
         >
           <div class="flex items-center gap-2">
-            <Badge.badge size="sm" label={option.label} color={option.color} variant="status" />
+            <Badge.badge size="sm" label={option.label} color={option.color} />
             <span :if={option[:name]} class="block truncate">
               {option[:name]}
             </span>

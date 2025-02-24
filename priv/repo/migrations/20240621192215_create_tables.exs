@@ -188,9 +188,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create index(:billing_subscription_items, [:subscription_id])
     create unique_index(:billing_subscription_items, [:provider_id], where: "deleted_at is null")
 
-    ## Projects
+    ## Apps
 
-    create table(:projects, primary_key: false) do
+    create table(:apps, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :slug, :citext, null: false
       add :name, :string, null: false
@@ -202,47 +202,196 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create unique_index(:projects, [:org_id, :slug], where: "deleted_at is null")
+    create unique_index(:apps, [:org_id, :slug], where: "deleted_at is null")
 
     ## Actors
 
     create table(:actors, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :email, :citext, null: false
-      add :email_verified, :boolean, null: false, default: false
-      add :phone, :citext
-      add :phone_verified, :boolean, null: false, default: false
+      add :name, :string
       add :state, :string, null: false
-      add :country, :string, null: false
-      add :first_name, :string
-      add :last_name, :string
-      add :user_id, :string
+      add :language, :string, null: false
 
-      add :project_id, references(:projects, type: :uuid, on_delete: :delete_all), null: false
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
       soft_delete_column()
     end
 
-    create index(:actors, [:project_id], where: "deleted_at is null")
+    create index(:actors, [:app_id], where: "deleted_at is null")
     create index(:actors, [:state], where: "deleted_at is null")
-    create unique_index(:actors, [:project_id, :email], where: "deleted_at is null")
-    create unique_index(:actors, [:project_id, :phone], where: "deleted_at is null")
-    create unique_index(:actors, [:project_id, :user_id], where: "deleted_at is null")
+
+    execute "create index actors_name_gin_trgm_idx on actors using gin (name gin_trgm_ops);"
+
+    ## Emails
+
+    create table(:emails, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :address, :citext, null: false
+      add :primary, :boolean, null: false, default: false
+      add :verified, :boolean, null: false, default: false
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create index(:emails, [:actor_id])
+    create unique_index(:emails, [:app_id, :address], where: "deleted_at is null")
+    create unique_index(:emails, [:app_id, :actor_id, :primary], where: "\"primary\"")
+    create unique_index(:emails, [:app_id, :actor_id, :address], where: "deleted_at is null")
+
+    execute "create index emails_email_gin_trgm_idx on emails using gin (address gin_trgm_ops);"
+
+    ## Phones
+
+    create table(:phones, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :address, :citext, null: false
+      add :primary, :boolean, null: false, default: false
+      add :verified, :boolean, null: false, default: false
+      add :channel, {:array, :string}, null: false, default: []
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create index(:phones, [:actor_id])
+    create unique_index(:phones, [:app_id, :address], where: "deleted_at is null")
+    create unique_index(:phones, [:app_id, :actor_id, :primary], where: "\"primary\"")
+    create unique_index(:phones, [:app_id, :actor_id, :address], where: "deleted_at is null")
+
+    execute "create index phones_email_gin_trgm_idx on phones using gin (address gin_trgm_ops);"
+
+    ## TOTPS
+
+    create table(:totps, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :secret, :binary, null: false
+      add :backup_codes, :map, null: false, default: %{}
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create index(:totps, [:actor_id])
+    create unique_index(:totps, [:app_id, :secret], where: "deleted_at is null")
+    create unique_index(:totps, [:app_id, :actor_id, :secret], where: "deleted_at is null")
+
+    ## WebAuthn Identities
+
+    create table(:webauthn_identities, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :handle, :string, null: false
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create index(:webauthn_identities, [:actor_id])
+    create unique_index(:webauthn_identities, [:app_id, :handle], where: "deleted_at is null")
+
+    create unique_index(:webauthn_identities, [:app_id, :actor_id, :handle],
+             where: "deleted_at is null"
+           )
+
+    ## WebAuthn Credentials
+
+    create table(:webauthn_credentials, primary_key: false) do
+      add :id, :uuid, primary_key: true
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+
+      add :webauthn_identity_id,
+          references(:webauthn_identities, type: :uuid, on_delete: :delete_all),
+          null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    ## Action
 
     create table(:actions, primary_key: false) do
       add :id, :uuid, primary_key: true
+      add :name, :string, null: false
+      add :method, :string, null: false
       add :outcome, :string, null: false
 
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
       add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create index(:actions, [:app_id])
+    create index(:actions, [:actor_id])
+    create index(:actions, [:outcome])
+
+    ## Challenge
+
+    create table(:challenges, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :state, :string, null: false
+      add :method, :string, null: false
+      add :context, :string, null: false
+      add :expires_at, :utc_datetime_usec, null: false
+      add :attempts, :integer, null: false, default: 0
+      add :token, :binary, null: false
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create index(:challenges, [:actor_id])
+
+    create unique_index(:challenges, [:app_id, :token], where: "deleted_at is null")
+    create unique_index(:challenges, [:app_id, :actor_id, :token], where: "deleted_at is null")
+
+    create unique_index(:challenges, [:app_id, :actor_id, :action_id],
+             where: "deleted_at is null"
+           )
+
+    ## Action log
+
+    create table(:actor_logs, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :name, :string, null: false
+      add :details, :string
+      add :ip_address, :string
+      add :country, :string
+      add :city, :string
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+      add :actor_id, references(:actors, type: :uuid, on_delete: :nilify_all)
+      add :action_id, references(:actions, type: :uuid, on_delete: :nilify_all)
+      add :challenge_id, references(:challenges, type: :uuid, on_delete: :nilify_all)
 
       timestamps(updated_at: false)
     end
 
-    create index(:actions, [:actor_id])
-    create index(:actions, [:outcome])
+    create index(:actor_logs, [:app_id])
+    create index(:actor_logs, [:app_id, :actor_id])
+    create index(:actor_logs, [:app_id, :action_id])
+    create index(:actor_logs, [:app_id, :challenge_id])
 
-    ## Activity Logs
+    ## Activity Log
 
     create table(:activity_logs, primary_key: false) do
       add :id, :uuid, primary_key: true
@@ -258,7 +407,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :target_user_id, references(:users, type: :uuid, on_delete: :nilify_all)
 
       # Projects
-      add :project_id, references(:projects, type: :uuid, on_delete: :nilify_all)
+      add :app_id, references(:apps, type: :uuid, on_delete: :nilify_all)
 
       # Billing
       add :billing_customer_id,
@@ -276,7 +425,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create index(:activity_logs, [:user_id])
     create index(:activity_logs, [:auth_token_id])
     create index(:activity_logs, [:target_user_id])
-    create index(:activity_logs, [:project_id])
+    create index(:activity_logs, [:app_id])
     create index(:activity_logs, [:billing_customer_id])
     create index(:activity_logs, [:billing_subscription_id])
 

@@ -22,7 +22,7 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
     default: [],
     doc: "The items that will be displayed in the user menu."
 
-  attr :project_menu_items, :list,
+  attr :app_menu_items, :list,
     default: [],
     doc: "The items that will be displayed in the user menu."
 
@@ -31,21 +31,16 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
     <div {@rest} class={["flex items-center gap-3", @class]}>
       <.theme_switch />
 
-      <.dropdown label={PasswordlessWeb.Helpers.user_project_name(@current_user)} variant="outline">
-        <.dropdown_menu_item link_type="live_redirect" to={~p"/app/project/new"}>
+      <.dropdown label={PasswordlessWeb.Helpers.user_app_name(@current_user)} variant="outline">
+        <.dropdown_menu_item link_type="live_redirect" to={~p"/app/apps/new"}>
           <.icon name="remix-add-line" class="w-5 h-5" />
-          {gettext("Create project")}
+          {gettext("Create app")}
         </.dropdown_menu_item>
-        <.form
-          :for={project <- @project_menu_items}
-          for={nil}
-          action={~p"/app/project/switch"}
-          method="post"
-        >
-          <.input type="hidden" name="project_id" value={project.id} />
+        <.form :for={app <- @app_menu_items} for={nil} action={~p"/app/apps/switch"} method="post">
+          <.input type="hidden" name="app_id" value={app.id} />
           <button class="pc-dropdown__menu-item">
             <.icon name="remix-instance-line" class="w-5 h-5" />
-            <span class="line-clamp-1">{project.name}</span>
+            <span class="line-clamp-1">{app.name}</span>
           </button>
         </.form>
       </.dropdown>

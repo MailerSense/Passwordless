@@ -10,16 +10,18 @@ defmodule Passwordless.Organizations.Org do
   alias Database.ChangesetExt
   alias Passwordless.Accounts.User
   alias Passwordless.Activity.Log
+  alias Passwordless.App
   alias Passwordless.Organizations.AuthToken
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
-  alias Passwordless.Project
   alias Passwordless.Repo
 
-  @tags ~w(
-    admin
-  )a
+  @tags ~w(admin)a
 
+  @derive {
+    Flop.Schema,
+    filterable: [], sortable: [:id]
+  }
   @derive {Phoenix.Param, key: :slug}
   schema "orgs" do
     field :slug, :string
@@ -31,8 +33,8 @@ defmodule Passwordless.Organizations.Org do
 
     has_one :billing_customer, Billing.Customer
 
+    has_many :apps, App
     has_many :logs, Log
-    has_many :projects, Project
     has_many :auth_tokens, AuthToken
     has_many :memberships, Membership
     has_many :invitations, Invitation

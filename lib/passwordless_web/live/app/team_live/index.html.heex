@@ -49,7 +49,6 @@
             else: gettext("Disabled")
         }
         color={if user_2fa_enabled(membership.user), do: "success", else: "danger"}
-        variant="status"
         with_dot
       />
     </:col>
@@ -98,7 +97,7 @@
     <.live_component
       id={@live_action}
       title={@page_title}
-      module={PasswordlessWeb.Org.MemberLive.FormComponent}
+      module={PasswordlessWeb.Org.TeamLive.FormComponent}
       membership={@membership}
       current_org={@current_org}
       current_user={@current_user}
@@ -174,7 +173,7 @@
     <.modal max_width="lg" title={@page_title} subtitle={@page_subtitle}>
       <.live_component
         id={@live_action}
-        module={PasswordlessWeb.Org.MemberLive.InvitationsComponent}
+        module={PasswordlessWeb.Org.TeamLive.InvitationsComponent}
         current_org={@current_org}
         current_user={@current_user}
         return_to={~p"/app/team"}
