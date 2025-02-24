@@ -52,7 +52,7 @@ defmodule Passwordless.Action do
   @required_fields @fields
 
   @doc """
-  A contact changeset.
+  A changeset.
   """
   def changeset(%__MODULE__{} = action, attrs \\ %{}) do
     action

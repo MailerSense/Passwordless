@@ -88,7 +88,7 @@ defmodule Passwordless.Actor do
     where(
       query,
       [c],
-      ilike(fragment("concat(?, ' ', ?)", c.first_name, c.last_name), ^value) or
+      ilike(c.name, ^value) or
         ilike(c.email, ^value) or
         ilike(c.phone, ^value) or
         ilike(c.user_id, ^value)

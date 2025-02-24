@@ -14,7 +14,7 @@ defmodule Passwordless.App do
 
   @derive {
     Flop.Schema,
-    filterable: [], sortable: [:id]
+    filterable: [:id], sortable: [:id]
   }
   @derive {Phoenix.Param, key: :slug}
   schema "apps" do
