@@ -1,4 +1,4 @@
-defmodule Passwordless.Cluster.PostgresStrategy do
+defmodule Util.PostgresStrategy do
   @moduledoc """
   A libcluster strategy that uses Postgres LISTEN/NOTIFY to determine the cluster topology.
 

@@ -41,7 +41,7 @@ defmodule PasswordlessWeb.App.ActorLive.FormComponent do
 
   defp save_actor(socket, :edit, actor_params) do
     case Passwordless.update_actor(socket.assigns.actor, actor_params) do
-      {:ok, actor} ->
+      {:ok, _actor} ->
         {:noreply,
          socket
          |> put_flash(:info, gettext("Actor updated."))

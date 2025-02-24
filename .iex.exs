@@ -8,7 +8,6 @@ alias Passwordless.Accounts.UserSeeder
 alias Passwordless.Activity
 alias Passwordless.Activity.Log
 alias Passwordless.Billing.Plans
-alias Passwordless.Coordinator
 alias Passwordless.Organizations
 alias Passwordless.Organizations.Invitation
 alias Passwordless.Organizations.Membership
@@ -45,5 +44,3 @@ defmodule Helpers do
     :ok
   end
 end
-
-Ecto.Adapters.SQL.query(Repo, ~SQL"REFRESH MATERIALIZED VIEW CONCURRENTLY schedule_statistics;")

@@ -1,7 +1,6 @@
 defmodule PasswordlessWeb.Org.FormComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
-  use Util.FunctionExt
 
   alias Passwordless.Accounts.User
   alias Passwordless.Activity
