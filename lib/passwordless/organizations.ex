@@ -227,6 +227,10 @@ defmodule Passwordless.Organizations do
     |> Repo.preload(:org)
   end
 
+  def has_open_invitations?(%User{} = user) do
+    Repo.exists?(Invitation.get_by_user(user))
+  end
+
   def accept_invitation!(%User{} = user, id) when is_binary(id) do
     invitation = get_invitation_by_user!(user, id)
     org = Repo.one!(Ecto.assoc(invitation, :org))

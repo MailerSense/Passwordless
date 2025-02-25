@@ -35,7 +35,9 @@ defmodule Passwordless.Action do
   Get by app.
   """
   def get_by_app(query \\ __MODULE__, %App{} = app) do
-    from q in query, where: q.app_id == ^app.id
+    from q in query,
+      left_join: a in assoc(q, :actor),
+      where: q.app_id == ^app.id and is_nil(a.deleted_at)
   end
 
   @doc """

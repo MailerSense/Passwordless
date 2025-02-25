@@ -80,13 +80,13 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
         {:noreply,
          socket
          |> put_flash(:info, gettext("actor deleted successfully."))
-         |> push_navigate(to: ~p"/app")}
+         |> push_navigate(to: ~p"/app/users")}
 
       {:error, _} ->
         {:noreply,
          socket
          |> LiveToast.put_toast(:error, gettext("Failed to delete actor!"))
-         |> push_patch(to: ~p"/app/actors/#{actor}/script")}
+         |> push_patch(to: ~p"/app/users/#{actor}/edit")}
     end
   end
 

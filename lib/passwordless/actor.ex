@@ -1,6 +1,6 @@
 defmodule Passwordless.Actor do
   @moduledoc """
-  An actor acts.
+  An actor.
   """
 
   use Passwordless.Schema

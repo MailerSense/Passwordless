@@ -79,14 +79,14 @@ defmodule PasswordlessWeb.App.ActorLive.Activity do
       {:ok, _actor} ->
         {:noreply,
          socket
-         |> put_flash(:info, gettext("actor deleted successfully."))
-         |> push_navigate(to: ~p"/app")}
+         |> put_flash(:info, gettext("User deleted successfully."))
+         |> push_navigate(to: ~p"/app/users")}
 
       {:error, _} ->
         {:noreply,
          socket
-         |> LiveToast.put_toast(:error, gettext("Failed to delete actor!"))
-         |> push_patch(to: ~p"/app/actors/#{actor}/script")}
+         |> LiveToast.put_toast(:error, gettext("Failed to delete user!"))
+         |> push_patch(to: ~p"/app/users/#{actor}/activity")}
     end
   end
 

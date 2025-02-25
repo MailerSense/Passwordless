@@ -71,8 +71,8 @@ defmodule PasswordlessWeb.Helpers do
       },
       %{
         name: :security_key,
-        label: "Authenticator",
-        icon: "remix-shield-user-line",
+        label: "Security key",
+        icon: "remix-shield-keyhole-line",
         path: ~p"/app/methods/security-key",
         link_type: "live_patch"
       },
@@ -92,14 +92,14 @@ defmodule PasswordlessWeb.Helpers do
         name: :activity,
         label: "Activity",
         icon: "remix-file-list-3-line",
-        path: ~p"/app/actor/#{actor}/activity",
+        path: ~p"/app/users/#{actor}/activity",
         link_type: "live_patch"
       },
       %{
         name: :authenticators,
         label: "Authenticators",
         icon: "remix-shield-keyhole-line",
-        path: ~p"/app/actor/#{actor}/authenticators",
+        path: ~p"/app/users/#{actor}/authenticators",
         link_type: "live_patch"
       }
     ]

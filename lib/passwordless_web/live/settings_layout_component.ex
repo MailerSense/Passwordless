@@ -46,7 +46,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
     ]
 
     user_routes =
-      if user |> Organizations.list_invitations_by_user() |> Enum.empty?(),
+      if Organizations.has_open_invitations?(user),
         do: user_routes -- [:org_invitations],
         else: user_routes
 
