@@ -1741,10 +1741,10 @@
   @apply w-6 h-6;
 }
 .pc-editor-field {
-  @apply max-w-[300px] xl:min-w-[420px] ps-3 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:outline-none;
+  @apply max-w-[400px] lg:min-w-[500px] ps-3 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:outline-none;
 }
 .pc-editor-field-icon__padding {
-  @apply max-w-[300px] xl:min-w-[420px] ps-12 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:outline-none;
+  @apply max-w-[400px] lg:min-w-[500px] ps-12 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:outline-none;
 }
 .pc-editor-field-emoji {
   @apply w-6 h-6 text-slate-500 dark:text-slate-300 absolute start-0 flex items-center pe-3 pointer-events-none;
