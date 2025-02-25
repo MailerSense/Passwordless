@@ -47,8 +47,8 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
 
     user_routes =
       if Organizations.has_open_invitations?(user),
-        do: user_routes -- [:org_invitations],
-        else: user_routes
+        do: user_routes,
+        else: user_routes -- [:org_invitations]
 
     PasswordlessWeb.Menus.build_menu(
       user_routes ++ org_routes,

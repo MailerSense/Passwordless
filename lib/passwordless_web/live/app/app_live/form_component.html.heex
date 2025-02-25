@@ -3,7 +3,7 @@
   <.slide_over title={@title} origin={origin}>
     <div class="flex flex-col gap-8">
       <.form
-        id="edit-project-form"
+        id="edit-app-form"
         for={@form}
         phx-target={@myself}
         phx-submit="save"
@@ -46,10 +46,10 @@
         phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
       />
       <.button
-        id="edit-project-form-submit"
+        id="edit-app-form-submit"
         size="wide"
         type="submit"
-        form="edit-project-form"
+        form="edit-app-form"
         disabled={not @form.source.valid?}
         label={
           if @live_action == :new,

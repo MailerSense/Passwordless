@@ -471,7 +471,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :auth_token_id, references(:auth_tokens, type: :uuid, on_delete: :nilify_all)
       add :target_user_id, references(:users, type: :uuid, on_delete: :nilify_all)
 
-      # Projects
+      # Apps
       add :app_id, references(:apps, type: :uuid, on_delete: :nilify_all)
 
       # Billing

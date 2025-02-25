@@ -57,7 +57,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
       %App{id: ^id} ->
         {:noreply,
          socket
-         |> put_flash(:error, gettext("You cannot delete the project you are currently viewing."))
+         |> put_flash(:error, gettext("You cannot delete the app you are currently viewing."))
          |> push_patch(to: ~p"/app/apps")}
 
       _ ->
@@ -71,7 +71,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
           {:error, _} ->
             {:noreply,
              socket
-             |> LiveToast.put_toast(:error, gettext("Failed to delete project!"))
+             |> LiveToast.put_toast(:error, gettext("Failed to delete app!"))
              |> push_patch(to: ~p"/app/apps")}
         end
     end

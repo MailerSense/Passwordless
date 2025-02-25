@@ -285,7 +285,7 @@ defmodule Passwordless.Organizations do
     |> Repo.update()
   end
 
-  ## Projects
+  ## Apps
 
   def preload_apps(%Org{} = org) do
     Repo.preload(org, :apps)
