@@ -77,7 +77,7 @@ defmodule PasswordlessWeb.Email do
 
   def contact_form(email, name, message) do
     support_email()
-    |> to("hello@livecheck.io")
+    |> to("hello@passwordless.tools")
     |> subject(gettext("Contact Form Submission"))
     |> render_body("contact_form.html", %{name: name, email_address: email, message: message})
     |> premail()
