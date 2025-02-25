@@ -9,47 +9,14 @@
         phx-submit="save"
         phx-change="validate"
       >
-        <div class="grid grid-cols-2 gap-3">
-          <.field field={@form[:first_name]} autocomplete="given-name" />
-          <.field field={@form[:last_name]} autocomplete="family-name" />
-        </div>
-        <.field type="email" field={@form[:email]} autocomplete="email" required />
-        <.field type="text" field={@form[:phone]} autocomplete="tel" />
-        <.field
-          field={@form[:user_id]}
-          icon="remix-id-card-line"
-          label={gettext("User ID")}
-          placeholder={gettext("User ID from your internal system")}
-        />
+        <.field field={@form[:name]} autocomplete="name" required />
         <.field
           type="select"
-          field={@form[:country]}
-          options={@locales}
-          icon_mapping={@icon_mapping}
-          icon_class="pc-select-input__flag"
+          field={@form[:language]}
+          options={@languages}
           required
           required_asterix={false}
         />
-        <.field type="checkbox" field={@form[:email_verified]} />
-        <.field type="checkbox" field={@form[:phone_verified]} />
-        <div :if={@live_action == :edit} class="pc-form-field-wrapper">
-          <.form_header title={gettext("Credentials")} />
-          <.simple_table items={[]}>
-            <:if_empty>
-              {gettext("No %{models} found", models: gettext("credentials"))}
-            </:if_empty>
-            <:col field={:name} />
-          </.simple_table>
-        </div>
-        <div :if={@live_action == :edit} class="pc-form-field-wrapper">
-          <.form_header title={gettext("Recent activity")} />
-          <.simple_table items={[]}>
-            <:if_empty>
-              {gettext("No %{models} found", models: gettext("actions"))}
-            </:if_empty>
-            <:col field={:name} />
-          </.simple_table>
-        </div>
       </.form>
     </div>
 

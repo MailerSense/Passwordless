@@ -1,31 +1,27 @@
-defmodule Passwordless.WebAuthnCredential do
+defmodule Passwordless.Methods.Email do
   @moduledoc """
-  A WebAuthn credential.
+  An Email method.
   """
 
   use Passwordless.Schema
 
-  alias Passwordless.Actor
   alias Passwordless.App
-  alias Passwordless.WebAuthnIdentity
 
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
   }
-  schema "webauthn_credentials" do
+  schema "email_methods" do
+    field :enabled, :boolean, default: true
+
     belongs_to :app, App, type: :binary_id
-    belongs_to :actor, Actor, type: :binary_id
-    belongs_to :webauthn_identity, WebAuthnIdentity, type: :binary_id
 
     timestamps()
-    soft_delete_timestamp()
   end
 
   @fields ~w(
+    enabled
     app_id
-    actor_id
-    webauthn_identity_id
   )a
   @required_fields @fields
 
@@ -37,7 +33,5 @@ defmodule Passwordless.WebAuthnCredential do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> assoc_constraint(:app)
-    |> assoc_constraint(:actor)
-    |> assoc_constraint(:webauthn_identity)
   end
 end

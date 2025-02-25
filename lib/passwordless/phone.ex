@@ -1,11 +1,10 @@
 defmodule Passwordless.Phone do
   @moduledoc """
-  An actor phone.
+  A phone.
   """
 
   use Passwordless.Schema
 
-  alias Database.ChangesetExt
   alias Passwordless.Actor
   alias Passwordless.App
 
@@ -14,7 +13,7 @@ defmodule Passwordless.Phone do
     Flop.Schema,
     filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
   }
-  schema "actor_phones" do
+  schema "phones" do
     field :address, :string
     field :primary, :boolean, default: false
     field :verified, :boolean, default: false
@@ -44,7 +43,6 @@ defmodule Passwordless.Phone do
     actor_email
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> validate_email()
     |> unique_constraint([:app_id, :address], error_key: :address)
     |> unique_constraint([:app_id, :actor_id, :primary], error_key: :primary)
     |> unique_constraint([:app_id, :actor_id, :address], error_key: :address)
@@ -56,8 +54,4 @@ defmodule Passwordless.Phone do
   end
 
   # Private
-
-  defp validate_email(changeset) do
-    ChangesetExt.validate_email(changeset, :address)
-  end
 end

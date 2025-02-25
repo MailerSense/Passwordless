@@ -3,17 +3,10 @@
 
   <div class="flex flex-col gap-6">
     <div class="flex">
-      <.tab_menu menu_items={method_menu_items()} current_tab={:magic_link} variant="buttons" />
+      <.tab_menu menu_items={method_menu_items()} current_tab={@live_action} variant="buttons" />
     </div>
     <.box>
-      <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-slate-700">
-        <h3 class="text-lg font-medium text-slate-900 dark:text-white">
-          {gettext("Enabled")}
-        </h3>
-
-        <.field type="switch" label="" name="test" value={true} />
-      </div>
-      <div class="p-6">test</div>
+      <.live_component id={@live_action} app={@current_app} module={@module} />
     </.box>
   </div>
 </.layout>

@@ -5,8 +5,8 @@ defmodule PasswordlessWeb.Admin.OrgLive do
     adapter_config: [
       schema: Passwordless.Organizations.Org,
       repo: Passwordless.Repo,
-      update_changeset: &Passwordless.Organizations.Org.update_changeset/3,
-      create_changeset: &Passwordless.Organizations.Org.insert_changeset/3
+      update_changeset: &Passwordless.Organizations.Org.changeset/3,
+      create_changeset: &Passwordless.Organizations.Org.changeset/3
     ],
     pubsub: [
       name: Passwordless.PubSub,
@@ -44,12 +44,6 @@ defmodule PasswordlessWeb.Admin.OrgLive do
         label: "ID",
         module: Backpex.Fields.Text,
         only: [:show]
-      },
-      slug: %{
-        module: Backpex.Fields.Text,
-        label: "Slug",
-        searchable: true,
-        only: [:index, :show]
       },
       name: %{
         module: Backpex.Fields.Text,

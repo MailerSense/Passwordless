@@ -10,7 +10,7 @@
         link_type="live_patch"
       />
       <.button
-        to={~p"/app/methods"}
+        to={~p"/app/methods/magic-link"}
         size="md"
         color="primary"
         label={gettext("Setup methods")}
@@ -77,7 +77,7 @@
         field={:name}
         body_class="!font-medium !text-slate-900 dark:!text-white"
       >
-        Sign in
+        {action.name}
       </:col>
       <:col :let={action} label={gettext("Details")} field={:details}>
         User requested a Magic Link
@@ -88,7 +88,7 @@
       </:col>
       <:col :let={action} label={gettext("Who")} field={:user}>
         <.a
-          to={~p"/app/users/#{action.actor}/edit"}
+          to={~p"/app/users/#{action.actor}/activity"}
           class="text-info-700 dark:text-info-200"
           label={Actor.handle(action.actor)}
           link_type="live_redirect"

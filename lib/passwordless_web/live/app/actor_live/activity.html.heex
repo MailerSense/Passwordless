@@ -1,0 +1,97 @@
+<.layout current_user={@current_user} current_page={:users} current_section={:app}>
+  <div class="py-12">
+    <.form id="edit-actor-form" for={@form} phx-change="validate" phx-submit="save">
+      <div class="mb-12 flex justify-between items-center h-12">
+        <div class="relative">
+          <.field type="editor" field={@form[:name]} />
+          <div class="pc-editor-field-icon">
+            <.icon name="remix-pencil-line" class="pc-editor-field-icon__icon" />
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <.button
+            to={~p"/app/users"}
+            size="md"
+            type="button"
+            color="light"
+            label={gettext("Cancel")}
+            link_type="live_redirect"
+          />
+          <.button
+            to={~p"/app/users/#{@actor}/activity/delete"}
+            size="md"
+            type="button"
+            label={gettext("Delete")}
+            icon="remix-delete-bin-line"
+            color="danger"
+            variant="outline"
+            link_type="live_patch"
+          />
+        </div>
+      </div>
+    </.form>
+    <.tab_menu
+      class="mb-8"
+      menu_items={actor_menu_items(@actor)}
+      current_tab={:activity}
+      variant="buttons"
+    />
+    <.stream_table id="actions" meta={@meta} items={@streams.actions} finished={@finished}>
+      <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+      <:col
+        :let={action}
+        label={gettext("Action")}
+        field={:name}
+        body_class="!font-medium !text-slate-900 dark:!text-white"
+      >
+        {action.name}
+      </:col>
+      <:col :let={action} label={gettext("Details")} field={:details}>
+        User requested a Magic Link
+      </:col>
+      <:col :let={action} label={gettext("Outcome")} field={:outcome}>
+        <% {badge_label, badge_color} = action_state_badge(action) %>
+        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+      </:col>
+      <:col :let={action} label={gettext("Where")} field={:location}>
+        <div class="flex items-center gap-2">
+          <.icon
+            name="flag-us"
+            class="h-[15px] w-5 outline outline-1 outline-offset-[-1px] outline-black/10"
+          /> New Jersey
+        </div>
+      </:col>
+      <:col :let={action} label={gettext("When")} field={:inserted_at}>
+        {Timex.from_now(action.inserted_at)}
+      </:col>
+    </.stream_table>
+  </div>
+</.layout>
+
+<%= case @live_action do %>
+  <% :delete -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light-flat"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Delete \"%{actor}\"", actor: @actor.name)}
+          color="danger"
+          phx-click="delete_actor"
+        />
+      </div>
+    </.modal>
+  <% _ -> %>
+<% end %>

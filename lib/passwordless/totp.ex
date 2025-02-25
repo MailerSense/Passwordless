@@ -7,7 +7,7 @@ defmodule Passwordless.TOTP do
 
   alias Passwordless.Actor
 
-  schema "actor_totps" do
+  schema "totps" do
     field :secret, :binary
     field :code, :string, virtual: true
 

@@ -1,6 +1,6 @@
 defmodule Passwordless.Email do
   @moduledoc """
-  An actor email.
+  An email.
   """
 
   use Passwordless.Schema
@@ -13,7 +13,7 @@ defmodule Passwordless.Email do
     Flop.Schema,
     filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
   }
-  schema "actor_emails" do
+  schema "emails" do
     field :address, :string
     field :primary, :boolean, default: false
     field :verified, :boolean, default: false

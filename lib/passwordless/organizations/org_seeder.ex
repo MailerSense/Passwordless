@@ -39,19 +39,34 @@ defmodule Passwordless.Organizations.OrgSeeder do
         "description" => "Demo App Description"
       })
 
-    for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1000) do
+    {:ok, _methods} = Passwordless.create_methods(app)
+
+    for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(2_000) do
       {:ok, actor} =
         Passwordless.create_actor(app, %{
-          first_name: Faker.Person.first_name(),
-          last_name: Faker.Person.last_name(),
-          email: email,
-          phone: phone,
+          name: Faker.Person.name(),
           state: Enum.random(Actor.states())
+        })
+
+      {:ok, _email} =
+        Passwordless.add_email(actor, %{
+          address: email,
+          primary: true,
+          verified: true
+        })
+
+      {:ok, _phone} =
+        Passwordless.add_phone(actor, %{
+          address: phone,
+          primary: true,
+          verified: true
         })
 
       for _ <- 1..1 do
         {:ok, _action} =
           Passwordless.create_action(actor, %{
+            name: Enum.random(~w(signIn withdraw placeOrder)),
+            method: Enum.random(Passwordless.methods()),
             outcome: Enum.random(Action.outcomes())
           })
       end

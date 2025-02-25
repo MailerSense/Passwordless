@@ -18,11 +18,21 @@
         />
         <.field field={@form[:description]} placeholder={gettext("e.g. my awesome site")} />
         <.field
-          field={@form[:slug]}
-          placeholder={gettext("your-site")}
-          icon="remix-id-card-line"
+          :if={@live_action == :edit}
+          field={@form[:id]}
+          class="font-mono"
           label={gettext("App ID")}
           readonly
+          copyable
+        />
+        <.field
+          :if={@live_action == :edit}
+          type="password"
+          field={@form[:id]}
+          class="font-mono"
+          label={gettext("App Secret")}
+          readonly
+          viewable
         />
       </.form>
     </div>

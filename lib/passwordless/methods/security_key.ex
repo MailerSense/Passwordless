@@ -1,31 +1,27 @@
-defmodule Passwordless.WebAuthnIdentity do
+defmodule Passwordless.Methods.SecurityKey do
   @moduledoc """
-  A WebAuthn identity.
+  An security key method.
   """
 
   use Passwordless.Schema
 
-  alias Passwordless.Actor
   alias Passwordless.App
 
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
   }
-  schema "webauthn_identities" do
-    field :handle, :string
+  schema "security_key_methods" do
+    field :enabled, :boolean, default: true
 
     belongs_to :app, App, type: :binary_id
-    belongs_to :actor, Actor, type: :binary_id
 
     timestamps()
-    soft_delete_timestamp()
   end
 
   @fields ~w(
-    handle
+    enabled
     app_id
-    actor_id
   )a
   @required_fields @fields
 
@@ -37,6 +33,5 @@ defmodule Passwordless.WebAuthnIdentity do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> assoc_constraint(:app)
-    |> assoc_constraint(:actor)
   end
 end

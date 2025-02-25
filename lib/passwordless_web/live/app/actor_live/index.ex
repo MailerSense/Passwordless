@@ -162,8 +162,14 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   defp assign_actors(socket, params) when is_map(params) do
     query =
       case socket.assigns[:current_app] do
-        %App{} = app -> Actor.get_by_app(app)
-        _ -> Actor.get_none()
+        %App{} = app ->
+          app
+          |> Actor.get_by_app()
+          |> Actor.join_details()
+          |> Actor.preload_details()
+
+        _ ->
+          Actor.get_none()
       end
 
     {actors, meta} = DataTable.search(query, params, @data_table_opts)

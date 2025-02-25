@@ -49,31 +49,24 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
-        name: :sms_otp,
+        name: :sms,
         label: "SMS",
         icon: "remix-message-line",
-        path: ~p"/app/methods/sms-otp",
+        path: ~p"/app/methods/sms",
         link_type: "live_patch"
       },
       %{
-        name: :email_otp,
+        name: :email,
         label: "Email",
         icon: "remix-mail-line",
-        path: ~p"/app/methods/email-otp",
+        path: ~p"/app/methods/email",
         link_type: "live_patch"
       },
       %{
-        name: :authenticator_app,
+        name: :authenticator,
         label: "Authenticator",
         icon: "remix-shield-user-line",
-        path: ~p"/app/methods/authenticator-app",
-        link_type: "live_patch"
-      },
-      %{
-        name: :whatsapp_otp,
-        label: "WhatsApp",
-        icon: "remix-whatsapp-line",
-        path: ~p"/app/methods/whatsapp-otp",
+        path: ~p"/app/methods/authenticator",
         link_type: "live_patch"
       },
       %{
@@ -88,6 +81,25 @@ defmodule PasswordlessWeb.Helpers do
         label: "Passkey",
         icon: "remix-pass-valid-line",
         path: ~p"/app/methods/passkey",
+        link_type: "live_patch"
+      }
+    ]
+  end
+
+  def actor_menu_items(%Actor{} = actor) do
+    [
+      %{
+        name: :activity,
+        label: "Activity",
+        icon: "remix-file-list-3-line",
+        path: ~p"/app/actor/#{actor}/activity",
+        link_type: "live_patch"
+      },
+      %{
+        name: :authenticators,
+        label: "Authenticators",
+        icon: "remix-shield-keyhole-line",
+        path: ~p"/app/actor/#{actor}/authenticators",
         link_type: "live_patch"
       }
     ]

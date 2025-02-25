@@ -7,7 +7,7 @@
       >
         <.dropdown_menu_item link_type="live_redirect" to={~p"/app/organization/new"}>
           <.icon name="remix-add-line" class="w-5 h-5" />
-          {gettext("Create organization")}
+          {gettext("New organization")}
         </.dropdown_menu_item>
         <.form :for={org <- @org_menu_items} for={nil} action={~p"/app/org/switch"} method="post">
           <.input type="hidden" name="org_id" value={org.id} />

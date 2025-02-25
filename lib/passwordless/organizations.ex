@@ -34,7 +34,7 @@ defmodule Passwordless.Organizations do
   def get_org(_), do: nil
 
   @doc """
-  Get an org by member and the slug.
+  Get an org by member and the id.
   """
   def get_org!(%User{} = user, org_id) when is_binary(org_id) do
     user
@@ -43,10 +43,10 @@ defmodule Passwordless.Organizations do
   end
 
   @doc """
-  Get an org by slug.
+  Get an org.
   """
-  def get_org!(slug) when is_binary(slug) do
-    Repo.get_by!(Org, slug: slug)
+  def get_org!(id) when is_binary(id) do
+    Repo.get_by!(Org, id)
   end
 
   @doc """
@@ -98,7 +98,7 @@ defmodule Passwordless.Organizations do
   """
   def create_org(attrs \\ %{}) do
     %Org{}
-    |> Org.insert_changeset(attrs)
+    |> Org.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -106,7 +106,7 @@ defmodule Passwordless.Organizations do
   Create the org with the owner.
   """
   def create_org_with_owner(%User{} = user, attrs \\ %{}) do
-    changeset = Org.insert_changeset(%Org{}, attrs)
+    changeset = Org.changeset(%Org{}, attrs)
 
     multi =
       Ecto.Multi.new()
@@ -124,15 +124,15 @@ defmodule Passwordless.Organizations do
 
   def change_org(%Org{} = org, attrs \\ %{}) do
     if Ecto.get_meta(org, :state) == :loaded do
-      Org.update_changeset(org, attrs)
+      Org.changeset(org, attrs)
     else
-      Org.insert_changeset(org, attrs)
+      Org.changeset(org, attrs)
     end
   end
 
   def update_org(%Org{} = org, attrs \\ %{}) do
     org
-    |> Org.update_changeset(attrs)
+    |> Org.changeset(attrs)
     |> Repo.update()
   end
 

@@ -32,14 +32,24 @@ defmodule Passwordless.Action do
   def outcomes, do: @outcomes
 
   @doc """
+  Get by app.
+  """
+  def get_by_app(query \\ __MODULE__, %App{} = app) do
+    from q in query, where: q.app_id == ^app.id
+  end
+
+  @doc """
+  Get by actor.
+  """
+  def get_by_actor(query \\ __MODULE__, %Actor{} = actor) do
+    from q in query, where: q.actor_id == ^actor.id
+  end
+
+  @doc """
   Preload associations.
   """
   def preload_actor(query \\ __MODULE__) do
-    actor_query =
-      from a in Actor,
-        select: struct(a, [:id, :name])
-
-    from q in query, preload: [actor: ^actor_query]
+    from q in query, preload: [actor: [:email, :phone]]
   end
 
   @fields ~w(

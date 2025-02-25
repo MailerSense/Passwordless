@@ -133,7 +133,7 @@ defmodule Passwordless.Organizations.AuthToken do
   defp validate_name(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 160)
+    |> validate_length(:name, min: 1, max: 128)
   end
 
   defp validate_scopes(changeset) do

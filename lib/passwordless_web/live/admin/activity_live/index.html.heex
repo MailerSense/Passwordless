@@ -1,9 +1,8 @@
 <.layout current_user={@current_user} current_page={:activity_admin} current_section={:admin}>
   <div class="px-6 xl:px-8 py-6">
     <.page_header title={gettext("Activity")} />
-    <.stream_table meta={@meta} items={@streams.logs} finished={@finished}>
+    <.stream_table id="activities" meta={@meta} items={@streams.logs} finished={@finished}>
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-      <:col field={:search} searchable filterable={[:==]} />
       <:col :let={log} field={:event}>
         <% action_text = Atom.to_string(log.action) %>
         <% action_icon_name = action_icon(Atom.to_string(log.action)) %>

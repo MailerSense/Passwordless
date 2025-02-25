@@ -19,7 +19,6 @@
       />
     </div>
   </.page_header>
-
   <.data_table
     meta={@meta}
     items={@actors}
@@ -79,8 +78,12 @@
     >
       {Actor.handle(actor)}
     </:col>
-    <:col field={:email} sortable />
-    <:col field={:phone} sortable />
+    <:col :let={actor} field={:email} sortable>
+      {Actor.email(actor)}
+    </:col>
+    <:col :let={actor} field={:phone} sortable>
+      {Actor.phone(actor)}
+    </:col>
     <:col :let={actor} field={:state} sortable switchable filterable={[:==]}>
       {Phoenix.Naming.humanize(actor.state)}
     </:col>
@@ -103,7 +106,7 @@
         color="light"
         title={gettext("Edit")}
         link_type="live_patch"
-        to={apply_filters(@filters, @meta, ~p"/app/users/#{actor}/edit")}
+        to={apply_filters(@filters, @meta, ~p"/app/users/#{actor}/activity")}
       />
     </:actions>
   </.data_table>
@@ -114,21 +117,11 @@
     <.live_component
       id={@live_action}
       title={@page_title}
-      module={PasswordlessWeb.App.ActorLive.FormComponent}
       actor={Ecto.build_assoc(@current_app, :actors)}
-      live_action={@live_action}
-      current_org={@current_org}
-      current_user={@current_user}
-      return_to={apply_filters(@filters, @meta, ~p"/app/users")}
-    />
-  <% :edit -> %>
-    <.live_component
-      id={@live_action}
-      title={@page_title}
       module={PasswordlessWeb.App.ActorLive.FormComponent}
-      actor={@actor}
       live_action={@live_action}
       current_org={@current_org}
+      current_app={@current_app}
       current_user={@current_user}
       return_to={apply_filters(@filters, @meta, ~p"/app/users")}
     />

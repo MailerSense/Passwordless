@@ -1,0 +1,10 @@
+<div>
+  <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-slate-700">
+    <h3 class="text-lg font-medium text-slate-900 dark:text-white">
+      {if @enabled, do: gettext("Enabled"), else: gettext("Disabled")}
+    </h3>
+
+    <.field type="switch" field={@form[:enabled]} label="" />
+  </div>
+  <div class="p-6">test</div>
+</div>

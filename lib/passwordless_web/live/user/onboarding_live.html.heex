@@ -101,13 +101,6 @@
                 phx-debounce="100"
                 required
               />
-              <.field
-                field={@org_form[:slug]}
-                placeholder={gettext("your-company")}
-                icon="remix-id-card-line"
-                label={gettext("Org ID")}
-                readonly
-              />
 
               <div class="flex items-center justify-between">
                 <.link class="text-sm underline" href={~p"/auth/sign-out"} method="delete">

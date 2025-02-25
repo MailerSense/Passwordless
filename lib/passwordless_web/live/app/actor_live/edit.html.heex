@@ -1,0 +1,137 @@
+<.layout current_user={@current_user} current_page={:users} current_section={:app}>
+  <div class="py-12">
+    <.form id="edit-actor-form" for={@form} phx-change="validate" phx-submit="save">
+      <div class="mb-12 flex justify-between items-center h-12">
+        <div class="relative">
+          <.field type="editor" field={@form[:name]} />
+          <div class="pc-editor-field-icon">
+            <.icon name="remix-pencil-line" class="pc-editor-field-icon__icon" />
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <.button
+            to={~p"/app/users"}
+            size="md"
+            type="button"
+            color="light"
+            label={gettext("Cancel")}
+            link_type="live_redirect"
+          />
+          <.button
+            to={~p"/app/users/#{@actor}/edit/delete"}
+            size="md"
+            type="button"
+            label={gettext("Delete")}
+            icon="remix-delete-bin-line"
+            color="danger"
+            variant="outline"
+            link_type="live_patch"
+          />
+        </div>
+      </div>
+    </.form>
+    <.tab_menu
+      class="mb-8"
+      menu_items={actor_menu_items(@actor)}
+      current_tab={:details}
+      variant="buttons"
+    />
+    <div class="flex flex-col gap-4">
+      <.simple_table items={@emails}>
+        <:if_empty>{gettext("No %{models} defined yet", models: gettext("emails"))}</:if_empty>
+        <:col
+          field={:address}
+          label={gettext("Email")}
+          body_class="w-full !font-medium !text-slate-900 dark:!text-white"
+        />
+        <:col :let={email} field={:verified}>
+          <.field type="checkbox" name="" label="" value={email.verified} readonly />
+        </:col>
+        <:col :let={email} field={:primary}>
+          <.field type="checkbox" name="" label="" value={email.primary} readonly />
+        </:col>
+        <:col actions></:col>
+        <:actions :let={email}>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/emails/#{email}/delete"}
+            size="sm"
+            icon="custom-trash"
+            color="light"
+            title={gettext("Remove")}
+            link_type="live_patch"
+          />
+          <.icon_button
+            to={~p"/app/users/#{@actor}/emails/#{email}/edit"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+      </.simple_table>
+
+      <.simple_table items={@phones}>
+        <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
+        <:col
+          field={:address}
+          label={gettext("Phone")}
+          body_class="w-full !font-medium !text-slate-900 dark:!text-white"
+        />
+        <:col :let={phone} field={:verified}>
+          <.field type="checkbox" name="" label="" value={phone.verified} readonly />
+        </:col>
+        <:col :let={phone} field={:primary}>
+          <.field type="checkbox" name="" label="" value={phone.primary} readonly />
+        </:col>
+        <:col actions></:col>
+        <:actions :let={phone}>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/phones/#{phone}/delete"}
+            size="sm"
+            icon="custom-trash"
+            color="light"
+            title={gettext("Remove")}
+            link_type="live_patch"
+          />
+          <.icon_button
+            to={~p"/app/users/#{@actor}/phones/#{phone}/edit"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+      </.simple_table>
+    </div>
+  </div>
+</.layout>
+
+<%= case @live_action do %>
+  <% :delete -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light-flat"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Delete \"%{actor}\"", actor: @actor.name)}
+          color="danger"
+          phx-click="delete_actor"
+        />
+      </div>
+    </.modal>
+  <% _ -> %>
+<% end %>

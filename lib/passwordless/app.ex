@@ -9,20 +9,29 @@ defmodule Passwordless.App do
 
   alias Database.ChangesetExt
   alias Passwordless.Actor
+  alias Passwordless.Email
+  alias Passwordless.Methods
   alias Passwordless.Organizations.Org
-  alias Passwordless.Repo
+  alias Passwordless.Phone
 
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  @derive {Phoenix.Param, key: :slug}
   schema "apps" do
-    field :slug, :string
     field :name, :string
     field :description, :string
 
+    has_one :magic_link, Methods.MagicLink
+    has_one :email, Methods.Email
+    has_one :sms, Methods.SMS
+    has_one :authenticator, Methods.Authenticator
+    has_one :security_key, Methods.SecurityKey
+    has_one :passkey, Methods.Passkey
+
     has_many :actors, Actor
+    has_many :emails, Email
+    has_many :phones, Phone
 
     belongs_to :org, Org, type: :binary_id
 
@@ -41,20 +50,6 @@ defmodule Passwordless.App do
   @required_fields ~w(name org_id)a
 
   @doc """
-  A changeset to create a new organization.
-  """
-  def insert_changeset(org, attrs \\ %{}, _metadata \\ []) do
-    org
-    |> cast(attrs, @fields)
-    |> validate_required(@required_fields)
-    |> validate_name()
-    |> validate_description()
-    |> name_to_slug()
-    |> validate_slug()
-    |> assoc_constraint(:org)
-  end
-
-  @doc """
   A changeset to update an existing organization.
   """
   def changeset(org, attrs \\ %{}, _metadata \\ []) do
@@ -71,38 +66,12 @@ defmodule Passwordless.App do
   defp validate_name(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 160)
+    |> validate_length(:name, min: 1, max: 128)
   end
 
   defp validate_description(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:description)
     |> validate_length(:description, min: 1, max: 1024)
-  end
-
-  defp validate_slug(changeset) do
-    changeset
-    |> validate_required(:slug)
-    |> unique_constraint(:slug)
-    |> unsafe_validate_unique(:slug, Passwordless.Repo)
-  end
-
-  defp name_to_slug(changeset) do
-    case get_change(changeset, :name) do
-      name when is_binary(name) ->
-        slug = Slug.slugify(name)
-
-        slug =
-          Util.generate_until(
-            slug,
-            fn _prev -> slug <> "-" <> Util.random_numeric_string(3) end,
-            fn slug -> Repo.exists?(from __MODULE__, where: [slug: ^slug]) end
-          )
-
-        put_change(changeset, :slug, slug)
-
-      _ ->
-        changeset
-    end
   end
 end

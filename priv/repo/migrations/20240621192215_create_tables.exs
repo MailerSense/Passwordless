@@ -69,7 +69,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create table(:orgs, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :slug, :citext, null: false
       add :name, :string, null: false
       add :email, :citext, null: false
       add :tags, {:array, :string}, null: false, default: []
@@ -78,7 +77,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create unique_index(:orgs, [:slug], where: "deleted_at is null")
     create unique_index(:orgs, [:email], where: "deleted_at is null")
 
     create table(:org_memberships, primary_key: false) do
@@ -192,7 +190,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create table(:apps, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :slug, :citext, null: false
       add :name, :string, null: false
       add :description, :string
 
@@ -202,7 +199,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create unique_index(:apps, [:org_id, :slug], where: "deleted_at is null")
+    create index(:apps, [:org_id], where: "deleted_at is null")
 
     ## Actors
 
@@ -238,7 +235,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create index(:emails, [:actor_id])
+    create index(:emails, [:actor_id], where: "deleted_at is null")
     create unique_index(:emails, [:app_id, :address], where: "deleted_at is null")
     create unique_index(:emails, [:app_id, :actor_id, :primary], where: "\"primary\"")
     create unique_index(:emails, [:app_id, :actor_id, :address], where: "deleted_at is null")
@@ -252,7 +249,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :address, :citext, null: false
       add :primary, :boolean, null: false, default: false
       add :verified, :boolean, null: false, default: false
-      add :channel, {:array, :string}, null: false, default: []
+      add :channels, {:array, :string}, null: false, default: []
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
       add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
@@ -261,7 +258,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create index(:phones, [:actor_id])
+    create index(:phones, [:actor_id], where: "deleted_at is null")
     create unique_index(:phones, [:app_id, :address], where: "deleted_at is null")
     create unique_index(:phones, [:app_id, :actor_id, :primary], where: "\"primary\"")
     create unique_index(:phones, [:app_id, :actor_id, :address], where: "deleted_at is null")
@@ -282,13 +279,13 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create index(:totps, [:actor_id])
+    create index(:totps, [:actor_id], where: "deleted_at is null")
     create unique_index(:totps, [:app_id, :secret], where: "deleted_at is null")
     create unique_index(:totps, [:app_id, :actor_id, :secret], where: "deleted_at is null")
 
-    ## WebAuthn Identities
+    ## Security Key Holders
 
-    create table(:webauthn_identities, primary_key: false) do
+    create table(:security_key_holders, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :handle, :string, null: false
 
@@ -299,23 +296,23 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create index(:webauthn_identities, [:actor_id])
-    create unique_index(:webauthn_identities, [:app_id, :handle], where: "deleted_at is null")
+    create index(:security_key_holders, [:actor_id], where: "deleted_at is null")
+    create unique_index(:security_key_holders, [:app_id, :handle], where: "deleted_at is null")
 
-    create unique_index(:webauthn_identities, [:app_id, :actor_id, :handle],
+    create unique_index(:security_key_holders, [:app_id, :actor_id, :handle],
              where: "deleted_at is null"
            )
 
-    ## WebAuthn Credentials
+    ## Security Keys
 
-    create table(:webauthn_credentials, primary_key: false) do
+    create table(:security_keys, primary_key: false) do
       add :id, :uuid, primary_key: true
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
       add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
 
-      add :webauthn_identity_id,
-          references(:webauthn_identities, type: :uuid, on_delete: :delete_all),
+      add :security_key_holder_id,
+          references(:security_key_holders, type: :uuid, on_delete: :delete_all),
           null: false
 
       timestamps()
@@ -359,8 +356,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create index(:challenges, [:actor_id])
-
+    create index(:challenges, [:actor_id], where: "deleted_at is null")
     create unique_index(:challenges, [:app_id, :token], where: "deleted_at is null")
     create unique_index(:challenges, [:app_id, :actor_id, :token], where: "deleted_at is null")
 
@@ -368,11 +364,12 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
              where: "deleted_at is null"
            )
 
-    ## Action log
+    ## Events
 
-    create table(:actor_logs, primary_key: false) do
+    create table(:events, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
+      add :state, :string, null: false
       add :details, :string
       add :ip_address, :string
       add :country, :string
@@ -386,10 +383,78 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps(updated_at: false)
     end
 
-    create index(:actor_logs, [:app_id])
-    create index(:actor_logs, [:app_id, :actor_id])
-    create index(:actor_logs, [:app_id, :action_id])
-    create index(:actor_logs, [:app_id, :challenge_id])
+    create index(:events, [:app_id])
+    create index(:events, [:actor_id])
+    create index(:events, [:action_id])
+    create index(:events, [:challenge_id])
+
+    ## Methods
+
+    create table(:megic_link_methods, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :enabled, :boolean, null: false, default: true
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:megic_link_methods, [:app_id])
+
+    create table(:sms_methods, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :enabled, :boolean, null: false, default: true
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:sms_methods, [:app_id])
+
+    create table(:email_methods, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :enabled, :boolean, null: false, default: true
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:email_methods, [:app_id])
+
+    create table(:authenticator_methods, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :enabled, :boolean, null: false, default: true
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:authenticator_methods, [:app_id])
+
+    create table(:security_key_methods, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :enabled, :boolean, null: false, default: true
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:security_key_methods, [:app_id])
+
+    create table(:passkey_methods, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :enabled, :boolean, null: false, default: true
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:passkey_methods, [:app_id])
 
     ## Activity Log
 

@@ -43,7 +43,7 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   end
 
   defp save_app(socket, :new, app_params) do
-    case Passwordless.create_app(socket.assigns.current_org, app_params) do
+    case Passwordless.create_full_app(socket.assigns.current_org, app_params) do
       {:ok, _app} ->
         {:noreply,
          socket
