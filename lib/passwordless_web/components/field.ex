@@ -21,21 +21,29 @@ defmodule PasswordlessWeb.Components.Field do
     doc: "the id of the input. If not passed, it will be generated automatically from the field"
 
   attr :icon, :string, default: nil, doc: "the icon for text inputs"
-  attr :icon_class, :string, default: "pc-select-input__icon", doc: "the icon class for select inputs"
+
+  attr :icon_class, :string,
+    default: "pc-select-input__icon",
+    doc: "the icon class for select inputs"
+
   attr :icon_mapping, :any, default: nil, doc: "the icon mapping for select inputs"
 
   attr :name, :any, doc: "the name of the input. If not passed, it will be generated automatically from the field"
+
   attr :label, :string, doc: "the label for the input. If not passed, it will be generated automatically from the field"
+
   attr :value, :any, doc: "the value of the input. If not passed, it will be generated automatically from the field"
+
   attr :prefix, :string, default: nil, doc: "the icon mapping for select inputs"
+
+  attr :suffix, :string, default: nil, doc: "the icon mapping for select inputs"
 
   attr :option_func, :any, default: nil, doc: "the icon mapping for select inputs"
 
   attr :type, :string,
     default: "text",
-    values:
-      ~w(checkbox checkbox-group color date datetime-local email file hidden month number password
-               range radio-group radio-card radio-card-group search select switch tel text textarea time url week copy editor editor_icon),
+    values: ~w(checkbox checkbox-group color date datetime-local email file hidden month number password
+               range radio-group radio-card radio-card-group search select switch tel text textarea time url week editor),
     doc: "the type of input"
 
   attr :size, :string,
@@ -117,9 +125,10 @@ defmodule PasswordlessWeb.Components.Field do
     |> assign(field: nil, id: assigns.id || field.id)
     |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
     |> assign_new(:name, fn ->
-      if assigns.multiple && assigns.type not in ["checkbox-group", "radio-group", "radio-card-group"],
-        do: field.name <> "[]",
-        else: field.name
+      if assigns.multiple &&
+           assigns.type not in ["checkbox-group", "radio-group", "radio-card-group"],
+         do: field.name <> "[]",
+         else: field.name
     end)
     |> assign_new(:value, fn -> field.value end)
     |> assign_new(:label, fn -> PhoenixHTMLHelpers.Form.humanize(field.field) end)
@@ -141,12 +150,13 @@ defmodule PasswordlessWeb.Components.Field do
           value="true"
           checked={@checked}
           required={@required}
+          disabled={@disabled}
           class={["pc-checkbox", @class]}
           {@rest}
         />
-        <div class={[@required && @required_asterix && "pc-label--required"]}>
+        <span class={[@required && @required_asterix && "pc-label--required"]}>
           {@label}
-        </div>
+        </span>
       </label>
       <.field_error :for={msg <- @errors}>{msg}</.field_error>
       <.field_help_text help_text={@help_text} />
@@ -550,7 +560,8 @@ defmodule PasswordlessWeb.Components.Field do
   end
 
   def field(%{type: "password", viewable: true} = assigns) do
-    assigns = assign(assigns, class: [assigns.class, get_class_for_type(assigns.type, assigns.size)])
+    assigns =
+      assign(assigns, class: [assigns.class, get_class_for_type(assigns.type, assigns.size)])
 
     ~H"""
     <.field_wrapper errors={@errors} name={@name} class={@wrapper_class} no_margin={@no_margin}>
@@ -583,7 +594,8 @@ defmodule PasswordlessWeb.Components.Field do
   end
 
   def field(%{type: type, copyable: true} = assigns) when type in ["text", "url", "email"] do
-    assigns = assign(assigns, class: [assigns.class, get_class_for_type(assigns.type, assigns.size)])
+    assigns =
+      assign(assigns, class: [assigns.class, get_class_for_type(assigns.type, assigns.size)])
 
     ~H"""
     <.field_wrapper errors={@errors} name={@name} class={@wrapper_class} no_margin={@no_margin}>
@@ -592,15 +604,7 @@ defmodule PasswordlessWeb.Components.Field do
         {@label}
       </.field_label>
       <!-- Copyable Field Wrapper -->
-      <div
-        class={["pc-copyable-field-wrapper", if(Util.present?(@prefix), do: "flex items-center")]}
-        x-data="{ copied: false }"
-      >
-        <%= if Util.present?(@prefix) do %>
-          <span class="flex items-center justify-center px-3.5 py-[9px] border border-slate-300 border-r-0 rounded-l-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none">
-            {@prefix}
-          </span>
-        <% end %>
+      <div class={["pc-copyable-field-wrapper"]} x-data="{ copied: false }">
         <!-- Input Field -->
         <input
           x-ref="copyInput"
@@ -621,9 +625,9 @@ defmodule PasswordlessWeb.Components.Field do
           type="button"
           class="pc-copyable-field-button"
           @click="
-          navigator.clipboard.writeText($refs.copyInput.value)
-            .then(() => { copied = true; setTimeout(() => copied = false, 2000); })
-        "
+            navigator.clipboard.writeText($refs.copyInput.value)
+              .then(() => { copied = true; setTimeout(() => copied = false, 2000); })
+          "
         >
           <!-- Copy Icon -->
           <span x-show="!copied" class="pc-copyable-field-icon-container">
@@ -639,42 +643,6 @@ defmodule PasswordlessWeb.Components.Field do
       <.field_error :for={msg <- @errors}>{msg}</.field_error>
       <!-- Help Text -->
       <.field_help_text help_text={@help_text} />
-    </.field_wrapper>
-    """
-  end
-
-  def field(%{type: "copy"} = assigns) do
-    ~H"""
-    <.field_wrapper
-      errors={@errors}
-      successes={@successes}
-      name={@name}
-      class={@wrapper_class}
-      no_margin={@no_margin}
-    >
-      <.field_label
-        :if={Util.present?(@label)}
-        for={@id}
-        class={@label_class}
-        required={@required}
-        required_asterix={@required_asterix}
-      >
-        {@label}
-      </.field_label>
-      <div class="relative">
-        <input
-          type={@type}
-          name={@name}
-          id={@id}
-          value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-          class={["pc-field-icon__padding-right", @class]}
-          required={@required}
-          {@rest}
-        />
-        <div class="pc-field-icon">
-          <Icon.icon name="remix-file-copy-line" class="pc-field-icon__icon-right" />
-        </div>
-      </div>
     </.field_wrapper>
     """
   end
@@ -696,26 +664,10 @@ defmodule PasswordlessWeb.Components.Field do
     """
   end
 
-  def field(%{type: "editor_icon"} = assigns) do
-    ~H"""
-    <.field_wrapper errors={@errors} name={@name} class={[@wrapper_class, "!mb-0"]}>
-      <input
-        id={@id}
-        type={@type}
-        name={@name}
-        value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-        class={[@class, "pc-editor-field-icon__padding"]}
-        required={@required}
-        disabled={@disabled}
-        {@rest}
-      />
-    </.field_wrapper>
-    """
-  end
-
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def field(assigns) do
-    assigns = assign(assigns, class: [assigns.class, get_class_for_type(assigns.type, assigns.size)])
+    assigns =
+      assign(assigns, class: [assigns.class, get_class_for_type(assigns.type, assigns.size)])
 
     ~H"""
     <.field_wrapper
@@ -752,9 +704,12 @@ defmodule PasswordlessWeb.Components.Field do
               {@rest}
             />
           </div>
-        <% Util.present?(@prefix) -> %>
+        <% Util.present?(@prefix) or Util.present?(@suffix) -> %>
           <div class="flex">
-            <span class="flex items-center justify-center px-3.5 py-[9px] border border-slate-300 border-r-0 rounded-l-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none">
+            <span
+              :if={Util.present?(@prefix)}
+              class="flex items-center justify-center px-3.5 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-r-0 rounded-l-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none"
+            >
               {@prefix}
             </span>
             <input
@@ -762,11 +717,21 @@ defmodule PasswordlessWeb.Components.Field do
               name={@name}
               id={@id}
               value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-              class={["!rounded-l-none", @class]}
+              class={[
+                if(Util.present?(@prefix), do: "!rounded-l-none"),
+                if(Util.present?(@suffix), do: "!rounded-r-none"),
+                @class
+              ]}
               required={@required}
               disabled={@disabled}
               {@rest}
             />
+            <span
+              :if={Util.present?(@suffix)}
+              class="flex items-center justify-center px-3.5 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-l-0 rounded-r-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none"
+            >
+              {@suffix}
+            </span>
           </div>
         <% true -> %>
           <input

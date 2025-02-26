@@ -107,6 +107,16 @@ defmodule PasswordlessWeb.App.ActorLive.Activity do
   end
 
   @impl true
+  def handle_event("close_modal", _params, socket) do
+    {:noreply, push_patch(socket, to: ~p"/app/users/#{socket.assigns.actor}/activity")}
+  end
+
+  @impl true
+  def handle_event("close_slide_over", _params, socket) do
+    {:noreply, push_patch(socket, to: ~p"/app/users/#{socket.assigns.actor}/activity")}
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
@@ -136,7 +146,7 @@ defmodule PasswordlessWeb.App.ActorLive.Activity do
   end
 
   defp apply_action(socket, :edit, %Actor{} = actor) do
-    assign(socket, page_title: actor.name)
+    assign(socket, page_title: Actor.handle(actor))
   end
 
   defp apply_action(socket, :delete, _actor) do

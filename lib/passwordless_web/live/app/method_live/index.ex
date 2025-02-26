@@ -4,7 +4,11 @@ defmodule PasswordlessWeb.App.MethodLive.Index do
 
   @methods [
     magic_link: PasswordlessWeb.App.MethodLive.MagicLink,
-    sms: PasswordlessWeb.App.MethodLive.SMS
+    sms: PasswordlessWeb.App.MethodLive.SMS,
+    email: PasswordlessWeb.App.MethodLive.Email,
+    authenticator: PasswordlessWeb.App.MethodLive.Authenticator,
+    security_key: PasswordlessWeb.App.MethodLive.SecurityKey,
+    passkey: PasswordlessWeb.App.MethodLive.Passkey
   ]
 
   @impl true
@@ -46,8 +50,36 @@ defmodule PasswordlessWeb.App.MethodLive.Index do
 
   defp apply_action(socket, :sms) do
     assign(socket,
-      page_title: gettext("SMS"),
+      page_title: gettext("SMS OTP"),
       page_subtitle: gettext("Manage SMS settings")
+    )
+  end
+
+  defp apply_action(socket, :email) do
+    assign(socket,
+      page_title: gettext("Email OTP"),
+      page_subtitle: gettext("Manage email settings")
+    )
+  end
+
+  defp apply_action(socket, :authenticator) do
+    assign(socket,
+      page_title: gettext("Authenticator"),
+      page_subtitle: gettext("Manage authenticator settings")
+    )
+  end
+
+  defp apply_action(socket, :security_key) do
+    assign(socket,
+      page_title: gettext("Security Key"),
+      page_subtitle: gettext("Manage security key settings")
+    )
+  end
+
+  defp apply_action(socket, :passkey) do
+    assign(socket,
+      page_title: gettext("Passkey"),
+      page_subtitle: gettext("Manage passkey settings")
     )
   end
 end

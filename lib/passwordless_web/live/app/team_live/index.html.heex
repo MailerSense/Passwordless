@@ -49,7 +49,6 @@
             else: gettext("Disabled")
         }
         color={if user_2fa_enabled(membership.user), do: "success", else: "danger"}
-        with_dot
       />
     </:col>
     <:col :let={membership} field={:inserted_at} label={gettext("Joined")} sortable>

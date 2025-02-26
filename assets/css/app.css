@@ -2,6 +2,7 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 @import "petal_components.css";
+@import "combo-box.css";
 @import "tippy.js/dist/tippy.css";
 
 .dark {

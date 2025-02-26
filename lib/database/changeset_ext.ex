@@ -94,7 +94,7 @@ defmodule Database.ChangesetExt do
     end)
   end
 
-  @domain_regex ~r/^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2,6}$/
+  @domain_regex ~r/^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2,8}$/
 
   @doc """
   Validates a domain name by ensuring it is trimmed, is lowercase, has a valid format and TLD.
@@ -120,7 +120,8 @@ defmodule Database.ChangesetExt do
     |> validate_domain(field)
     |> validate_change(field, fn ^field, domain ->
       case Domainatrex.parse(domain) do
-        {:ok, %{domain: domain, subdomain: "", tld: tld}} when is_binary(domain) and is_binary(tld) ->
+        {:ok, %{domain: domain, subdomain: "", tld: tld}}
+        when is_binary(domain) and is_binary(tld) ->
           [{field, "is not a subdomain"}]
 
         _ ->
@@ -210,17 +211,17 @@ defmodule Database.ChangesetExt do
   @doc """
   Remove the blank value from the array.
   """
-  def trim_array(%Ecto.Changeset{} = changeset, field, blank \\ "") do
-    update_change(changeset, field, &Enum.reject(&1, fn item -> item == blank end))
+  def trim_array(%Ecto.Changeset{} = changeset, field) do
+    update_change(changeset, field, &Enum.reject(&1, fn item -> Util.blank?(item) end))
   end
 
   @doc """
   Clean and process the array values and validate the selected
   values against an approved list.
   """
-  def clean_array(%Ecto.Changeset{} = changeset, field, blank \\ "") do
+  def clean_array(%Ecto.Changeset{} = changeset, field) do
     changeset
-    |> trim_array(field, blank)
+    |> trim_array(field)
     |> uniq_array(field)
     |> sort_array(field)
   end

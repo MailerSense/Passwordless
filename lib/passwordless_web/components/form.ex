@@ -783,6 +783,15 @@ defmodule PasswordlessWeb.Components.Form do
     """
   end
 
+  attr(:class, :any, default: "", doc: "extra classes for the help text")
+  attr(:rest, :global)
+
+  def form_separator(assigns) do
+    ~H"""
+    <span class="w-full h-[1px] bg-slate-200 dark:bg-slate-700 block my-6" {@rest}></span>
+    """
+  end
+
   # Private
 
   defp generated_translated_errors(form, field) do

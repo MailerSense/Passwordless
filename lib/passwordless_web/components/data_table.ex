@@ -98,14 +98,13 @@ defmodule PasswordlessWeb.Components.DataTable do
     >
       <.table_search_bar
         :if={@search_field || @switch_field}
+        meta={@meta}
         form={filter_form}
         switch_field={@switch_field}
         search_field={@search_field}
         switch_items={@switch_items}
       />
-      <div :if={Util.present?(@info)} class="mb-6">{render_slot(@info)}</div>
       <div class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
-        <.table_header :if={@title} title={@title} />
         <div class="pc-data-table">
           <.table>
             <thead class="pc-table__thead-striped">
@@ -380,6 +379,8 @@ defmodule PasswordlessWeb.Components.DataTable do
   end
 
   attr :form, :map, default: nil
+  attr :meta, Flop.Meta, required: true
+  attr :title, :string, default: nil
   attr :switch_field, :atom, default: nil
   attr :search_field, :atom, default: nil
   attr :switch_items, :list, default: []
@@ -387,7 +388,8 @@ defmodule PasswordlessWeb.Components.DataTable do
   defp table_search_bar(assigns) do
     ~H"""
     <div class={[
-      "flex justify-between mb-6"
+      "flex items-center justify-between gap-3",
+      "pb-6"
     ]}>
       <.inputs_for :let={f2} field={@form[:filters]}>
         <%= if Phoenix.HTML.Form.input_value(f2, :field) == @switch_field do %>
@@ -407,7 +409,7 @@ defmodule PasswordlessWeb.Components.DataTable do
             <.field
               icon="custom-search"
               field={f2[:value]}
-              class=" xl:min-w-[400px]"
+              class="md:min-w-[400px] lg:min-w-[500px]"
               label=""
               phx-debounce="100"
               wrapper_class="!mb-0"
@@ -416,7 +418,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
             <button
               class={[
-                "h-[44px]",
+                "h-[42px]",
                 "bg-white dark:bg-transparent select-none",
                 "text-sm font-semibold text-slate-700 dark:text-slate-200",
                 "flex items-center rounded-lg px-4 py-2.5 bg-white",

@@ -13,10 +13,12 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   def handle_params(%{"id" => id}, _url, socket) do
     actor = Passwordless.get_actor!(socket.assigns.current_app, id)
     changeset = Passwordless.change_actor(actor)
+    languages = Enum.map(Passwordless.Locale.languages(), fn {code, name} -> {name, code} end)
+    states = Enum.map(Actor.states(), fn state -> {Phoenix.Naming.humanize(state), state} end)
 
     {:noreply,
      socket
-     |> assign(actor: actor)
+     |> assign(actor: actor, states: states, languages: languages)
      |> assign_form(changeset)
      |> assign_emails(actor)
      |> assign_phones(actor)

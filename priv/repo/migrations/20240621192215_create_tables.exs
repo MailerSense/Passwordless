@@ -191,6 +191,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:apps, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
+      add :website, :string, null: false
       add :description, :string
 
       add :org_id, references(:orgs, type: :uuid, on_delete: :delete_all), null: false
@@ -390,16 +391,21 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     ## Methods
 
-    create table(:megic_link_methods, primary_key: false) do
+    create table(:magic_link_methods, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
+      add :expires, :integer, null: false, default: 15
+      add :sender, :string, null: false
+      add :sender_name, :string, null: false
+      add :email_tracking, :boolean, null: false, default: false
+      add :fingerprint_device, :boolean, null: false, default: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
     end
 
-    create unique_index(:megic_link_methods, [:app_id])
+    create unique_index(:magic_link_methods, [:app_id])
 
     create table(:sms_methods, primary_key: false) do
       add :id, :uuid, primary_key: true
@@ -415,6 +421,10 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:email_methods, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
+      add :expires, :integer, null: false, default: 15
+      add :sender, :string, null: false
+      add :sender_name, :string, null: false
+      add :email_tracking, :boolean, null: false, default: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 
@@ -426,6 +436,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:authenticator_methods, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
+      add :issuer_name, :string, null: false
+      add :hide_download_screen, :boolean, null: false, default: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 
@@ -437,6 +449,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:security_key_methods, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
+      add :relying_party_id, :string, null: false
+      add :expected_origins, :map, null: false, default: %{}
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 
@@ -448,6 +462,10 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:passkey_methods, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
+      add :relying_party_id, :string, null: false
+      add :expected_origins, :map, null: false, default: %{}
+      add :uplift_prompt_interval, :string, null: false
+      add :require_user_verification, :boolean, null: false, default: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 

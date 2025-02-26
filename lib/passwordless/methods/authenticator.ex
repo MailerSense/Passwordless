@@ -13,6 +13,8 @@ defmodule Passwordless.Methods.Authenticator do
   }
   schema "authenticator_methods" do
     field :enabled, :boolean, default: true
+    field :issuer_name, :string
+    field :hide_download_screen, :boolean, default: false
 
     belongs_to :app, App, type: :binary_id
 
@@ -21,6 +23,8 @@ defmodule Passwordless.Methods.Authenticator do
 
   @fields ~w(
     enabled
+    issuer_name
+    hide_download_screen
     app_id
   )a
   @required_fields @fields

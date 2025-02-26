@@ -22,9 +22,8 @@ defmodule PasswordlessWeb.Helpers do
     do:
       {Phoenix.Naming.humanize(actor.state),
        case actor.state do
-         :healthy -> "success"
-         :warning -> "warning"
-         :locked -> "danger"
+         :active -> "success"
+         :stale -> "gray"
        end}
 
   def action_state_badge(nil), do: {nil, "gray"}
@@ -89,17 +88,17 @@ defmodule PasswordlessWeb.Helpers do
   def actor_menu_items(%Actor{} = actor) do
     [
       %{
+        name: :details,
+        label: "Details",
+        icon: "remix-shield-keyhole-line",
+        path: ~p"/app/users/#{actor}/edit",
+        link_type: "live_patch"
+      },
+      %{
         name: :activity,
         label: "Activity",
         icon: "remix-file-list-3-line",
         path: ~p"/app/users/#{actor}/activity",
-        link_type: "live_patch"
-      },
-      %{
-        name: :authenticators,
-        label: "Authenticators",
-        icon: "remix-shield-keyhole-line",
-        path: ~p"/app/users/#{actor}/authenticators",
         link_type: "live_patch"
       }
     ]
@@ -211,9 +210,11 @@ defmodule PasswordlessWeb.Helpers do
   def format_date(date, format), do: Timex.format!(date, format, :strftime)
 
   def user_role(%Membership{role: role}) when is_atom(role), do: String.capitalize(Atom.to_string(role))
+
   def user_role(%Membership{}), do: "-"
 
   def user_added(%Membership{inserted_at: %DateTime{} = inserted_at}), do: format_date_time(inserted_at)
+
   def user_added(%Membership{}), do: ""
 
   def is_admin?(%User{} = user), do: User.is_admin?(user)

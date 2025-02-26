@@ -129,7 +129,6 @@ defmodule PasswordlessWeb.User.SecurityLive do
           autocomplete="current-password"
           viewable={true}
           required
-          autofocus
         />
 
         <div class="flex justify-end">

@@ -29,82 +29,40 @@
           />
         </div>
       </div>
-    </.form>
-    <.tab_menu
-      class="mb-8"
-      menu_items={actor_menu_items(@actor)}
-      current_tab={:details}
-      variant="buttons"
-    />
-    <div class="flex flex-col gap-4">
-      <.simple_table items={@emails}>
-        <:if_empty>{gettext("No %{models} defined yet", models: gettext("emails"))}</:if_empty>
-        <:col
-          field={:address}
-          label={gettext("Email")}
-          body_class="w-full !font-medium !text-slate-900 dark:!text-white"
-        />
-        <:col :let={email} field={:verified}>
-          <.field type="checkbox" name="" label="" value={email.verified} readonly />
-        </:col>
-        <:col :let={email} field={:primary}>
-          <.field type="checkbox" name="" label="" value={email.primary} readonly />
-        </:col>
-        <:col actions></:col>
-        <:actions :let={email}>
-          <.icon_button
-            to={~p"/app/users/#{@actor}/emails/#{email}/delete"}
-            size="sm"
-            icon="custom-trash"
-            color="light"
-            title={gettext("Remove")}
-            link_type="live_patch"
-          />
-          <.icon_button
-            to={~p"/app/users/#{@actor}/emails/#{email}/edit"}
-            size="sm"
-            icon="custom-edit"
-            color="light"
-            title={gettext("Edit")}
-            link_type="live_patch"
-          />
-        </:actions>
-      </.simple_table>
 
-      <.simple_table items={@phones}>
-        <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
-        <:col
-          field={:address}
-          label={gettext("Phone")}
-          body_class="w-full !font-medium !text-slate-900 dark:!text-white"
-        />
-        <:col :let={phone} field={:verified}>
-          <.field type="checkbox" name="" label="" value={phone.verified} readonly />
-        </:col>
-        <:col :let={phone} field={:primary}>
-          <.field type="checkbox" name="" label="" value={phone.primary} readonly />
-        </:col>
-        <:col actions></:col>
-        <:actions :let={phone}>
-          <.icon_button
-            to={~p"/app/users/#{@actor}/phones/#{phone}/delete"}
-            size="sm"
-            icon="custom-trash"
-            color="light"
-            title={gettext("Remove")}
-            link_type="live_patch"
-          />
-          <.icon_button
-            to={~p"/app/users/#{@actor}/phones/#{phone}/edit"}
-            size="sm"
-            icon="custom-edit"
-            color="light"
-            title={gettext("Edit")}
-            link_type="live_patch"
-          />
-        </:actions>
-      </.simple_table>
-    </div>
+      <.tab_menu
+        class="mb-8"
+        menu_items={actor_menu_items(@actor)}
+        current_tab={:details}
+        variant="buttons"
+      />
+      <div class="flex flex-col gap-4">
+        <.box padded>
+          <div class="grid grid-cols-3 gap-3">
+            <.field
+              type="select"
+              field={@form[:state]}
+              options={@states}
+              required
+              required_asterix={false}
+              readonly
+            />
+
+            <.field
+              type="select"
+              field={@form[:language]}
+              options={@languages}
+              required
+              required_asterix={false}
+            />
+          </div>
+        </.box>
+
+        <.box padded>
+          <.form_header title="Authenticators" />
+        </.box>
+      </div>
+    </.form>
   </div>
 </.layout>
 

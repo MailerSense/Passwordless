@@ -54,10 +54,7 @@ defmodule PasswordlessWeb.Menus do
       )
 
   def main_menu_items(:dev, %User{} = current_user),
-    do:
-      if(Passwordless.config(:env) == :dev,
-        do: build_menu([:dev_routes, :dev_email_templates, :dev_sent_emails], current_user)
-      )
+    do: if(Passwordless.config(:env) == :dev, do: build_menu([:dev_email_templates, :dev_sent_emails], current_user))
 
   def main_menu_items(_section, _user), do: []
 
@@ -143,16 +140,8 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Profile"),
       path: ~p"/app/settings",
-      icon: "remix-at-line"
-    }
-  end
-
-  def get_link(:edit_email = name, _user) do
-    %{
-      name: name,
-      label: gettext("Login Email"),
-      path: ~p"/app/edit-email",
-      icon: "remix-at-line"
+      icon: "remix-at-line",
+      link_type: "live_patch"
     }
   end
 
@@ -161,7 +150,8 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Password"),
       path: ~p"/app/password",
-      icon: "remix-key-line"
+      icon: "remix-key-line",
+      link_type: "live_patch"
     }
   end
 
@@ -170,7 +160,8 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Invitations"),
       path: ~p"/app/invitations",
-      icon: "remix-mail-line"
+      icon: "remix-mail-line",
+      link_type: "live_patch"
     }
   end
 
@@ -179,7 +170,8 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Security"),
       path: ~p"/app/security",
-      icon: "remix-lock-line"
+      icon: "remix-lock-line",
+      link_type: "live_patch"
     }
   end
 
@@ -264,7 +256,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Dev"),
-      path: ~p"/dev",
+      path: ~p"/dev/emails",
       icon: "custom-more-dots"
     }
   end
@@ -444,18 +436,6 @@ defmodule PasswordlessWeb.Menus do
       icon: "remix-plug-line",
       link_type: "live_patch"
     }
-  end
-
-  def get_link(:dev_routes = name, _current_user) do
-    if Passwordless.config(:env) == :dev do
-      %{
-        name: name,
-        label: gettext("App Routes"),
-        path: "/dev",
-        icon: "remix-router-line",
-        link_type: "live_patch"
-      }
-    end
   end
 
   def get_link(:dev_email_templates = name, _current_user) do

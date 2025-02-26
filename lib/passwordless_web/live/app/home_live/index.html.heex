@@ -77,22 +77,22 @@
         field={:name}
         body_class="!font-medium !text-slate-900 dark:!text-white"
       >
-        {action.name}
+        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
       </:col>
-      <:col :let={action} label={gettext("Details")} field={:details}>
-        User requested a Magic Link
-      </:col>
-      <:col :let={action} label={gettext("Outcome")} field={:outcome}>
-        <% {badge_label, badge_color} = action_state_badge(action) %>
-        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-      </:col>
-      <:col :let={action} label={gettext("Who")} field={:user}>
+      <:col :let={action} label={gettext("User")} field={:user}>
         <.a
-          to={~p"/app/users/#{action.actor}/activity"}
-          class="text-info-700 dark:text-info-200"
+          to={~p"/app/users/#{action.actor}/edit"}
+          class="text-info-600 dark:text-info-300 hover:underline"
           label={Actor.handle(action.actor)}
           link_type="live_redirect"
         />
+      </:col>
+      <:col :let={action} label={gettext("Details")} field={:details}>
+        Requested a Magic Link
+      </:col>
+      <:col :let={action} label={gettext("State")} field={:state}>
+        <% {badge_label, badge_color} = action_state_badge(action) %>
+        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
       <:col :let={action} label={gettext("Where")} field={:location}>
         <div class="flex items-center gap-2">
@@ -105,6 +105,18 @@
       <:col :let={action} label={gettext("When")} field={:inserted_at}>
         {Timex.from_now(action.inserted_at)}
       </:col>
+      <:col actions></:col>
+      <:actions :let={action}>
+        <.dropdown placement="left">
+          <:trigger_element>
+            <.icon name="custom-more-dots" class="w-6 h-6" />
+          </:trigger_element>
+          <.dropdown_menu_item link_type="live_redirect" to={~p"/app/users/#{action.actor}/edit"}>
+            <.icon name="remix-pencil-line" class="w-6 h-6 shrink-0" />
+            {gettext("Edit user")}
+          </.dropdown_menu_item>
+        </.dropdown>
+      </:actions>
     </.stream_table>
   </div>
 </.layout>

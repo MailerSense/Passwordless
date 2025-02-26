@@ -1,6 +1,6 @@
 <div>
   <.form
-    id="edit-magic-link-form"
+    id="edit-email-form"
     for={@form}
     phx-target={@myself}
     phx-submit="save"
@@ -38,16 +38,6 @@
         help_text={
           gettext(
             "Links first go to a server that logs the link as clicked, and then redirect to the actual URL requested."
-          )
-        }
-        disabled={not @enabled}
-      />
-      <.field
-        type="checkbox"
-        field={@form[:fingerprint_device]}
-        help_text={
-          gettext(
-            "This cookie will then be sent automatically by the browser when the user clicks on the magic link, and we can verify the link was opened in the same browser it was requested."
           )
         }
         disabled={not @enabled}

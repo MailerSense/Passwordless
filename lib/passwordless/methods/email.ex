@@ -5,6 +5,7 @@ defmodule Passwordless.Methods.Email do
 
   use Passwordless.Schema
 
+  alias Database.ChangesetExt
   alias Passwordless.App
 
   @derive {
@@ -13,6 +14,10 @@ defmodule Passwordless.Methods.Email do
   }
   schema "email_methods" do
     field :enabled, :boolean, default: true
+    field :expires, :integer, default: 15
+    field :sender, :string
+    field :sender_name, :string
+    field :email_tracking, :boolean, default: false
 
     belongs_to :app, App, type: :binary_id
 
@@ -21,6 +26,10 @@ defmodule Passwordless.Methods.Email do
 
   @fields ~w(
     enabled
+    expires
+    sender
+    sender_name
+    email_tracking
     app_id
   )a
   @required_fields @fields
@@ -32,6 +41,16 @@ defmodule Passwordless.Methods.Email do
     actor_email
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> validate_string(:sender_name)
+    |> validate_number(:expires, greater_than: 0, less_than_or_equal_to: 60)
     |> assoc_constraint(:app)
+  end
+
+  # Private
+
+  defp validate_string(changeset, field) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(field)
+    |> validate_length(field, min: 1, max: 128)
   end
 end

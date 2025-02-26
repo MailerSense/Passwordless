@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.MethodLive.MagicLink do
+defmodule PasswordlessWeb.App.MethodLive.Email do
   @moduledoc false
 
   use PasswordlessWeb, :live_component
@@ -8,39 +8,39 @@ defmodule PasswordlessWeb.App.MethodLive.MagicLink do
 
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
-    magic_link = Repo.preload(app, :magic_link).magic_link
-    changeset = Passwordless.change_magic_link(magic_link)
+    email = Repo.preload(app, :email).email
+    changeset = Passwordless.change_email(email)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(magic_link: magic_link)
+     |> assign(email: email)
      |> assign_form(changeset)}
   end
 
   @impl true
-  def handle_event("save", %{"magic_link" => magic_link_params}, socket) do
-    save_magic_link(socket, magic_link_params)
+  def handle_event("save", %{"email" => email_params}, socket) do
+    save_email(socket, email_params)
   end
 
   @impl true
-  def handle_event("validate", %{"magic_link" => magic_link_params}, socket) do
-    save_magic_link(socket, magic_link_params)
+  def handle_event("validate", %{"email" => email_params}, socket) do
+    save_email(socket, email_params)
   end
 
   # Private
 
-  defp save_magic_link(socket, params) do
-    case Passwordless.update_magic_link(socket.assigns.magic_link, params) do
-      {:ok, magic_link} ->
+  defp save_email(socket, params) do
+    case Passwordless.update_email(socket.assigns.email, params) do
+      {:ok, email} ->
         changeset =
-          magic_link
-          |> Passwordless.change_magic_link()
+          email
+          |> Passwordless.change_email()
           |> Map.put(:action, :validate)
 
         {:noreply,
          socket
-         |> assign(magic_link: magic_link)
+         |> assign(email: email)
          |> assign_form(changeset)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

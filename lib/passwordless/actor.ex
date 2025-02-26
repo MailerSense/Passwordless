@@ -16,7 +16,7 @@ defmodule Passwordless.Actor do
   alias Passwordless.Phone
   alias Passwordless.TOTP
 
-  @states ~w(enrolled active stale)a
+  @states ~w(active stale)a
   @derive {
     Flop.Schema,
     filterable: [:id, :search, :state],
@@ -68,14 +68,19 @@ defmodule Passwordless.Actor do
   Get the handle of the actor.
   """
   def handle(%__MODULE__{name: name}) when is_binary(name) and not is_nil(name), do: name
+
   def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address) and not is_nil(address), do: address
+
   def handle(%__MODULE__{phone: %Phone{address: address}}) when is_binary(address) and not is_nil(address), do: address
+
   def handle(%__MODULE__{}), do: nil
 
   def email(%__MODULE__{email: %Email{address: address}}) when is_binary(address) and not is_nil(address), do: address
+
   def email(%__MODULE__{}), do: nil
 
   def phone(%__MODULE__{phone: %Phone{address: address}}) when is_binary(address) and not is_nil(address), do: address
+
   def phone(%__MODULE__{}), do: nil
 
   @doc """

@@ -20,6 +20,7 @@ defmodule Passwordless.App do
   }
   schema "apps" do
     field :name, :string
+    field :website, :string
     field :description, :string
 
     has_one :magic_link, Methods.MagicLink
@@ -46,8 +47,8 @@ defmodule Passwordless.App do
     from c in __MODULE__, where: c.org_id == ^org.id
   end
 
-  @fields ~w(name description org_id)a
-  @required_fields ~w(name org_id)a
+  @fields ~w(name website description org_id)a
+  @required_fields ~w(name website org_id)a
 
   @doc """
   A changeset to update an existing organization.
@@ -57,6 +58,7 @@ defmodule Passwordless.App do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_name()
+    |> validate_website()
     |> validate_description()
     |> assoc_constraint(:org)
   end
@@ -67,6 +69,12 @@ defmodule Passwordless.App do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
     |> validate_length(:name, min: 1, max: 128)
+  end
+
+  defp validate_website(changeset) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(:website)
+    |> validate_length(:name, min: 1, max: 1024)
   end
 
   defp validate_description(changeset) do

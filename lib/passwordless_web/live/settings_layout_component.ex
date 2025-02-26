@@ -23,12 +23,16 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
       current_section={:app}
       current_subpage={@current_page}
     >
-      <.tabbed_layout current_page={@current_page} menu_items={@menu_items}>
-        <.page_header title={PasswordlessWeb.Menus.translate_item(@current_page, @current_user)}>
-          {render_slot(@action)}
-        </.page_header>
+      <.page_header title={PasswordlessWeb.Menus.translate_item(@current_page, @current_user)}>
+        {render_slot(@action)}
+      </.page_header>
+
+      <div class="flex flex-col gap-6">
+        <div class="flex">
+          <.tab_menu menu_items={@menu_items} current_tab={@current_page} variant="buttons" />
+        </div>
         {render_slot(@inner_block)}
-      </.tabbed_layout>
+      </div>
     </.layout>
     """
   end

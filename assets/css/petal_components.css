@@ -31,7 +31,7 @@
   @apply text-xs leading-4 px-2.5 py-[5px];
 }
 .pc-button--sm {
-  @apply px-3.5 py-2 h-[44px] text-sm font-semibold leading-tight;
+  @apply px-3.5 py-2 h-[42px] text-sm font-semibold leading-tight;
 }
 .pc-button--md {
   @apply h-12 px-4 py-3 text-sm font-semibold leading-tight;
@@ -87,7 +87,7 @@
 }
 
 .pc-button__spinner-icon--xs {
-  @apply w-4 h-4;
+  @apply w-5 h-5;
 }
 .pc-button__spinner-icon--sm {
   @apply w-5 h-5;
@@ -157,7 +157,7 @@
 /* Icon Button - sizes */
 
 .pc-icon-button--xs {
-  @apply w-9 h-9;
+  @apply w-6 h-6;
 }
 .pc-icon-button--sm {
   @apply w-10 h-10;
@@ -175,7 +175,7 @@
 /* Icon Button - loading */
 
 .pc-icon-button-spinner--xs {
-  @apply w-5 h-5;
+  @apply w-6 h-6;
 }
 .pc-icon-button-spinner--sm {
   @apply w-6 h-6;
@@ -513,10 +513,10 @@
 }
 
 .pc-checkbox-label {
-  @apply inline-flex items-center gap-2 text-sm font-normal leading-tight text-slate-900 cursor-pointer dark:text-white;
+  @apply inline-flex items-center gap-2 text-sm font-medium leading-tight text-slate-900 cursor-pointer dark:text-white;
 }
 .pc-label {
-  @apply block mb-1.5 text-sm font-medium leading-tight text-slate-900 dark:text-white;
+  @apply block mb-2 text-sm font-medium leading-tight text-slate-900 dark:text-white;
 }
 .pc-label--for-checkbox {
   @apply !mb-0 font-normal;
@@ -549,7 +549,7 @@
   @apply hidden;
 }
 .pc-form-help-text {
-  @apply mt-[6px] text-sm text-slate-500 dark:text-slate-400;
+  @apply mt-2 text-sm text-slate-500 dark:text-slate-400;
 }
 .pc-time-select {
   @apply select-wrapper dark:text-white;
@@ -582,7 +582,7 @@
   @apply block w-full px-3.5 py-4 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700;
 }
 .pc-text-input--md {
-  @apply block w-full px-3.5 py-[9px] border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700;
+  @apply block w-full px-3.5 py-2 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700;
 }
 .pc-text-input--sm {
   @apply block min-w-16 px-2.5 py-[5px] font-medium border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-xs disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700;
@@ -671,7 +671,7 @@
   @apply w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2;
 }
 .pc-select-input {
-  @apply ps-10 block w-full px-3.5 py-[9px] border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none;
+  @apply ps-10 block w-full px-3.5 py-2 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none;
 }
 .pc-select {
   @apply block w-full py-2 pl-3 pr-10 text-base border-slate-300 rounded-md cursor-pointer focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed focus:outline-none sm:text-sm dark:disabled:bg-slate-700 dark:text-slate-300 dark:bg-slate-800;
@@ -686,7 +686,7 @@
   @apply w-full border-slate-300 cursor-pointer dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600;
 }
 .pc-checkbox {
-  @apply w-4 h-4 transition-all duration-150 ease-linear border-slate-300 rounded cursor-pointer focus:ring-primary-500 dark:bg-slate-800 dark:border-slate-600 disabled:bg-slate-300 dark:disabled:bg-slate-600 disabled:cursor-not-allowed;
+  @apply w-4 h-4 transition-all duration-150 ease-linear border-slate-300 rounded cursor-pointer focus:ring-primary-500 dark:bg-slate-800 dark:border-slate-600 disabled:bg-slate-300 disabled:hover:bg-slate-300 dark:disabled:bg-slate-600 disabled:cursor-not-allowed;
 }
 .pc-checkbox-group {
   @apply pt-2;
@@ -755,7 +755,7 @@
 
 /* Apply padding to .pc-radio-card__content */
 .pc-radio-card--sm > .pc-radio-card__content {
-  @apply px-3.5 py-[9px];
+  @apply px-3.5 py-2;
 }
 
 .pc-radio-card--md > .pc-radio-card__content {
@@ -1328,7 +1328,7 @@
   @apply inline-flex items-center gap-2;
 }
 .pc-tabs--buttons {
-  @apply inline-flex rounded-lg shadow-m2 bg-white dark:bg-transparent border border-slate-300 dark:border-slate-600 divide-x divide-slate-300 dark:divide-slate-600 select-none overflow-hidden;
+  @apply inline-flex rounded-lg shadow-m2 bg-white dark:bg-transparent border border-slate-300 dark:border-slate-600 divide-x divide-slate-300 dark:divide-slate-600 select-none overflow-x-auto;
 }
 
 /* Tabs - Pill */
@@ -1370,7 +1370,7 @@
 /* Tabs - Buttons */
 
 .pc-tab__pill--buttons {
-  @apply flex items-center justify-center px-4 gap-2 py-2.5 text-sm font-medium whitespace-nowrap h-[42px];
+  @apply flex items-center justify-center px-4 gap-2 py-2.5 text-sm font-medium whitespace-nowrap h-[40px];
 }
 .pc-tab__pill--is-active--buttons {
   @apply bg-slate-50 dark:bg-slate-700/50 text-slate-800 dark:text-white;
@@ -1474,7 +1474,7 @@
   @apply overflow-hidden;
 }
 .pc-table__th {
-  @apply text-xs text-left font-medium select-none text-slate-600 dark:text-slate-300;
+  @apply text-sm text-left font-medium select-none;
 }
 .pc-table__th--md {
   @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-3;
@@ -1490,6 +1490,7 @@
 }
 .pc-table__tr {
   @apply border-b border-slate-200 dark:border-slate-700 last:border-none;
+  @apply hover:bg-slate-50 dark:hover:bg-slate-700/50;
 }
 .pc-table__tr--row-click {
   @apply hover:bg-slate-50 dark:hover:bg-slate-800;
@@ -1519,7 +1520,7 @@
   @apply bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300;
 }
 .pc-table__thead-striped {
-  @apply text-slate-600 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-800 tracking-wide;
+  @apply text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800;
 }
 .pc-table__pagination {
   @apply px-6 py-4 border-t border-slate-200 dark:border-slate-700;

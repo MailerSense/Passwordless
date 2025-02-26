@@ -34,12 +34,11 @@ defmodule Passwordless.Organizations.OrgSeeder do
     {:ok, org, _membership} = Organizations.create_org_with_owner(user, attrs)
 
     {:ok, app} =
-      Passwordless.create_app(org, %{
+      Passwordless.create_full_app(org, %{
         "name" => "Demo App",
+        "website" => "https://passwordless.tools",
         "description" => "Demo App Description"
       })
-
-    {:ok, _methods} = Passwordless.create_methods(app)
 
     for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(2_000) do
       {:ok, actor} =

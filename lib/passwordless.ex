@@ -7,6 +7,8 @@ defmodule Passwordless do
   if it comes from the database, an external API or others.
   """
 
+  import Util.Crud
+
   alias Passwordless.Action
   alias Passwordless.Actor
   alias Passwordless.App
@@ -69,7 +71,28 @@ defmodule Passwordless do
   def create_full_app(%Org{} = org, attrs \\ %{}) do
     Repo.transact(fn ->
       with {:ok, app} <- create_app(org, attrs),
-           {:ok, _methods} <- create_methods(app),
+           {:ok, _methods} <-
+             create_methods(app, %{
+               magic_link: %{
+                 sender: "notifications",
+                 sender_name: app.name
+               },
+               email: %{
+                 sender: "notifications",
+                 sender_name: app.name
+               },
+               authenticator: %{
+                 issuer_name: app.name
+               },
+               security_key: %{
+                 relying_party_id: URI.parse(app.website).host,
+                 expected_origins: [%{url: app.website}]
+               },
+               passkey: %{
+                 relying_party_id: URI.parse(app.website).host,
+                 expected_origins: [%{url: app.website}]
+               }
+             }),
            do: {:ok, app}
     end)
   end
@@ -114,20 +137,19 @@ defmodule Passwordless do
           app
           |> Ecto.build_assoc(key)
           |> mod.changeset(Map.get(defaults, key, %{}))
-          |> Repo.insert()
+          |> Repo.insert!()
         end)
 
       {:ok, methods}
     end)
   end
 
-  def change_magic_link(%Methods.MagicLink{} = magic_link, attrs \\ %{}) do
-    Methods.MagicLink.changeset(magic_link, attrs)
-  end
-
-  def change_sms(%Methods.SMS{} = sms, attrs \\ %{}) do
-    Methods.SMS.changeset(sms, attrs)
-  end
+  crud(:magic_link, :magic_link, Passwordless.Methods.MagicLink)
+  crud(:email, :email, Passwordless.Methods.Email)
+  crud(:sms, :sms, Passwordless.Methods.SMS)
+  crud(:authenticator, :authenticator, Passwordless.Methods.Authenticator)
+  crud(:security_key, :security_key, Passwordless.Methods.SecurityKey)
+  crud(:passkey, :passkey, Passwordless.Methods.Passkey)
 
   # Actor
 

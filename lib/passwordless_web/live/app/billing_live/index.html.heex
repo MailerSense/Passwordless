@@ -40,12 +40,10 @@
       </:col>
       <:col actions></:col>
       <:actions :let={log}>
-        <.icon_button
-          to={apply_filters(@filters, @meta, ~p"/app/billing/#{log}")}
-          size="sm"
-          color="light"
-          icon="remix-eye-line"
-          title={gettext("View")}
+        <.a
+          icon="custom-trash"
+          label={gettext("Download")}
+          class="text-info-700 dark:text-info-200"
           link_type="live_patch"
         />
       </:actions>

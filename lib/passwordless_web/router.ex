@@ -124,6 +124,8 @@ defmodule PasswordlessWeb.Router do
       live "/users", App.ActorLive.Index, :index
       live "/users/new", App.ActorLive.Index, :new
       live "/users/import", App.ActorLive.Index, :import
+      live "/users/:id/edit", App.ActorLive.Edit, :edit
+      live "/users/:id/edit/delete", App.ActorLive.Edit, :delete
       live "/users/:id/activity", App.ActorLive.Activity, :edit
       live "/users/:id/activity/delete", App.ActorLive.Activity, :delete
       live "/users/:id/delete", App.ActorLive.Index, :delete
@@ -131,6 +133,10 @@ defmodule PasswordlessWeb.Router do
       # Methods
       live "/methods/magic-link", App.MethodLive.Index, :magic_link
       live "/methods/sms", App.MethodLive.Index, :sms
+      live "/methods/email", App.MethodLive.Index, :email
+      live "/methods/authenticator", App.MethodLive.Index, :authenticator
+      live "/methods/security-key", App.MethodLive.Index, :security_key
+      live "/methods/passkey", App.MethodLive.Index, :passkey
 
       # Reports
       live "/reports", App.ReportLive.Index, :index

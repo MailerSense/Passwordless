@@ -44,6 +44,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
     doc: "The path to the home page. When a user clicks the logo, they will be taken to this path."
 
   attr :header_bg_class, :string, default: "bg-white/50 dark:bg-slate-900/50 backdrop-blur-md shadow-m2"
+
   attr :header_border_class, :string, default: "border-b border-slate-200 dark:border-slate-700"
 
   slot :inner_block, required: true, doc: "The main content of the page."

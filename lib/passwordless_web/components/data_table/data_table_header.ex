@@ -20,15 +20,21 @@ defmodule PasswordlessWeb.Components.DataTable.Header do
       <%= if @column[:sortable] && !@no_results? do %>
         <.a
           to={order_link(@column, @meta, @currently_ordered, @order_direction, @base_url_params)}
-          class={["flex items-center gap-1", if(@column[:align_right], do: "justify-end")]}
+          class={[
+            "flex items-center gap-1",
+            if(@column[:align_right], do: "justify-end"),
+            if(@currently_ordered, do: "text-slate-900 dark:text-white")
+          ]}
           link_type="live_patch"
         >
           {get_label(@column)}
           <.icon
             name={
-              if @currently_ordered && @order_direction == :desc,
-                do: "remix-arrow-down-line",
-                else: "remix-arrow-up-line"
+              cond do
+                @currently_ordered && @order_direction == :desc -> "remix-arrow-down-line"
+                @currently_ordered && @order_direction == :asc -> "remix-arrow-up-line"
+                true -> "remix-expand-up-down-line"
+              end
             }
             class="h-4 w-4"
           />
