@@ -54,17 +54,17 @@
 .pc-button--primary-outline {
   @apply text-primary-300 bg-transparent border-2 border-primary-300 hover:text-slate-900 hover:bg-primary-300 focus:bg-primary-500 focus:border-primary-500 focus:text-slate-900 active:bg-primary-500 shadow-m2;
 }
-.pc-button--secondary {
-  @apply text-primary-300 border-transparent bg-slate-900 dark:bg-slate-900 hover:bg-slate-700 focus:bg-slate-600 active:bg-slate-600 shadow-m2;
+.pc-button--success {
+  @apply text-white border-transparent bg-success-600 hover:bg-success-800 active:bg-success-900 focus:bg-success-800 shadow-m2;
 }
 .pc-button--danger {
-  @apply text-white border-transparent bg-danger-700 hover:bg-danger-800 active:bg-danger-900 focus:bg-danger-800;
+  @apply text-white border-transparent bg-danger-600 hover:bg-danger-800 active:bg-danger-900 focus:bg-danger-800 shadow-m2;
 }
 .pc-button--danger-outline {
   @apply text-danger-700 hover:text-danger-600 bg-white dark:bg-slate-700/30 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 focus:bg-slate-100 focus:text-danger-500 active:bg-slate-200 dark:text-danger-400 dark:hover:bg-slate-800 dark:active:bg-slate-700;
 }
 .pc-button--light {
-  @apply text-slate-700 hover:text-slate-900 bg-white dark:bg-slate-700/30 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 focus:bg-slate-100 focus:text-slate-900 active:bg-slate-200 dark:text-white dark:hover:bg-slate-800 dark:active:bg-slate-700;
+  @apply text-slate-700 hover:text-slate-900 bg-white dark:bg-slate-700/30 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 focus:bg-slate-100 focus:text-slate-900 active:bg-slate-200 dark:text-white dark:hover:bg-slate-800 dark:active:bg-slate-700 shadow-m2;
 }
 .pc-button--light-flat {
   @apply text-slate-700 bg-white hover:text-slate-900 hover:bg-slate-50 focus:bg-slate-100 focus:text-slate-900 active:bg-slate-200 dark:bg-transparent dark:text-white dark:hover:bg-slate-800 dark:active:bg-slate-700;
@@ -488,13 +488,13 @@
 }
 :not(.phx-no-feedback).pc-form-field-wrapper--error .pc-label,
 :not(.phx-no-feedback).pc-form-field-wrapper--error .pc-checkbox-label {
-  @apply !text-danger-600 dark:!text-danger-200;
+  @apply !text-danger-600 dark:!text-danger-300;
 }
 
 :not(.phx-no-feedback).pc-form-field-wrapper--success input,
 :not(.phx-no-feedback).pc-form-field-wrapper--success select,
 :not(.phx-no-feedback).pc-form-field-wrapper--success textarea {
-  @apply border-success-500 focus:border-success-500 text-success-900 placeholder-success-700 bg-success-50 dark:text-success-100 dark:placeholder-success-300 dark:bg-success-900 focus:ring-success-100;
+  @apply border-success-500 focus:border-success-500 text-success-900 placeholder-success-700 bg-success-50 dark:text-success-100 dark:placeholder-success-300 dark:bg-success-900 focus:ring-success-500;
 }
 :not(.phx-no-feedback).pc-form-field-wrapper--success input[type="checkbox"] {
   @apply bg-success-700;
@@ -509,7 +509,7 @@
 }
 :not(.phx-no-feedback).pc-form-field-wrapper--success .pc-label,
 :not(.phx-no-feedback).pc-form-field-wrapper--success .pc-checkbox-label {
-  @apply !text-success-600 dark:!text-success-200;
+  @apply !text-success-600 dark:!text-success-300;
 }
 
 .pc-checkbox-label {

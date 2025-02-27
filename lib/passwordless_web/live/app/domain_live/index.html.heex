@@ -10,10 +10,11 @@
         link_type="live_patch"
       />
       <.button
+        :if={not @domain.verified}
         size="md"
         color="primary"
         label={gettext("Refresh")}
-        icon="remix-refresh-line"
+        icon="remix-radar-line"
         link_type="live_patch"
       />
     </div>
@@ -24,9 +25,9 @@
       <.field
         field={@form[:name]}
         label={gettext("Domain")}
-        prefix={gettext("https://")}
         readonly
         copyable
+        successes={if @domain.verified, do: ["DNS records verified"], else: []}
       />
     </.form>
 

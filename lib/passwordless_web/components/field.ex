@@ -598,7 +598,13 @@ defmodule PasswordlessWeb.Components.Field do
       assign(assigns, class: [assigns.class, get_class_for_type(assigns.type, assigns.size)])
 
     ~H"""
-    <.field_wrapper errors={@errors} name={@name} class={@wrapper_class} no_margin={@no_margin}>
+    <.field_wrapper
+      successes={@successes}
+      errors={@errors}
+      name={@name}
+      class={@wrapper_class}
+      no_margin={@no_margin}
+    >
       <!-- Field Label -->
       <.field_label :if={Util.present?(@label)} required={@required} for={@id} class={@label_class}>
         {@label}
@@ -644,9 +650,8 @@ defmodule PasswordlessWeb.Components.Field do
           </button>
         </div>
       </div>
-      <!-- Error Message -->
       <.field_error :for={msg <- @errors}>{msg}</.field_error>
-      <!-- Help Text -->
+      <.field_success :for={msg <- @successes}>{msg}</.field_success>
       <.field_help_text help_text={@help_text} />
     </.field_wrapper>
     """

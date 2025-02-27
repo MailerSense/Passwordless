@@ -9,13 +9,7 @@
         phx-change="validate"
         phx-target={@myself}
       >
-        <.field
-          field={@form[:domain]}
-          label={gettext("New domain")}
-          prefix={gettext("https://")}
-          required
-          autofocus
-        />
+        <.field field={@form[:domain]} label={gettext("New domain")} required autofocus />
       </.form>
     </div>
 
