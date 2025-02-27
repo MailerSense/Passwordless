@@ -28,7 +28,7 @@ defmodule PasswordlessWeb.CheckComponents do
         title={"#{@badge}: #{@content}"}
         {@rest}
         class={[
-          "shadow-m2 hover:shadow-2 active:shadow-3 transition-all duration-150 ease-in-out",
+          "shadow-m3 hover:shadow-2 active:shadow-3 transition-all duration-150 ease-in-out",
           "border border-slate-200 dark:border-slate-700"
         ]}
       >
@@ -48,7 +48,7 @@ defmodule PasswordlessWeb.CheckComponents do
     <% else %>
       <section
         class={[
-          "p-6 rounded-lg shadow-m2 flex flex-col gap-4",
+          "p-6 rounded-lg shadow-m3 flex flex-col gap-4",
           "border border-slate-200 dark:border-slate-700",
           "bg-white dark:bg-slate-700/30",
           @class

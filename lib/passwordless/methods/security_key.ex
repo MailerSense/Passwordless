@@ -41,7 +41,8 @@ defmodule Passwordless.Methods.SecurityKey do
     |> cast_embed(:expected_origins,
       with: &expected_origin_changeset/2,
       sort_param: :expected_origins_sort,
-      drop_param: :expected_origins_drop
+      drop_param: :expected_origins_drop,
+      required: true
     )
     |> validate_required(@required_fields)
     |> validate_relying_party_id()

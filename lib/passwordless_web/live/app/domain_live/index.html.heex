@@ -32,7 +32,7 @@
 
     <div class="pc-form-field-wrapper">
       <.form_label>
-        {gettext("DNS records to be added")}
+        {gettext("DNS records")}
       </.form_label>
       <.simple_table items={@records}>
         <:if_empty>{gettext("No %{models} found", models: gettext("DNS records"))}</:if_empty>

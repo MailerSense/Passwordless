@@ -1468,7 +1468,7 @@
   @apply min-w-full table-auto;
 }
 .pc-table__wrapper {
-  @apply rounded-lg shadow-m2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-700/30;
+  @apply rounded-lg shadow-m3 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-700/30;
 }
 .pc-data-table {
   @apply overflow-x-scroll;

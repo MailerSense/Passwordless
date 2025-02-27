@@ -38,7 +38,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
     <section
       {@rest}
       class={[
-        "shadow-m2 border border-slate-200 dark:border-slate-700",
+        "shadow-m3 border border-slate-200 dark:border-slate-700",
         "bg-white dark:bg-slate-700/30 rounded-lg",
         @class,
         if(@padded, do: "p-6", else: "")

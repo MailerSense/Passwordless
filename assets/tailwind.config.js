@@ -94,6 +94,7 @@ module.exports = {
     extend: {
       boxShadow: {
         m2: "0 1px 2px 0 rgb(16 24 40 / 0.05)",
+        m3: "0 1px 2px 0 rgb(16 24 40 / 0.05)",
         0: "0 1px 3px 0 rgb(16 24 40 / 0.1), 0 1px 2px 0px rgb(16 24 40 / 0.06)",
         1: "0 4px 8px -2px rgb(16 24 40 / 0.1), 0 2px 4px -2px rgb(16 24 40 / 0.06)",
         2: "0 12px 16px -4px rgb(16 24 40 / 0.08), 0 4px 6px -2px rgb(16 24 40 / 0.03)",

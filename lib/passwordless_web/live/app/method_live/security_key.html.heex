@@ -34,6 +34,7 @@
               name="security_key[expected_origins_sort][]"
               value={expected_origin.index}
             />
+            {IO.inspect(@form[:expected_origins].errors)}
             <div class="flex items-center grow gap-2">
               <.field
                 type="url"

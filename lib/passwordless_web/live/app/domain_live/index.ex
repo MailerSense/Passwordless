@@ -72,26 +72,26 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
       if assigns.verified do
         %{
           text: gettext("Domain is verified and healthy"),
-          text_class: "text-green-500 dark:text-green-400"
+          text_class: "text-green-600 dark:text-green-300"
         }
       else
         case assigns.state do
           :all_records_verified ->
             %{
               text: gettext("Domain is verified and healthy"),
-              text_class: "text-green-500 dark:text-green-400"
+              text_class: "text-green-600 dark:text-green-300"
             }
 
           :some_records_missing ->
             %{
               text: gettext("Domain is partially verified"),
-              text_class: "text-orange-500 dark:text-orange-400"
+              text_class: "text-orange-600 dark:text-orange-300"
             }
 
           _ ->
             %{
               text: gettext("Domain is being verified"),
-              text_class: "text-orange-500 dark:text-orange-400"
+              text_class: "text-orange-600 dark:text-orange-300"
             }
         end
       end
@@ -119,13 +119,13 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
       if assigns.verified do
         %{
           icon: "remix-checkbox-circle-line",
-          text_class: "text-green-600 dark:text-green-400",
-          icon_class: "text-green-600 dark:text-green-400"
+          text_class: "text-green-700 dark:text-green-200",
+          icon_class: "text-green-700 dark:text-green-200"
         }
       else
         %{
           icon: nil,
-          text_class: "text-orange-600 dark:text-orange-400",
+          text_class: "text-orange-700 dark:text-orange-200",
           icon_class: nil
         }
       end
@@ -154,7 +154,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
             {@value}
           </span>
         </div>
-        <div class="hidden text-green-600 after-copied dark:text-green-300">Copied!</div>
+        <div class="hidden text-green-700 after-copied dark:text-green-200">Copied!</div>
       </span>
     </span>
     """
