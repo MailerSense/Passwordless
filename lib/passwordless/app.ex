@@ -9,6 +9,7 @@ defmodule Passwordless.App do
 
   alias Database.ChangesetExt
   alias Passwordless.Actor
+  alias Passwordless.Domain
   alias Passwordless.Email
   alias Passwordless.Methods
   alias Passwordless.Organizations.Org
@@ -23,6 +24,10 @@ defmodule Passwordless.App do
     field :website, :string
     field :description, :string
 
+    # Domain
+    has_one :domain, Domain
+
+    # Methods
     has_one :magic_link, Methods.MagicLink
     has_one :email, Methods.Email
     has_one :sms, Methods.SMS
@@ -30,6 +35,7 @@ defmodule Passwordless.App do
     has_one :security_key, Methods.SecurityKey
     has_one :passkey, Methods.Passkey
 
+    # Entities
     has_many :actors, Actor
     has_many :emails, Email
     has_many :phones, Phone

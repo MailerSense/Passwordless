@@ -9,12 +9,13 @@ defmodule PasswordlessWeb.App.MethodLive.Email do
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
     email = Repo.preload(app, :email).email
+    domain = Repo.preload(app, :domain).domain
     changeset = Passwordless.change_email(email)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(email: email)
+     |> assign(email: email, domain: domain)
      |> assign_form(changeset)}
   end
 

@@ -43,7 +43,7 @@ defmodule PasswordlessWeb.App.MethodLive.Index do
 
   defp apply_action(socket, :magic_link) do
     assign(socket,
-      page_title: gettext("Magic Link"),
+      page_title: gettext("Magic link"),
       page_subtitle: gettext("Manage magic link settings")
     )
   end
@@ -64,14 +64,14 @@ defmodule PasswordlessWeb.App.MethodLive.Index do
 
   defp apply_action(socket, :authenticator) do
     assign(socket,
-      page_title: gettext("Authenticator"),
+      page_title: gettext("Authenticator (TOTP)"),
       page_subtitle: gettext("Manage authenticator settings")
     )
   end
 
   defp apply_action(socket, :security_key) do
     assign(socket,
-      page_title: gettext("Security Key"),
+      page_title: gettext("Security key"),
       page_subtitle: gettext("Manage security key settings")
     )
   end

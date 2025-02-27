@@ -9,7 +9,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
   alias Passwordless.Organizations.Membership
 
   attr :current_user, :map, required: true
-  attr :current_page, :atom
+  attr :current_page, :atom, required: true
   slot :action, required: false
   slot :inner_block
 
@@ -17,22 +17,13 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
     assigns = assign_new(assigns, :menu_items, fn -> menu_items(assigns[:current_user]) end)
 
     ~H"""
-    <.layout
-      current_user={@current_user}
-      current_page={:settings}
-      current_section={:app}
-      current_subpage={@current_page}
-    >
-      <.page_header title={PasswordlessWeb.Menus.translate_item(@current_page, @current_user)}>
-        {render_slot(@action)}
-      </.page_header>
-
-      <div class="flex flex-col gap-6">
-        <div class="flex">
-          <.tab_menu menu_items={@menu_items} current_tab={@current_page} variant="buttons" />
-        </div>
+    <.layout current_user={@current_user} current_page={:settings} current_section={:app}>
+      <.tabbed_layout current_page={@current_page} menu_items={@menu_items}>
+        <.page_header title={PasswordlessWeb.Menus.translate_item(@current_page, @current_user)}>
+          {render_slot(@action)}
+        </.page_header>
         {render_slot(@inner_block)}
-      </div>
+      </.tabbed_layout>
     </.layout>
     """
   end
@@ -40,7 +31,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
   # Private
 
   defp menu_items(%User{current_membership: %Membership{}} = user) do
-    org_routes = [:apps, :team, :billing, :organization]
+    org_routes = [:apps, :team, :billing, :domain, :organization]
 
     user_routes = [
       :edit_profile,

@@ -26,7 +26,7 @@
         <.field
           field={@form[:sender]}
           label={gettext("Sender email")}
-          suffix={gettext("@passwordless.tools")}
+          suffix={Passwordless.Domain.email_suffix(@domain)}
           disabled={not @enabled}
         />
       </div>

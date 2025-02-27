@@ -9,12 +9,13 @@ defmodule PasswordlessWeb.App.MethodLive.MagicLink do
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
     magic_link = Repo.preload(app, :magic_link).magic_link
+    domain = Repo.preload(app, :domain).domain
     changeset = Passwordless.change_magic_link(magic_link)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(magic_link: magic_link)
+     |> assign(magic_link: magic_link, domain: domain)
      |> assign_form(changeset)}
   end
 

@@ -2,43 +2,43 @@
   <.page_header title={gettext("Embed & API")}></.page_header>
 
   <div class="flex flex-col gap-6">
-    <.box class="flex flex-col gap-6 p-6">
-      <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
-        {gettext("App config")}
-      </h4>
-      <p class="text-slate-500 dark:text-slate-400">
-        Use the
-        <code class="font-code text-sm text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 py-0.5 px-1.5 rounded-lg">
-          App ID
-        </code>
-        to embed the login & authentication guards in your frontend apps. Never publish your
-        <code class="font-code text-sm text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 py-0.5 px-1.5 rounded-lg">
-          App Secret
-        </code>
-        , use it only when calling Passwordless API from your backend. If your secret is compromised, you can
-        <.a class="text-info-600 dark:text-info-300 hover:underline">regenerate</.a>
-        it at any time.
-      </p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <.field
-          name="test"
-          value={@current_app.id}
-          label="App ID"
-          readonly
-          copyable={true}
-          wrapper_class="!mb-0"
-          class="font-mono"
-        />
-        <.field
-          name="test2"
-          value="lololololo"
-          label="App Secret"
-          type="password"
-          readonly
-          viewable={true}
-          wrapper_class="!mb-0"
-          class="font-mono"
-        />
+    <.box padded>
+      <.form_header title="App config" />
+      <div class="flex flex-col gap-6">
+        <p class="text-slate-500 dark:text-slate-400">
+          Use the
+          <code class="font-code text-sm text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 py-0.5 px-1.5 rounded-lg">
+            App ID
+          </code>
+          to embed the login & authentication guards in your frontend. Never publish the
+          <code class="font-code text-sm text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 py-0.5 px-1.5 rounded-lg">
+            App Secret
+          </code>
+          , use it only when calling the API from your backend. If your secret is compromised, you can
+          <.a class="text-info-600 dark:text-info-300 hover:underline">regenerate</.a>
+          it at any time.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <.field
+            name="test"
+            value={@current_app.id}
+            label="App ID"
+            readonly
+            copyable={true}
+            wrapper_class="!mb-0"
+            class="font-mono"
+          />
+          <.field
+            name="test2"
+            value="lololololo"
+            label="App Secret"
+            type="password"
+            readonly
+            viewable={true}
+            wrapper_class="!mb-0"
+            class="font-mono"
+          />
+        </div>
       </div>
     </.box>
 

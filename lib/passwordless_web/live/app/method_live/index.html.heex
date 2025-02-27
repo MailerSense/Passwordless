@@ -1,12 +1,8 @@
 <.layout current_user={@current_user} current_page={:methods} current_section={:app}>
-  <.page_header title={@page_title}></.page_header>
-
-  <div class="flex flex-col gap-6">
-    <div class="flex">
-      <.tab_menu menu_items={method_menu_items()} current_tab={@live_action} variant="buttons" />
-    </div>
+  <.tabbed_layout current_page={@live_action} menu_items={method_menu_items()}>
+    <.page_header title={@page_title} />
     <.box>
       <.live_component id={@live_action} app={@current_app} module={@module} />
     </.box>
-  </div>
+  </.tabbed_layout>
 </.layout>

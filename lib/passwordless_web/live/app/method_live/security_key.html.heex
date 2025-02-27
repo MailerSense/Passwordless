@@ -19,11 +19,12 @@
         label={gettext("Relying Party ID")}
         disabled={not @enabled}
         help_text={
-          gettext("We recommend your application's top-level domain, e.g. 'example.com'.")
+          gettext("We recommend your application's top-level domain, e.g. '%{domain}'.",
+            domain: URI.parse(@app.website).host
+          )
         }
       />
       <.form_separator />
-      <.form_header title="Origins" />
       <div class="pc-form-field-wrapper">
         <.form_label>{gettext("Expected origins")}</.form_label>
         <div class="flex flex-col gap-y-2">
@@ -38,7 +39,6 @@
                 type="url"
                 label=""
                 field={expected_origin[:url]}
-                prefix={gettext("https://")}
                 required
                 wrapper_class="!mb-0 w-full grow"
               />

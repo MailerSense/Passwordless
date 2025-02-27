@@ -46,7 +46,11 @@ defmodule PasswordlessWeb.Components.Progress do
     >
       <span
         :for={item <- @items}
-        class={["pc-progress__inner--#{item.color}", "pc-multi-progress__inner"]}
+        class={[
+          "pc-progress__inner--#{item.color}",
+          "pc-multi-progress__inner",
+          if(item[:rounded], do: "rounded-r-full", else: nil)
+        ]}
         style={"width: #{Float.round(item.value/@max*100, 2)}%"}
       />
     </div>

@@ -7,6 +7,7 @@ defmodule Passwordless.Methods.MagicLink do
 
   alias Database.ChangesetExt
   alias Passwordless.App
+  alias Passwordless.Domain
 
   @derive {
     Flop.Schema,
@@ -21,6 +22,7 @@ defmodule Passwordless.Methods.MagicLink do
     field :fingerprint_device, :boolean, default: false
 
     belongs_to :app, App, type: :binary_id
+    belongs_to :domain, Domain, type: :binary_id
 
     timestamps()
   end
@@ -33,8 +35,9 @@ defmodule Passwordless.Methods.MagicLink do
     email_tracking
     fingerprint_device
     app_id
+    domain_id
   )a
-  @required_fields @fields
+  @required_fields @fields -- [:domain_id]
 
   @doc """
   A changeset.
@@ -45,7 +48,12 @@ defmodule Passwordless.Methods.MagicLink do
     |> validate_required(@required_fields)
     |> validate_string(:sender_name)
     |> validate_number(:expires, greater_than: 0, less_than_or_equal_to: 60)
+    |> unique_constraint(:app_id)
+    |> unsafe_validate_unique(:app_id, Passwordless.Repo)
+    |> unique_constraint(:domain_id)
+    |> unsafe_validate_unique(:domain_id, Passwordless.Repo)
     |> assoc_constraint(:app)
+    |> assoc_constraint(:domain)
   end
 
   # Private

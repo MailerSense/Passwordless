@@ -40,7 +40,17 @@ defmodule Passwordless.Organizations.OrgSeeder do
         "description" => "Demo App Description"
       })
 
-    for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(2_000) do
+    {:ok, domain} =
+      Passwordless.create_domain(app, %{
+        name: "auth.passwordless.tools",
+        kind: :sub_domain
+      })
+
+    for r <- default_domain_records(domain.name) do
+      {:ok, _} = Passwordless.create_domain_record(domain, r)
+    end
+
+    for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1_000) do
       {:ok, actor} =
         Passwordless.create_actor(app, %{
           name: Faker.Person.name(),
@@ -81,5 +91,36 @@ defmodule Passwordless.Organizations.OrgSeeder do
       name: Faker.Company.name(),
       email: Enum.random(@random_emails)
     }
+  end
+
+  defp default_domain_records(domain) do
+    {:ok, %{subdomain: subdomain}} = Domainatrex.parse(domain)
+
+    [
+      %{kind: :txt, name: "envelope.#{subdomain}", value: "v=spf1 include:amazonses.com ~all"},
+      %{
+        kind: :txt,
+        name: "envelope.#{subdomain}",
+        value: "v=DMARC1; p=none; rua=mailto:dmarc@mailersense.com;"
+      },
+      %{
+        kind: :cname,
+        name: "6gofkzgsmtm3puhejogwvpq4hdulyhbt._domainkey.#{subdomain}",
+        value: "6gofkzgsmtm3puhejogwvpq4hdulyhbt.dkim.amazonses.com",
+        verified: true
+      },
+      %{
+        kind: :cname,
+        name: "4pjglljley3rptdd6x6jiukdffssnfj4._domainkey.#{subdomain}",
+        value: "4pjglljley3rptdd6x6jiukdffssnfj4.dkim.amazonses.com",
+        verified: true
+      },
+      %{
+        kind: :cname,
+        name: "vons5ikwlowq2o4k53modgl3wtfi4eqd._domainkey.#{subdomain}",
+        value: "vons5ikwlowq2o4k53modgl3wtfi4eqd.dkim.amazonses.com",
+        verified: true
+      }
+    ]
   end
 end

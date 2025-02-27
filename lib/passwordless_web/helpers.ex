@@ -42,7 +42,7 @@ defmodule PasswordlessWeb.Helpers do
     [
       %{
         name: :magic_link,
-        label: "Magic Link",
+        label: "Magic link",
         icon: "remix-magic-line",
         path: ~p"/app/methods/magic-link",
         link_type: "live_patch"

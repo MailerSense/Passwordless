@@ -12,6 +12,8 @@ defmodule Passwordless do
   alias Passwordless.Action
   alias Passwordless.Actor
   alias Passwordless.App
+  alias Passwordless.Domain
+  alias Passwordless.DomainRecord
   alias Passwordless.Email
   alias Passwordless.Methods
   alias Passwordless.Organizations.Org
@@ -113,6 +115,44 @@ defmodule Passwordless do
 
   def delete_app(%App{} = app) do
     Repo.soft_delete(app)
+  end
+
+  # Domains
+
+  def list_domain_record(%Domain{} = domain) do
+    DomainRecord.order(Repo.preload(domain, :records).records)
+  end
+
+  def create_domain(%App{} = app, attrs \\ %{}) do
+    app
+    |> Ecto.build_assoc(:domain)
+    |> Domain.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_domain_record(%Domain{} = domain, attrs \\ %{}) do
+    domain
+    |> Ecto.build_assoc(:records)
+    |> DomainRecord.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def change_domain(%Domain{} = domain, attrs \\ %{}) do
+    if Ecto.get_meta(domain, :state) == :loaded do
+      Domain.changeset(domain, attrs)
+    else
+      Domain.create_changeset(domain, attrs)
+    end
+  end
+
+  def update_domain(%Domain{} = domain, attrs) do
+    domain
+    |> Domain.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_domain(%Domain{} = domain) do
+    Repo.soft_delete(domain)
   end
 
   # Methods

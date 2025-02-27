@@ -32,6 +32,8 @@ defmodule Passwordless.Methods.SMS do
     actor_email
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> unique_constraint(:app_id)
+    |> unsafe_validate_unique(:app_id, Passwordless.Repo)
     |> assoc_constraint(:app)
   end
 end

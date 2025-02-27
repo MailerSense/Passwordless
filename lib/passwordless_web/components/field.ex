@@ -605,39 +605,44 @@ defmodule PasswordlessWeb.Components.Field do
       </.field_label>
       <!-- Copyable Field Wrapper -->
       <div class={["pc-copyable-field-wrapper"]} x-data="{ copied: false }">
-        <!-- Input Field -->
-        <input
-          x-ref="copyInput"
-          type={@type || "text"}
-          name={@name}
-          id={@id}
-          value={Phoenix.HTML.Form.normalize_value(@type || "text", @value)}
-          class={[
-            @class,
-            "pc-copyable-field-input",
-            if(Util.present?(@prefix), do: "!rounded-l-none")
-          ]}
-          readonly
-          {@rest}
-        />
-        <!-- Copy Button -->
-        <button
-          type="button"
-          class="pc-copyable-field-button"
-          @click="
+        <div class="flex">
+          <span :if={Util.present?(@prefix)} class="pc-field-prefix">
+            {@prefix}
+          </span>
+          <!-- Input Field -->
+          <input
+            x-ref="copyInput"
+            type={@type || "text"}
+            name={@name}
+            id={@id}
+            value={Phoenix.HTML.Form.normalize_value(@type || "text", @value)}
+            class={[
+              @class,
+              "pc-copyable-field-input",
+              if(Util.present?(@prefix), do: "!rounded-l-none")
+            ]}
+            readonly
+            {@rest}
+          />
+          <!-- Copy Button -->
+          <button
+            type="button"
+            class="pc-copyable-field-button"
+            @click="
             navigator.clipboard.writeText($refs.copyInput.value)
               .then(() => { copied = true; setTimeout(() => copied = false, 2000); })
           "
-        >
-          <!-- Copy Icon -->
-          <span x-show="!copied" class="pc-copyable-field-icon-container">
-            <Icon.icon name="remix-file-copy-line" class="pc-copyable-field-icon" />
-          </span>
-          <!-- Copied Icon -->
-          <span x-show="copied" class="pc-copyable-field-icon-container" style="display: none;">
-            <Icon.icon name="remix-check-line" class="pc-copyable-field-icon" />
-          </span>
-        </button>
+          >
+            <!-- Copy Icon -->
+            <span x-show="!copied" class="pc-copyable-field-icon-container">
+              <Icon.icon name="remix-file-copy-line" class="pc-copyable-field-icon" />
+            </span>
+            <!-- Copied Icon -->
+            <span x-show="copied" class="pc-copyable-field-icon-container" style="display: none;">
+              <Icon.icon name="remix-check-line" class="pc-copyable-field-icon" />
+            </span>
+          </button>
+        </div>
       </div>
       <!-- Error Message -->
       <.field_error :for={msg <- @errors}>{msg}</.field_error>
@@ -706,10 +711,7 @@ defmodule PasswordlessWeb.Components.Field do
           </div>
         <% Util.present?(@prefix) or Util.present?(@suffix) -> %>
           <div class="flex">
-            <span
-              :if={Util.present?(@prefix)}
-              class="flex items-center justify-center px-3.5 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-r-0 rounded-l-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none"
-            >
+            <span :if={Util.present?(@prefix)} class="pc-field-prefix">
               {@prefix}
             </span>
             <input
@@ -726,10 +728,7 @@ defmodule PasswordlessWeb.Components.Field do
               disabled={@disabled}
               {@rest}
             />
-            <span
-              :if={Util.present?(@suffix)}
-              class="flex items-center justify-center px-3.5 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-l-0 rounded-r-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none"
-            >
+            <span :if={Util.present?(@suffix)} class="pc-field-suffix">
               {@suffix}
             </span>
           </div>

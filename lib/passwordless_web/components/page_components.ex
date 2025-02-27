@@ -111,7 +111,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
   def sidebar_tabs_container(assigns) do
     ~H"""
     <.box class="flex flex-col border border-slate-200 divide-y divide-slate-200 dark:border-none dark:divide-slate-700 md:divide-y-0 md:divide-x md:flex-row">
-      <div class="flex-shrink-0 w-full py-6 md:w-72">
+      <div class="flex-shrink-0 py-6 md:w-72">
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </div>
 
@@ -138,7 +138,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
       link_type="live_redirect"
       class={[
         menu_item_classes(@is_active?),
-        "flex items-center rounded-xl px-4 py-3 text-base font-medium leading-normal tracking-tight border-transparent group gap-4 transition duration-200"
+        "flex items-center rounded-lg px-4 py-3 text-base font-medium tracking-tight group gap-4 transition duration-200"
       ]}
     >
       <.icon name={@icon} class={["w-6 h-6", menu_item_icon_classes(@is_active?)]} />

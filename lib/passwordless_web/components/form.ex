@@ -58,8 +58,7 @@ defmodule PasswordlessWeb.Components.Form do
   attr(:rest, :global, include: ~w(for))
 
   def form_label(assigns) do
-    assigns =
-      assign(assigns, :classes, label_classes(assigns))
+    assigns = assign(assigns, :classes, label_classes(assigns))
 
     ~H"""
     <%= if @form && @field do %>

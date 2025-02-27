@@ -17,18 +17,9 @@ defmodule PasswordlessWeb.CoreComponents do
 
   def tabbed_layout(assigns) do
     ~H"""
-    <div class="flex h-full">
-      <aside class="py-12 w-56 z-20 flex flex-col select-none pr-6">
-        <%= if menu_items_grouped?(@menu_items) do %>
-          <.tabbed_menu_group
-            :for={menu_group <- @menu_items}
-            title={menu_group[:title]}
-            menu_items={menu_group.menu_items}
-            current_page={@current_page}
-          />
-        <% else %>
-          <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
-        <% end %>
+    <div class="flex flex-col md:flex-row gap-6">
+      <aside class="py-6 md:py-12 w-48 flex flex-col select-none shrink-0">
+        <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </aside>
 
       <div class="flex-grow lg:pl-6 pb-12">
@@ -135,6 +126,7 @@ defmodule PasswordlessWeb.CoreComponents do
   """
   attr :current_user, :map, default: nil
   attr :current_page, :any, required: true
+  attr :current_section, :atom, required: true
   attr :app_menu_items, :list
   attr :user_menu_items, :list
   attr :main_menu_items, :list

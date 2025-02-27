@@ -45,6 +45,8 @@ defmodule Passwordless.Methods.SecurityKey do
     )
     |> validate_required(@required_fields)
     |> validate_relying_party_id()
+    |> unique_constraint(:app_id)
+    |> unsafe_validate_unique(:app_id, Passwordless.Repo)
     |> assoc_constraint(:app)
   end
 

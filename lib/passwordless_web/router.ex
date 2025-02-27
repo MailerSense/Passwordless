@@ -157,6 +157,10 @@ defmodule PasswordlessWeb.Router do
       live "/apps/:id/edit", App.AppLive.Index, :edit
       live "/apps/:id/delete", App.AppLive.Index, :delete
 
+      # Domain
+      live "/domain", App.DomainLive.Index, :index
+      live "/domain/change", App.DomainLive.Index, :change
+
       # Billing
       live "/billing", App.BillingLive.Index, :index
       live "/subscribe/success", App.BillingLive.SubscribeSuccessLive, :index

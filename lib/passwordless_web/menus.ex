@@ -418,6 +418,16 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
+  def get_link(:domain = name, _user) do
+    %{
+      name: name,
+      label: gettext("Domain"),
+      path: ~p"/app/domain",
+      icon: "remix-global-line",
+      link_type: "live_patch"
+    }
+  end
+
   def get_link(:billing = name, _user) do
     %{
       name: name,
