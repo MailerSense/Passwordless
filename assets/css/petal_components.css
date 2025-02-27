@@ -28,7 +28,7 @@
 /* Buttons - sizes */
 
 .pc-button--xs {
-  @apply text-xs leading-4 px-2.5 py-[5px];
+  @apply text-xs leading-4 px-2.5 py-1.5;
 }
 .pc-button--sm {
   @apply px-3.5 py-2 h-[42px] text-sm font-semibold leading-tight;
@@ -87,7 +87,7 @@
 }
 
 .pc-button__spinner-icon--xs {
-  @apply w-5 h-5;
+  @apply w-4 h-4;
 }
 .pc-button__spinner-icon--sm {
   @apply w-5 h-5;
@@ -108,7 +108,7 @@
   @apply flex items-center gap-3 whitespace-nowrap;
 }
 .pc-button--with-icon--xs {
-  @apply flex items-center gap-[10px] whitespace-nowrap;
+  @apply flex items-center gap-2 whitespace-nowrap;
 }
 
 /* Icon Button */
