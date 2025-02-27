@@ -50,7 +50,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
           content="Join our Discord Community"
         />-->
         <h1 class="text-white font-display font-bold text-4xl sm:text-5xl md:text-6xl md:leading-[74px] tracking-tight text-center mb-6">
-          Test Automation, 10x Faster
+          Strong Passwordless authentication in minutes
         </h1>
         <p class="inline-block text-xl text-white text-center md:max-w-2xl mb-6 sm:mb-10 leading-[30px]">
           Run

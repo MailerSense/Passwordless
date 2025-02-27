@@ -5,7 +5,7 @@ defmodule PasswordlessWeb.PageController do
 
   def landing_page(conn, _params) do
     render(conn, :landing_page,
-      page_title: gettext("Passwordless: Test Automation, 10x Faster"),
+      page_title: gettext("Passwordless"),
       page_description:
         gettext(
           "More than uptime checks - catch website bugs with Playwright and never miss regressions in production again. No complex setup required. Flexible pricing."

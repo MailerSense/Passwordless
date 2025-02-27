@@ -5,7 +5,6 @@ defmodule Passwordless.Methods.Email do
 
   use Passwordless.Schema
 
-
   alias Database.ChangesetExt
   alias Passwordless.App
   alias Passwordless.Domain
