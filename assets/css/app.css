@@ -2,7 +2,6 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 @import "petal_components.css";
-@import "combo-box.css";
 @import "tippy.js/dist/tippy.css";
 
 .dark {
@@ -86,12 +85,14 @@
 
   input[type="range"]::-webkit-slider-runnable-track {
     @apply h-2 rounded-full;
-    background: linear-gradient(#2e90fa, #2e90fa) 0 / var(--sx) 100% no-repeat,
+    background:
+      linear-gradient(#2e90fa, #2e90fa) 0 / var(--sx) 100% no-repeat,
       #f1f5f9;
   }
 
   .dark input[type="range"]::-webkit-slider-runnable-track {
-    background: linear-gradient(#2e90fa, #2e90fa) 0 / var(--sx) 100% no-repeat,
+    background:
+      linear-gradient(#2e90fa, #2e90fa) 0 / var(--sx) 100% no-repeat,
       rgba(51, 65, 85, 0.5);
   }
 
@@ -100,7 +101,8 @@
     border: 1px solid #b2b2b2;
     border-radius: 0.5em;
     box-shadow: none;
-    background: linear-gradient(#1570ef, #1570ef) 0 / var(--sx) 100% no-repeat,
+    background:
+      linear-gradient(#1570ef, #1570ef) 0 / var(--sx) 100% no-repeat,
       #efefef;
   }
 

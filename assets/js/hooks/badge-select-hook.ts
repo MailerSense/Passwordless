@@ -4,7 +4,7 @@ class BadgeSelectHook extends Hook {
   public mounted() {
     this.el.addEventListener("selected-change", (event) => {
       const input = this.el.querySelector(
-        "input[type=\"hidden\"]",
+        'input[type="hidden"]',
       ) as HTMLInputElement;
       if (!input) {
         throw new Error("No hidden input found.");
