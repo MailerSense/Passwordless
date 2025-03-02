@@ -36,7 +36,7 @@
       <:col :let={actor} field={:name}>
         <.a
           to={~p"/app/users/#{actor}/edit"}
-          class="text-info-600 dark:text-info-300 underline"
+          class="text-info-600 dark:text-info-300 hover:underline"
           label={Actor.handle(actor)}
           link_type="live_redirect"
         />
@@ -62,7 +62,7 @@
       <:actions :let={actor}>
         <.dropdown placement="left">
           <:trigger_element>
-            <.icon name="custom-more-dots" class="w-6 h-6" />
+            <.icon name="custom-more-dots" class="w-5 h-5" />
           </:trigger_element>
           <.dropdown_menu_item link_type="live_redirect" to={~p"/app/users/#{actor}/edit"}>
             <.icon name="remix-pencil-line" class="w-6 h-6 shrink-0" />

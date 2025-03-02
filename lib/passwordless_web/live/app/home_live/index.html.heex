@@ -88,7 +88,7 @@
       <:col :let={action} label={gettext("User")} field={:user}>
         <.a
           to={~p"/app/users/#{action.actor}/edit"}
-          class="text-info-600 dark:text-info-300 underline"
+          class="text-info-600 dark:text-info-300 hover:underline"
           label={Actor.handle(action.actor)}
           link_type="live_redirect"
         />
@@ -96,7 +96,6 @@
       <:col :let={action} label={gettext("Action")} field={:name}>
         {Phoenix.Naming.humanize(Macro.underscore(action.name))}
       </:col>
-
       <:col :let={action} label={gettext("Details")} field={:details}>
         Requested a Magic Link
       </:col>
@@ -116,7 +115,7 @@
       <:actions :let={action}>
         <.dropdown placement="left">
           <:trigger_element>
-            <.icon name="custom-more-dots" class="w-6 h-6" />
+            <.icon name="custom-more-dots" class="w-5 h-5" />
           </:trigger_element>
           <.dropdown_menu_item link_type="live_redirect" to={~p"/app/users/#{action.actor}/edit"}>
             <.icon name="remix-pencil-line" class="w-6 h-6 shrink-0" />

@@ -25,12 +25,12 @@ class ComboBoxHook extends Hook {
 
     initialSelect.value = latestSelect.value;
 
-    let latestOptions = latestSelect.querySelectorAll("option");
-    let initialOptions = initialSelect.querySelectorAll("option");
+    const latestOptions = latestSelect.querySelectorAll("option");
+    const initialOptions = initialSelect.querySelectorAll("option");
 
     // Convert latestOptions and initialOptions to arrays
-    let latestOptionsArray = Array.from(latestOptions);
-    let initialOptionsArray = Array.from(initialOptions);
+    const latestOptionsArray = Array.from(latestOptions);
+    const initialOptionsArray = Array.from(initialOptions);
 
     // Sort the arrays by their values
     latestOptionsArray.sort((a, b) => a.value.localeCompare(b.value));

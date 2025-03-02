@@ -15,11 +15,7 @@
     </div>
     <.data_table meta={@meta} items={@memberships}>
       <:if_empty>{gettext("No %{models} found", models: gettext("members"))}</:if_empty>
-      <:col
-        :let={membership}
-        field={:name}
-        body_class="!font-medium !text-slate-900 dark:!text-white"
-      >
+      <:col :let={membership} field={:name}>
         {user_name(membership.user)}
       </:col>
       <:col :let={membership} field={:email}>

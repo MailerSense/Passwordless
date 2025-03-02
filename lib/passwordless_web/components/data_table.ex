@@ -137,7 +137,7 @@ defmodule PasswordlessWeb.Components.DataTable do
                 </.tr>
               <% end %>
 
-              <.tr :for={item <- @items}>
+              <.tr :for={item <- @items} class="pc-table__tr-striped">
                 <.td
                   :for={col <- @col}
                   class={[
@@ -243,6 +243,7 @@ defmodule PasswordlessWeb.Components.DataTable do
           <.tr
             :for={{id, item} <- @items}
             id={id}
+            class="pc-table__tr-striped"
             phx-mounted={
               Phoenix.LiveView.JS.transition(
                 {"transition ease-in-out duration-150", "opacity-0 translate-y-2",
