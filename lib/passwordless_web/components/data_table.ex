@@ -22,6 +22,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :meta, Flop.Meta, required: true
   attr :items, :list, required: true
   attr :title, :string, default: nil
+  attr :title_func, {:fun, 1}, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
   attr :base_url_params, :map, required: false
 
@@ -105,7 +106,12 @@ defmodule PasswordlessWeb.Components.DataTable do
         switch_items={@switch_items}
       />
       <div class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
-        <.table_header :if={@title} meta={@meta} title={@title} />
+        <.table_header
+          :if={Util.present?(@title) or Util.present?(@title_func)}
+          meta={@meta}
+          title={@title}
+          title_func={@title_func}
+        />
         <div class="pc-data-table">
           <.table>
             <thead class="pc-table__thead-striped">
@@ -371,9 +377,16 @@ defmodule PasswordlessWeb.Components.DataTable do
   # Private
 
   attr :meta, Flop.Meta, default: nil
-  attr :title, :string, required: true
+  attr :title, :string, default: nil
+  attr :title_func, {:fun, 1}, default: nil
 
   defp table_header(assigns) do
+    assigns =
+      case assigns[:title_func] do
+        fun when is_function(fun, 1) -> assign(assigns, :title, fun.(assigns[:meta]))
+        nil -> assigns
+      end
+
     ~H"""
     <div class="px-6 py-5 flex items-center gap-4">
       <div class="flex items-center gap-2">

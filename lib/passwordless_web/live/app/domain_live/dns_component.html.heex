@@ -4,16 +4,14 @@
     <.simple_table items={@records}>
       <:if_empty>{gettext("No %{models} found", models: gettext("DNS records"))}</:if_empty>
       <:col :let={record} field={:name}>
-        <% elem_id = UUIDv7.generate() %>
         <div
-          id={elem_id <> "-tooltip"}
+          id={record.name <> "-tooltip"}
           class="cursor-pointer"
           phx-hook="TippyHook"
           data-tippy-content={gettext("Click to copy: %{value}", value: record.name)}
         >
           <span
-            id={elem_id <> "-clipboard"}
-            class="text-slate-900 dark:text-white text-sm font-medium"
+            id={record.name <> "-clipboard"}
             phx-hook="ClipboardHook"
             data-content={record.name}
           >
@@ -24,7 +22,7 @@
           </span>
         </div>
       </:col>
-      <:col :let={record} field={:kind}>
+      <:col :let={record} field={:kind} body_class="font-mono">
         {String.upcase(Atom.to_string(record.kind))}
       </:col>
       <:col :let={record} field={:value}>

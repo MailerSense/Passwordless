@@ -407,6 +407,12 @@
   @apply text-sm font-medium text-slate-900 dark:text-white;
 }
 
+/* User badge */
+
+.pc-user-badge {
+  @apply text-info-600 dark:text-info-300 hover:underline;
+}
+
 /* Alerts */
 
 .pc-alert {

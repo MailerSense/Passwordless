@@ -159,6 +159,8 @@ defmodule Passwordless.Actor do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields ++ [:name])
     |> validate_name()
+    |> cast_assoc(:email)
+    |> cast_assoc(:phone)
     |> assoc_constraint(:app)
   end
 

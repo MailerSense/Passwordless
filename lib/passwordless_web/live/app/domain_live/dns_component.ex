@@ -38,20 +38,17 @@ defmodule PasswordlessWeb.App.DomainLive.DNSComponent do
         }
       end
 
-    assigns =
-      assigns
-      |> assign(classes)
-      |> assign(elem_id: UUIDv7.generate())
+    assigns = assign(assigns, classes)
 
     ~H"""
     <span
-      id={@elem_id <> "-tooltip"}
+      id={@value <> "-tooltip"}
       phx-hook="TippyHook"
       data-tippy-content={gettext("Click to copy: %{value}", value: @value)}
       {@rest}
     >
       <span
-        id={@elem_id <> "-clipboard"}
+        id={@value <> "-clipboard"}
         class="flex gap-1 items-center cursor-pointer"
         phx-hook="ClipboardHook"
         data-content={@value}

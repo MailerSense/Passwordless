@@ -8,7 +8,7 @@
       phx-submit="save"
       phx-change="validate"
     >
-      <.field field={@form[:name]} autocomplete="name" required />
+      <.field field={@form[:name]} autocomplete="name" phx-debounce="blur" required />
       <.field type="select" field={@form[:language]} options={@languages} required />
     </.form>
 

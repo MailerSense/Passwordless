@@ -66,11 +66,17 @@ defmodule Database.ChangesetExt do
   Validates an email address by ensuring it is trimmed, has a valid format,
   corresponds to a valid MX record, is not a burner email, and is less than 320 characters.
   """
-  def validate_email(%Ecto.Changeset{} = changeset, field \\ :email) when is_atom(field) do
+  def validate_email(%Ecto.Changeset{} = changeset, field \\ :email, opts \\ []) when is_atom(field) do
     changeset
     |> ensure_trimmed(field)
     |> ensure_lowercase(field)
     |> validate_change(field, fn ^field, email ->
+      email =
+        case Keyword.get(opts, :suffix) do
+          suffix when is_binary(suffix) -> "#{email}@#{suffix}"
+          _ -> email
+        end
+
       case Util.Email.validate(email) do
         :ok -> []
         {:error, _key, message} -> [{field, message}]
@@ -82,11 +88,17 @@ defmodule Database.ChangesetExt do
   Validates an email address by ensuring it is trimmed, has a valid format,
   is not a burner email, and is less than 320 characters.
   """
-  def validate_email_format(%Ecto.Changeset{} = changeset, field \\ :email) when is_atom(field) do
+  def validate_email_format(%Ecto.Changeset{} = changeset, field \\ :email, opts \\ []) when is_atom(field) do
     changeset
     |> ensure_trimmed(field)
     |> ensure_lowercase(field)
     |> validate_change(field, fn ^field, email ->
+      email =
+        case Keyword.get(opts, :suffix) do
+          suffix when is_binary(suffix) -> "#{email}@#{suffix}"
+          _ -> email
+        end
+
       case Util.Email.validate(email, [:format, :domain, :burner]) do
         :ok -> []
         {:error, _key, message} -> [{field, message}]

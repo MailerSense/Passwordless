@@ -34,7 +34,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
     {:ok, org, _membership} = Organizations.create_org_with_owner(user, attrs)
 
     {:ok, app} =
-      Passwordless.create_full_app(org, %{
+      Passwordless.create_app(org, %{
         "name" => "Demo App",
         "website" => "https://passwordless.tools",
         "display_name" => "Demo App"
@@ -44,6 +44,31 @@ defmodule Passwordless.Organizations.OrgSeeder do
       Passwordless.create_domain(app, %{
         name: "auth.passwordless.tools",
         kind: :sub_domain
+      })
+
+    {:ok, methods} =
+      Passwordless.create_methods(app, %{
+        magic_link: %{
+          sender: "notifications",
+          sender_name: app.name,
+          domain_id: domain.id
+        },
+        email: %{
+          sender: "notifications",
+          sender_name: app.name,
+          domain_id: domain.id
+        },
+        authenticator: %{
+          issuer_name: app.name
+        },
+        security_key: %{
+          relying_party_id: URI.parse(app.website).host,
+          expected_origins: [%{url: app.website}]
+        },
+        passkey: %{
+          relying_party_id: URI.parse(app.website).host,
+          expected_origins: [%{url: app.website}]
+        }
       })
 
     for r <- default_domain_records(domain.name) do

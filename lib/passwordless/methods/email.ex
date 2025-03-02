@@ -5,9 +5,12 @@ defmodule Passwordless.Methods.Email do
 
   use Passwordless.Schema
 
+  import Ecto.Query
+
   alias Database.ChangesetExt
   alias Passwordless.App
   alias Passwordless.Domain
+  alias Passwordless.Repo
 
   @derive {
     Flop.Schema,
@@ -44,6 +47,7 @@ defmodule Passwordless.Methods.Email do
     actor_email
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> validate_sender()
     |> validate_string(:sender_name)
     |> validate_number(:expires, greater_than: 0, less_than_or_equal_to: 60)
     |> unique_constraint(:app_id)
@@ -60,5 +64,15 @@ defmodule Passwordless.Methods.Email do
     changeset
     |> ChangesetExt.ensure_trimmed(field)
     |> validate_length(field, min: 1, max: 128)
+  end
+
+  defp validate_sender(changeset) do
+    with domain_id when is_binary(domain_id) <- get_field(changeset, :domain_id),
+         domain_name when is_binary(domain_name) <-
+           Repo.one(from(d in Domain, where: d.id == ^domain_id, select: d.name)) do
+      ChangesetExt.validate_email(changeset, :sender, suffix: domain_name)
+    else
+      _ -> changeset
+    end
   end
 end

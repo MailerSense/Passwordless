@@ -25,6 +25,7 @@
       meta={@meta}
       items={@actors}
       title={gettext("All users")}
+      title_func={@title_func}
       switch_items={
         [
           %{name: :all, label: gettext("All"), clear: true}
@@ -36,7 +37,7 @@
       <:col :let={actor} field={:name}>
         <.a
           to={~p"/app/users/#{actor}/edit"}
-          class="text-info-600 dark:text-info-300 hover:underline"
+          class="pc-user-badge"
           label={Actor.handle(actor)}
           link_type="live_redirect"
         />

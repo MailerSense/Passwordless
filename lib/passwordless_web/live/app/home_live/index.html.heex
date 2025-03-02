@@ -88,7 +88,7 @@
       <:col :let={action} label={gettext("User")} field={:user}>
         <.a
           to={~p"/app/users/#{action.actor}/edit"}
-          class="text-info-600 dark:text-info-300 hover:underline"
+          class="pc-user-badge"
           label={Actor.handle(action.actor)}
           link_type="live_redirect"
         />
