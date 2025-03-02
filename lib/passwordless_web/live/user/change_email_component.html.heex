@@ -1,29 +1,41 @@
 <div>
-  <.form
-    id="change-email-form"
-    for={@form}
-    phx-submit="submit"
-    phx-change="validate"
-    phx-target={@myself}
-  >
-    <.field
-      type="email"
-      field={@form[:email]}
-      label={gettext("Email")}
-      placeholder={gettext("eg. john@gmail.com")}
-      phx-debounce="blur"
-      autocomplete="email"
-      {alpine_autofocus()}
-    />
-
-    <div class="flex justify-end gap-3">
-      <.button
-        size="md"
-        label="Cancel"
-        color="light-flat"
-        phx-click={JS.exec("data-cancel", to: "#modal")}
-      />
-      <.button icon="remix-mail-open-line" label={gettext("Change Email")} />
+  <% origin = "right" %>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+    <div class="flex flex-col gap-8">
+      <.form
+        id="change-email-form"
+        for={@form}
+        phx-submit="submit"
+        phx-change="validate"
+        phx-target={@myself}
+      >
+        <.field
+          type="email"
+          field={@form[:email]}
+          label={gettext("Email")}
+          placeholder={gettext("eg. john@gmail.com")}
+          autocomplete="email"
+          required
+        />
+      </.form>
     </div>
-  </.form>
+
+    <:actions>
+      <.button
+        size="wide"
+        type="submit"
+        color="light-flat"
+        label={gettext("Cancel")}
+        phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+      />
+      <.button
+        id="change-email-form-submit"
+        size="wide"
+        type="submit"
+        form="change-email-form"
+        disabled={not @form.source.valid?}
+        label={gettext("Change")}
+      />
+    </:actions>
+  </.slide_over>
 </div>

@@ -192,7 +192,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
       add :website, :string, null: false
-      add :description, :string
+      add :display_name, :string, null: false
+      add :primary_button_color, :string, null: false
+      add :secondary_button_color, :string, null: false
 
       add :org_id, references(:orgs, type: :uuid, on_delete: :delete_all), null: false
 
@@ -404,7 +406,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create unique_index(:domains, [:app_id])
+    create unique_index(:domains, [:app_id], where: "deleted_at is null")
     create unique_index(:domains, [:name], where: "verified AND deleted_at is null")
 
     create table(:domain_records, primary_key: false) do
@@ -445,6 +447,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:sms_methods, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
+      add :expires, :integer, null: false, default: 5
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 

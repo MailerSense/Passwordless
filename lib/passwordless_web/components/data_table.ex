@@ -6,6 +6,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   use Phoenix.Component
   use Gettext, backend: PasswordlessWeb.Gettext
 
+  import PasswordlessWeb.Components.Badge
   import PasswordlessWeb.Components.Field
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Pagination
@@ -56,7 +57,6 @@ defmodule PasswordlessWeb.Components.DataTable do
     attr :align_right, :boolean, doc: "Aligns the column to the right"
   end
 
-  slot :info, required: false
   slot :actions, required: false
   slot :if_empty, required: false
 
@@ -105,6 +105,7 @@ defmodule PasswordlessWeb.Components.DataTable do
         switch_items={@switch_items}
       />
       <div class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
+        <.table_header :if={@title} meta={@meta} title={@title} />
         <div class="pc-data-table">
           <.table>
             <thead class="pc-table__thead-striped">
@@ -207,12 +208,16 @@ defmodule PasswordlessWeb.Components.DataTable do
     attr :align_right, :boolean, doc: "Aligns the column to the right"
   end
 
+  slot :header
   slot :actions, required: false
   slot :if_empty, required: false
 
   def stream_table(assigns) do
     ~H"""
     <div class={["pc-table__wrapper", "pc-stream-table__wrapper", @class]}>
+      <%= if Util.present?(@header) do %>
+        {render_slot(@header)}
+      <% end %>
       <.table_header :if={@title} title={@title} />
       <.table>
         <thead class="pc-table__thead-striped">
@@ -364,6 +369,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   # Private
 
+  attr :meta, Flop.Meta, default: nil
   attr :title, :string, required: true
 
   defp table_header(assigns) do
@@ -373,6 +379,12 @@ defmodule PasswordlessWeb.Components.DataTable do
         <h3 class="text-lg font-medium text-slate-900 dark:text-white">
           {@title}
         </h3>
+        <.badge
+          :if={Util.present?(@meta)}
+          size="sm"
+          color="primary"
+          label={Passwordless.Locale.Number.to_string!(@meta.total_count)}
+        />
       </div>
     </div>
     """
@@ -418,7 +430,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
             <button
               class={[
-                "h-[42px]",
+                "h-[46px]",
                 "bg-white dark:bg-transparent select-none",
                 "text-sm font-semibold text-slate-700 dark:text-slate-200",
                 "flex items-center rounded-lg px-4 py-2.5 bg-white",

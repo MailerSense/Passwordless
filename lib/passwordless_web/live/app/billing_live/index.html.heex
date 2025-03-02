@@ -1,52 +1,18 @@
 <.tabbed_settings_layout current_user={@current_user} current_page={:billing}>
-  <:action>
-    <div class="flex gap-3">
-      <.button
-        to={"mailto:#{Passwordless.config(:sales_email)}"}
-        size="md"
-        color="light"
-        label={gettext("Contact support")}
-        icon="remix-phone-line"
-        link_type="a"
-      />
+  <div class="flex flex-col gap-6">
+    <div class="flex justify-between items-center gap-3">
+      <h3 class={["text-lg font-semibold text-slate-900 dark:text-white"]}>
+        {gettext("Billing")}
+      </h3>
+
       <.button
         to={~p"/"}
         size="md"
         color="primary"
         label={gettext("Manage plan")}
-        icon="remix-coin-line"
+        icon="remix-external-link-line"
         link_type="a"
       />
     </div>
-  </:action>
-
-  <div class="flex flex-col gap-6">
-    <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      <.simple_card badge={gettext("Plan")} content={gettext("Business")} />
-      <.simple_card badge={gettext("Usage")} content={gettext("14,000 users")} />
-      <.simple_card badge={gettext("Estimated fee")} content={gettext("$99,00")} />
-    </div>
-
-    <.data_table meta={@meta} items={@logs}>
-      <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-      <:col :let={log} field={:action} label={gettext("Event")}>
-        {log.action}
-      </:col>
-      <:col :let={log} field={:domain} label={gettext("Kind")}>
-        {log.domain}
-      </:col>
-      <:col :let={log} field={:inserted_at} label={gettext("Happened")}>
-        {format_date_time(log.inserted_at)}
-      </:col>
-      <:col actions></:col>
-      <:actions :let={log}>
-        <.a
-          icon="custom-trash"
-          label={gettext("Download")}
-          class="text-info-700 dark:text-info-200"
-          link_type="live_patch"
-        />
-      </:actions>
-    </.data_table>
   </div>
 </.tabbed_settings_layout>

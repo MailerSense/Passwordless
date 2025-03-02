@@ -1,0 +1,52 @@
+<div>
+  <% origin = "right" %>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin} max_width="xl">
+    <.simple_table items={@records}>
+      <:if_empty>{gettext("No %{models} found", models: gettext("DNS records"))}</:if_empty>
+      <:col :let={record} field={:name}>
+        <% elem_id = UUIDv7.generate() %>
+        <div
+          id={elem_id <> "-tooltip"}
+          class="cursor-pointer"
+          phx-hook="TippyHook"
+          data-tippy-content={gettext("Click to copy: %{value}", value: record.name)}
+        >
+          <span
+            id={elem_id <> "-clipboard"}
+            class="text-gray-900 dark:text-white text-sm font-medium"
+            phx-hook="ClipboardHook"
+            data-content={record.name}
+          >
+            <span class="before-copied">{record.name}</span>
+            <span class="hidden text-green-600 after-copied dark:text-green-300">
+              Copied!
+            </span>
+          </span>
+        </div>
+      </:col>
+      <:col :let={record} field={:kind}>
+        {String.upcase(Atom.to_string(record.kind))}
+      </:col>
+      <:col :let={record} field={:value}>
+        <.value_line verified={record.verified} value={record.value} />
+      </:col>
+    </.simple_table>
+
+    <:actions>
+      <.button
+        size="wide"
+        type="submit"
+        color="light-flat"
+        label={gettext("Cancel")}
+        phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+      />
+      <.button
+        to={~p"/app/domain/dns/download"}
+        size="wide"
+        label={gettext("Download")}
+        download
+        link_type="a"
+      />
+    </:actions>
+  </.slide_over>
+</div>

@@ -2,6 +2,14 @@
   <.page_header title={gettext("Home")}>
     <div class="flex gap-3">
       <.button
+        to={~p"/app/reports"}
+        size="md"
+        color="light"
+        label={gettext("View reports")}
+        icon="remix-pie-chart-line"
+        link_type="live_patch"
+      />
+      <.button
         to={~p"/app/users"}
         size="md"
         color="light"
@@ -69,7 +77,13 @@
         }
       ]}
     />
-    <.stream_table id="actions" meta={@meta} items={@streams.actions} finished={@finished}>
+    <.stream_table
+      id="actions"
+      meta={@meta}
+      title="Recent activity"
+      items={@streams.actions}
+      finished={@finished}
+    >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
       <:col
         :let={action}

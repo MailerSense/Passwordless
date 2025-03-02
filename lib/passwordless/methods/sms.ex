@@ -13,6 +13,7 @@ defmodule Passwordless.Methods.SMS do
   }
   schema "sms_methods" do
     field :enabled, :boolean, default: true
+    field :expires, :integer, default: 5
 
     belongs_to :app, App, type: :binary_id
 
@@ -21,6 +22,7 @@ defmodule Passwordless.Methods.SMS do
 
   @fields ~w(
     enabled
+    expires
     app_id
   )a
   @required_fields @fields
@@ -32,6 +34,7 @@ defmodule Passwordless.Methods.SMS do
     actor_email
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> validate_number(:expires, greater_than: 0, less_than_or_equal_to: 60)
     |> unique_constraint(:app_id)
     |> unsafe_validate_unique(:app_id, Passwordless.Repo)
     |> assoc_constraint(:app)

@@ -142,11 +142,14 @@ defmodule PasswordlessWeb.Components.Form do
             </div>
           </label>
         <% "switch" -> %>
-          <label class="pc-checkbox-label">
+          <label class="pc-switch-label">
             <.switch form={@form} field={@field} {@rest} />
-            <div class={
-              label_classes(%{form: @form, field: @field, type: "checkbox", class: @label_class})
-            }>
+            <div
+              :if={Util.present?(@label)}
+              class={
+                label_classes(%{form: @form, field: @field, type: "checkbox", class: @label_class})
+              }
+            >
               {@label}
             </div>
           </label>

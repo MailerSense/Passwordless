@@ -22,7 +22,9 @@ defmodule Passwordless.App do
   schema "apps" do
     field :name, :string
     field :website, :string
-    field :description, :string
+    field :display_name, :string
+    field :primary_button_color, :string
+    field :secondary_button_color, :string
 
     # Domain
     has_one :domain, Domain
@@ -53,8 +55,15 @@ defmodule Passwordless.App do
     from c in __MODULE__, where: c.org_id == ^org.id
   end
 
-  @fields ~w(name website description org_id)a
-  @required_fields ~w(name website org_id)a
+  @fields ~w(
+    name
+    website
+    display_name
+    primary_button_color
+    secondary_button_color
+    org_id
+  )a
+  @required_fields @fields
 
   @doc """
   A changeset to update an existing organization.
@@ -65,7 +74,7 @@ defmodule Passwordless.App do
     |> validate_required(@required_fields)
     |> validate_name()
     |> validate_website()
-    |> validate_description()
+    |> validate_display_name()
     |> assoc_constraint(:org)
   end
 
@@ -83,9 +92,9 @@ defmodule Passwordless.App do
     |> validate_length(:name, min: 1, max: 1024)
   end
 
-  defp validate_description(changeset) do
+  defp validate_display_name(changeset) do
     changeset
-    |> ChangesetExt.ensure_trimmed(:description)
-    |> validate_length(:description, min: 1, max: 1024)
+    |> ChangesetExt.ensure_trimmed(:display_name)
+    |> validate_length(:display_name, min: 1, max: 128)
   end
 end

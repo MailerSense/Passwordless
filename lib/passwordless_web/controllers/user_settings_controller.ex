@@ -40,12 +40,12 @@ defmodule PasswordlessWeb.UserSettingsController do
 
         conn
         |> put_flash(:info, gettext("Email changed successfully."))
-        |> redirect(to: ~p"/app/settings")
+        |> redirect(to: ~p"/app/profile")
 
       _ ->
         conn
         |> put_flash(:error, gettext("Email change link is invalid or it has expired!"))
-        |> redirect(to: ~p"/app/settings")
+        |> redirect(to: ~p"/app/profile")
     end
   end
 

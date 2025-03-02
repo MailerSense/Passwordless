@@ -101,6 +101,9 @@ defmodule PasswordlessWeb.Router do
     # Billing
     get "/billing/checkout/:plan_id", BillingController, :checkout
 
+    # DNS
+    get "/domain/dns/download", DNSController, :download
+
     live_session :app_onboarding_session,
       on_mount: [
         {PasswordlessWeb.User.Hooks, :require_authenticated_user},
@@ -142,7 +145,9 @@ defmodule PasswordlessWeb.Router do
       live "/reports", App.ReportLive.Index, :index
 
       # Embed & API
-      live "/embed", App.EmbedLive.Index, :index
+      live "/embed/secrets", App.EmbedLive.Index, :secrets
+      live "/embed/login-page", App.EmbedLive.Index, :login_page
+      live "/embed/auth-guard", App.EmbedLive.Index, :auth_guard
 
       # Team
       live "/team", App.TeamLive.Index, :index
@@ -152,13 +157,13 @@ defmodule PasswordlessWeb.Router do
       live "/team/:id/delete", App.TeamLive.Index, :delete
 
       # App
-      live "/apps", App.AppLive.Index, :index
-      live "/apps/new", App.AppLive.Index, :new
-      live "/apps/:id/edit", App.AppLive.Index, :edit
-      live "/apps/:id/delete", App.AppLive.Index, :delete
+      live "/app", App.AppLive.Index, :index
+      live "/app/new", App.AppLive.Index, :new
+      live "/app/delete", App.AppLive.Index, :delete
 
       # Domain
       live "/domain", App.DomainLive.Index, :index
+      live "/domain/dns", App.DomainLive.Index, :dns
       live "/domain/change", App.DomainLive.Index, :change
 
       # Billing
@@ -166,8 +171,8 @@ defmodule PasswordlessWeb.Router do
       live "/subscribe/success", App.BillingLive.SubscribeSuccessLive, :index
       live "/subscribe", App.BillingLive.SubscribeLive, :index
 
-      # Settings
-      live "/settings", User.ProfileLive
+      # Profile
+      live "/profile", User.ProfileLive
 
       # User
       live "/edit-email", User.ProfileLive, :change_email

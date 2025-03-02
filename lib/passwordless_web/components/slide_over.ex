@@ -3,6 +3,7 @@ defmodule PasswordlessWeb.Components.SlideOver do
   use Phoenix.Component
 
   alias PasswordlessWeb.Components.Icon
+  alias PasswordlessWeb.Components.Typography
   alias Phoenix.LiveView.JS
 
   attr(:origin, :string,
@@ -28,6 +29,7 @@ defmodule PasswordlessWeb.Components.SlideOver do
   )
 
   attr(:title, :string, default: nil, doc: "slideover title")
+  attr(:subtitle, :string, default: nil, doc: "slideover subtitle")
 
   attr(:max_width, :string,
     default: "sm",
@@ -87,6 +89,10 @@ defmodule PasswordlessWeb.Components.SlideOver do
             </div>
 
             <div class="pc-slideover__content">
+              <Typography.p :if={@subtitle} class="mb-6">
+                {@subtitle}
+              </Typography.p>
+
               {render_slot(@inner_block)}
             </div>
 

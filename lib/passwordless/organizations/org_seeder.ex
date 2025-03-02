@@ -37,7 +37,9 @@ defmodule Passwordless.Organizations.OrgSeeder do
       Passwordless.create_full_app(org, %{
         "name" => "Demo App",
         "website" => "https://passwordless.tools",
-        "description" => "Demo App Description"
+        "display_name" => "Demo App",
+        "primary_button_color" => "#000000",
+        "secondary_button_color" => "#ffffff"
       })
 
     {:ok, domain} =

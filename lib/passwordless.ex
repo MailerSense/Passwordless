@@ -119,6 +119,10 @@ defmodule Passwordless do
 
   # Domains
 
+  def get_domain!(%App{} = app) do
+    Repo.one!(Ecto.assoc(app, :domain))
+  end
+
   def list_domain_record(%Domain{} = domain) do
     DomainRecord.order(Repo.preload(domain, :records).records)
   end
@@ -141,7 +145,7 @@ defmodule Passwordless do
     if Ecto.get_meta(domain, :state) == :loaded do
       Domain.changeset(domain, attrs)
     else
-      Domain.create_changeset(domain, attrs)
+      Domain.changeset(domain, attrs)
     end
   end
 
@@ -153,6 +157,21 @@ defmodule Passwordless do
 
   def delete_domain(%Domain{} = domain) do
     Repo.soft_delete(domain)
+  end
+
+  def replace_domain(%App{} = app, %Domain{} = current_domain, attrs, records) do
+    Repo.transact(fn ->
+      with {:ok, _deleted} <- delete_domain(current_domain),
+           {:ok, domain} <- create_domain(app, attrs),
+           {:ok, records} <-
+             Enum.reduce(records, {:ok, []}, fn record, {:ok, acc} ->
+               case create_domain_record(domain, record) do
+                 {:ok, record} -> {:ok, [record | acc]}
+                 {:error, changeset} -> {:error, changeset}
+               end
+             end),
+           do: {:ok, %Domain{domain | records: records}}
+    end)
   end
 
   # Methods

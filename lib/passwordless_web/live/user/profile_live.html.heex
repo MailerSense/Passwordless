@@ -5,7 +5,6 @@
       label={gettext("Name")}
       placeholder={gettext("eg. John Smith")}
       autocomplete="given-name family-name"
-      phx-debounce="blur"
       required
       required_asterix={false}
     />
@@ -14,30 +13,28 @@
       <.a
         to={~p"/app/edit-email"}
         label={gettext("Change your email")}
-        class="underline text-sm text-slate-600 dark:text-slate-300"
+        class="text-sm underline text-slate-600 dark:text-slate-300"
         link_type="live_patch"
       />
-      <.button icon="remix-save-line" label={gettext("Save changes")} />
+      <.button
+        icon="remix-save-line"
+        label={gettext("Save changes")}
+        disabled={not @form.source.valid?}
+      />
     </div>
   </.form>
 </.tabbed_settings_layout>
 
 <%= case @live_action do %>
   <% :change_email -> %>
-    <.modal
-      max_width="lg"
+    <.live_component
+      id={@live_action}
       title={@page_title}
       subtitle={@page_subtitle}
-      variant="delete"
-      hide_close_button
-    >
-      <.live_component
-        id={@live_action}
-        module={PasswordlessWeb.User.ChangeEmailComponent}
-        live_action={@live_action}
-        return_to={~p"/app/settings"}
-        current_user={@current_user}
-      />
-    </.modal>
+      module={PasswordlessWeb.User.ChangeEmailComponent}
+      live_action={@live_action}
+      return_to={~p"/app/profile"}
+      current_user={@current_user}
+    />
   <% _ -> %>
 <% end %>

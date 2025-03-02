@@ -1,33 +1,31 @@
-<div class="flex flex-col">
-  <.tabbed_settings_layout current_page={:organization} current_user={@current_user}>
-    <:action>
-      <.dropdown
-        size="lg"
-        label={PasswordlessWeb.Helpers.user_org_name(@current_user)}
-        label_icon="remix-building-line"
-      >
-        <.dropdown_menu_item link_type="live_redirect" to={~p"/app/organization/new"}>
-          <.icon name="remix-add-line" class="w-5 h-5" />
-          {gettext("New organization")}
-        </.dropdown_menu_item>
-        <.form :for={org <- @org_menu_items} for={nil} action={~p"/app/org/switch"} method="post">
-          <.input type="hidden" name="org_id" value={org.id} />
-          <button class="pc-dropdown__menu-item">
-            <.icon name="remix-building-line" class="w-5 h-5" />
-            <span class="line-clamp-1">{org.name}</span>
-          </button>
-        </.form>
-      </.dropdown>
-    </:action>
-    <.live_component
-      id={:edit}
-      org={@current_org}
-      action={:edit}
-      module={PasswordlessWeb.Org.FormComponent}
-      current_user={@current_user}
-    />
-  </.tabbed_settings_layout>
-</div>
+<.tabbed_settings_layout current_page={:organization} current_user={@current_user}>
+  <:action>
+    <.dropdown
+      size="lg"
+      label={PasswordlessWeb.Helpers.user_org_name(@current_user)}
+      label_icon="remix-building-line"
+    >
+      <.dropdown_menu_item link_type="live_redirect" to={~p"/app/organization/new"}>
+        <.icon name="remix-add-line" class="w-5 h-5" />
+        {gettext("New organization")}
+      </.dropdown_menu_item>
+      <.form :for={org <- @org_menu_items} for={nil} action={~p"/app/org/switch"} method="post">
+        <.input type="hidden" name="org_id" value={org.id} />
+        <button class="pc-dropdown__menu-item">
+          <.icon name="remix-building-line" class="w-5 h-5" />
+          <span class="line-clamp-1">{org.name}</span>
+        </button>
+      </.form>
+    </.dropdown>
+  </:action>
+  <.live_component
+    id={:edit}
+    org={@current_org}
+    action={:edit}
+    module={PasswordlessWeb.Org.FormComponent}
+    current_user={@current_user}
+  />
+</.tabbed_settings_layout>
 
 <%= case @live_action do %>
   <% :new -> %>
@@ -35,6 +33,7 @@
       id={@live_action}
       org={%Org{}}
       title={@page_title}
+      subtitle={@page_subtitle}
       module={PasswordlessWeb.Org.CreateComponent}
       return_to={~p"/app/organization"}
       live_action={@live_action}

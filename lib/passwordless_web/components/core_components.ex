@@ -13,19 +13,21 @@ defmodule PasswordlessWeb.CoreComponents do
     required: true,
     doc: "list of maps with keys :name, :path, :label, :icon (atom)"
 
+  attr :class, :any, default: nil
+  attr :inner_class, :any, default: nil
+
   slot :inner_block
 
   def tabbed_layout(assigns) do
     ~H"""
-    <div class="flex flex-col md:flex-row gap-6">
-      <aside class="py-6 md:py-12 w-48 flex flex-col select-none shrink-0">
+    <.box class={["flex", @class]}>
+      <nav class="py-6 w-64 lg:w-72 flex flex-col select-none shrink-0 border-r border-slate-200 dark:border-slate-700">
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
-      </aside>
-
-      <div class="flex-grow lg:pl-6 pb-12">
+      </nav>
+      <div class={["flex-grow", @inner_class]}>
         {render_slot(@inner_block)}
       </div>
-    </div>
+    </.box>
     """
   end
 

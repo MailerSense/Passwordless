@@ -229,7 +229,7 @@
   @apply text-slate-600 dark:text-slate-300;
 }
 .pc-text--small {
-  @apply text-sm;
+  @apply text-base;
 }
 .pc-text--large {
   @apply text-lg;
@@ -416,7 +416,7 @@
   @apply flex items-center justify-between;
 }
 .pc-alert-base-classes {
-  @apply flex items-center w-full gap-2 px-3 py-2 text-sm rounded-lg focus:outline-none shadow-m2;
+  @apply flex items-center w-full gap-2 px-3 py-2 text-sm rounded-md focus:outline-none;
 }
 .pc-alert__heading {
   @apply pt-1 font-bold;
@@ -469,7 +469,7 @@
 
 /* Forms */
 :not(.pc-form-field-wrapper--no-margin).pc-form-field-wrapper {
-  @apply [&:not(:last-child)]:mb-[20px];
+  @apply [&:not(:last-child)]:mb-6;
 }
 :not(.phx-no-feedback).pc-form-field-wrapper--error input,
 :not(.phx-no-feedback).pc-form-field-wrapper--error select,
@@ -511,12 +511,14 @@
 :not(.phx-no-feedback).pc-form-field-wrapper--success .pc-checkbox-label {
   @apply !text-success-600 dark:!text-success-300;
 }
-
 .pc-checkbox-label {
-  @apply inline-flex items-center gap-2 text-sm font-medium leading-tight text-slate-900 cursor-pointer dark:text-white;
+  @apply inline-flex items-center gap-3 text-base font-normal text-slate-900 cursor-pointer dark:text-white;
+}
+.pc-switch-label {
+  @apply inline-flex items-center text-base font-normal text-slate-900 cursor-pointer dark:text-white;
 }
 .pc-label {
-  @apply block mb-2 text-sm font-medium leading-tight text-slate-900 dark:text-white;
+  @apply block mb-2 text-sm font-medium text-slate-900 dark:text-white;
 }
 .pc-label--for-checkbox {
   @apply !mb-0 font-normal;
@@ -531,7 +533,7 @@
   @apply hidden;
 }
 .pc-form-field-error {
-  @apply mt-1 text-xs italic text-danger-500;
+  @apply mt-2 text-xs italic text-danger-500;
 }
 .phx-no-feedback.pc-form-field-error {
   @apply hidden;
@@ -540,7 +542,7 @@
   @apply hidden;
 }
 .pc-form-field-success {
-  @apply mt-1 text-xs italic text-success-500;
+  @apply mt-2 text-xs italic text-success-500;
 }
 .phx-no-feedback.pc-form-field-success {
   @apply hidden;
@@ -579,13 +581,13 @@
 /* Text Input */
 
 .pc-text-input--lg {
-  @apply block w-full px-3.5 py-4 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700;
+  @apply block w-full px-3.5 py-4 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20;
 }
 .pc-text-input--md {
-  @apply block w-full px-3.5 py-2 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700;
+  @apply block w-full px-3 py-2.5 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20;
 }
 .pc-text-input--sm {
-  @apply block min-w-16 px-2.5 py-[5px] font-medium border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-xs disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700;
+  @apply block min-w-16 px-2.5 py-[5px] font-medium border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-xs disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20;
 }
 
 /* Password Input */
@@ -680,13 +682,26 @@
   @apply text-sm rounded-md cursor-pointer focus:outline-none file:border-0 text-slate-500 file:text-primary-700 file:font-semibold file:px-4 file:py-2 file:mr-6 file:rounded-md hover:file:bg-primary-100 file:bg-primary-200 dark:file:bg-primary-300 hover:dark:file:bg-primary-200;
 }
 .pc-color-input {
-  @apply border-slate-300 cursor-pointer dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600;
+}
+input[type="color" i] {
+  border-radius: 50%;
+  inline-size: 24px;
+  block-size: 24px;
+}
+input[type="color" i]::-webkit-color-swatch-wrapper {
+  padding: 1px;
+}
+input[type="color" i]::-webkit-color-swatch {
+  border-radius: 50%;
+}
+input[type="color" i]::-moz-color-swatch {
+  border-radius: 50%;
 }
 .pc-range-input {
-  @apply w-full border-slate-300 cursor-pointer dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600;
+  @apply w-full;
 }
 .pc-checkbox {
-  @apply w-4 h-4 transition-all duration-150 ease-linear border-slate-300 rounded cursor-pointer focus:ring-primary-500 dark:bg-slate-800 dark:border-slate-600 disabled:bg-slate-300 disabled:hover:bg-slate-300 dark:disabled:bg-slate-600 disabled:cursor-not-allowed;
+  @apply w-5 h-5 transition-all duration-150 ease-linear border-gray-300 rounded cursor-pointer text-primary-600 dark:bg-gray-800 dark:border-gray-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed;
 }
 .pc-checkbox-group {
   @apply pt-2;
@@ -903,10 +918,10 @@
   @apply mb-6 text-lg font-semibold text-slate-900 dark:text-white;
 }
 .pc-field-prefix {
-  @apply flex items-center justify-center px-3.5 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-r-0 rounded-l-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none;
+  @apply flex items-center justify-center px-3 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-r-0 rounded-l-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none z-10;
 }
 .pc-field-suffix {
-  @apply flex items-center justify-center px-3.5 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-l-0 rounded-r-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none;
+  @apply flex items-center justify-center px-3 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-l-0 rounded-r-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none z-10;
 }
 
 /* Dropdown */
@@ -951,7 +966,7 @@
   @apply inline-flex justify-center items-center w-full gap-2 px-4 py-2 text-sm font-medium leading-tight text-slate-700 dark:text-slate-200 bg-white border border-slate-300 dark:border-slate-600 rounded-lg shadow-m2 dark:bg-slate-800 dark:focus:bg-slate-800 hover:bg-slate-50 select-none;
 }
 .pc-dropdown__trigger-button--with-label--lg-solid {
-  @apply inline-flex justify-between items-center min-w-full lg:min-w-64 gap-2 px-4 py-2 h-12 text-base font-normal text-slate-500 dark:text-slate-400 bg-white border border-slate-300 dark:border-slate-600 rounded-lg shadow-m2 dark:bg-slate-700/50 dark:hover:bg-slate-800 dark:focus:bg-slate-800 hover:bg-slate-50 select-none;
+  @apply inline-flex justify-between items-center min-w-full lg:min-w-64 gap-2 px-4 py-2 h-12 text-base font-normal text-slate-700 dark:text-slate-200 bg-white border border-slate-300 dark:border-slate-600 rounded-lg shadow-m2 dark:bg-slate-700/50 dark:hover:bg-slate-800 dark:focus:bg-slate-800 hover:bg-slate-50 select-none;
 }
 .pc-dropdown__trigger-button--with-label--sm-outline {
   @apply inline-flex justify-center items-center w-full text-base font-normal leading-tight text-slate-900 dark:text-white select-none;
@@ -1376,10 +1391,10 @@
 /* Tabs - Buttons */
 
 .pc-tab__pill--buttons {
-  @apply flex items-center justify-center px-4 gap-2 py-2.5 text-sm font-medium whitespace-nowrap h-[40px];
+  @apply flex items-center justify-center px-4 gap-2 py-2.5 text-sm font-medium whitespace-nowrap h-[44px];
 }
 .pc-tab__pill--is-active--buttons {
-  @apply bg-slate-50 dark:bg-slate-700/50 text-slate-800 dark:text-white;
+  @apply bg-slate-50/50 dark:bg-slate-700/50 text-slate-800 dark:text-white;
 }
 .pc-tab__pill--is-not-active--buttons {
   @apply text-slate-700 dark:text-slate-200;
@@ -1468,7 +1483,7 @@
   @apply min-w-full table-auto;
 }
 .pc-table__wrapper {
-  @apply rounded-lg shadow-m3 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-700/30;
+  @apply rounded-lg shadow-1 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-700/30;
 }
 .pc-data-table {
   @apply overflow-x-scroll;
@@ -1480,7 +1495,7 @@
   @apply overflow-hidden;
 }
 .pc-table__th {
-  @apply text-sm text-left font-medium select-none;
+  @apply text-xs text-left font-medium select-none;
 }
 .pc-table__th--md {
   @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-3;
@@ -1525,7 +1540,7 @@
   @apply bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300;
 }
 .pc-table__thead-striped {
-  @apply text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800;
+  @apply text-slate-600 dark:text-slate-300;
 }
 .pc-table__pagination {
   @apply px-6 py-4 border-t border-slate-200 dark:border-slate-700;
@@ -1535,22 +1550,14 @@
 
 .pc-accordion-container {
   @apply divide-y divide-slate-200 dark:divide-slate-700;
-}
-.pc-accordion-container > .pc-accordion-item--expanded {
-  @apply border-none;
-}
-.pc-accordion-container
-  > .pc-accordion-item--expanded
-  + .pc-accordion-item-marker {
-  @apply border-none;
+  @apply border-t border-slate-200 dark:border-slate-700;
 }
 .pc-accordion-item-marker {
 }
 .pc-accordion-item {
-  @apply flex items-center justify-between w-full px-3 py-4 text-left text-slate-900 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg select-none z-10;
+  @apply flex items-center justify-between w-full px-6 py-4 text-left text-slate-900 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 select-none z-10;
 }
 .pc-accordion-item--expanded {
-  @apply rounded-lg bg-slate-50 dark:bg-slate-700 shadow-0 z-20;
 }
 .pc-accordion-item--all-except-last {
   @apply border-b-0;
@@ -1562,10 +1569,9 @@
   @apply flex-shrink-0 w-6 h-6 ml-3 text-slate-600 dark:text-slate-300 duration-300 fill-current dark:group-hover:text-slate-300 group-hover:text-slate-500;
 }
 .pc-accordion-item__content-container {
-  @apply px-3 py-4;
+  @apply px-6 py-4;
 }
 .pc-accordion-item__content-container--highlight-accordion-button-on-expanded-js-attributes {
-  @apply bg-slate-50 dark:bg-slate-700 dark:hover:bg-slate-700;
 }
 
 /* Modal */

@@ -119,7 +119,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   defp apply_action(socket, :new, _) do
     assign(socket,
       page_title: gettext("Create user"),
-      page_subtitle: gettext("Manage your users")
+      page_subtitle: gettext("Import a user manually. You can also import users from a CSV file.")
     )
   end
 
@@ -133,7 +133,10 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   defp apply_action(socket, :import, _) do
     assign(socket,
       page_title: gettext("Import users"),
-      page_subtitle: gettext("Manage your users")
+      page_subtitle:
+        gettext(
+          "Import existing users from a CSV file. Download our reference CSV template and fill it out with your users."
+        )
     )
   end
 

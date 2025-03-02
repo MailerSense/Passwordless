@@ -30,6 +30,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
   @doc "Gives you a white background with shadow."
   attr :class, :any, default: nil
   attr :padded, :boolean, default: false
+  attr :shadow_class, :string, default: "shadow-1"
   attr :rest, :global
   slot :inner_block
 
@@ -38,8 +39,10 @@ defmodule PasswordlessWeb.Components.PageComponents do
     <section
       {@rest}
       class={[
-        "shadow-m3 border border-slate-200 dark:border-slate-700",
+        "border border-slate-200 dark:border-slate-700",
         "bg-white dark:bg-slate-700/30 rounded-lg",
+        "overflow-hidden",
+        @shadow_class,
         @class,
         if(@padded, do: "p-6", else: "")
       ]}
@@ -138,7 +141,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
       link_type="live_redirect"
       class={[
         menu_item_classes(@is_active?),
-        "flex items-center rounded-lg px-4 py-3 text-base font-medium tracking-tight group gap-4 transition duration-200"
+        "flex items-center px-6 py-3 text-base font-medium tracking-tight group gap-4 transition duration-200"
       ]}
     >
       <.icon name={@icon} class={["w-6 h-6", menu_item_icon_classes(@is_active?)]} />
@@ -148,15 +151,15 @@ defmodule PasswordlessWeb.Components.PageComponents do
   end
 
   defp menu_item_classes(true),
-    do: "tabbed-menu-active bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-white dark:hover:text-white"
+    do: "tabbed-menu-active bg-primary-50 text-primary-800 dark:bg-slate-700 dark:text-white dark:hover:text-white"
 
   defp menu_item_classes(false),
     do:
-      "text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-50"
+      "text-slate-600 hover:bg-primary-50 hover:text-primary-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-50"
 
   defp menu_item_icon_classes(true),
-    do: "text-slate-900 group-hover:text-slate-900 dark:text-white dark:group-hover:text-white"
+    do: "text-primary-800 group-hover:text-primary-800 dark:text-white dark:group-hover:text-white"
 
   defp menu_item_icon_classes(false),
-    do: "text-slate-600 group-hover:text-slate-900 dark:text-slate-400 dark:group-hover:text-white"
+    do: "text-slate-600 group-hover:text-primary-800 dark:text-slate-300 dark:group-hover:text-white"
 end

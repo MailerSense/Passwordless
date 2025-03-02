@@ -150,11 +150,13 @@ defmodule PasswordlessWeb.Components.Field do
           value="true"
           checked={@checked}
           required={@required}
-          disabled={@disabled}
           class={["pc-checkbox", @class]}
           {@rest}
         />
-        <span class={[@required && @required_asterix && "pc-label--required"]}>
+        <span
+          :if={Util.present?(@label)}
+          class={[@required && @required_asterix && "pc-label--required"]}
+        >
           {@label}
         </span>
       </label>
@@ -262,7 +264,7 @@ defmodule PasswordlessWeb.Components.Field do
       assign_new(assigns, :checked, fn -> Phoenix.HTML.Form.normalize_value("checkbox", value) end)
 
     ~H"""
-    <label class={["pc-checkbox-label", @label_class]}>
+    <label class={["pc-switch-label", @label_class]}>
       <input type="hidden" name={@name} value="false" />
       <label class={["pc-switch", @disabled && "pc-switch--disabled"]}>
         <input
@@ -674,6 +676,38 @@ defmodule PasswordlessWeb.Components.Field do
     """
   end
 
+  def field(%{type: "color"} = assigns) do
+    ~H"""
+    <.field_wrapper errors={@errors} name={@name} class={@wrapper_class} no_margin={true}>
+      <.field_label
+        :if={Util.present?(@label)}
+        required={@required}
+        required_asterix={@required_asterix}
+        for={@id}
+        class={@label_class}
+      >
+        {@label}
+      </.field_label>
+      <div class={[
+        "flex items-center gap-3 border",
+        "w-full px-3 py-2.5 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20"
+      ]}>
+        <input
+          id={@id}
+          type={@type}
+          name={@name}
+          value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+          class={[get_class_for_type(@type, @size), @class]}
+          required={@required}
+          disabled={@disabled}
+          {@rest}
+        />
+        <span>{Phoenix.HTML.Form.normalize_value(@type, @value)}</span>
+      </div>
+    </.field_wrapper>
+    """
+  end
+
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def field(assigns) do
     assigns =
@@ -711,6 +745,7 @@ defmodule PasswordlessWeb.Components.Field do
               class={["pc-field-icon__padding", @class]}
               required={@required}
               disabled={@disabled}
+              {input_parameters(@type)}
               {@rest}
             />
           </div>
@@ -731,6 +766,7 @@ defmodule PasswordlessWeb.Components.Field do
               ]}
               required={@required}
               disabled={@disabled}
+              {input_parameters(@type)}
               {@rest}
             />
             <span :if={Util.present?(@suffix)} class="pc-field-suffix">
@@ -746,6 +782,7 @@ defmodule PasswordlessWeb.Components.Field do
             class={@class}
             required={@required}
             disabled={@disabled}
+            {input_parameters(@type)}
             {@rest}
           />
       <% end %>
@@ -893,4 +930,7 @@ defmodule PasswordlessWeb.Components.Field do
       nil -> nil
     end
   end
+
+  defp input_parameters("range"), do: %{"phx-hook" => "ProgressInput"}
+  defp input_parameters(_), do: %{}
 end

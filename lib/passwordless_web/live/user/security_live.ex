@@ -86,7 +86,7 @@ defmodule PasswordlessWeb.User.SecurityLive do
         <.button
           type="submit"
           icon="remix-verified-badge-line"
-          label={gettext("Verify Code")}
+          label={gettext("Verify code")}
           phx-disable-with="Verifying..."
         />
       </div>

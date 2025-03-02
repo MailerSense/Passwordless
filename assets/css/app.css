@@ -48,6 +48,67 @@
     bottom: 0;
     @apply bg-primary-500 dark:bg-primary-400 w-full transform left-1/2 -translate-x-1/2 rounded-full;
   }
+
+  .tabbed-menu-active {
+    @apply relative;
+  }
+  /* .tabbed-menu-active::before {
+    position: absolute;
+    content: "";
+    display: block;
+    height: 100%;
+    width: 2px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: transparent;
+    @apply bg-primary-600 dark:bg-primary-400;
+  } */
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    cursor: pointer;
+    outline: none;
+    @apply h-2 bg-gray-200 dark:bg-gray-700 rounded-full;
+  }
+
+  input[type="range"] {
+    --range: calc(var(--max) - var(--min));
+    --ratio: calc((var(--value) - var(--min)) / var(--range));
+    --sx: calc(0.5 * 2em + var(--ratio) * (100% - 2em));
+  }
+
+  input[type="range"]:focus {
+    outline: none;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    @apply h-2 rounded-full;
+    background: linear-gradient(#2e90fa, #2e90fa) 0 / var(--sx) 100% no-repeat,
+      #f1f5f9;
+  }
+
+  .dark input[type="range"]::-webkit-slider-runnable-track {
+    background: linear-gradient(#2e90fa, #2e90fa) 0 / var(--sx) 100% no-repeat,
+      rgba(51, 65, 85, 0.5);
+  }
+
+  input[type="range"]::-moz-range-track {
+    @apply h-2;
+    border: 1px solid #b2b2b2;
+    border-radius: 0.5em;
+    box-shadow: none;
+    background: linear-gradient(#1570ef, #1570ef) 0 / var(--sx) 100% no-repeat,
+      #efefef;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    @apply h-4 w-4 shadow-0 rounded-full -mt-1;
+    @apply bg-white ring-1 ring-slate-300 dark:ring-slate-400;
+  }
 }
 
 @layer components {

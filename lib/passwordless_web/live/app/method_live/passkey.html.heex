@@ -6,25 +6,20 @@
     phx-submit="save"
     phx-change="validate"
   >
-    <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-slate-700">
-      <h3 class="text-lg font-medium text-slate-900 dark:text-white">
-        {if @enabled, do: gettext("Enabled"), else: gettext("Disabled")}
-      </h3>
-
-      <.field type="switch" field={@form[:enabled]} label="" />
-    </div>
     <div class="p-6">
+      <.field type="checkbox" field={@form[:enabled]} />
+      <.p class="mb-6">
+        Passkeys are a method that allows users to sign in without a password. When enabled, users will receive a prompt to add a passkey to their device. The passkey is valid for a limited time and can only be used once.
+      </.p>
+      <.form_separator />
+      <.form_header title="General" />
       <.field
         field={@form[:relying_party_id]}
         label={gettext("Relying Party ID")}
         disabled={not @enabled}
-        help_text={
-          gettext("We recommend your application's top-level domain, e.g. '%{domain}'.",
-            domain: URI.parse(@app.website).host
-          )
-        }
+        required
+        required_asterix={false}
       />
-      <.form_separator />
       <div class="pc-form-field-wrapper">
         <.form_label>{gettext("Expected origins")}</.form_label>
         <div class="flex flex-col gap-y-2">
@@ -40,6 +35,7 @@
                 label=""
                 field={expected_origin[:url]}
                 required
+                disabled={not @enabled}
                 wrapper_class="!mb-0 w-full grow"
               />
               <.icon_form_button
@@ -50,25 +46,26 @@
                 title={gettext("Remove")}
                 value={expected_origin.index}
                 event={JS.dispatch("change")}
+                disabled={not @enabled}
               />
             </div>
           </.inputs_for>
-          <div class="flex">
-            <.button
-              size="xs"
-              type="button"
-              color="light"
-              icon="remix-add-circle-line"
-              label={gettext("Add origin")}
-              name="passkey[expected_origins_sort][]"
-              value="new"
-              phx-click={JS.dispatch("change")}
-            />
-          </div>
+        </div>
+        <div class="flex mt-4">
+          <.button
+            size="xs"
+            type="button"
+            color="light"
+            icon="remix-add-circle-line"
+            label={gettext("Add origin")}
+            name="passkey[expected_origins_sort][]"
+            value="new"
+            disabled={not @enabled}
+            phx-click={JS.dispatch("change")}
+          />
         </div>
         <input type="hidden" name="passkey[expected_origins_drop][]" />
       </div>
-      <.form_separator />
       <.field
         type="select"
         field={@form[:uplift_prompt_interval]}

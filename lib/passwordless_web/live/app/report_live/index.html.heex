@@ -28,6 +28,46 @@
       </div>
       <div id="chart" phx-hook="ChartHook" class="pl-2 pr-4"></div>
     </.box>
+
+    <.action_stat
+      legend={[
+        %{color: "bg-blue-500", label: gettext("Magic Link")},
+        %{color: "bg-pink-500", label: gettext("SMS")},
+        %{color: "bg-purple-500", label: gettext("Email")},
+        %{color: "bg-cyan-500", label: gettext("Authenticator")},
+        %{color: "bg-emerald-500", label: gettext("WhatsApp")},
+        %{color: "bg-amber-500", label: gettext("Passkey")}
+      ]}
+      items={[
+        %{
+          name: "Magic Link",
+          value: 21323,
+          progress: %{max: 100, value: 80, color: "info"},
+          to: ~p"/app/reports"
+        },
+        %{
+          name: "SMS",
+          value: 11323,
+          progress: %{max: 100, value: 30, color: "pink"},
+          to: ~p"/app/reports"
+        },
+        %{
+          name: "Other",
+          value: 1323,
+          progress: %{
+            max: 100,
+            items: [
+              %{value: 20, color: "purple"},
+              %{value: 20, color: "emerald"},
+              %{value: 10, color: "amber", rounded: true},
+              %{value: 50, color: "neutral"}
+            ]
+          },
+          to: ~p"/app/reports"
+        }
+      ]}
+    />
+
     <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       <.change_stat label={gettext("Sign in")} value={10} change={5} color_class="bg-success-500" />
       <.change_stat

@@ -43,14 +43,14 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :magic_link,
         label: "Magic link",
-        icon: "remix-magic-line",
+        icon: "remix-link",
         path: ~p"/app/methods/magic-link",
         link_type: "live_patch"
       },
       %{
         name: :sms,
         label: "SMS",
-        icon: "remix-message-line",
+        icon: "remix-message-2-line",
         path: ~p"/app/methods/sms",
         link_type: "live_patch"
       },
@@ -63,8 +63,8 @@ defmodule PasswordlessWeb.Helpers do
       },
       %{
         name: :authenticator,
-        label: "Authenticator",
-        icon: "remix-shield-user-line",
+        label: "Authenticator (TOTP)",
+        icon: "remix-smartphone-line",
         path: ~p"/app/methods/authenticator",
         link_type: "live_patch"
       },
@@ -99,6 +99,32 @@ defmodule PasswordlessWeb.Helpers do
         label: "Activity",
         icon: "remix-file-list-3-line",
         path: ~p"/app/users/#{actor}/activity",
+        link_type: "live_patch"
+      }
+    ]
+  end
+
+  def embed_menu_items do
+    [
+      %{
+        name: :secrets,
+        label: "App secrets",
+        icon: "remix-instance-line",
+        path: ~p"/app/embed/secrets",
+        link_type: "live_patch"
+      },
+      %{
+        name: :login_page,
+        label: "Login page",
+        icon: "remix-window-line",
+        path: ~p"/app/embed/login-page",
+        link_type: "live_patch"
+      },
+      %{
+        name: :auth_guard,
+        label: "Auth guard",
+        icon: "remix-shield-user-line",
+        path: ~p"/app/embed/auth-guard",
         link_type: "live_patch"
       }
     ]

@@ -1,6 +1,6 @@
 <div>
   <% origin = "right" %>
-  <.slide_over title={@title} origin={origin}>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
     <div class="flex flex-col gap-8">
       <.form
         id="edit-app-form"
@@ -14,25 +14,19 @@
           placeholder={gettext("e.g. YourSite")}
           autocomplete="organization"
           required
-          {alpine_autofocus()}
-        />
-        <.field field={@form[:description]} placeholder={gettext("e.g. my awesome site")} />
-        <.field
-          :if={@live_action == :edit}
-          field={@form[:id]}
-          class="font-mono"
-          label={gettext("App ID")}
-          readonly
-          copyable
         />
         <.field
-          :if={@live_action == :edit}
-          type="password"
-          field={@form[:id]}
-          class="font-mono"
-          label={gettext("App Secret")}
-          readonly
-          viewable
+          type="url"
+          field={@form[:website]}
+          placeholder={gettext("e.g. https://gmail.com")}
+          autocomplete="url"
+          required
+        />
+        <.field
+          field={@form[:display_name]}
+          placeholder={gettext("e.g. YourApp")}
+          autocomplete="organization"
+          required
         />
       </.form>
     </div>

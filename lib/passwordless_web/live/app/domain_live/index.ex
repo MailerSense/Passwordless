@@ -4,6 +4,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
   import PasswordlessWeb.SettingsLayoutComponent
 
+  alias Passwordless.Domain
   alias Passwordless.Repo
 
   @impl true
@@ -13,15 +14,27 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
   @impl true
   def handle_params(_params, _url, socket) do
-    domain = Repo.preload(socket.assigns.current_app, :domain).domain
-    records = Passwordless.list_domain_record(domain)
-    changeset = Passwordless.change_domain(domain)
+    case Repo.preload(socket.assigns.current_app, :domain).domain do
+      %Domain{} = domain ->
+        records = Passwordless.list_domain_record(domain)
+        changeset = Passwordless.change_domain(domain)
 
-    {:noreply,
-     socket
-     |> assign(domain: domain, records: records)
-     |> assign_form(changeset)
-     |> apply_action(socket.assigns.live_action)}
+        {:noreply,
+         socket
+         |> assign(mode: :edit, domain: domain, records: records)
+         |> assign_form(changeset)
+         |> apply_action(socket.assigns.live_action)}
+
+      _ ->
+        domain = Ecto.build_assoc(socket.assigns.current_app, :domain)
+        changeset = Passwordless.change_domain(domain)
+
+        {:noreply,
+         socket
+         |> assign(mode: :new, domain: domain)
+         |> assign_form(changeset)
+         |> apply_action(socket.assigns.live_action)}
+    end
   end
 
   @impl true
@@ -32,6 +45,56 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   @impl true
   def handle_event("close_slide_over", _, socket) do
     {:noreply, push_patch(socket, to: ~p"/app/domain")}
+  end
+
+  @impl true
+  def handle_event("validate", %{"domain" => domain_params}, socket) do
+    case socket.assigns[:mode] do
+      :new ->
+        changeset =
+          socket.assigns.domain
+          |> Passwordless.change_domain(domain_params)
+          |> Map.put(:action, :validate)
+
+        {:noreply, assign_form(socket, changeset)}
+
+      :edit ->
+        {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_event("save", %{"domain" => domain_params}, socket) do
+    case socket.assigns[:mode] do
+      :new ->
+        case Passwordless.create_domain(socket.assigns.current_app, domain_params) do
+          {:ok, domain} ->
+            records =
+              for r <- default_domain_records(domain.name) do
+                {:ok, r} = Passwordless.create_domain_record(domain, r)
+                r
+              end
+
+            changeset = Passwordless.change_domain(domain)
+
+            socket =
+              socket
+              |> LiveToast.put_toast(
+                :info,
+                gettext("Domain added. Please add required DNS records in your domain provider.")
+              )
+              |> assign(mode: :edit, domain: domain, records: records)
+              |> assign_form(changeset)
+
+            {:noreply, socket}
+
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:noreply, assign_form(socket, changeset)}
+        end
+
+      :edit ->
+        {:noreply, socket}
+    end
   end
 
   @impl true
@@ -52,111 +115,51 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
     )
   end
 
+  defp apply_action(socket, :dns) do
+    assign(socket,
+      page_title: gettext("DNS records"),
+      page_subtitle: gettext("Ensure the following DNS records are set up for your domain.")
+    )
+  end
+
   defp apply_action(socket, :change) do
     assign(socket,
       page_title: gettext("Change domain"),
       page_subtitle:
         gettext(
-          "If you wish to change your sending domain, type your new domain below and press the submit button. We'll get back to you shortly."
+          "If you change the domain, the previous one will be deleted after 1 day. Keep in mind the new one still needs to be validated."
         )
     )
   end
 
-  attr :state, :atom, required: true, values: [:active, :inactive, :unhealthy, :under_review]
-  attr :verified, :boolean, required: true
-  attr :class, :any, default: ""
-  attr :rest, :global, doc: "Any additional HTML attributes to add to the floating container."
+  defp default_domain_records(domain) do
+    {:ok, %{subdomain: subdomain}} = Domainatrex.parse(domain)
 
-  defp state_link(assigns) do
-    classes =
-      if assigns.verified do
-        %{
-          text: gettext("Domain is verified and healthy"),
-          text_class: "text-green-600 dark:text-green-300"
-        }
-      else
-        case assigns.state do
-          :all_records_verified ->
-            %{
-              text: gettext("Domain is verified and healthy"),
-              text_class: "text-green-600 dark:text-green-300"
-            }
-
-          :some_records_missing ->
-            %{
-              text: gettext("Domain is partially verified"),
-              text_class: "text-orange-600 dark:text-orange-300"
-            }
-
-          _ ->
-            %{
-              text: gettext("Domain is being verified"),
-              text_class: "text-orange-600 dark:text-orange-300"
-            }
-        end
-      end
-
-    assigns = assign(assigns, classes)
-
-    ~H"""
-    <.a
-      type="button"
-      to={~p"/app/settings/org/domain/dns"}
-      class={["text-sm underline", @text_class]}
-      link_type="live_redirect"
-      label={@text}
-    />
-    """
-  end
-
-  attr :value, :string, required: true
-  attr :priority, :string, default: nil
-  attr :verified, :boolean, required: true
-  attr :rest, :global, doc: "Any additional HTML attributes to add to the floating container."
-
-  defp value_line(assigns) do
-    classes =
-      if assigns.verified do
-        %{
-          icon: "remix-checkbox-circle-line",
-          text_class: "text-green-700 dark:text-green-200",
-          icon_class: "text-green-700 dark:text-green-200"
-        }
-      else
-        %{
-          icon: nil,
-          text_class: "text-orange-700 dark:text-orange-200",
-          icon_class: nil
-        }
-      end
-
-    assigns =
-      assigns
-      |> assign(classes)
-      |> assign(elem_id: UUIDv7.generate())
-
-    ~H"""
-    <span
-      id={@elem_id <> "-tooltip"}
-      phx-hook="TippyHook"
-      data-tippy-content={gettext("Click to copy: %{value}", value: @value)}
-      {@rest}
-    >
-      <span
-        id={@elem_id <> "-clipboard"}
-        class="flex gap-1 items-center cursor-pointer"
-        phx-hook="ClipboardHook"
-        data-content={@value}
-      >
-        <div class="before-copied flex items-center gap-1">
-          <.icon :if={@icon} name={@icon} class={["w-4 h-4 shrink-0", @icon_class]} />
-          <span class={[@text_class]}>
-            {@value}
-          </span>
-        </div>
-        <div class="hidden text-green-700 after-copied dark:text-green-200">Copied!</div>
-      </span>
-    </span>
-    """
+    [
+      %{kind: :txt, name: "envelope.#{subdomain}", value: "v=spf1 include:amazonses.com ~all"},
+      %{
+        kind: :txt,
+        name: "envelope.#{subdomain}",
+        value: "v=DMARC1; p=none; rua=mailto:dmarc@mailersense.com;"
+      },
+      %{
+        kind: :cname,
+        name: "6gofkzgsmtm3puhejogwvpq4hdulyhbt._domainkey.#{subdomain}",
+        value: "6gofkzgsmtm3puhejogwvpq4hdulyhbt.dkim.amazonses.com",
+        verified: true
+      },
+      %{
+        kind: :cname,
+        name: "4pjglljley3rptdd6x6jiukdffssnfj4._domainkey.#{subdomain}",
+        value: "4pjglljley3rptdd6x6jiukdffssnfj4.dkim.amazonses.com",
+        verified: true
+      },
+      %{
+        kind: :cname,
+        name: "vons5ikwlowq2o4k53modgl3wtfi4eqd._domainkey.#{subdomain}",
+        value: "vons5ikwlowq2o4k53modgl3wtfi4eqd.dkim.amazonses.com",
+        verified: true
+      }
+    ]
   end
 end

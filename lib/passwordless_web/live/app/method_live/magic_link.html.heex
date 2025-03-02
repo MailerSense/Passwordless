@@ -6,30 +6,42 @@
     phx-submit="save"
     phx-change="validate"
   >
-    <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-slate-700">
-      <h3 class="text-lg font-medium text-slate-900 dark:text-white">
-        {if @enabled, do: gettext("Enabled"), else: gettext("Disabled")}
-      </h3>
-
-      <.field type="switch" field={@form[:enabled]} label="" />
-    </div>
     <div class="p-6">
+      <.field type="checkbox" field={@form[:enabled]} />
+      <.p class="mb-6">
+        Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in. The link is valid for a limited time and can only be used once.
+      </.p>
+      <.form_separator />
+      <.form_header title="General" />
       <.field
         field={@form[:expires]}
         type="number"
-        label={gettext("Expire after")}
         suffix={gettext("minutes")}
         disabled={not @enabled}
+        required
+        required_asterix={false}
       />
-      <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-4 mb-6 lg:mb-0">
-        <.field field={@form[:sender_name]} disabled={not @enabled} />
+      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+        <.field
+          field={@form[:sender_name]}
+          label={gettext("Sender")}
+          disabled={not @enabled}
+          required
+          required_asterix={false}
+          wrapper_class="!mb-0"
+        />
         <.field
           field={@form[:sender]}
-          label={gettext("Sender email")}
+          label={gettext("Email")}
           suffix={Passwordless.Domain.email_suffix(@domain)}
           disabled={not @enabled}
+          required
+          required_asterix={false}
+          wrapper_class="!mb-0"
         />
       </div>
+      <.form_separator />
+      <.form_header title="Template" />
       <.form_separator />
       <.form_header title="Advanced" />
       <.field
