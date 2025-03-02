@@ -8,17 +8,15 @@ defmodule Passwordless.App do
   import Ecto.Query
 
   alias Database.ChangesetExt
-  alias Passwordless.Actor
   alias Passwordless.Domain
-  alias Passwordless.Email
   alias Passwordless.Methods
   alias Passwordless.Organizations.Org
-  alias Passwordless.Phone
 
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
+  @schema_prefix "public"
   schema "apps" do
     field :name, :string
     field :website, :string
@@ -36,11 +34,6 @@ defmodule Passwordless.App do
     has_one :authenticator, Methods.Authenticator
     has_one :security_key, Methods.SecurityKey
     has_one :passkey, Methods.Passkey
-
-    # Entities
-    has_many :actors, Actor
-    has_many :emails, Email
-    has_many :phones, Phone
 
     belongs_to :org, Org, type: :binary_id
 

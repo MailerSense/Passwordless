@@ -76,17 +76,29 @@ defmodule Database.SoftDelete do
       if the schema in the from clause has a deleted_at column
       NOTE: will not exclude soft deleted records if :with_deleted option passed as true
       """
+      @impl Ecto.Repo
       def prepare_query(_operation, query, opts) do
         schema_module = get_schema_module_from_query(query)
         fields = if schema_module, do: schema_module.__schema__(:fields), else: []
-        soft_deletable? = Enum.member?(fields, :deleted_at)
 
-        if has_include_deleted_at_clause?(query) || opts[:with_deleted] || deletion_disabled_for_process?() ||
-             !soft_deletable? do
-          {query, opts}
-        else
-          query = from(x in query, where: is_nil(x.deleted_at))
-          {query, opts}
+        cond do
+          opts[:prefix] == "oban" ->
+            {query, opts}
+
+          opts[:with_deleted] ->
+            {query, opts}
+
+          has_include_deleted_at_clause?(query) ->
+            {query, opts}
+
+          deletion_disabled_for_process?() ->
+            {query, opts}
+
+          not Enum.member?(fields, :deleted_at) ->
+            {query, opts}
+
+          true ->
+            {from(x in query, where: is_nil(x.deleted_at)), opts}
         end
       end
 

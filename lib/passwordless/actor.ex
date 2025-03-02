@@ -9,7 +9,6 @@ defmodule Passwordless.Actor do
 
   alias Database.ChangesetExt
   alias Passwordless.Action
-  alias Passwordless.App
   alias Passwordless.Challenge
   alias Passwordless.Email
   alias Passwordless.Locale
@@ -56,8 +55,6 @@ defmodule Passwordless.Actor do
     has_many :actions, Action
     has_many :challenges, Challenge
 
-    belongs_to :app, App, type: :binary_id
-
     timestamps()
     soft_delete_timestamp()
   end
@@ -89,13 +86,6 @@ defmodule Passwordless.Actor do
     do: String.downcase(region)
 
   def phone_region(%__MODULE__{}), do: nil
-
-  @doc """
-  Get by app.
-  """
-  def get_by_app(query \\ __MODULE__, %App{} = app) do
-    from q in query, where: q.app_id == ^app.id
-  end
 
   @doc """
   Get none.
@@ -143,12 +133,10 @@ defmodule Passwordless.Actor do
     name
     state
     language
-    app_id
   )a
   @required_fields ~w(
     state
     language
-    app_id
   )a
 
   @doc """
@@ -161,7 +149,6 @@ defmodule Passwordless.Actor do
     |> validate_name()
     |> cast_assoc(:email)
     |> cast_assoc(:phone)
-    |> assoc_constraint(:app)
   end
 
   @doc """
@@ -172,7 +159,6 @@ defmodule Passwordless.Actor do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_name()
-    |> assoc_constraint(:app)
   end
 
   @doc """

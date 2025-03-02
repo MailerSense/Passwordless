@@ -9,6 +9,7 @@ defmodule Passwordless do
 
   import Util.Crud
 
+  alias Database.Multitenant
   alias Passwordless.Action
   alias Passwordless.Actor
   alias Passwordless.App
@@ -43,6 +44,20 @@ defmodule Passwordless do
 
   def config(key, default \\ nil) when is_atom(key) do
     Application.get_env(:passwordless, key, default)
+  end
+
+  ## Tenant
+
+  def get_tenand_id do
+    Repo.get_tenant_id()
+  end
+
+  def set_tenant(%App{} = app) do
+    Repo.put_tenant_id(app)
+  end
+
+  def clear_tenant do
+    Repo.clear_tenant_id()
   end
 
   ## Methods
@@ -213,16 +228,13 @@ defmodule Passwordless do
   # Actor
 
   def get_actor!(%App{} = app, id) when is_binary(id) do
-    app
-    |> Ecto.assoc(:actors)
-    |> Repo.get!(id)
+    Repo.get!(Actor, id, prefix: Multitenant.to_prefix(app))
   end
 
   def create_actor(%App{} = app, attrs \\ %{}) do
-    app
-    |> Ecto.build_assoc(:actors)
+    %Actor{}
     |> Actor.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert(prefix: Multitenant.to_prefix(app))
   end
 
   def change_actor(%Actor{} = actor, attrs \\ %{}) do
@@ -246,21 +258,21 @@ defmodule Passwordless do
   def add_email(%Actor{} = actor, attrs \\ %{}) do
     actor
     |> Ecto.build_assoc(:emails)
-    |> Email.changeset(Map.put(attrs, :app_id, actor.app_id))
+    |> Email.changeset(attrs)
     |> Repo.insert()
   end
 
   def add_regional_phone(%Actor{} = actor, attrs \\ %{}) do
     actor
     |> Ecto.build_assoc(:phones)
-    |> Phone.regional_changeset(Map.put(attrs, :app_id, actor.app_id))
+    |> Phone.regional_changeset(attrs)
     |> Repo.insert()
   end
 
   def add_canonical_phone(%Actor{} = actor, attrs \\ %{}) do
     actor
     |> Ecto.build_assoc(:phones)
-    |> Phone.canonical_changeset(Map.put(attrs, :app_id, actor.app_id))
+    |> Phone.canonical_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -281,7 +293,7 @@ defmodule Passwordless do
   def create_action(%Actor{} = actor, attrs \\ %{}) do
     actor
     |> Ecto.build_assoc(:actions)
-    |> Action.changeset(Map.put(attrs, :app_id, actor.app_id))
+    |> Action.changeset(attrs)
     |> Repo.insert()
   end
 end

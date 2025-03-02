@@ -8,11 +8,19 @@ defmodule Passwordless.Methods.Passkey do
   alias Database.ChangesetExt
   alias Passwordless.App
 
-  @uplift_intervals ~w(every_challenge one_day one_week one_month never_again)a
+  @uplift_intervals ~w(
+    every_challenge
+    one_day
+    one_week
+    one_month
+    never_again
+  )a
+
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
   }
+  @schema_prefix "public"
   schema "passkey_methods" do
     field :enabled, :boolean, default: true
     field :relying_party_id, :string

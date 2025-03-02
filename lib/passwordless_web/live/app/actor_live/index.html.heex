@@ -88,7 +88,7 @@
       id={@live_action}
       title={@page_title}
       subtitle={@page_subtitle}
-      actor={Ecto.build_assoc(@current_app, :actors)}
+      actor={%Actor{}}
       module={PasswordlessWeb.App.ActorLive.FormComponent}
       live_action={@live_action}
       current_org={@current_org}

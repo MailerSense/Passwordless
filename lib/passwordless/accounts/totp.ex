@@ -9,6 +9,7 @@ defmodule Passwordless.Accounts.TOTP do
 
   alias Passwordless.Accounts.User
 
+  @schema_prefix "public"
   schema "user_totps" do
     field :secret, :binary
     field :code, :string, virtual: true

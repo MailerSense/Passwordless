@@ -43,17 +43,17 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     if socket.assigns.finished do
       {:noreply, socket}
     else
-      query =
-        socket.assigns.current_app
-        |> Action.get_by_app()
-        |> Action.preload_actor()
-
+      query = Action.preload_actor()
       assigns = Map.take(socket.assigns, ~w(cursor)a)
+      current_app = socket.assigns.current_app
 
       {:noreply,
        socket
        |> assign(finished: false)
-       |> start_async(:load_actions, fn -> load_actions(query, assigns) end)}
+       |> start_async(:load_actions, fn ->
+         Passwordless.set_tenant(current_app)
+         load_actions(query, assigns)
+       end)}
     end
   end
 
@@ -90,10 +90,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   end
 
   defp assign_actions(socket, params) do
-    query =
-      socket.assigns.current_app
-      |> Action.get_by_app()
-      |> Action.preload_actor()
+    query = Action.preload_actor()
 
     params = Map.take(params, ~w(filters order_by order_directions))
 

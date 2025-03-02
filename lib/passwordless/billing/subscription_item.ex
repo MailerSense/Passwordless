@@ -14,6 +14,7 @@ defmodule Passwordless.Billing.SubscriptionItem do
     Flop.Schema,
     sortable: [:id], filterable: [:id]
   }
+  @schema_prefix "public"
   schema "billing_subscription_items" do
     field :name, :string
     field :quantity, :integer, default: 1

@@ -16,6 +16,7 @@ defmodule Passwordless.Methods.Email do
     Flop.Schema,
     filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
   }
+  @schema_prefix "public"
   schema "email_methods" do
     field :enabled, :boolean, default: true
     field :expires, :integer, default: 15

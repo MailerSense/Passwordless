@@ -18,13 +18,13 @@ defmodule Passwordless.Domain do
     all_records_verified
     some_records_missing
   )a
-
   @states @aws_states ++ @dns_states
 
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
+  @schema_prefix "public"
   schema "domains" do
     field :name, :string
     field :kind, Ecto.Enum, values: @kinds, default: :sub_domain

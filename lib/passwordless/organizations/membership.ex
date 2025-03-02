@@ -30,6 +30,7 @@ defmodule Passwordless.Organizations.Membership do
       ]
     ]
   }
+  @schema_prefix "public"
   schema "org_memberships" do
     field :role, Ecto.Enum, values: Roles.org_roles(), default: :member
 

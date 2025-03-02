@@ -16,6 +16,7 @@ defmodule Passwordless.Accounts.User do
 
   @states ~w(inactive locked active)a
 
+  @schema_prefix "public"
   schema "users" do
     field :name, :string
     field :email, :string
@@ -278,7 +279,7 @@ defmodule Passwordless.Accounts.User do
   defp validate_name(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 160)
+    |> validate_length(:name, min: 1, max: 128)
   end
 
   defp validate_state(changeset) do

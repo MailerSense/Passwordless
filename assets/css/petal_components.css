@@ -410,7 +410,7 @@
 /* User badge */
 
 .pc-user-badge {
-  @apply text-info-600 dark:text-info-300 hover:underline;
+  @apply text-info-600 dark:text-info-300 underline;
 }
 
 /* Alerts */

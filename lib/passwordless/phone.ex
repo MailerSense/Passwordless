@@ -7,12 +7,12 @@ defmodule Passwordless.Phone do
 
   alias Database.ChangesetExt
   alias Passwordless.Actor
-  alias Passwordless.App
 
   @channels ~w(sms whatsapp)a
+
   @derive {
     Flop.Schema,
-    filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
+    filterable: [:id], sortable: [:id]
   }
   schema "phones" do
     field :number, :string
@@ -22,7 +22,6 @@ defmodule Passwordless.Phone do
     field :verified, :boolean, default: false
     field :channels, {:array, Ecto.Enum}, values: @channels, default: [:sms]
 
-    belongs_to :app, App, type: :binary_id
     belongs_to :actor, Actor, type: :binary_id
 
     timestamps()
@@ -36,7 +35,6 @@ defmodule Passwordless.Phone do
     primary
     verified
     channels
-    app_id
     actor_id
   )a
   @required_fields @fields
@@ -109,11 +107,12 @@ defmodule Passwordless.Phone do
   defp base_changeset(changeset) do
     changeset
     |> validate_channels()
-    |> unique_constraint([:app_id, :actor_id, :primary], error_key: :primary)
-    |> unique_constraint([:app_id, :actor_id, :canonical], error_key: :canonical)
-    |> unsafe_validate_unique([:app_id, :actor_id, :primary], Passwordless.Repo, error_key: :primary)
-    |> unsafe_validate_unique([:app_id, :actor_id, :canonical], Passwordless.Repo, error_key: :canonical)
-    |> assoc_constraint(:app)
+    |> unique_constraint([:actor_id, :primary], error_key: :primary)
+    |> unique_constraint([:actor_id, :canonical], error_key: :canonical)
+    |> unique_constraint([:actor_id, :region, :number], error_key: :number)
+    |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo, error_key: :primary)
+    |> unsafe_validate_unique([:actor_id, :canonical], Passwordless.Repo, error_key: :canonical)
+    |> unsafe_validate_unique([:actor_id, :region, :number], Passwordless.Repo, error_key: :number)
     |> assoc_constraint(:actor)
   end
 

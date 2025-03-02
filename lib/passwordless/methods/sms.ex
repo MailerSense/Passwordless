@@ -11,6 +11,7 @@ defmodule Passwordless.Methods.SMS do
     Flop.Schema,
     filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
   }
+  @schema_prefix "public"
   schema "sms_methods" do
     field :enabled, :boolean, default: true
     field :expires, :integer, default: 5

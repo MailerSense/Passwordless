@@ -16,6 +16,7 @@ defmodule PasswordlessWeb.UserAuth do
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
+  alias Passwordless.Repo
 
   require Logger
 
@@ -106,6 +107,8 @@ defmodule PasswordlessWeb.UserAuth do
     with %User{} = user <- conn.assigns[:current_user] do
       Activity.log_async(:user, :"user.sign_out", %{user: user})
     end
+
+    Repo.clear_tenant_id()
 
     conn
     |> renew_session()

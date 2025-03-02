@@ -14,6 +14,7 @@ defmodule Passwordless.DomainRecord do
     Flop.Schema,
     filterable: [:id], sortable: [:id, :name, :kind, :value, :verified]
   }
+  @schema_prefix "public"
   schema "domain_records" do
     field :kind, Ecto.Enum, values: ~w(txt cname)a
     field :name, :string

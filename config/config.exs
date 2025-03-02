@@ -27,6 +27,12 @@ config :passwordless,
   generators: [timestamp_type: :utc_datetime_usec],
   migration_primary_key: [type: :uuid]
 
+config :passwordless, :multitenant,
+  repo: Passwordless.Repo,
+  tenant_field: :id,
+  tenant_prefix: "app_",
+  tenant_migrations: "tenant_migrations"
+
 # Configures the session
 config :passwordless, :session,
   salt: "N7Amr6UvJN64wB3iLstI9fwNJGAIZpVmJDxOHWVx+VtKaT3d8nTeH5UZNJxniSse",
@@ -54,6 +60,7 @@ config :ex_aws,
 # Configures Oban
 config :passwordless, Oban,
   repo: Passwordless.Repo,
+  prefix: "oban",
   queues: [
     default: 100,
     mailer: [local_limit: 10, global_limit: 20],

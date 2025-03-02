@@ -8,7 +8,6 @@ defmodule Passwordless.Action do
   import Ecto.Query
 
   alias Passwordless.Actor
-  alias Passwordless.App
   alias Passwordless.Challenge
 
   @outcomes ~w(allow timeout block challenge)a
@@ -23,22 +22,12 @@ defmodule Passwordless.Action do
 
     has_one :challenge, Challenge
 
-    belongs_to :app, App, type: :binary_id
     belongs_to :actor, Actor, type: :binary_id
 
     timestamps()
   end
 
   def outcomes, do: @outcomes
-
-  @doc """
-  Get by app.
-  """
-  def get_by_app(query \\ __MODULE__, %App{} = app) do
-    from q in query,
-      left_join: a in assoc(q, :actor),
-      where: q.app_id == ^app.id and is_nil(a.deleted_at)
-  end
 
   @doc """
   Get by actor.
@@ -58,7 +47,6 @@ defmodule Passwordless.Action do
     name
     method
     outcome
-    app_id
     actor_id
   )a
   @required_fields @fields
@@ -70,7 +58,6 @@ defmodule Passwordless.Action do
     action
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> assoc_constraint(:app)
     |> assoc_constraint(:actor)
   end
 end

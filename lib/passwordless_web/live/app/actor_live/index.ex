@@ -153,8 +153,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
     query =
       case socket.assigns[:current_app] do
         %App{} = app ->
-          app
-          |> Actor.get_by_app()
+          Actor
           |> Actor.join_details()
           |> Actor.preload_details()
 

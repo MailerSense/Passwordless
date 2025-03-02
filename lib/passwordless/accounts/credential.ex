@@ -10,6 +10,7 @@ defmodule Passwordless.Accounts.Credential do
 
   @providers ~w(google)a
 
+  @schema_prefix "public"
   schema "user_credentials" do
     field :subject, :string
     field :provider, Ecto.Enum, values: @providers

@@ -7,18 +7,16 @@ defmodule Passwordless.Email do
 
   alias Database.ChangesetExt
   alias Passwordless.Actor
-  alias Passwordless.App
 
   @derive {
     Flop.Schema,
-    filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
+    filterable: [:id], sortable: [:id]
   }
   schema "emails" do
     field :address, :string
     field :primary, :boolean, default: false
     field :verified, :boolean, default: false
 
-    belongs_to :app, App, type: :binary_id
     belongs_to :actor, Actor, type: :binary_id
 
     timestamps()
@@ -29,7 +27,6 @@ defmodule Passwordless.Email do
     address
     primary
     verified
-    app_id
     actor_id
   )a
   @required_fields @fields
@@ -42,11 +39,10 @@ defmodule Passwordless.Email do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_email()
-    |> unique_constraint([:app_id, :actor_id, :primary], error_key: :primary)
-    |> unique_constraint([:app_id, :actor_id, :address], error_key: :address)
-    |> unsafe_validate_unique([:app_id, :actor_id, :primary], Passwordless.Repo, error_key: :primary)
-    |> unsafe_validate_unique([:app_id, :actor_id, :address], Passwordless.Repo, error_key: :address)
-    |> assoc_constraint(:app)
+    |> unique_constraint([:actor_id, :primary], error_key: :primary)
+    |> unique_constraint([:actor_id, :address], error_key: :address)
+    |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo, error_key: :primary)
+    |> unsafe_validate_unique([:actor_id, :address], Passwordless.Repo, error_key: :address)
     |> assoc_constraint(:actor)
   end
 

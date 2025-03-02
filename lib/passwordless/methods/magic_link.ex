@@ -16,6 +16,7 @@ defmodule Passwordless.Methods.MagicLink do
     Flop.Schema,
     filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
   }
+  @schema_prefix "public"
   schema "magic_link_methods" do
     field :enabled, :boolean, default: true
     field :expires, :integer, default: 15

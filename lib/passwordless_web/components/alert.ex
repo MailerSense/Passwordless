@@ -27,34 +27,32 @@ defmodule PasswordlessWeb.Components.Alert do
     assigns = assign(assigns, :classes, alert_classes(assigns))
 
     ~H"""
-    <%= unless label_blank?(@label, @inner_block) do %>
-      <div {@rest} class={@classes}>
-        <%= if @with_icon do %>
-          <.get_icon color={@color} />
-        <% end %>
+    <div {@rest} class={@classes}>
+      <%= if @with_icon do %>
+        <.get_icon color={@color} />
+      <% end %>
 
-        <div class="pc-alert">
-          <div class="pc-alert__inner">
-            <div class="pc-alert__label">
-              {render_slot(@inner_block) || @label}
-            </div>
-
-            <%= if Util.present?(@action) do %>
-              {render_slot(@action)}
-            <% end %>
-
-            <%= if @close_button_properties do %>
-              <button
-                class={["pc-alert__dismiss-button", get_dismiss_icon_classes(@color)]}
-                {@close_button_properties}
-              >
-                <Icon.icon name="remix-close-line" class="self-start w-4 h-4" />
-              </button>
-            <% end %>
+      <div class="pc-alert">
+        <div class="pc-alert__inner">
+          <div class="pc-alert__label">
+            {render_slot(@inner_block) || @label}
           </div>
+
+          <%= if Util.present?(@action) do %>
+            {render_slot(@action)}
+          <% end %>
+
+          <%= if @close_button_properties do %>
+            <button
+              class={["pc-alert__dismiss-button", get_dismiss_icon_classes(@color)]}
+              {@close_button_properties}
+            >
+              <Icon.icon name="remix-close-line" class="self-start w-4 h-4" />
+            </button>
+          <% end %>
         </div>
       </div>
-    <% end %>
+    </div>
     """
   end
 
@@ -111,10 +109,5 @@ defmodule PasswordlessWeb.Components.Alert do
     ~H"""
     <Icon.icon name="remix-close-circle-line" class="w-6 h-6" />
     """
-  end
-
-  defp label_blank?(label, inner_block) do
-    IO.inspect(inner_block)
-    Util.blank?(label) && Util.blank?(inner_block)
   end
 end
