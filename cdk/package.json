@@ -24,7 +24,7 @@
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "~5.4.5"
+    "typescript": "~5.8.2"
   },
   "dependencies": {
     "@aws-cdk/app-staging-synthesizer-alpha": "2.160.0-alpha.0",
