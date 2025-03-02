@@ -180,8 +180,7 @@ defmodule PasswordlessWeb.Components.SlideOver do
     slide_over_classes =
       case origin do
         "left" -> "fixed left-0 inset-y-0 transform -translate-x-full"
-        # transform translate-x-full
-        "right" -> "fixed right-0 inset-y-0"
+        "right" -> "fixed right-0 inset-y-0 transform translate-x-full"
         "top" -> "fixed inset-x-0 top-0 transform -translate-y-full"
         "bottom" -> "fixed inset-x-0 bottom-0 transform translate-y-full"
       end

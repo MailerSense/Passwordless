@@ -239,7 +239,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create index(:emails, [:actor_id], where: "deleted_at is null")
-    create unique_index(:emails, [:app_id, :address], where: "deleted_at is null")
     create unique_index(:emails, [:app_id, :actor_id, :primary], where: "\"primary\"")
     create unique_index(:emails, [:app_id, :actor_id, :address], where: "deleted_at is null")
 
@@ -249,7 +248,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create table(:phones, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :address, :citext, null: false
+      add :number, :citext, null: false
+      add :region, :string, null: false
+      add :canonical, :citext, null: false
       add :primary, :boolean, null: false, default: false
       add :verified, :boolean, null: false, default: false
       add :channels, {:array, :string}, null: false, default: []
@@ -262,11 +263,10 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create index(:phones, [:actor_id], where: "deleted_at is null")
-    create unique_index(:phones, [:app_id, :address], where: "deleted_at is null")
     create unique_index(:phones, [:app_id, :actor_id, :primary], where: "\"primary\"")
-    create unique_index(:phones, [:app_id, :actor_id, :address], where: "deleted_at is null")
+    create unique_index(:phones, [:app_id, :actor_id, :canonical], where: "deleted_at is null")
 
-    execute "create index phones_email_gin_trgm_idx on phones using gin (address gin_trgm_ops);"
+    execute "create index phones_email_gin_trgm_idx on phones using gin (canonical gin_trgm_ops);"
 
     ## TOTPS
 

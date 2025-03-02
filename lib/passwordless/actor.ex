@@ -71,7 +71,8 @@ defmodule Passwordless.Actor do
 
   def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address) and not is_nil(address), do: address
 
-  def handle(%__MODULE__{phone: %Phone{address: address}}) when is_binary(address) and not is_nil(address), do: address
+  def handle(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical) and not is_nil(canonical),
+    do: canonical
 
   def handle(%__MODULE__{}), do: nil
 
@@ -79,9 +80,15 @@ defmodule Passwordless.Actor do
 
   def email(%__MODULE__{}), do: nil
 
-  def phone(%__MODULE__{phone: %Phone{address: address}}) when is_binary(address) and not is_nil(address), do: address
+  def phone(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical) and not is_nil(canonical),
+    do: canonical
 
   def phone(%__MODULE__{}), do: nil
+
+  def phone_region(%__MODULE__{phone: %Phone{region: region}}) when is_binary(region) and not is_nil(region),
+    do: String.downcase(region)
+
+  def phone_region(%__MODULE__{}), do: nil
 
   @doc """
   Get by app.
@@ -116,7 +123,7 @@ defmodule Passwordless.Actor do
     phone =
       from p in Phone,
         where: p.actor_id == parent_as(:actor).id and p.primary,
-        select: %{phone: p.address}
+        select: %{phone: p.canonical}
 
     query =
       if has_named_binding?(query, :actor),

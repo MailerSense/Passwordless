@@ -33,24 +33,23 @@
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
       <:col field={:search} searchable filterable={[:==]} />
-      <:col
-        :let={actor}
-        field={:name}
-        sortable
-        body_class="!font-medium !text-slate-900 dark:!text-white"
-      >
-        {Actor.handle(actor)}
-      </:col>
-      <:col :let={actor} field={:email} sortable>
+      <:col :let={actor} field={:name}>
         <.a
           to={~p"/app/users/#{actor}/edit"}
-          class="text-info-600 dark:text-info-300 hover:underline"
-          label={Actor.email(actor)}
+          class="text-info-600 dark:text-info-300 underline"
+          label={Actor.handle(actor)}
           link_type="live_redirect"
         />
       </:col>
+      <:col :let={actor} field={:email} sortable>
+        {Actor.email(actor)}
+      </:col>
       <:col :let={actor} field={:phone} sortable>
-        {Actor.phone(actor)}
+        <div class="flex items-center gap-2">
+          <.icon name={"flag-#{Actor.phone_region(actor)}"} class="pc-flag-icon" /> {Actor.phone(
+            actor
+          )}
+        </div>
       </:col>
       <:col :let={actor} field={:state} sortable switchable filterable={[:==]}>
         <% {badge_label, badge_color} = actor_state_badge(actor) %>

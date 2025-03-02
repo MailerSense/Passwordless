@@ -118,7 +118,10 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   defp apply_action(socket, :dns) do
     assign(socket,
       page_title: gettext("DNS records"),
-      page_subtitle: gettext("Ensure the following DNS records are set up for your domain.")
+      page_subtitle:
+        gettext(
+          "Ensure the following DNS records are set up for your domain. This is required for sending emails from your branded domain. If you need help, please contact your domain provider. The records may take up to 48 hours to propagate."
+        )
     )
   end
 

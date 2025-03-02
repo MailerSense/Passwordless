@@ -79,6 +79,9 @@ defmodule Passwordless.MixProject do
       {:premailex, "~> 0.3"},
       {:gen_smtp, "~> 1.2"},
 
+      # Phones
+      {:ex_phone_number, "~> 0.4.5"},
+
       # Ecto querying / pagination
       {:query_builder, "~> 1.4"},
 

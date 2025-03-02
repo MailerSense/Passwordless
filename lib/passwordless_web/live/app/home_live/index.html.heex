@@ -85,22 +85,18 @@
       finished={@finished}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-      <:col
-        :let={action}
-        label={gettext("Action")}
-        field={:name}
-        body_class="!font-medium !text-slate-900 dark:!text-white"
-      >
-        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
-      </:col>
       <:col :let={action} label={gettext("User")} field={:user}>
         <.a
           to={~p"/app/users/#{action.actor}/edit"}
-          class="text-info-600 dark:text-info-300 hover:underline"
+          class="text-info-600 dark:text-info-300 underline"
           label={Actor.handle(action.actor)}
           link_type="live_redirect"
         />
       </:col>
+      <:col :let={action} label={gettext("Action")} field={:name}>
+        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+      </:col>
+
       <:col :let={action} label={gettext("Details")} field={:details}>
         Requested a Magic Link
       </:col>
@@ -110,10 +106,7 @@
       </:col>
       <:col :let={action} label={gettext("Where")} field={:location}>
         <div class="flex items-center gap-2">
-          <.icon
-            name="flag-us"
-            class="h-[15px] w-5 outline outline-1 outline-offset-[-1px] outline-black/10"
-          /> New Jersey
+          <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
         </div>
       </:col>
       <:col :let={action} label={gettext("When")} field={:inserted_at}>

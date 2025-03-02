@@ -12,7 +12,7 @@ defmodule PasswordlessWeb.App.MethodLive.SMS do
     changeset = Passwordless.change_sms(sms)
 
     preview = """
-    Your #{app.display_name} verification code is 123456. To stop receiving these messages, visit #{app.website}
+    Your #{app.display_name} verification code is 123456. To stop receiving these messages, visit #{app.website}/sms-opt-out?code=#{app.id}.
     """
 
     {:ok,

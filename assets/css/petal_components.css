@@ -990,6 +990,12 @@ input[type="color" i]::-moz-color-swatch {
   @apply w-full h-[1px] my-1 bg-slate-200 dark:bg-white/30;
 }
 
+/* Flag icon */
+
+.pc-flag-icon {
+  @apply h-[15px] w-5 outline outline-1 outline-offset-[-1px] outline-black/10;
+}
+
 /* Theme switcher */
 
 .pc-theme-switcher--button {

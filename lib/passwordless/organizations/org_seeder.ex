@@ -65,8 +65,9 @@ defmodule Passwordless.Organizations.OrgSeeder do
         })
 
       {:ok, _phone} =
-        Passwordless.add_phone(actor, %{
-          address: phone,
+        Passwordless.add_regional_phone(actor, %{
+          region: "US",
+          number: phone,
           primary: true,
           verified: true
         })

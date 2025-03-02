@@ -189,7 +189,7 @@ defmodule Passwordless do
     Repo.transact(fn ->
       methods =
         methods
-        |> Enum.reject(fn {key, mod} ->
+        |> Enum.reject(fn {key, _mod} ->
           Repo.exists?(Ecto.assoc(app, key))
         end)
         |> Enum.map(fn {key, mod} ->
@@ -250,10 +250,17 @@ defmodule Passwordless do
     |> Repo.insert()
   end
 
-  def add_phone(%Actor{} = actor, attrs \\ %{}) do
+  def add_regional_phone(%Actor{} = actor, attrs \\ %{}) do
     actor
     |> Ecto.build_assoc(:phones)
-    |> Phone.changeset(Map.put(attrs, :app_id, actor.app_id))
+    |> Phone.regional_changeset(Map.put(attrs, :app_id, actor.app_id))
+    |> Repo.insert()
+  end
+
+  def add_canonical_phone(%Actor{} = actor, attrs \\ %{}) do
+    actor
+    |> Ecto.build_assoc(:phones)
+    |> Phone.canonical_changeset(Map.put(attrs, :app_id, actor.app_id))
     |> Repo.insert()
   end
 
