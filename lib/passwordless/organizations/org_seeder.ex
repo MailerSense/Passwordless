@@ -23,25 +23,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
                  |> Enum.to_list()
 
   def root_org(%User{} = user, attrs \\ %{}) do
-    attrs = Map.merge(random_org_attributes(), attrs)
-    attrs = Map.put(attrs, :name, "Passwordless GmbH")
-    attrs = Map.put(attrs, :tags, [:admin])
-
-    {:ok, org, _membership} = Organizations.create_org_with_owner(user, attrs)
-
-    {:ok, auth_token, _signed_auth_token} =
-      Organizations.create_auth_token(org, %{"name" => "Github Actions", "scopes" => [:sync]})
-
-    Logger.info("----------- AUTH TOKEN ------------")
-    Logger.info(auth_token)
-
-    {:ok, project} =
-      Passwordless.create_project(org, %{
-        "name" => "Demo Project",
-        "description" => "Demo Project Description"
-      })
-
-    org
+    root_org_local(user, attrs)
   end
 
   def root_org_local(%User{} = user, attrs \\ %{}) do
@@ -51,31 +33,75 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
     {:ok, org, _membership} = Organizations.create_org_with_owner(user, attrs)
 
-    {:ok, auth_token, _signed_auth_token} =
-      Organizations.create_auth_token(org, %{"name" => "Github Actions", "scopes" => [:sync]})
-
-    Logger.info("----------- AUTH TOKEN ------------")
-    Logger.info(auth_token)
-
-    {:ok, project} =
-      Passwordless.create_project(org, %{
-        "name" => "Demo Project",
-        "description" => "Demo Project Description"
+    {:ok, app} =
+      Passwordless.create_app(org, %{
+        "name" => "Demo App",
+        "website" => "https://passwordless.tools",
+        "display_name" => "Demo App"
       })
 
-    for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1000) do
+    {:ok, domain} =
+      Passwordless.create_domain(app, %{
+        name: "auth.passwordless.tools",
+        kind: :sub_domain
+      })
+
+    {:ok, methods} =
+      Passwordless.create_methods(app, %{
+        magic_link: %{
+          sender: "notifications",
+          sender_name: app.name,
+          domain_id: domain.id
+        },
+        email: %{
+          sender: "notifications",
+          sender_name: app.name,
+          domain_id: domain.id
+        },
+        authenticator: %{
+          issuer_name: app.name
+        },
+        security_key: %{
+          relying_party_id: URI.parse(app.website).host,
+          expected_origins: [%{url: app.website}]
+        },
+        passkey: %{
+          relying_party_id: URI.parse(app.website).host,
+          expected_origins: [%{url: app.website}]
+        }
+      })
+
+    for r <- default_domain_records(domain.name) do
+      {:ok, _} = Passwordless.create_domain_record(domain, r)
+    end
+
+    for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1_000) do
       {:ok, actor} =
-        Passwordless.create_actor(project, %{
-          first_name: Faker.Person.first_name(),
-          last_name: Faker.Person.last_name(),
-          email: email,
-          phone: phone,
+        Passwordless.create_actor(app, %{
+          name: Faker.Person.name(),
           state: Enum.random(Actor.states())
+        })
+
+      {:ok, _email} =
+        Passwordless.add_email(actor, %{
+          address: email,
+          primary: true,
+          verified: true
+        })
+
+      {:ok, _phone} =
+        Passwordless.add_regional_phone(actor, %{
+          region: "US",
+          number: phone,
+          primary: true,
+          verified: true
         })
 
       for _ <- 1..1 do
         {:ok, _action} =
           Passwordless.create_action(actor, %{
+            name: Enum.random(~w(signIn withdraw placeOrder)),
+            method: Enum.random(Passwordless.methods()),
             outcome: Enum.random(Action.outcomes())
           })
       end
@@ -86,13 +112,6 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
   # Private
 
-  defp random_check_attributes do
-    %{
-      name: "Check " <> Faker.Pokemon.name(),
-      state: Enum.random(for(_ <- 1..10, do: :online) ++ ~w(warning down)a)
-    }
-  end
-
   defp random_org_attributes do
     %{
       name: Faker.Company.name(),
@@ -100,12 +119,34 @@ defmodule Passwordless.Organizations.OrgSeeder do
     }
   end
 
-  defp random_data_entry_schema do
-    Faker.App.name() |> Slug.slugify() |> String.replace(~r/-/, "_") |> String.to_atom()
+  defp default_domain_records(domain) do
+    {:ok, %{subdomain: subdomain}} = Domainatrex.parse(domain)
 
-    %{
-      name: Faker.Company.name(),
-      email: Enum.random(@random_emails)
-    }
+    [
+      %{kind: :txt, name: "envelope.#{subdomain}", value: "v=spf1 include:amazonses.com ~all"},
+      %{
+        kind: :txt,
+        name: "envelope.#{subdomain}",
+        value: "v=DMARC1; p=none; rua=mailto:dmarc@mailersense.com;"
+      },
+      %{
+        kind: :cname,
+        name: "6gofkzgsmtm3puhejogwvpq4hdulyhbt._domainkey.#{subdomain}",
+        value: "6gofkzgsmtm3puhejogwvpq4hdulyhbt.dkim.amazonses.com",
+        verified: true
+      },
+      %{
+        kind: :cname,
+        name: "4pjglljley3rptdd6x6jiukdffssnfj4._domainkey.#{subdomain}",
+        value: "4pjglljley3rptdd6x6jiukdffssnfj4.dkim.amazonses.com",
+        verified: true
+      },
+      %{
+        kind: :cname,
+        name: "vons5ikwlowq2o4k53modgl3wtfi4eqd._domainkey.#{subdomain}",
+        value: "vons5ikwlowq2o4k53modgl3wtfi4eqd.dkim.amazonses.com",
+        verified: true
+      }
+    ]
   end
 end

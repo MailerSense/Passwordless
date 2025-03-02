@@ -34,7 +34,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
 
   attr :current_subpage, :atom, default: nil
 
-  attr :project_menu_items, :list,
+  attr :app_menu_items, :list,
     default: [],
     doc: "The items that will be displayed in the main menu in the sidebar."
 

@@ -13,28 +13,21 @@ defmodule PasswordlessWeb.CoreComponents do
     required: true,
     doc: "list of maps with keys :name, :path, :label, :icon (atom)"
 
+  attr :class, :any, default: nil
+  attr :inner_class, :any, default: nil
+
   slot :inner_block
 
   def tabbed_layout(assigns) do
     ~H"""
-    <div class="flex h-full">
-      <aside class="py-12 w-56 z-20 flex flex-col select-none pr-6">
-        <%= if menu_items_grouped?(@menu_items) do %>
-          <.tabbed_menu_group
-            :for={menu_group <- @menu_items}
-            title={menu_group[:title]}
-            menu_items={menu_group.menu_items}
-            current_page={@current_page}
-          />
-        <% else %>
-          <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
-        <% end %>
-      </aside>
-
-      <div class="flex-grow lg:pl-6 pb-12">
+    <.box class={["flex", @class]}>
+      <nav class="pc-sidebar__nav">
+        <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
+      </nav>
+      <div class={["flex-grow", @inner_class]}>
         {render_slot(@inner_block)}
       </div>
-    </div>
+    </.box>
     """
   end
 
@@ -135,7 +128,8 @@ defmodule PasswordlessWeb.CoreComponents do
   """
   attr :current_user, :map, default: nil
   attr :current_page, :any, required: true
-  attr :project_menu_items, :list
+  attr :current_section, :atom, required: true
+  attr :app_menu_items, :list
   attr :user_menu_items, :list
   attr :main_menu_items, :list
   attr :home_path, :string
@@ -148,7 +142,7 @@ defmodule PasswordlessWeb.CoreComponents do
       |> assign_new(:home_path, fn -> home_path(assigns[:current_user]) end)
       |> assign_new(:user_menu_items, fn -> user_menu_items(assigns[:current_user]) end)
       |> assign_new(:main_menu_items, fn -> main_menu_items(assigns[:current_section], assigns[:current_user]) end)
-      |> assign_new(:project_menu_items, fn -> project_menu_items(assigns[:current_user]) end)
+      |> assign_new(:app_menu_items, fn -> app_menu_items(assigns[:current_user]) end)
 
     assigns =
       update(assigns, :current_page, fn
@@ -161,7 +155,7 @@ defmodule PasswordlessWeb.CoreComponents do
       home_path={@home_path}
       current_user={@current_user}
       current_page={@current_page}
-      project_menu_items={@project_menu_items}
+      app_menu_items={@app_menu_items}
       user_menu_items={@user_menu_items}
       main_menu_items={@main_menu_items}
     >

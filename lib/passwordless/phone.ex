@@ -1,0 +1,123 @@
+defmodule Passwordless.Phone do
+  @moduledoc """
+  A phone.
+  """
+
+  use Passwordless.Schema
+
+  alias Database.ChangesetExt
+  alias Passwordless.Actor
+  alias Passwordless.App
+
+  @channels ~w(sms whatsapp)a
+  @derive {
+    Flop.Schema,
+    filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
+  }
+  schema "phones" do
+    field :number, :string
+    field :region, :string
+    field :canonical, :string
+    field :primary, :boolean, default: false
+    field :verified, :boolean, default: false
+    field :channels, {:array, Ecto.Enum}, values: @channels, default: [:sms]
+
+    belongs_to :app, App, type: :binary_id
+    belongs_to :actor, Actor, type: :binary_id
+
+    timestamps()
+    soft_delete_timestamp()
+  end
+
+  @fields ~w(
+    number
+    region
+    canonical
+    primary
+    verified
+    channels
+    app_id
+    actor_id
+  )a
+  @required_fields @fields
+
+  @doc """
+  A regional changeset.
+  """
+  def regional_changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
+    excluded = [:canonical]
+
+    actor_email
+    |> cast(attrs, @fields -- excluded)
+    |> validate_required(@required_fields -- excluded)
+    |> validate_regional_phone_number()
+    |> base_changeset()
+  end
+
+  @doc """
+  A canonical changeset.
+  """
+  def canonical_changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
+    excluded = [:number, :region]
+
+    actor_email
+    |> cast(attrs, @fields -- excluded)
+    |> validate_required(@required_fields -- excluded)
+    |> validate_canonical_phone_number()
+    |> base_changeset()
+  end
+
+  # Private
+
+  defp validate_regional_phone_number(%Ecto.Changeset{valid?: true} = changeset) do
+    changeset =
+      changeset
+      |> ChangesetExt.ensure_trimmed(:number)
+      |> ChangesetExt.ensure_trimmed(:region)
+
+    number = fetch_field!(changeset, :number)
+    region = fetch_field!(changeset, :region)
+
+    with {:ok, phone_number} <- ExPhoneNumber.parse(number, region),
+         true <- ExPhoneNumber.is_possible_number?(phone_number) do
+      put_change(changeset, :canonical, ExPhoneNumber.format(phone_number, :e164))
+    else
+      {:error, message} -> add_error(changeset, :number, message)
+      _ -> add_error(changeset, :number, "is invalid")
+    end
+  end
+
+  defp validate_regional_phone_number(changeset), do: changeset
+
+  defp validate_canonical_phone_number(%Ecto.Changeset{valid?: true} = changeset) do
+    changeset = ChangesetExt.ensure_trimmed(changeset, :canonical)
+    canonical = fetch_field!(changeset, :canonical)
+
+    with {:ok, phone_number} <- ExPhoneNumber.parse(canonical, ""),
+         true <- ExPhoneNumber.is_possible_number?(phone_number) do
+      changeset
+      |> put_change(:number, phone_number.national_number)
+      |> put_change(:region, ExPhoneNumber.Metadata.get_region_code_for_country_code(phone_number.country_code))
+    else
+      {:error, message} -> add_error(changeset, :canonical, message)
+      _ -> add_error(changeset, :canonical, "is invalid")
+    end
+  end
+
+  defp validate_canonical_phone_number(changeset), do: changeset
+
+  defp base_changeset(changeset) do
+    changeset
+    |> validate_channels()
+    |> unique_constraint([:app_id, :actor_id, :primary], error_key: :primary)
+    |> unique_constraint([:app_id, :actor_id, :canonical], error_key: :canonical)
+    |> unsafe_validate_unique([:app_id, :actor_id, :primary], Passwordless.Repo, error_key: :primary)
+    |> unsafe_validate_unique([:app_id, :actor_id, :canonical], Passwordless.Repo, error_key: :canonical)
+    |> assoc_constraint(:app)
+    |> assoc_constraint(:actor)
+  end
+
+  defp validate_channels(changeset) do
+    ChangesetExt.clean_array(changeset, :channels)
+  end
+end

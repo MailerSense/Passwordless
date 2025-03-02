@@ -1,0 +1,108 @@
+<.tabbed_settings_layout current_user={@current_user} current_page={:app}>
+  <:action></:action>
+
+  <.form id="edit-app-form" for={@form} phx-submit="save" phx-change="validate">
+    <.image_input
+      upload={@uploads.avatar}
+      label={gettext("Logo")}
+      current_image_src={nil}
+      placeholder_icon="hero-user-solid"
+      on_delete="clear_avatar"
+      automatic_help_text
+    />
+    <.field
+      field={@form[:name]}
+      placeholder={gettext("e.g. YourSite")}
+      autocomplete="organization"
+      required
+      required_asterix={false}
+    />
+    <.field
+      type="url"
+      field={@form[:website]}
+      placeholder={gettext("e.g. https://gmail.com")}
+      autocomplete="url"
+      required
+      required_asterix={false}
+    />
+    <.field
+      field={@form[:display_name]}
+      placeholder={gettext("e.g. YourApp")}
+      autocomplete="organization"
+      required
+      required_asterix={false}
+    />
+    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+      <.field
+        field={@form[:primary_button_color]}
+        type="color"
+        required
+        required_asterix={false}
+        wrapper_class="!mb-0"
+      />
+      <.field
+        field={@form[:secondary_button_color]}
+        type="color"
+        required
+        required_asterix={false}
+        wrapper_class="!mb-0"
+      />
+    </div>
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <.a
+          to={~p"/app/app/new"}
+          label={gettext("Create new app")}
+          class="text-sm underline text-slate-700 dark:text-slate-200"
+          link_type="live_redirect"
+        />
+      </div>
+      <.button
+        icon="remix-save-line"
+        label={gettext("Save changes")}
+        disabled={not @form.source.valid?}
+      />
+    </div>
+  </.form>
+</.tabbed_settings_layout>
+
+<%= case @live_action do %>
+  <% :new -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      app={Ecto.build_assoc(@current_org, :apps)}
+      module={PasswordlessWeb.App.AppLive.FormComponent}
+      return_to={~p"/app/app"}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_user={@current_user}
+    />
+  <% :delete -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light-flat"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Delete \"%{app}\"", app: @app.name)}
+          color="danger"
+          phx-click="delete_app"
+          phx-value-id={@app.id}
+        />
+      </div>
+    </.modal>
+  <% _ -> %>
+<% end %>

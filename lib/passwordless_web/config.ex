@@ -27,7 +27,7 @@ defmodule PasswordlessWeb.Config do
   def session_options(:prod) do
     Keyword.merge(@session,
       secure: true,
-      domain: "livecheck.io",
+      domain: "passwordless.tools",
       same_site: "None"
     )
   end
@@ -40,7 +40,7 @@ defmodule PasswordlessWeb.Config do
   end
 
   def corsica_options(:prod) do
-    Keyword.put(@corsica, :origins, "https://livecheck.io")
+    Keyword.put(@corsica, :origins, "https://passwordless.tools")
   end
 
   def corsica_options(_) do

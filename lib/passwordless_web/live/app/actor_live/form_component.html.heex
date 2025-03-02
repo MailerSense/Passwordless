@@ -1,58 +1,16 @@
 <div>
   <% origin = "right" %>
-  <.slide_over title={@title} origin={origin}>
-    <div class="flex flex-col gap-8">
-      <.form
-        id="edit-actor-form"
-        for={@form}
-        phx-target={@myself}
-        phx-submit="save"
-        phx-change="validate"
-      >
-        <div class="grid grid-cols-2 gap-3">
-          <.field field={@form[:first_name]} autocomplete="given-name" />
-          <.field field={@form[:last_name]} autocomplete="family-name" />
-        </div>
-        <.field type="email" field={@form[:email]} autocomplete="email" required />
-        <.field type="text" field={@form[:phone]} autocomplete="tel" />
-        <.field
-          field={@form[:user_id]}
-          icon="remix-id-card-line"
-          label={gettext("User ID")}
-          placeholder={gettext("User ID from your internal system")}
-        />
-        <.field
-          type="select"
-          field={@form[:country]}
-          options={@locales}
-          icon_mapping={@icon_mapping}
-          icon_class="pc-select-input__flag"
-          required
-          required_asterix={false}
-        />
-        <.form_header title={gettext("Verification")} />
-        <.field type="checkbox" field={@form[:email_verified]} />
-        <.field type="checkbox" field={@form[:phone_verified]} />
-        <div :if={@live_action == :edit} class="pc-form-field-wrapper">
-          <.form_header title={gettext("Credentials")} />
-          <.simple_table items={[]}>
-            <:if_empty>
-              {gettext("No %{models} found", models: gettext("credentials"))}
-            </:if_empty>
-            <:col field={:name} />
-          </.simple_table>
-        </div>
-        <div :if={@live_action == :edit} class="pc-form-field-wrapper">
-          <.form_header title={gettext("Recent activity")} />
-          <.simple_table items={[]}>
-            <:if_empty>
-              {gettext("No %{models} found", models: gettext("actions"))}
-            </:if_empty>
-            <:col field={:name} />
-          </.simple_table>
-        </div>
-      </.form>
-    </div>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+    <.form
+      id="edit-actor-form"
+      for={@form}
+      phx-target={@myself}
+      phx-submit="save"
+      phx-change="validate"
+    >
+      <.field field={@form[:name]} autocomplete="name" phx-debounce="blur" required />
+      <.field type="select" field={@form[:language]} options={@languages} required />
+    </.form>
 
     <:actions>
       <.button

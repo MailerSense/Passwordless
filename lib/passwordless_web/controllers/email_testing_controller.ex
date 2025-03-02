@@ -43,7 +43,7 @@ defmodule PasswordlessWeb.EmailTestingController do
   end
 
   defp generate_email("org_invitation", current_user) do
-    org = %Org{name: "Petal Pro", slug: "org"}
+    org = %Org{name: "Petal Pro"}
     invitation = %{email: current_user.email, user_id: current_user.id}
     Email.org_invitation(org, invitation, "#")
   end

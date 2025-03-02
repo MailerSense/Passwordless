@@ -58,8 +58,7 @@ defmodule PasswordlessWeb.Components.Form do
   attr(:rest, :global, include: ~w(for))
 
   def form_label(assigns) do
-    assigns =
-      assign(assigns, :classes, label_classes(assigns))
+    assigns = assign(assigns, :classes, label_classes(assigns))
 
     ~H"""
     <%= if @form && @field do %>
@@ -143,11 +142,14 @@ defmodule PasswordlessWeb.Components.Form do
             </div>
           </label>
         <% "switch" -> %>
-          <label class="pc-checkbox-label">
+          <label class="pc-switch-label">
             <.switch form={@form} field={@field} {@rest} />
-            <div class={
-              label_classes(%{form: @form, field: @field, type: "checkbox", class: @label_class})
-            }>
+            <div
+              :if={Util.present?(@label)}
+              class={
+                label_classes(%{form: @form, field: @field, type: "checkbox", class: @label_class})
+              }
+            >
               {@label}
             </div>
           </label>
@@ -780,6 +782,15 @@ defmodule PasswordlessWeb.Components.Form do
     <h3 class={["pc-form-header", @class]} {@rest}>
       {@title}
     </h3>
+    """
+  end
+
+  attr(:class, :any, default: "", doc: "extra classes for the help text")
+  attr(:rest, :global)
+
+  def form_separator(assigns) do
+    ~H"""
+    <span class={["pc-form-separator", @class]} {@rest}></span>
     """
   end
 

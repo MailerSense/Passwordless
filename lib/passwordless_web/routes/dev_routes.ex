@@ -20,8 +20,6 @@ defmodule PasswordlessWeb.DevRoutes do
               {PasswordlessWeb.User.Hooks, :require_authenticated_user},
               {PasswordlessWeb.Org.Hooks, :fetch_current_org}
             ] do
-            live "/", DevDashboardLive
-
             scope "/emails" do
               get "/", EmailTestingController, :index
               get "/sent", EmailTestingController, :sent

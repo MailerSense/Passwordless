@@ -6,19 +6,13 @@ defmodule PasswordlessWeb.App.ActorLive.FormComponent do
 
   @impl true
   def update(%{actor: %Actor{} = actor} = assigns, socket) do
-    changeset = Passwordless.change_actor(actor, %{})
-
-    locales = Enum.map(Passwordless.Locale.countries(), fn {code, name} -> {name, code} end)
-
-    icon_mapping = fn
-      k when is_atom(k) -> "flag-#{k}"
-      k when is_binary(k) -> "flag-#{k}"
-    end
+    changeset = Passwordless.change_actor(actor)
+    languages = Enum.map(Passwordless.Locale.languages(), fn {code, name} -> {name, code} end)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(locales: locales, icon_mapping: icon_mapping)
+     |> assign(languages: languages)
      |> assign_form(changeset)}
   end
 
@@ -41,7 +35,7 @@ defmodule PasswordlessWeb.App.ActorLive.FormComponent do
 
   defp save_actor(socket, :edit, actor_params) do
     case Passwordless.update_actor(socket.assigns.actor, actor_params) do
-      {:ok, actor} ->
+      {:ok, _actor} ->
         {:noreply,
          socket
          |> put_flash(:info, gettext("Actor updated."))
@@ -53,10 +47,8 @@ defmodule PasswordlessWeb.App.ActorLive.FormComponent do
   end
 
   defp save_actor(socket, :new, actor_params) do
-    case Passwordless.create_actor(socket.assigns.current_org, actor_params) do
+    case Passwordless.create_actor(socket.assigns.current_app, actor_params) do
       {:ok, _actor} ->
-        Organizations.clear_cached_actors(socket.assigns.current_org)
-
         {:noreply,
          socket
          |> put_flash(:info, gettext("Actor created."))

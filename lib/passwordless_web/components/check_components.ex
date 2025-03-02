@@ -28,7 +28,7 @@ defmodule PasswordlessWeb.CheckComponents do
         title={"#{@badge}: #{@content}"}
         {@rest}
         class={[
-          "shadow-m2 hover:shadow-2 active:shadow-3 transition-all duration-150 ease-in-out",
+          "hover:shadow-2 active:shadow-3 transition-all duration-150 ease-in-out",
           "border border-slate-200 dark:border-slate-700"
         ]}
       >
@@ -48,7 +48,7 @@ defmodule PasswordlessWeb.CheckComponents do
     <% else %>
       <section
         class={[
-          "p-6 rounded-lg shadow-m2 flex flex-col gap-4",
+          "p-6 rounded-lg flex flex-col gap-4",
           "border border-slate-200 dark:border-slate-700",
           "bg-white dark:bg-slate-700/30",
           @class
@@ -144,7 +144,7 @@ defmodule PasswordlessWeb.CheckComponents do
       class={["flex flex-col divide-y divide-slate-200 dark:divide-slate-700 overflow-hidden", @class]}
       {@rest}
     >
-      <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-slate-700">
+      <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-slate-700">
         <.a
           :for={item <- @items}
           to={item.to}

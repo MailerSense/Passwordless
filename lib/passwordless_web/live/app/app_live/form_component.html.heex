@@ -1,0 +1,54 @@
+<div>
+  <% origin = "right" %>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+    <.form
+      id="edit-app-form"
+      for={@form}
+      phx-target={@myself}
+      phx-submit="save"
+      phx-change="validate"
+    >
+      <.field
+        field={@form[:name]}
+        placeholder={gettext("e.g. YourSite")}
+        autocomplete="organization"
+        required
+      />
+      <.field
+        type="url"
+        field={@form[:website]}
+        placeholder={gettext("e.g. https://gmail.com")}
+        autocomplete="url"
+        required
+      />
+      <.field
+        field={@form[:display_name]}
+        placeholder={gettext("e.g. YourApp")}
+        autocomplete="organization"
+        required
+      />
+    </.form>
+
+    <:actions>
+      <.button
+        size="wide"
+        type="submit"
+        color="light-flat"
+        label={gettext("Cancel")}
+        phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+      />
+      <.button
+        id="edit-app-form-submit"
+        size="wide"
+        type="submit"
+        form="edit-app-form"
+        disabled={not @form.source.valid?}
+        label={
+          if @live_action == :new,
+            do: gettext("Create"),
+            else: gettext("Save")
+        }
+      />
+    </:actions>
+  </.slide_over>
+</div>

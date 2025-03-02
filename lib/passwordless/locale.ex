@@ -18,6 +18,12 @@ defmodule Passwordless.Locale do
   @countries Application.compile_env!(:passwordless, :countries)
   @country_codes Keyword.keys(@countries)
 
+  @languages Application.compile_env!(:passwordless, :languages)
+  @language_codes Keyword.keys(@languages)
+
   def countries, do: @countries
   def country_codes, do: @country_codes
+
+  def languages, do: @languages
+  def language_codes, do: @language_codes
 end

@@ -12,24 +12,14 @@ defmodule PasswordlessWeb.Menus do
   def public_menu_items,
     do: [
       %{label: gettext("Product"), path: ~p"/product"},
-      %{
-        path: "/",
-        label: gettext("Developers"),
-        menu_items: [
-          %{icon: "remix-news-line", label: gettext("Blog"), path: ~p"/blog"},
-          %{icon: "remix-hand", label: gettext("Demo"), path: ~p"/book-demo"},
-          %{icon: "remix-book-open-line", label: gettext("Documentation"), path: ~p"/docs"}
-        ]
-      },
-      %{label: gettext("Pricing"), path: ~p"/pricing"},
-      %{label: gettext("Demo"), path: ~p"/book-demo"}
+      %{path: "/", label: gettext("Developers"), menu_items: []},
+      %{label: gettext("Pricing"), path: ~p"/pricing"}
     ]
 
   def public_mobile_menu_items(%User{}),
     do: [
       %{label: gettext("Product"), path: ~p"/product"},
       %{label: gettext("Pricing"), path: ~p"/pricing"},
-      %{label: gettext("Demo"), path: ~p"/book-demo"},
       %{label: gettext("Open App"), path: ~p"/app/home"},
       %{label: gettext("Contact"), path: ~p"/contact"}
     ]
@@ -38,7 +28,6 @@ defmodule PasswordlessWeb.Menus do
     do: [
       %{label: gettext("Product"), path: ~p"/product"},
       %{label: gettext("Pricing"), path: ~p"/pricing"},
-      %{label: gettext("Demo"), path: ~p"/book-demo"},
       %{label: gettext("Sign In"), path: ~p"/auth/sign-in"},
       %{label: gettext("Contact"), path: ~p"/contact"}
     ]
@@ -65,15 +54,12 @@ defmodule PasswordlessWeb.Menus do
       )
 
   def main_menu_items(:dev, %User{} = current_user),
-    do:
-      if(Passwordless.config(:env) == :dev,
-        do: build_menu([:dev_routes, :dev_email_templates, :dev_sent_emails], current_user)
-      )
+    do: if(Passwordless.config(:env) == :dev, do: build_menu([:dev_email_templates, :dev_sent_emails], current_user))
 
   def main_menu_items(_section, _user), do: []
 
   def user_menu_items(%User{current_org: %Org{}} = current_user),
-    do: build_menu([:billing, :team, :projects, :organization, :sign_out], current_user)
+    do: build_menu([:app, :team, :billing, :sign_out], current_user)
 
   def user_menu_items(_user), do: []
 
@@ -88,21 +74,12 @@ defmodule PasswordlessWeb.Menus do
 
   def section_menu_items(_user), do: []
 
-  def footer_menu_items,
-    do: [
-      %{label: gettext("Home"), path: ~p"/"},
-      %{label: gettext("Pricing"), path: ~p"/pricing"},
-      %{label: gettext("Demo"), path: ~p"/book-demo"},
-      %{label: gettext("Docs"), path: ~p"/docs"}
-    ]
+  def footer_menu_items, do: [%{label: gettext("Home"), path: ~p"/"}, %{label: gettext("Pricing"), path: ~p"/pricing"}]
 
   def build_menu(menu_items, current_user \\ nil) do
     menu_items
     |> Enum.map(fn menu_item ->
       cond do
-        menu_item == :separator ->
-          %{separator: true}
-
         is_atom(menu_item) ->
           get_link(menu_item, current_user)
 
@@ -162,17 +139,9 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Profile"),
-      path: ~p"/app/settings",
-      icon: "remix-at-line"
-    }
-  end
-
-  def get_link(:edit_email = name, _user) do
-    %{
-      name: name,
-      label: gettext("Login Email"),
-      path: ~p"/app/edit-email",
-      icon: "remix-at-line"
+      path: ~p"/app/profile",
+      icon: "remix-at-line",
+      link_type: "live_patch"
     }
   end
 
@@ -181,7 +150,8 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Password"),
       path: ~p"/app/password",
-      icon: "remix-key-line"
+      icon: "remix-key-line",
+      link_type: "live_patch"
     }
   end
 
@@ -190,7 +160,8 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Invitations"),
       path: ~p"/app/invitations",
-      icon: "remix-mail-line"
+      icon: "remix-mail-line",
+      link_type: "live_patch"
     }
   end
 
@@ -199,11 +170,12 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Security"),
       path: ~p"/app/security",
-      icon: "remix-lock-line"
+      icon: "remix-lock-line",
+      link_type: "live_patch"
     }
   end
 
-  def get_link(:users = name, %User{} = user) do
+  def get_link(:users = name, _user) do
     %{
       name: name,
       label: gettext("Users"),
@@ -213,7 +185,7 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
-  def get_link(:home = name, %User{} = _user) do
+  def get_link(:home = name, _user) do
     %{
       name: name,
       label: gettext("Home"),
@@ -223,17 +195,17 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
-  def get_link(:methods = name, %User{} = _user) do
+  def get_link(:methods = name, _user) do
     %{
       name: name,
       label: gettext("Methods"),
-      path: ~p"/app/methods",
+      path: ~p"/app/methods/magic-link",
       icon: "remix-database-2-line",
       link_type: "live_patch"
     }
   end
 
-  def get_link(:reports = name, %User{} = _user) do
+  def get_link(:reports = name, _user) do
     %{
       name: name,
       label: gettext("Reports"),
@@ -247,18 +219,9 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Settings"),
-      path: ~p"/app/settings",
+      path: ~p"/app/app",
       icon: "remix-settings-2-line",
       link_type: "live_redirect"
-    }
-  end
-
-  def get_link(:app = name, _user) do
-    %{
-      name: name,
-      label: gettext("Home"),
-      path: ~p"/app/home",
-      icon: "custom-dashboard"
     }
   end
 
@@ -284,7 +247,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Dev"),
-      path: ~p"/dev",
+      path: ~p"/dev/emails",
       icon: "custom-more-dots"
     }
   end
@@ -416,11 +379,11 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
-  def get_link(:projects = name, _user) do
+  def get_link(:app = name, _user) do
     %{
       name: name,
-      label: gettext("Projects"),
-      path: ~p"/app/projects",
+      label: gettext("App"),
+      path: ~p"/app/app",
       icon: "remix-instance-line",
       link_type: "live_patch"
     }
@@ -446,13 +409,13 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
-  def get_link(:auth_tokens = name, _user) do
+  def get_link(:domain = name, _user) do
     %{
       name: name,
-      label: gettext("Auth tokens"),
-      path: ~p"/app/auth-tokens",
-      icon: "remix-code-s-slash-line",
-      link_type: "live_redirect"
+      label: gettext("Domain"),
+      path: ~p"/app/domain",
+      icon: "remix-global-line",
+      link_type: "live_patch"
     }
   end
 
@@ -470,22 +433,10 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Embed & API"),
-      path: ~p"/app/embed",
+      path: ~p"/app/embed/secrets",
       icon: "remix-plug-line",
       link_type: "live_patch"
     }
-  end
-
-  def get_link(:dev_routes = name, _current_user) do
-    if Passwordless.config(:env) == :dev do
-      %{
-        name: name,
-        label: gettext("App Routes"),
-        path: "/dev",
-        icon: "remix-router-line",
-        link_type: "live_patch"
-      }
-    end
   end
 
   def get_link(:dev_email_templates = name, _current_user) do

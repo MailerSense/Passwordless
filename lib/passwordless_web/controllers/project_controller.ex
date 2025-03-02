@@ -4,14 +4,14 @@ defmodule PasswordlessWeb.ProjectController do
   alias Passwordless.Accounts.User
   alias Passwordless.Organizations.Org
 
-  @project_key "project_id"
+  @app_key "app_id"
 
-  def switch(conn, %{"project_id" => project_id}, %User{current_org: %Org{} = org}) do
-    project = Passwordless.get_project!(org, project_id)
+  def switch(conn, %{"app_id" => app_id}, %User{current_org: %Org{} = org}) do
+    app = Passwordless.get_app!(org, app_id)
 
     conn
-    |> assign(:current_project, project)
-    |> put_session(@project_key, project.id)
+    |> assign(:current_app, app)
+    |> put_session(@app_key, app.id)
     |> redirect(to: ~p"/app/home")
   end
 end

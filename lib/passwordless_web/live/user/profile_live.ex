@@ -42,16 +42,16 @@ defmodule PasswordlessWeb.User.ProfileLive do
 
   @impl true
   def handle_event("close_modal", _, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/settings")}
+    {:noreply, push_patch(socket, to: ~p"/app/profile")}
+  end
+
+  @impl true
+  def handle_event("close_slide_over", _, socket) do
+    {:noreply, push_patch(socket, to: ~p"/app/profile")}
   end
 
   @impl true
   def handle_event(_event, _params, socket) do
-    {:noreply, socket}
-  end
-
-  @impl true
-  def handle_params(_params, _url, socket) do
     {:noreply, socket}
   end
 
@@ -88,7 +88,7 @@ defmodule PasswordlessWeb.User.ProfileLive do
 
   defp apply_action(socket, :change_email) do
     assign(socket,
-      page_title: gettext("Change your email"),
+      page_title: gettext("Change email"),
       page_subtitle: gettext("Update your account email address. We'll send a confirmation link to the new address.")
     )
   end

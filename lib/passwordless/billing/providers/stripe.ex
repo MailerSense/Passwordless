@@ -84,7 +84,7 @@ defmodule Passwordless.Billing.Providers.Stripe do
 
       nil ->
         customer_attrs =
-          Util.maybe_put(%{name: org.name, metadata: %{"org_id" => org.id, "org_slug" => org.slug}}, :email, org.email)
+          Util.maybe_put(%{name: org.name, metadata: %{"org_id" => org.id}}, :email, org.email)
 
         with {:ok, %Stripe.Customer{} = stripe_customer} <- Stripe.Customer.create(customer_attrs) do
           attrs = %{

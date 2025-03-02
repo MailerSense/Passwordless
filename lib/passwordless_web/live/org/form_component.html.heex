@@ -8,11 +8,10 @@
   >
     <.field
       field={@form[:name]}
-      placeholder={gettext("e.g. YourCorp")}
+      placeholder={gettext("e.g. YourOrg")}
       autocomplete="organization"
       required
-      required_asterix={@action == :new}
-      {alpine_autofocus()}
+      required_asterix={false}
     />
     <.field
       type="email"
@@ -20,14 +19,7 @@
       placeholder={gettext("e.g. you@org.com")}
       autocomplete="email"
       required
-      required_asterix={@action == :new}
-    />
-    <.field
-      field={@form[:slug]}
-      placeholder={gettext("your-company")}
-      icon="remix-id-card-line"
-      label={gettext("Org ID")}
-      readonly
+      required_asterix={false}
     />
 
     <div class="flex items-center justify-between">
@@ -35,7 +27,7 @@
         :if={@action == :edit}
         to={~p"/app/organization/new"}
         label={gettext("Create new organization")}
-        class="underline text-sm text-slate-600 dark:text-slate-300"
+        class="text-sm underline text-slate-600 dark:text-slate-300"
         link_type="live_redirect"
       />
 

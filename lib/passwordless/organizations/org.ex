@@ -5,24 +5,21 @@ defmodule Passwordless.Organizations.Org do
 
   use Passwordless.Schema
 
-  import Ecto.Query
-
   alias Database.ChangesetExt
   alias Passwordless.Accounts.User
   alias Passwordless.Activity.Log
+  alias Passwordless.App
   alias Passwordless.Organizations.AuthToken
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
-  alias Passwordless.Project
-  alias Passwordless.Repo
 
-  @tags ~w(
-    admin
-  )a
+  @tags ~w(admin)a
 
-  @derive {Phoenix.Param, key: :slug}
+  @derive {
+    Flop.Schema,
+    filterable: [], sortable: [:id]
+  }
   schema "orgs" do
-    field :slug, :string
     field :name, :string
     field :email, :string
     field :tags, {:array, Ecto.Enum}, values: @tags, default: []
@@ -31,8 +28,8 @@ defmodule Passwordless.Organizations.Org do
 
     has_one :billing_customer, Billing.Customer
 
+    has_many :apps, App
     has_many :logs, Log
-    has_many :projects, Project
     has_many :auth_tokens, AuthToken
     has_many :memberships, Membership
     has_many :invitations, Invitation
@@ -55,23 +52,9 @@ defmodule Passwordless.Organizations.Org do
   @required_fields @fields
 
   @doc """
-  A changeset to create a new organization.
+  A changeset.
   """
-  def insert_changeset(org, attrs \\ %{}, _metadata \\ []) do
-    org
-    |> cast(attrs, @fields)
-    |> validate_required(@required_fields)
-    |> validate_name()
-    |> validate_email()
-    |> validate_tags()
-    |> name_to_slug()
-    |> validate_slug()
-  end
-
-  @doc """
-  A changeset to update an existing organization.
-  """
-  def update_changeset(org, attrs \\ %{}, _metadata \\ []) do
+  def changeset(org, attrs \\ %{}, _metadata \\ []) do
     org
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
@@ -85,14 +68,7 @@ defmodule Passwordless.Organizations.Org do
   defp validate_name(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 160)
-  end
-
-  defp validate_slug(changeset) do
-    changeset
-    |> validate_required(:slug)
-    |> unique_constraint(:slug)
-    |> unsafe_validate_unique(:slug, Passwordless.Repo)
+    |> validate_length(:name, min: 1, max: 128)
   end
 
   defp validate_email(changeset) do
@@ -101,24 +77,5 @@ defmodule Passwordless.Organizations.Org do
 
   defp validate_tags(changeset) do
     update_change(changeset, :tags, &Enum.uniq/1)
-  end
-
-  defp name_to_slug(changeset) do
-    case get_change(changeset, :name) do
-      name when is_binary(name) ->
-        slug = Slug.slugify(name)
-
-        slug =
-          Util.generate_until(
-            slug,
-            fn _prev -> slug <> "-" <> Util.random_numeric_string(3) end,
-            fn slug -> Repo.exists?(from __MODULE__, where: [slug: ^slug]) end
-          )
-
-        put_change(changeset, :slug, slug)
-
-      _ ->
-        changeset
-    end
   end
 end

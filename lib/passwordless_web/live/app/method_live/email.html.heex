@@ -1,0 +1,57 @@
+<div>
+  <.form
+    id="edit-email-form"
+    for={@form}
+    phx-target={@myself}
+    phx-submit="save"
+    phx-change="validate"
+  >
+    <div class="p-6">
+      <.field type="checkbox" field={@form[:enabled]} />
+      <.p class="mb-6">
+        Email OTP allows users to sign in without a password. When enabled, users will receive an email with a one-time password that will sign them in. The password is valid for a limited time and can only be used once.
+      </.p>
+      <.form_separator />
+      <.field
+        field={@form[:expires]}
+        type="number"
+        prefix={gettext("After")}
+        suffix={gettext("minutes")}
+        disabled={not @enabled}
+        required
+        required_asterix={false}
+      />
+      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+        <.field
+          field={@form[:sender_name]}
+          label={gettext("Sender")}
+          disabled={not @enabled}
+          required
+          required_asterix={false}
+          wrapper_class="!mb-0"
+        />
+        <.field
+          field={@form[:sender]}
+          label={gettext("Email")}
+          suffix={Passwordless.Domain.email_suffix(@domain)}
+          disabled={not @enabled}
+          required
+          required_asterix={false}
+          wrapper_class="!mb-0"
+        />
+      </div>
+      <.form_separator />
+      <.form_header title="Advanced" />
+      <.field
+        type="checkbox"
+        field={@form[:email_tracking]}
+        help_text={
+          gettext(
+            "Links first go to a server that logs the link as clicked, and then redirect to the actual URL requested."
+          )
+        }
+        disabled={not @enabled}
+      />
+    </div>
+  </.form>
+</div>

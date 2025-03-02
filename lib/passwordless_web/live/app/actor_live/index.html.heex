@@ -20,93 +20,66 @@
     </div>
   </.page_header>
 
-  <.data_table
-    meta={@meta}
-    items={@actors}
-    switch_items={
-      [
-        %{name: :all, label: gettext("All"), clear: true}
-      ] ++ Enum.map(Actor.states(), &%{name: &1, label: Phoenix.Naming.humanize(&1)})
-    }
-  >
-    <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
-    <:info>
-      <.action_stat
-        legend={[
-          %{color: "bg-blue-500", label: gettext("Magic Link")},
-          %{color: "bg-pink-500", label: gettext("SMS")},
-          %{color: "bg-purple-500", label: gettext("Email")},
-          %{color: "bg-cyan-500", label: gettext("Authenticator")},
-          %{color: "bg-emerald-500", label: gettext("WhatsApp")},
-          %{color: "bg-amber-500", label: gettext("Passkey")}
-        ]}
-        items={[
-          %{
-            name: "Magic Link",
-            value: 21323,
-            progress: %{max: 100, value: 80, color: "info"},
-            to: ~p"/app/reports"
-          },
-          %{
-            name: "SMS",
-            value: 11323,
-            progress: %{max: 100, value: 30, color: "pink"},
-            to: ~p"/app/reports"
-          },
-          %{
-            name: "Other",
-            value: 1323,
-            progress: %{
-              max: 100,
-              items: [
-                %{value: 20, color: "purple"},
-                %{value: 20, color: "emerald"},
-                %{value: 10, color: "amber"},
-                %{value: 50, color: "neutral"}
-              ]
-            },
-            to: ~p"/app/reports"
-          }
-        ]}
-      />
-    </:info>
-    <:col field={:search} searchable filterable={[:==]} />
-    <:col
-      :let={actor}
-      field={:name}
-      sortable
-      body_class="!font-medium !text-slate-900 dark:!text-white"
+  <div class="flex flex-col gap-6">
+    <.data_table
+      meta={@meta}
+      items={@actors}
+      title={gettext("All users")}
+      title_func={@title_func}
+      switch_items={
+        [
+          %{name: :all, label: gettext("All"), clear: true}
+        ] ++ Enum.map(Actor.states(), &%{name: &1, label: Phoenix.Naming.humanize(&1)})
+      }
     >
-      {Actor.name(actor)}
-    </:col>
-    <:col field={:email} sortable />
-    <:col field={:phone} sortable />
-    <:col :let={actor} field={:state} sortable switchable filterable={[:==]}>
-      {Phoenix.Naming.humanize(actor.state)}
-    </:col>
-    <:col :let={actor} label={gettext("Added")} field={:inserted_at} sortable>
-      {format_date_time(actor.inserted_at)}
-    </:col>
-    <:col actions></:col>
-    <:actions :let={actor}>
-      <.icon_button
-        icon="custom-trash"
-        size="sm"
-        color="light"
-        title={gettext("Remove")}
-        link_type="live_patch"
-        to={apply_filters(@filters, @meta, ~p"/app/users/#{actor}/delete")}
-      />
-      <.icon_button
-        size="sm"
-        icon="custom-edit"
-        color="light"
-        title={gettext("Edit")}
-        link_type="live_patch"
-        to={apply_filters(@filters, @meta, ~p"/app/users/#{actor}/edit")}
-      />
-    </:actions>
-  </.data_table>
+      <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
+      <:col field={:search} searchable filterable={[:==]} />
+      <:col :let={actor} field={:name}>
+        <.a
+          to={~p"/app/users/#{actor}/edit"}
+          class="pc-user-badge"
+          label={Actor.handle(actor)}
+          link_type="live_redirect"
+        />
+      </:col>
+      <:col :let={actor} field={:email} sortable>
+        {Actor.email(actor)}
+      </:col>
+      <:col :let={actor} field={:phone} sortable>
+        <div class="flex items-center gap-2">
+          <.icon name={"flag-#{Actor.phone_region(actor)}"} class="pc-flag-icon" /> {Actor.phone(
+            actor
+          )}
+        </div>
+      </:col>
+      <:col :let={actor} field={:state} sortable switchable filterable={[:==]}>
+        <% {badge_label, badge_color} = actor_state_badge(actor) %>
+        <.badge size="sm" label={badge_label} color={badge_color} />
+      </:col>
+      <:col :let={actor} label={gettext("Joined")} field={:inserted_at} sortable>
+        {format_date_time(actor.inserted_at)}
+      </:col>
+      <:col actions></:col>
+      <:actions :let={actor}>
+        <.dropdown placement="left">
+          <:trigger_element>
+            <.icon name="custom-more-dots" class="w-5 h-5" />
+          </:trigger_element>
+          <.dropdown_menu_item link_type="live_redirect" to={~p"/app/users/#{actor}/edit"}>
+            <.icon name="remix-pencil-line" class="w-6 h-6 shrink-0" />
+            {gettext("Edit")}
+          </.dropdown_menu_item>
+          <.dropdown_menu_item link_type="live_patch" to={~p"/app/users/#{actor}/delete"}>
+            <.icon
+              name="remix-delete-bin-line"
+              class="w-6 h-6 shrink-0 text-danger-700 dark:text-danger-400"
+            />
+            <span class="text-danger-700 dark:text-danger-400">{gettext("Delete")}</span>
+          </.dropdown_menu_item>
+        </.dropdown>
+      </:actions>
+    </.data_table>
+  </div>
 </.layout>
 
 <%= case @live_action do %>
@@ -114,21 +87,12 @@
     <.live_component
       id={@live_action}
       title={@page_title}
+      subtitle={@page_subtitle}
+      actor={Ecto.build_assoc(@current_app, :actors)}
       module={PasswordlessWeb.App.ActorLive.FormComponent}
-      actor={Ecto.build_assoc(@current_project, :actors)}
       live_action={@live_action}
       current_org={@current_org}
-      current_user={@current_user}
-      return_to={apply_filters(@filters, @meta, ~p"/app/users")}
-    />
-  <% :edit -> %>
-    <.live_component
-      id={@live_action}
-      title={@page_title}
-      module={PasswordlessWeb.App.ActorLive.FormComponent}
-      actor={@actor}
-      live_action={@live_action}
-      current_org={@current_org}
+      current_app={@current_app}
       current_user={@current_user}
       return_to={apply_filters(@filters, @meta, ~p"/app/users")}
     />
@@ -150,7 +114,7 @@
         <.button
           icon="remix-delete-bin-line"
           size="md"
-          label={gettext("Yes, Delete \"%{actor}\"", actor: Actor.name(@actor))}
+          label={gettext("Yes, Delete \"%{actor}\"", actor: Actor.handle(@actor))}
           color="danger"
           phx-click="delete_actor"
           phx-value-id={@actor.id}
@@ -161,6 +125,7 @@
     <.live_component
       id={@live_action}
       title={@page_title}
+      subtitle={@page_subtitle}
       module={PasswordlessWeb.App.ActorLive.ImportComponent}
       live_action={@live_action}
       current_org={@current_org}

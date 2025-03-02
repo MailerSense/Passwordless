@@ -10,11 +10,11 @@ defmodule PasswordlessWeb.Helpers do
   alias Passwordless.Action
   alias Passwordless.Activity.Log
   alias Passwordless.Actor
+  alias Passwordless.App
   alias Passwordless.Organizations
   alias Passwordless.Organizations.AuthToken
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
-  alias Passwordless.Project
 
   def actor_state_badge(nil), do: {nil, "gray"}
 
@@ -22,9 +22,8 @@ defmodule PasswordlessWeb.Helpers do
     do:
       {Phoenix.Naming.humanize(actor.state),
        case actor.state do
-         :healthy -> "success"
-         :warning -> "warning"
-         :locked -> "danger"
+         :active -> "success"
+         :stale -> "gray"
        end}
 
   def action_state_badge(nil), do: {nil, "gray"}
@@ -43,44 +42,89 @@ defmodule PasswordlessWeb.Helpers do
     [
       %{
         name: :magic_link,
-        label: "Magic Link",
-        icon: "remix-magic-line",
-        path: ~p"/app/checks",
+        label: "Magic link",
+        icon: "remix-link",
+        path: ~p"/app/methods/magic-link",
         link_type: "live_patch"
       },
       %{
-        name: :sms_otp,
+        name: :sms,
         label: "SMS",
-        icon: "remix-message-line",
-        path: ~p"/app/checks",
+        icon: "remix-message-2-line",
+        path: ~p"/app/methods/sms",
         link_type: "live_patch"
       },
       %{
-        name: :email_otp,
+        name: :email,
         label: "Email",
         icon: "remix-mail-line",
-        path: ~p"/app/checks",
+        path: ~p"/app/methods/email",
         link_type: "live_patch"
       },
       %{
-        name: :authenticator_app,
-        label: "Authenticator",
-        icon: "remix-shield-user-line",
-        path: ~p"/app/checks",
+        name: :authenticator,
+        label: "Authenticator (TOTP)",
+        icon: "remix-smartphone-line",
+        path: ~p"/app/methods/authenticator",
         link_type: "live_patch"
       },
       %{
-        name: :whatsapp_otp,
-        label: "WhatsApp",
-        icon: "remix-whatsapp-line",
-        path: ~p"/app/checks",
+        name: :security_key,
+        label: "Security key",
+        icon: "remix-shield-keyhole-line",
+        path: ~p"/app/methods/security-key",
         link_type: "live_patch"
       },
       %{
         name: :passkey,
         label: "Passkey",
         icon: "remix-pass-valid-line",
-        path: ~p"/app/checks",
+        path: ~p"/app/methods/passkey",
+        link_type: "live_patch"
+      }
+    ]
+  end
+
+  def actor_menu_items(%Actor{} = actor) do
+    [
+      %{
+        name: :details,
+        label: "Details",
+        icon: "remix-shield-keyhole-line",
+        path: ~p"/app/users/#{actor}/edit",
+        link_type: "live_patch"
+      },
+      %{
+        name: :activity,
+        label: "Activity",
+        icon: "remix-file-list-3-line",
+        path: ~p"/app/users/#{actor}/activity",
+        link_type: "live_patch"
+      }
+    ]
+  end
+
+  def embed_menu_items do
+    [
+      %{
+        name: :secrets,
+        label: "App secrets",
+        icon: "remix-instance-line",
+        path: ~p"/app/embed/secrets",
+        link_type: "live_patch"
+      },
+      %{
+        name: :login_page,
+        label: "Login page",
+        icon: "remix-window-line",
+        path: ~p"/app/embed/login-page",
+        link_type: "live_patch"
+      },
+      %{
+        name: :auth_guard,
+        label: "Auth guard",
+        icon: "remix-shield-user-line",
+        path: ~p"/app/embed/auth-guard",
         link_type: "live_patch"
       }
     ]
@@ -100,19 +144,19 @@ defmodule PasswordlessWeb.Helpers do
 
   def org_menu_items(_user), do: []
 
-  def project_menu_items(%User{current_org: %Org{} = org} = user) do
+  def app_menu_items(%User{current_org: %Org{} = org} = user) do
     org
-    |> Organizations.list_projects()
+    |> Organizations.list_apps()
     |> Enum.sort_by(& &1.name, :desc)
-    |> Enum.reject(fn %Project{id: id} ->
-      case user.current_project do
-        %Project{id: ^id} -> true
+    |> Enum.reject(fn %App{id: id} ->
+      case user.current_app do
+        %App{id: ^id} -> true
         _ -> false
       end
     end)
   end
 
-  def project_menu_items(_user), do: []
+  def app_menu_items(_user), do: []
 
   def user_menu_items(user) do
     PasswordlessWeb.Menus.user_menu_items(user)
@@ -172,9 +216,8 @@ defmodule PasswordlessWeb.Helpers do
   def user_org_name(%User{current_org: %Org{name: name}}) when is_binary(name), do: name
   def user_org_name(_), do: nil
 
-  def user_project_name(%User{current_project: %Project{name: name}}) when is_binary(name), do: name
-
-  def user_project_name(_), do: gettext("No Project")
+  def user_app_name(%User{current_app: %App{name: name}}) when is_binary(name), do: name
+  def user_app_name(_), do: nil
 
   def user_impersonated?(%User{current_impersonator: %User{}}), do: true
   def user_impersonated?(_), do: false
@@ -191,13 +234,6 @@ defmodule PasswordlessWeb.Helpers do
   def format_date(date, format \\ "%-d %b %Y")
   def format_date(nil, _format), do: ""
   def format_date(date, format), do: Timex.format!(date, format, :strftime)
-
-  def format_month_range(%Date{year: year, month: month} = date) do
-    start_date = Timex.format!(Date.beginning_of_month(date), "{D}st")
-    end_date = Timex.format!(Date.end_of_month(date), "{D}st")
-    month = Timex.format!(date, "{Mshort}")
-    "#{start_date} - #{end_date} #{month}"
-  end
 
   def user_role(%Membership{role: role}) when is_atom(role), do: String.capitalize(Atom.to_string(role))
 

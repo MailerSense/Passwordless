@@ -163,6 +163,7 @@ defmodule PasswordlessWeb.Components.Button do
     default: "primary",
     values: [
       "primary",
+      "success",
       "danger",
       "light",
       "wireframe"

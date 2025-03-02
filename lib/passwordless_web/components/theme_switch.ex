@@ -17,19 +17,11 @@ defmodule PasswordlessWeb.Components.ThemeSwitch do
 
     ~H"""
     <button
-      phx-hook="ColorSchemeHook"
-      type="button"
-      aria-label="Change color scheme"
       id={@id}
-      class={[
-        "color-scheme rounded-lg text-sm",
-        "transition duration-150 ease-in-out",
-        "w-10 h-10 flex items-center justify-center",
-        "text-slate-500 dark:text-slate-400",
-        "hover:text-slate-900 dark:hover:text-white",
-        "hover:bg-slate-100 focus:bg-slate-100 dark:focus:bg-slate-800 focus:text-slate-900 active:bg-slate-200 active:text-black dark:hover:bg-slate-700 dark:active:bg-slate-800",
-        @class
-      ]}
+      type="button"
+      class={["color-scheme", "pc-theme-switcher--button", @class]}
+      phx-hook="ColorSchemeHook"
+      aria-label="Change color scheme"
     >
       <.icon name="remix-moon-fill" class="hidden w-5 h-5 color-scheme-dark-icon" />
       <.icon name="remix-sun-fill" class="hidden w-5 h-5 color-scheme-light-icon" />

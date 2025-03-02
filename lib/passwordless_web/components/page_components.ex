@@ -16,8 +16,8 @@ defmodule PasswordlessWeb.Components.PageComponents do
 
   def page_header(assigns) do
     ~H"""
-    <div class={["my-12 flex justify-between items-center", @class]}>
-      <h1 class="font-display text-4xl md:text-5xl font-bold text-slate-950 dark:text-white tracking-tight">
+    <div class={["pc-page-header", @class]}>
+      <h1 class="pc-page-header--text">
         {@title}
       </h1>
       <%= if @inner_block do %>
@@ -30,6 +30,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
   @doc "Gives you a white background with shadow."
   attr :class, :any, default: nil
   attr :padded, :boolean, default: false
+  attr :shadow_class, :string, default: "shadow-1"
   attr :rest, :global
   slot :inner_block
 
@@ -38,8 +39,8 @@ defmodule PasswordlessWeb.Components.PageComponents do
     <section
       {@rest}
       class={[
-        "shadow-m2 border border-slate-200 dark:border-slate-700",
-        "bg-white dark:bg-slate-700/30 rounded-lg",
+        "pc-box",
+        @shadow_class,
         @class,
         if(@padded, do: "p-6", else: "")
       ]}
@@ -111,7 +112,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
   def sidebar_tabs_container(assigns) do
     ~H"""
     <.box class="flex flex-col border border-slate-200 divide-y divide-slate-200 dark:border-none dark:divide-slate-700 md:divide-y-0 md:divide-x md:flex-row">
-      <div class="flex-shrink-0 w-full py-6 md:w-72">
+      <div class="flex-shrink-0 py-6 md:w-72">
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </div>
 
@@ -137,8 +138,9 @@ defmodule PasswordlessWeb.Components.PageComponents do
       title={@label}
       link_type="live_redirect"
       class={[
-        menu_item_classes(@is_active?),
-        "flex items-center rounded-xl px-4 py-3 text-base font-medium leading-normal tracking-tight border-transparent group gap-4 transition duration-200"
+        "group",
+        "pc-sidebar__menu-item",
+        menu_item_classes(@is_active?)
       ]}
     >
       <.icon name={@icon} class={["w-6 h-6", menu_item_icon_classes(@is_active?)]} />
@@ -147,16 +149,8 @@ defmodule PasswordlessWeb.Components.PageComponents do
     """
   end
 
-  defp menu_item_classes(true),
-    do: "tabbed-menu-active bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-white dark:hover:text-white"
-
-  defp menu_item_classes(false),
-    do:
-      "text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-50"
-
-  defp menu_item_icon_classes(true),
-    do: "text-slate-900 group-hover:text-slate-900 dark:text-white dark:group-hover:text-white"
-
-  defp menu_item_icon_classes(false),
-    do: "text-slate-600 group-hover:text-slate-900 dark:text-slate-400 dark:group-hover:text-white"
+  defp menu_item_classes(true), do: "pc-sidebar__menu-item--active"
+  defp menu_item_classes(false), do: "pc-sidebar__menu-item--inactive"
+  defp menu_item_icon_classes(true), do: "pc-sidebar__menu-item-icon--active"
+  defp menu_item_icon_classes(false), do: "pc-sidebar__menu-item-icon--inactive"
 end

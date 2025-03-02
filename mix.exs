@@ -53,7 +53,7 @@ defmodule Passwordless.MixProject do
       {:phoenix, "~> 1.7"},
       {:phoenix_ecto, "~> 4.6"},
       {:ecto_sql, "~> 3.12"},
-      {:postgrex, ">= 0.0.0"},
+      {:postgrex, "~> 0.20.0"},
       {:phoenix_html, "~> 4.2"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_view, "~> 1.0"},
@@ -66,9 +66,9 @@ defmodule Passwordless.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.26.2"},
       {:jason, "~> 1.4"},
-      {:bandit, "~> 1.4"},
-      {:libcluster, "~> 3.4", only: [:dev, :prod]},
-      {:flop, "~> 0.25.0"},
+      {:bandit, "~> 1.6"},
+      {:libcluster, "~> 3.5", only: [:dev, :prod]},
+      {:flop, "~> 0.26.1"},
       {:email_checker, "~> 0.2.4"},
       {:live_toast, "~> 0.6.4"},
       {:rustler, "~> 0.34.0"},
@@ -79,12 +79,15 @@ defmodule Passwordless.MixProject do
       {:premailex, "~> 0.3"},
       {:gen_smtp, "~> 1.2"},
 
+      # Phones
+      {:ex_phone_number, "~> 0.4.5"},
+
       # Ecto querying / pagination
       {:query_builder, "~> 1.4"},
 
       # Authentication
-      {:argon2_elixir, "~> 4.0"},
-      {:ueberauth, "<= 0.10.5 or ~> 0.10.8"},
+      {:argon2_elixir, "~> 4.1"},
+      {:ueberauth, "~> 0.10.8"},
       {:ueberauth_google, "~> 0.12"},
 
       # API
@@ -92,7 +95,7 @@ defmodule Passwordless.MixProject do
 
       # TOTP (2FA)
       {:nimble_totp, "~> 1.0"},
-      {:eqrcode, "~> 0.1.10"},
+      {:eqrcode, "~> 0.2.1"},
 
       # Assets
       {:tailwind, "~> 0.2.4", runtime: Mix.env() == :dev},
@@ -111,20 +114,24 @@ defmodule Passwordless.MixProject do
       # Utils
       {:uuidv7, "~> 1.0.0"},
       {:blankable, "~> 1.0.0"},
-      {:currency_formatter, "~> 0.4"},
-      {:timex, "~> 3.7", override: true},
+      {:currency_formatter, "~> 0.8"},
+      {:timex, "~> 3.7"},
       {:slugify, "~> 1.3"},
       {:burnex, "~> 3.2"},
       {:faker, "~> 0.17"},
       {:redix, "~> 1.4"},
       {:corsica, "~> 2.1"},
       {:castore, "~> 1.0"},
-      {:cachex, "~> 3.6"},
-      {:money, "~> 1.12"},
+      {:cachex, "~> 4.0"},
+      {:money, "~> 1.13"},
       {:sweet_xml, "~> 0.7.4"},
       {:domainatrex, "~> 3.0"},
       {:sizeable, "~> 1.0"},
       {:crontab, "~> 1.1"},
+
+      # Markdown
+      {:earmark, "~> 1.4"},
+      {:html_sanitize_ex, "~> 1.4"},
 
       # HTTP client
       {:tesla, "~> 1.9"},

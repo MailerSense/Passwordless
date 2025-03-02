@@ -30,8 +30,6 @@ defmodule PasswordlessApi.Routes do
 
       scope "/api/v1", PasswordlessApi do
         pipe_through [:api, :api_authenticated]
-
-        get "/auth-token", AuthTokenController, :inspect_auth_token
       end
     end
   end

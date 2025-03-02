@@ -2,6 +2,14 @@
   <.page_header title={gettext("Home")}>
     <div class="flex gap-3">
       <.button
+        to={~p"/app/reports"}
+        size="md"
+        color="light"
+        label={gettext("View reports")}
+        icon="remix-pie-chart-line"
+        link_type="live_patch"
+      />
+      <.button
         to={~p"/app/users"}
         size="md"
         color="light"
@@ -10,7 +18,7 @@
         link_type="live_patch"
       />
       <.button
-        to={~p"/app/methods"}
+        to={~p"/app/methods/magic-link"}
         size="md"
         color="primary"
         label={gettext("Setup methods")}
@@ -69,43 +77,52 @@
         }
       ]}
     />
-    <.stream_table id="actions" meta={@meta} items={@streams.actions} finished={@finished}>
+    <.stream_table
+      id="actions"
+      meta={@meta}
+      title="Recent activity"
+      items={@streams.actions}
+      finished={@finished}
+    >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-      <:col
-        :let={action}
-        label={gettext("Action")}
-        field={:name}
-        body_class="!font-medium !text-slate-900 dark:!text-white"
-      >
-        Sign in
-      </:col>
-      <:col :let={action} label={gettext("Details")} field={:details}>
-        User requested a Magic Link
-      </:col>
-      <:col :let={action} label={gettext("Outcome")} field={:outcome}>
-        <% {badge_label, badge_color} = action_state_badge(action) %>
-        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-      </:col>
-      <:col :let={action} label={gettext("Who")} field={:user}>
+      <:col :let={action} label={gettext("User")} field={:user}>
         <.a
           to={~p"/app/users/#{action.actor}/edit"}
-          class="text-info-700 dark:text-info-200"
+          class="pc-user-badge"
           label={Actor.handle(action.actor)}
           link_type="live_redirect"
         />
       </:col>
-
+      <:col :let={action} label={gettext("Action")} field={:name}>
+        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+      </:col>
+      <:col :let={action} label={gettext("Details")} field={:details}>
+        Requested a Magic Link
+      </:col>
+      <:col :let={action} label={gettext("State")} field={:state}>
+        <% {badge_label, badge_color} = action_state_badge(action) %>
+        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+      </:col>
       <:col :let={action} label={gettext("Where")} field={:location}>
         <div class="flex items-center gap-2">
-          <.icon
-            name="flag-us"
-            class="h-[15px] w-5 outline outline-1 outline-offset-[-1px] outline-black/10"
-          /> New Jersey
+          <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
         </div>
       </:col>
       <:col :let={action} label={gettext("When")} field={:inserted_at}>
         {Timex.from_now(action.inserted_at)}
       </:col>
+      <:col actions></:col>
+      <:actions :let={action}>
+        <.dropdown placement="left">
+          <:trigger_element>
+            <.icon name="custom-more-dots" class="w-5 h-5" />
+          </:trigger_element>
+          <.dropdown_menu_item link_type="live_redirect" to={~p"/app/users/#{action.actor}/edit"}>
+            <.icon name="remix-pencil-line" class="w-6 h-6 shrink-0" />
+            {gettext("Edit user")}
+          </.dropdown_menu_item>
+        </.dropdown>
+      </:actions>
     </.stream_table>
   </div>
 </.layout>

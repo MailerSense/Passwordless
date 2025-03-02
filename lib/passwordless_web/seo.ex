@@ -25,7 +25,7 @@ defmodule PasswordlessWeb.SEO do
     SEO.OpenGraph.build(
       title: get_in(conn.assigns, [Access.key(:page_title, Passwordless.config(:app_name))]),
       image: %SEO.OpenGraph.Image{
-        url: "https://cdn.livecheck.io/public-sharing/twitter-card.webp",
+        url: "https://cdn.passwordless.tools/public-sharing/twitter-card.webp",
         alt: "Passwordless Promo Banner",
         type: "image/webp",
         width: 1536,
@@ -42,7 +42,7 @@ defmodule PasswordlessWeb.SEO do
       title: get_in(conn.assigns, [Access.key(:page_title, Passwordless.config(:app_name))]),
       description: get_in(conn.assigns, [Access.key(:page_description, Passwordless.config(:seo_description))]),
       creator: "@PasswordlessIO",
-      image: "https://cdn.livecheck.io/public-sharing/twitter-card.webp",
+      image: "https://cdn.passwordless.tools/public-sharing/twitter-card.webp",
       image_alt: "Easy, Continuous Monitoring With Playwright",
       card: :summary_large_image
     )

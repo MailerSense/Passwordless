@@ -20,15 +20,14 @@ defmodule PasswordlessWeb.Components.Alert do
     doc: "a list of properties passed to the close button"
   )
 
-  slot(:label_block, required: false)
+  slot(:inner_block)
   slot(:action, required: false)
 
   def alert(assigns) do
-    assigns =
-      assign(assigns, :classes, alert_classes(assigns))
+    assigns = assign(assigns, :classes, alert_classes(assigns))
 
     ~H"""
-    <%= unless label_blank?(@label, @label_block) do %>
+    <%= unless label_blank?(@label, @inner_block) do %>
       <div {@rest} class={@classes}>
         <%= if @with_icon do %>
           <.get_icon color={@color} />
@@ -37,7 +36,7 @@ defmodule PasswordlessWeb.Components.Alert do
         <div class="pc-alert">
           <div class="pc-alert__inner">
             <div class="pc-alert__label">
-              {render_slot(@label_block) || @label}
+              {render_slot(@inner_block) || @label}
             </div>
 
             <%= if Util.present?(@action) do %>
@@ -92,29 +91,30 @@ defmodule PasswordlessWeb.Components.Alert do
 
   defp get_icon(%{color: "info"} = assigns) do
     ~H"""
-    <Icon.icon name="remix-information-line" />
+    <Icon.icon name="remix-information-line" class="w-6 h-6" />
     """
   end
 
   defp get_icon(%{color: "success"} = assigns) do
     ~H"""
-    <Icon.icon name="remix-checkbox-circle-line" />
+    <Icon.icon name="remix-checkbox-circle-line" class="w-6 h-6" />
     """
   end
 
   defp get_icon(%{color: "warning"} = assigns) do
     ~H"""
-    <Icon.icon name="remix-error-warning-line" />
+    <Icon.icon name="remix-alert-line" class="w-6 h-6" />
     """
   end
 
   defp get_icon(%{color: "danger"} = assigns) do
     ~H"""
-    <Icon.icon name="remix-close-circle-line" />
+    <Icon.icon name="remix-close-circle-line" class="w-6 h-6" />
     """
   end
 
   defp label_blank?(label, inner_block) do
-    (!label || label == "") && inner_block == []
+    IO.inspect(inner_block)
+    Util.blank?(label) && Util.blank?(inner_block)
   end
 end

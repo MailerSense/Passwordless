@@ -6,6 +6,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   use Phoenix.Component
   use Gettext, backend: PasswordlessWeb.Gettext
 
+  import PasswordlessWeb.Components.Badge
   import PasswordlessWeb.Components.Field
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Pagination
@@ -21,6 +22,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :meta, Flop.Meta, required: true
   attr :items, :list, required: true
   attr :title, :string, default: nil
+  attr :title_func, {:fun, 1}, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
   attr :base_url_params, :map, required: false
 
@@ -56,7 +58,6 @@ defmodule PasswordlessWeb.Components.DataTable do
     attr :align_right, :boolean, doc: "Aligns the column to the right"
   end
 
-  slot :info, required: false
   slot :actions, required: false
   slot :if_empty, required: false
 
@@ -98,14 +99,19 @@ defmodule PasswordlessWeb.Components.DataTable do
     >
       <.table_search_bar
         :if={@search_field || @switch_field}
+        meta={@meta}
         form={filter_form}
         switch_field={@switch_field}
         search_field={@search_field}
         switch_items={@switch_items}
       />
-      <div :if={Util.present?(@info)} class="mb-6">{render_slot(@info)}</div>
       <div class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
-        <.table_header :if={@title} title={@title} />
+        <.table_header
+          :if={Util.present?(@title) or Util.present?(@title_func)}
+          meta={@meta}
+          title={@title}
+          title_func={@title_func}
+        />
         <div class="pc-data-table">
           <.table>
             <thead class="pc-table__thead-striped">
@@ -137,7 +143,7 @@ defmodule PasswordlessWeb.Components.DataTable do
                 </.tr>
               <% end %>
 
-              <.tr :for={item <- @items}>
+              <.tr :for={item <- @items} class="pc-table__tr-striped">
                 <.td
                   :for={col <- @col}
                   class={[
@@ -208,12 +214,16 @@ defmodule PasswordlessWeb.Components.DataTable do
     attr :align_right, :boolean, doc: "Aligns the column to the right"
   end
 
+  slot :header
   slot :actions, required: false
   slot :if_empty, required: false
 
   def stream_table(assigns) do
     ~H"""
     <div class={["pc-table__wrapper", "pc-stream-table__wrapper", @class]}>
+      <%= if Util.present?(@header) do %>
+        {render_slot(@header)}
+      <% end %>
       <.table_header :if={@title} title={@title} />
       <.table>
         <thead class="pc-table__thead-striped">
@@ -239,6 +249,7 @@ defmodule PasswordlessWeb.Components.DataTable do
           <.tr
             :for={{id, item} <- @items}
             id={id}
+            class="pc-table__tr-striped"
             phx-mounted={
               Phoenix.LiveView.JS.transition(
                 {"transition ease-in-out duration-150", "opacity-0 translate-y-2",
@@ -276,7 +287,7 @@ defmodule PasswordlessWeb.Components.DataTable do
     """
   end
 
-  attr :id, :string, required: true
+  attr :id, :string
   attr :size, :string, default: "md", values: ["sm", "md", "lg"], doc: "table sizes"
   attr :items, :any, required: true
   attr :title, :string, default: nil
@@ -303,6 +314,9 @@ defmodule PasswordlessWeb.Components.DataTable do
   slot :if_empty, required: false
 
   def simple_table(assigns) do
+    assigns =
+      assign_new(assigns, :id, fn -> "simple-table-#{:rand.uniform(10_000_000) + 1}" end)
+
     ~H"""
     <div class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
       <.table_header :if={@title} title={@title} />
@@ -362,21 +376,37 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   # Private
 
-  attr :title, :string, required: true
+  attr :meta, Flop.Meta, default: nil
+  attr :title, :string, default: nil
+  attr :title_func, {:fun, 1}, default: nil
 
   defp table_header(assigns) do
+    assigns =
+      case assigns[:title_func] do
+        fun when is_function(fun, 1) -> assign(assigns, :title, fun.(assigns[:meta]))
+        nil -> assigns
+      end
+
     ~H"""
     <div class="px-6 py-5 flex items-center gap-4">
       <div class="flex items-center gap-2">
         <h3 class="text-lg font-medium text-slate-900 dark:text-white">
           {@title}
         </h3>
+        <.badge
+          :if={Util.present?(@meta)}
+          size="sm"
+          color="primary"
+          label={Passwordless.Locale.Number.to_string!(@meta.total_count)}
+        />
       </div>
     </div>
     """
   end
 
   attr :form, :map, default: nil
+  attr :meta, Flop.Meta, required: true
+  attr :title, :string, default: nil
   attr :switch_field, :atom, default: nil
   attr :search_field, :atom, default: nil
   attr :switch_items, :list, default: []
@@ -384,7 +414,8 @@ defmodule PasswordlessWeb.Components.DataTable do
   defp table_search_bar(assigns) do
     ~H"""
     <div class={[
-      "flex justify-between mb-6"
+      "flex items-center justify-between gap-3",
+      "pb-6"
     ]}>
       <.inputs_for :let={f2} field={@form[:filters]}>
         <%= if Phoenix.HTML.Form.input_value(f2, :field) == @switch_field do %>
@@ -404,7 +435,7 @@ defmodule PasswordlessWeb.Components.DataTable do
             <.field
               icon="custom-search"
               field={f2[:value]}
-              class=" xl:min-w-[400px]"
+              class="md:min-w-[400px] lg:min-w-[500px]"
               label=""
               phx-debounce="100"
               wrapper_class="!mb-0"
@@ -413,7 +444,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
             <button
               class={[
-                "h-[44px]",
+                "h-[46px]",
                 "bg-white dark:bg-transparent select-none",
                 "text-sm font-semibold text-slate-700 dark:text-slate-200",
                 "flex items-center rounded-lg px-4 py-2.5 bg-white",

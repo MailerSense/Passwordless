@@ -2,6 +2,12 @@ defmodule PasswordlessWeb.App.EmbedLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
+  @methods [
+    secrets: PasswordlessWeb.App.EmbedLive.Secrets,
+    login_page: PasswordlessWeb.App.EmbedLive.Secrets,
+    auth_guard: PasswordlessWeb.App.EmbedLive.Secrets
+  ]
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, apply_action(socket, socket.assigns.live_action)}
@@ -9,17 +15,10 @@ defmodule PasswordlessWeb.App.EmbedLive.Index do
 
   @impl true
   def handle_params(_params, _url, socket) do
-    socket =
-      assign(socket,
-        integrations: []
-      )
-
-    {:noreply, apply_action(socket, socket.assigns.live_action)}
-  end
-
-  @impl true
-  def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/embed")}
+    {:noreply,
+     socket
+     |> apply_action(socket.assigns.live_action)
+     |> assign(module: Keyword.fetch!(@methods, socket.assigns.live_action))}
   end
 
   @impl true
@@ -29,7 +28,7 @@ defmodule PasswordlessWeb.App.EmbedLive.Index do
 
   # Private
 
-  defp apply_action(socket, :index) do
+  defp apply_action(socket, _action) do
     assign(socket,
       page_title: gettext("Embed & API"),
       page_subtitle: gettext("Manage your integrations")

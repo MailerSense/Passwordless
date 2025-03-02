@@ -27,7 +27,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
     required: true,
     doc: "The current page. This will be used to highlight the current page in the menu."
 
-  attr :project_menu_items, :list,
+  attr :app_menu_items, :list,
     default: [],
     doc: "The items that will be displayed in the main menu in the sidebar."
 
@@ -43,7 +43,8 @@ defmodule PasswordlessWeb.Components.StackedLayout do
     default: "/",
     doc: "The path to the home page. When a user clicks the logo, they will be taken to this path."
 
-  attr :header_bg_class, :string, default: "bg-white/50 dark:bg-slate-900/50 backdrop-blur-md shadow-m2"
+  attr :header_bg_class, :string, default: "bg-white/70 dark:bg-slate-900/70 backdrop-blur-md shadow-m2"
+
   attr :header_border_class, :string, default: "border-b border-slate-200 dark:border-slate-700"
 
   slot :inner_block, required: true, doc: "The main content of the page."
@@ -53,7 +54,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
 
   def stacked_layout(assigns) do
     ~H"""
-    <div class="h-screen overflow-y-auto bg-slate-100 dark:bg-slate-900">
+    <div class="h-screen overflow-y-auto bg-slate-50 dark:bg-slate-900">
       <header
         class={[
           @header_bg_class,
@@ -145,7 +146,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
             <.user_topbar_menu
               current_user={@current_user}
               user_menu_items={@user_menu_items}
-              project_menu_items={@project_menu_items}
+              app_menu_items={@app_menu_items}
               class="hidden lg:flex"
             />
           </div>

@@ -99,7 +99,7 @@ if config_env() == :prod do
   config :libcluster,
     topologies: [
       passwordless: [
-        strategy: Passwordless.Cluster.PostgresStrategy,
+        strategy: Util.PostgresStrategy,
         config: [
           hostname: postgres_host,
           username: postgres_user,

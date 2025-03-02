@@ -52,7 +52,7 @@ defmodule PasswordlessWeb.User.OnboardingLive do
   def handle_event("validate_org", %{"org" => org_params}, socket) do
     changeset =
       %Org{}
-      |> Org.insert_changeset(org_params)
+      |> Org.changeset(org_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, org_form: to_form(changeset))}
@@ -104,7 +104,7 @@ defmodule PasswordlessWeb.User.OnboardingLive do
             {:yes, :org} ->
               assign(socket,
                 step: :org,
-                org_form: to_form(Org.insert_changeset(%Org{})),
+                org_form: to_form(Org.changeset(%Org{})),
                 page_title: gettext("Your Organization")
               )
 

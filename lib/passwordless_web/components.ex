@@ -11,6 +11,7 @@ defmodule PasswordlessWeb.Components do
       import PasswordlessWeb.Components.BadgeSelect
       import PasswordlessWeb.Components.Button
       import PasswordlessWeb.Components.Card
+      import PasswordlessWeb.Components.ComboBox
       import PasswordlessWeb.Components.Container
       import PasswordlessWeb.Components.DataTable
       import PasswordlessWeb.Components.Dropdown
@@ -38,6 +39,7 @@ defmodule PasswordlessWeb.Components do
       import PasswordlessWeb.Components.ThemeSwitch
       import PasswordlessWeb.Components.Typography
       import PasswordlessWeb.Components.UserTopbarMenu
+      import PasswordlessWeb.FileUploadComponents
       import PasswordlessWeb.LandingPageComponents
       import PasswordlessWeb.PricingPageComponents
     end

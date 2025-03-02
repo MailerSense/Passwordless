@@ -59,7 +59,7 @@ config :passwordless, :browser, on_demand: true
 config :libcluster,
   topologies: [
     passwordless: [
-      strategy: Passwordless.Cluster.PostgresStrategy,
+      strategy: Util.PostgresStrategy,
       config: [
         hostname: "localhost",
         username: "postgres",

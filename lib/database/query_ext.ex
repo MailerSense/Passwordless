@@ -4,6 +4,8 @@ defmodule Database.QueryExt do
   """
   import Ecto.Query
 
+  alias Passwordless.App
+
   @doc """
   Limit a the number of results from a query. Can be compined with other queryables
   UserQuery.text_search("Matt") |> QueryExt.limit(query, 5)
@@ -55,6 +57,20 @@ defmodule Database.QueryExt do
     from(x in query,
       order_by: [asc: x.inserted_at, asc: x.id]
     )
+  end
+
+  @doc """
+  Get all entities by app.
+  """
+  def get_by_app(query, %App{} = app) do
+    from q in query, where: q.app_id == ^app.id
+  end
+
+  @doc """
+  Get none.
+  """
+  def get_none(query) do
+    from q in query, where: false
   end
 
   @doc """
@@ -329,7 +345,56 @@ defmodule Database.QueryExt do
     end
   end
 
+  @doc """
+  Returns a query that searches only for undeleted items
+
+      query = from(u in User, select: u)
+      |> with_undeleted
+
+      results = Repo.all(query)
+
+  """
+  @spec with_undeleted(Ecto.Queryable.t()) :: Ecto.Queryable.t()
+  def with_undeleted(query) do
+    if soft_deletable?(query) do
+      where(query, [t], is_nil(t.deleted_at))
+    else
+      query
+    end
+  end
+
+  @doc """
+  Returns `true` if the query is soft deletable, `false` otherwise.
+
+      query = from(u in User, select: u)
+      |> soft_deletable?
+
+  """
+  @spec soft_deletable?(Ecto.Queryable.t()) :: boolean()
+  def soft_deletable?(query) do
+    schema_module = get_schema_module(query)
+    fields = if schema_module, do: schema_module.__schema__(:fields), else: []
+
+    Enum.member?(fields, :deleted_at)
+  end
+
+  @doc """
+  Returns `true` if the schema is not flagged to skip auto-filtering
+  """
+  @spec auto_include_deleted_at_clause?(Ecto.Queriable.t()) :: boolean()
+  def auto_include_deleted_at_clause?(query) do
+    schema_module = get_schema_module(query)
+
+    !Kernel.function_exported?(schema_module, :skip_soft_delete_prepare_query?, 0) ||
+      !schema_module.skip_soft_delete_prepare_query?()
+  end
+
   # Private
+
+  defp get_schema_module({_raw_schema, module}) when not is_nil(module), do: module
+  defp get_schema_module(%Ecto.Query{from: %{source: source}}), do: get_schema_module(source)
+  defp get_schema_module(%Ecto.SubQuery{query: query}), do: get_schema_module(query)
+  defp get_schema_module(_), do: nil
 
   defp generate_question_marks(list) do
     Enum.map_join(list, ", ", fn _ -> "?" end)

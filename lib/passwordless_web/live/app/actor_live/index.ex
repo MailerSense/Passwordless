@@ -3,7 +3,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   use PasswordlessWeb, :live_view
 
   alias Passwordless.Actor
-  alias Passwordless.Project
+  alias Passwordless.App
   alias PasswordlessWeb.Components.DataTable
 
   @data_table_opts [
@@ -21,11 +21,11 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    actor = Passwordless.get_actor!(socket.assigns.current_project, id)
+    actor = Passwordless.get_actor!(socket.assigns.current_app, id)
 
     {:noreply,
      socket
-     |> assign(actor: actor)
+     |> assign(actor: actor, title_func: &title_func/1)
      |> assign_filters(params)
      |> assign_actors(params)
      |> apply_action(socket.assigns.live_action, actor)}
@@ -35,6 +35,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   def handle_params(params, _url, socket) do
     {:noreply,
      socket
+     |> assign(title_func: &title_func/1)
      |> assign_filters(params)
      |> assign_actors(params)
      |> apply_action(socket.assigns.live_action, nil)}
@@ -63,29 +64,15 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   @impl true
   def handle_event("update_filters", %{"filters" => filter_params}, socket) do
-    flop =
-      case Flop.validate(filter_params) do
-        {:ok, %Flop{} = flop} -> flop
-        _ -> nil
-      end
-
-    filtered? = flop && Enum.any?(flop.filters, fn x -> x.value end)
-
-    socket = assign(socket, current_flop: flop)
-
-    if filtered? do
-      {:noreply,
-       push_patch(socket,
-         to: ~p"/app/users?#{DataTable.build_filter_params(socket.assigns.meta, filter_params)}"
-       )}
-    else
-      {:noreply, push_patch(socket, to: ~p"/app/users")}
-    end
+    {:noreply,
+     push_patch(socket,
+       to: ~p"/app/users?#{DataTable.build_filter_params(socket.assigns.meta, filter_params)}"
+     )}
   end
 
   @impl true
   def handle_event("delete_actor", %{"id" => id}, socket) do
-    actor = Passwordless.get_actor!(socket.assigns.current_project, id)
+    actor = Passwordless.get_actor!(socket.assigns.current_app, id)
 
     case Passwordless.delete_actor(actor) do
       {:ok, _actor} ->
@@ -119,7 +106,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   defp apply_action(socket, :new, _) do
     assign(socket,
       page_title: gettext("Create user"),
-      page_subtitle: gettext("Manage your users")
+      page_subtitle: gettext("Import a user manually. You can also import users from a CSV file.")
     )
   end
 
@@ -133,7 +120,10 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   defp apply_action(socket, :import, _) do
     assign(socket,
       page_title: gettext("Import users"),
-      page_subtitle: gettext("Manage your users")
+      page_subtitle:
+        gettext(
+          "Import existing users from a CSV file. Download our reference CSV template and fill it out with your users."
+        )
     )
   end
 
@@ -143,7 +133,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
       page_subtitle:
         gettext(
           "Are you sure you want to delete user \"%{name}\"? This action is irreversible.",
-          name: Actor.name(actor)
+          name: Actor.handle(actor)
         )
     )
   end
@@ -161,12 +151,32 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   defp assign_actors(socket, params) when is_map(params) do
     query =
-      case socket.assigns[:current_project] do
-        %Project{} = project -> Actor.get_by_project(project)
-        _ -> Actor.get_none()
+      case socket.assigns[:current_app] do
+        %App{} = app ->
+          app
+          |> Actor.get_by_app()
+          |> Actor.join_details()
+          |> Actor.preload_details()
+
+        _ ->
+          Actor.get_none()
       end
 
     {actors, meta} = DataTable.search(query, params, @data_table_opts)
     assign(socket, actors: actors, meta: meta)
   end
+
+  defp title_func(%Flop.Meta{flop: %Flop{filters: [_ | _] = filters}}) do
+    Enum.find_value(
+      filters,
+      gettext("All users"),
+      fn
+        %Flop.Filter{field: :state, value: nil} -> gettext("All users")
+        %Flop.Filter{field: :state, value: value} -> gettext("%{state} users", state: Phoenix.Naming.humanize(value))
+        _ -> nil
+      end
+    )
+  end
+
+  defp title_func(_), do: gettext("All users")
 end

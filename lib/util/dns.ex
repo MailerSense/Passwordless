@@ -33,5 +33,3 @@ defmodule Util.DNS do
     {type, to_string(domain), ttl, to_string(cname)}
   end
 end
-
-Util.DNS.resolve("livecheck.io", :a)

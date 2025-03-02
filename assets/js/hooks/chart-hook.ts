@@ -11,7 +11,7 @@ class ChartHook extends Hook {
   }
 
   private run(_lifecycleMethod: "mounted" | "updated", el: HTMLElement) {
-    var options = {
+    const options = {
       series: [
         {
           name: "series1",
@@ -103,7 +103,7 @@ class ChartHook extends Hook {
       },
     };
 
-    var chart = new ApexCharts(el, options);
+    const chart = new ApexCharts(el, options);
     chart.render();
   }
 }

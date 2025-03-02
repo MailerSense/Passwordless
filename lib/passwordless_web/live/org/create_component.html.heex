@@ -1,37 +1,27 @@
 <div>
   <% origin = "right" %>
-  <.slide_over title={@title} origin={origin}>
-    <div class="flex flex-col gap-8">
-      <.form
-        id="edit-org-form"
-        for={@form}
-        phx-target={@myself}
-        phx-submit="save"
-        phx-change="validate"
-      >
-        <.field
-          field={@form[:name]}
-          placeholder={gettext("e.g. YourCorp")}
-          autocomplete="organization"
-          required
-          {alpine_autofocus()}
-        />
-        <.field
-          type="email"
-          field={@form[:email]}
-          placeholder={gettext("e.g. you@org.com")}
-          autocomplete="email"
-          required
-        />
-        <.field
-          field={@form[:slug]}
-          placeholder={gettext("your-company")}
-          icon="remix-id-card-line"
-          label={gettext("Org ID")}
-          readonly
-        />
-      </.form>
-    </div>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+    <.form
+      id="edit-org-form"
+      for={@form}
+      phx-target={@myself}
+      phx-submit="save"
+      phx-change="validate"
+    >
+      <.field
+        field={@form[:name]}
+        placeholder={gettext("e.g. YourOrg")}
+        autocomplete="organization"
+        required
+      />
+      <.field
+        type="email"
+        field={@form[:email]}
+        placeholder={gettext("e.g. you@org.com")}
+        autocomplete="email"
+        required
+      />
+    </.form>
 
     <:actions>
       <.button

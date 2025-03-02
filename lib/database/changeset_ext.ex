@@ -66,11 +66,17 @@ defmodule Database.ChangesetExt do
   Validates an email address by ensuring it is trimmed, has a valid format,
   corresponds to a valid MX record, is not a burner email, and is less than 320 characters.
   """
-  def validate_email(%Ecto.Changeset{} = changeset, field \\ :email) when is_atom(field) do
+  def validate_email(%Ecto.Changeset{} = changeset, field \\ :email, opts \\ []) when is_atom(field) do
     changeset
     |> ensure_trimmed(field)
     |> ensure_lowercase(field)
     |> validate_change(field, fn ^field, email ->
+      email =
+        case Keyword.get(opts, :suffix) do
+          suffix when is_binary(suffix) -> "#{email}@#{suffix}"
+          _ -> email
+        end
+
       case Util.Email.validate(email) do
         :ok -> []
         {:error, _key, message} -> [{field, message}]
@@ -82,11 +88,17 @@ defmodule Database.ChangesetExt do
   Validates an email address by ensuring it is trimmed, has a valid format,
   is not a burner email, and is less than 320 characters.
   """
-  def validate_email_format(%Ecto.Changeset{} = changeset, field \\ :email) when is_atom(field) do
+  def validate_email_format(%Ecto.Changeset{} = changeset, field \\ :email, opts \\ []) when is_atom(field) do
     changeset
     |> ensure_trimmed(field)
     |> ensure_lowercase(field)
     |> validate_change(field, fn ^field, email ->
+      email =
+        case Keyword.get(opts, :suffix) do
+          suffix when is_binary(suffix) -> "#{email}@#{suffix}"
+          _ -> email
+        end
+
       case Util.Email.validate(email, [:format, :domain, :burner]) do
         :ok -> []
         {:error, _key, message} -> [{field, message}]
@@ -94,7 +106,7 @@ defmodule Database.ChangesetExt do
     end)
   end
 
-  @domain_regex ~r/^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2,6}$/
+  @domain_regex ~r/^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2,8}$/
 
   @doc """
   Validates a domain name by ensuring it is trimmed, is lowercase, has a valid format and TLD.
@@ -120,7 +132,8 @@ defmodule Database.ChangesetExt do
     |> validate_domain(field)
     |> validate_change(field, fn ^field, domain ->
       case Domainatrex.parse(domain) do
-        {:ok, %{domain: domain, subdomain: "", tld: tld}} when is_binary(domain) and is_binary(tld) ->
+        {:ok, %{domain: domain, subdomain: "", tld: tld}}
+        when is_binary(domain) and is_binary(tld) ->
           [{field, "is not a subdomain"}]
 
         _ ->
@@ -210,17 +223,17 @@ defmodule Database.ChangesetExt do
   @doc """
   Remove the blank value from the array.
   """
-  def trim_array(%Ecto.Changeset{} = changeset, field, blank \\ "") do
-    update_change(changeset, field, &Enum.reject(&1, fn item -> item == blank end))
+  def trim_array(%Ecto.Changeset{} = changeset, field) do
+    update_change(changeset, field, &Enum.reject(&1, fn item -> Util.blank?(item) end))
   end
 
   @doc """
   Clean and process the array values and validate the selected
   values against an approved list.
   """
-  def clean_array(%Ecto.Changeset{} = changeset, field, blank \\ "") do
+  def clean_array(%Ecto.Changeset{} = changeset, field) do
     changeset
-    |> trim_array(field, blank)
+    |> trim_array(field)
     |> uniq_array(field)
     |> sort_array(field)
   end

@@ -1,6 +1,6 @@
 defmodule Passwordless.Actor do
   @moduledoc """
-  An actor acts.
+  An actor.
   """
 
   use Passwordless.Schema
@@ -9,14 +9,18 @@ defmodule Passwordless.Actor do
 
   alias Database.ChangesetExt
   alias Passwordless.Action
+  alias Passwordless.App
+  alias Passwordless.Challenge
+  alias Passwordless.Email
   alias Passwordless.Locale
-  alias Passwordless.Project
+  alias Passwordless.Phone
+  alias Passwordless.TOTP
 
   @states ~w(active stale)a
   @derive {
     Flop.Schema,
     filterable: [:id, :search, :state],
-    sortable: [:id, :name, :state, :email, :phone, :country, :inserted_at],
+    sortable: [:id, :name, :state, :email, :phone, :inserted_at],
     custom_fields: [
       search: [
         filter: {__MODULE__, :unified_search_filter, []},
@@ -24,24 +28,35 @@ defmodule Passwordless.Actor do
       ]
     ],
     adapter_opts: [
-      compound_fields: [name: [:first_name, :last_name]]
+      join_fields: [
+        email: [
+          binding: :email,
+          field: :email,
+          ecto_type: :string
+        ],
+        phone: [
+          binding: :phone,
+          field: :phone,
+          ecto_type: :string
+        ]
+      ]
     ]
   }
   schema "actors" do
-    field :name, :string, virtual: true
-    field :email, :string
-    field :email_verified, :boolean, default: false
-    field :phone, :string
-    field :phone_verified, :boolean, default: false
+    field :name, :string
     field :state, Ecto.Enum, values: @states, default: :active
-    field :country, Ecto.Enum, values: Locale.country_codes(), default: :us
-    field :first_name, :string
-    field :last_name, :string
-    field :user_id, :string
+    field :language, Ecto.Enum, values: Locale.language_codes(), default: :en
 
+    has_one :email, Email, where: [primary: true]
+    has_one :phone, Phone, where: [primary: true]
+
+    has_many :totps, TOTP
+    has_many :emails, Email
+    has_many :phones, Phone
     has_many :actions, Action
+    has_many :challenges, Challenge
 
-    belongs_to :project, Project, type: :binary_id
+    belongs_to :app, App, type: :binary_id
 
     timestamps()
     soft_delete_timestamp()
@@ -50,30 +65,36 @@ defmodule Passwordless.Actor do
   def states, do: @states
 
   @doc """
-  Get the full name of the actor.
-  """
-  def name(%__MODULE__{first_name: f, last_name: l}) when is_binary(f) and is_binary(l), do: "#{f} #{l}"
-  def name(%__MODULE__{first_name: f, last_name: nil}) when is_binary(f), do: f
-  def name(%__MODULE__{first_name: nil, last_name: l}) when is_binary(l), do: l
-  def name(%__MODULE__{}), do: nil
-
-  @doc """
   Get the handle of the actor.
   """
-  def handle(%__MODULE__{email: email, phone: phone} = actor) do
-    cond do
-      name = name(actor) -> name
-      email -> email
-      phone -> phone
-      true -> nil
-    end
-  end
+  def handle(%__MODULE__{name: name}) when is_binary(name) and not is_nil(name), do: name
+
+  def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address) and not is_nil(address), do: address
+
+  def handle(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical) and not is_nil(canonical),
+    do: canonical
+
+  def handle(%__MODULE__{}), do: nil
+
+  def email(%__MODULE__{email: %Email{address: address}}) when is_binary(address) and not is_nil(address), do: address
+
+  def email(%__MODULE__{}), do: nil
+
+  def phone(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical) and not is_nil(canonical),
+    do: canonical
+
+  def phone(%__MODULE__{}), do: nil
+
+  def phone_region(%__MODULE__{phone: %Phone{region: region}}) when is_binary(region) and not is_nil(region),
+    do: String.downcase(region)
+
+  def phone_region(%__MODULE__{}), do: nil
 
   @doc """
-  Get all contacts for an organization.
+  Get by app.
   """
-  def get_by_project(query \\ __MODULE__, %Project{} = project) do
-    from q in query, where: q.project_id == ^project.id
+  def get_by_app(query \\ __MODULE__, %App{} = app) do
+    from q in query, where: q.app_id == ^app.id
   end
 
   @doc """
@@ -83,55 +104,99 @@ defmodule Passwordless.Actor do
     from q in query, where: false
   end
 
+  @doc """
+  Preload associations.
+  """
+  def preload_details(query \\ __MODULE__) do
+    from q in query, preload: [:email, :phone]
+  end
+
+  @doc """
+  Join the details.
+  """
+  def join_details(query \\ __MODULE__) do
+    email =
+      from e in Email,
+        where: e.actor_id == parent_as(:actor).id and e.primary,
+        select: %{email: e.address}
+
+    phone =
+      from p in Phone,
+        where: p.actor_id == parent_as(:actor).id and p.primary,
+        select: %{phone: p.canonical}
+
+    query =
+      if has_named_binding?(query, :actor),
+        do: query,
+        else: from(q in query, as: :actor)
+
+    from q in query,
+      left_lateral_join: e in subquery(email),
+      on: true,
+      as: :email,
+      left_lateral_join: p in subquery(phone),
+      on: true,
+      as: :phone
+  end
+
   @fields ~w(
-    email
-    email_verified
-    phone
-    phone_verified
+    name
     state
-    country
-    first_name
-    last_name
-    user_id
-    project_id
+    language
+    app_id
   )a
   @required_fields ~w(
-    email
     state
-    country
-    project_id
+    language
+    app_id
   )a
 
   @doc """
-  A contact changeset.
+  A create changeset.
+  """
+  def create_changeset(%__MODULE__{} = contact, attrs \\ %{}) do
+    contact
+    |> cast(attrs, @fields)
+    |> validate_required(@required_fields ++ [:name])
+    |> validate_name()
+    |> cast_assoc(:email)
+    |> cast_assoc(:phone)
+    |> assoc_constraint(:app)
+  end
+
+  @doc """
+  A changeset.
   """
   def changeset(%__MODULE__{} = contact, attrs \\ %{}) do
     contact
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_name()
-    |> validate_email()
-    |> validate_phone()
-    |> validate_user_id()
-    |> unique_constraint([:project_id, :email], error_key: :email)
-    |> unique_constraint([:project_id, :phone], error_key: :phone)
-    |> unique_constraint([:project_id, :user_id], error_key: :user_id)
-    |> unsafe_validate_unique([:project_id, :email], Passwordless.Repo, error_key: :email)
-    |> unsafe_validate_unique([:project_id, :phone], Passwordless.Repo, error_key: :phone)
-    |> unsafe_validate_unique([:project_id, :user_id], Passwordless.Repo, error_key: :email)
-    |> assoc_constraint(:project)
+    |> assoc_constraint(:app)
   end
 
+  @doc """
+  A unified search filter.
+  """
   def unified_search_filter(query, %Flop.Filter{value: value} = _flop_filter, _) do
     value = "%#{value}%"
 
+    query =
+      if has_named_binding?(query, :actor),
+        do: query,
+        else: from(q in query, as: :actor)
+
+    query =
+      query
+      |> join_assoc(:email)
+      |> join_assoc(:phone)
+
     where(
       query,
-      [c],
-      ilike(fragment("concat(?, ' ', ?)", c.first_name, c.last_name), ^value) or
-        ilike(c.email, ^value) or
-        ilike(c.phone, ^value) or
-        ilike(c.user_id, ^value)
+      [actor: a, email: e, phone: p],
+      ilike(a.name, ^value) or
+        ilike(e.email, ^value) or
+        ilike(p.phone, ^value)
     )
   end
 
@@ -139,25 +204,13 @@ defmodule Passwordless.Actor do
 
   defp validate_name(changeset) do
     changeset
-    |> ChangesetExt.ensure_trimmed(:first_name)
-    |> ChangesetExt.ensure_trimmed(:last_name)
-    |> validate_length(:first_name, min: 1, max: 160)
-    |> validate_length(:last_name, min: 1, max: 160)
+    |> ChangesetExt.ensure_trimmed(:name)
+    |> validate_length(:name, min: 1, max: 512)
   end
 
-  defp validate_phone(changeset) do
-    changeset
-    |> ChangesetExt.ensure_trimmed(:phone)
-    |> validate_length(:phone, min: 1, max: 160)
-  end
-
-  defp validate_email(changeset) do
-    ChangesetExt.validate_email(changeset, :email)
-  end
-
-  defp validate_user_id(changeset) do
-    changeset
-    |> ChangesetExt.ensure_trimmed(:user_id)
-    |> validate_length(:user_id, max: 512)
+  defp join_assoc(query, binding) do
+    if has_named_binding?(query, binding),
+      do: query,
+      else: join(query, :left, [l], assoc(l, ^binding), as: ^binding)
   end
 end

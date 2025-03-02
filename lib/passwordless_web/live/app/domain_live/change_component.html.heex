@@ -1,0 +1,34 @@
+<div>
+  <% origin = "right" %>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+    <div class="flex flex-col gap-6">
+      <.form
+        id="change-domain-form"
+        for={@form}
+        phx-submit="save"
+        phx-change="validate"
+        phx-target={@myself}
+      >
+        <.field field={@form[:domain]} label={gettext("New domain")} required />
+      </.form>
+    </div>
+
+    <:actions>
+      <.button
+        size="wide"
+        type="submit"
+        color="light-flat"
+        label={gettext("Cancel")}
+        phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+      />
+      <.button
+        id="change-domain-form-submit"
+        size="wide"
+        type="submit"
+        form="change-domain-form"
+        disabled={not @form.source.valid?}
+        label={gettext("Change")}
+      />
+    </:actions>
+  </.slide_over>
+</div>
