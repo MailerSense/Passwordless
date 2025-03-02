@@ -126,6 +126,10 @@ defmodule Passwordless.MixProject do
       {:sizeable, "~> 1.0"},
       {:crontab, "~> 1.1"},
 
+      # Markdown
+      {:earmark, "~> 1.4"},
+      {:html_sanitize_ex, "~> 1.4"},
+
       # HTTP client
       {:tesla, "~> 1.9"},
       {:finch, "~> 0.18.0"},

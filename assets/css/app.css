@@ -71,7 +71,7 @@
     width: 100%;
     cursor: pointer;
     outline: none;
-    @apply h-2 bg-gray-200 dark:bg-gray-700 rounded-full;
+    @apply h-2 bg-slate-200 dark:bg-slate-700 rounded-full;
   }
 
   input[type="range"] {

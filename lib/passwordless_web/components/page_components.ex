@@ -16,8 +16,8 @@ defmodule PasswordlessWeb.Components.PageComponents do
 
   def page_header(assigns) do
     ~H"""
-    <div class={["my-12 flex justify-between items-center", @class]}>
-      <h1 class="font-display text-4xl md:text-5xl font-bold text-slate-950 dark:text-white tracking-tight">
+    <div class={["pc-page-header", @class]}>
+      <h1 class="pc-page-header--text">
         {@title}
       </h1>
       <%= if @inner_block do %>
@@ -39,9 +39,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
     <section
       {@rest}
       class={[
-        "border border-slate-200 dark:border-slate-700",
-        "bg-white dark:bg-slate-700/30 rounded-lg",
-        "overflow-hidden",
+        "pc-box",
         @shadow_class,
         @class,
         if(@padded, do: "p-6", else: "")
@@ -140,8 +138,9 @@ defmodule PasswordlessWeb.Components.PageComponents do
       title={@label}
       link_type="live_redirect"
       class={[
-        menu_item_classes(@is_active?),
-        "flex items-center px-6 py-3 text-base font-medium tracking-tight group gap-4 transition duration-200"
+        "group",
+        "pc-sidebar__menu-item",
+        menu_item_classes(@is_active?)
       ]}
     >
       <.icon name={@icon} class={["w-6 h-6", menu_item_icon_classes(@is_active?)]} />
@@ -150,16 +149,8 @@ defmodule PasswordlessWeb.Components.PageComponents do
     """
   end
 
-  defp menu_item_classes(true),
-    do: "tabbed-menu-active bg-primary-50 text-primary-800 dark:bg-slate-700 dark:text-white dark:hover:text-white"
-
-  defp menu_item_classes(false),
-    do:
-      "text-slate-600 hover:bg-primary-50 hover:text-primary-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-50"
-
-  defp menu_item_icon_classes(true),
-    do: "text-primary-800 group-hover:text-primary-800 dark:text-white dark:group-hover:text-white"
-
-  defp menu_item_icon_classes(false),
-    do: "text-slate-600 group-hover:text-primary-800 dark:text-slate-300 dark:group-hover:text-white"
+  defp menu_item_classes(true), do: "pc-sidebar__menu-item--active"
+  defp menu_item_classes(false), do: "pc-sidebar__menu-item--inactive"
+  defp menu_item_icon_classes(true), do: "pc-sidebar__menu-item-icon--active"
+  defp menu_item_icon_classes(false), do: "pc-sidebar__menu-item-icon--inactive"
 end

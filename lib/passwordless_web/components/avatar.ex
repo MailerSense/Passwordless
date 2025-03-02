@@ -15,6 +15,7 @@ defmodule PasswordlessWeb.Components.Avatar do
       "light",
       "black",
       "primary",
+      "success",
       "danger",
       "warning",
       "blue",

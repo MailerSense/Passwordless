@@ -21,7 +21,7 @@ defmodule PasswordlessWeb.CoreComponents do
   def tabbed_layout(assigns) do
     ~H"""
     <.box class={["flex", @class]}>
-      <nav class="py-6 w-64 lg:w-72 flex flex-col select-none shrink-0 border-r border-slate-200 dark:border-slate-700">
+      <nav class="pc-sidebar__nav">
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </nav>
       <div class={["flex-grow", @inner_class]}>

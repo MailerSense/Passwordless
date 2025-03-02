@@ -23,8 +23,8 @@ defmodule Passwordless.App do
     field :name, :string
     field :website, :string
     field :display_name, :string
-    field :primary_button_color, :string
-    field :secondary_button_color, :string
+    field :primary_button_color, :string, default: "#1570EF"
+    field :secondary_button_color, :string, default: "#FFFFFF"
 
     # Domain
     has_one :domain, Domain

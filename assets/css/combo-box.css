@@ -21,7 +21,7 @@
 }
 
 .ts-wrapper.plugin-drag_drop.multi > .ts-control > div.ui-sortable-placeholder {
-  @apply visible bg-gray-200 border-0 shadow-inner dark:bg-gray-800 bg-opacity-60 dark:bg-opacity-60 shadow-white;
+  @apply visible bg-slate-200 border-0 shadow-inner dark:bg-slate-800 bg-opacity-60 dark:bg-opacity-60 shadow-white;
 }
 
 .ts-wrapper.plugin-drag_drop .ui-sortable-placeholder::after {
@@ -34,7 +34,7 @@
 }
 
 .plugin-checkbox_options .option input {
-  @apply w-5 h-5 mr-2 transition-all duration-150 ease-linear border-gray-300 rounded checked:border-primary-700 text-primary-700 dark:bg-gray-800 dark:border-gray-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed;
+  @apply w-5 h-5 mr-2 transition-all duration-150 ease-linear border-slate-300 rounded checked:border-primary-700 text-primary-700 dark:bg-slate-800 dark:border-slate-600 disabled:bg-slate-300 dark:disabled:bg-slate-600 disabled:cursor-not-allowed;
 }
 
 .pc-form-field-wrapper--error .ts-control {
@@ -66,11 +66,11 @@
 }
 
 .ts-wrapper .dropdown-header {
-  @apply relative py-[10px] px-[8px] border-b border-gray-300 bg-gray-100 dark:border-gray-700 dark:bg-gray-800 rounded-t-lg;
+  @apply relative py-[10px] px-[8px] border-b border-slate-300 bg-slate-100 dark:border-slate-700 dark:bg-slate-800 rounded-t-lg;
 }
 
 .ts-wrapper .dropdown-header-close {
-  @apply absolute right-[8px] top-1/2 transform -translate-y-1/2 text-gray-700 dark:text-gray-300 opacity-40 mt-[-12px] leading-5 text-2xl font-[20px];
+  @apply absolute right-[8px] top-1/2 transform -translate-y-1/2 text-slate-700 dark:text-slate-300 opacity-40 mt-[-12px] leading-5 text-2xl font-[20px];
 }
 
 .ts-wrapper .dropdown-header-close:hover {
@@ -78,11 +78,11 @@
 }
 
 .plugin-dropdown_input.focus.dropdown-active .ts-control {
-  @apply border border-gray-300 shadow-none dark:border-gray-700;
+  @apply border border-slate-300 shadow-none dark:border-slate-700;
 }
 
 .plugin-dropdown_input .dropdown-input {
-  @apply block w-full p-2 bg-transparent border-b border-gray-300 rounded-none shadow-none dark:border-gray-700 focus-visible:outline-none focus-visible:ring-2 ring-primary-500 ring-inset;
+  @apply block w-full p-2 bg-transparent border-b border-slate-300 rounded-none shadow-none dark:border-slate-700 focus-visible:outline-none focus-visible:ring-2 ring-primary-500 ring-inset;
 }
 
 .ddts-wrapper.multi.plugin-dropdown_input {
@@ -187,17 +187,17 @@
 }
 
 .ts-wrapper.single.plugin-remove_button:not(.rtl) .item .remove {
-  @apply ml-2 text-gray-400 border-l border-gray-300 dark:border-gray-600 dark:text-gray-500 hover:text-gray-800 dark:hover:bg-gray-800;
+  @apply ml-2 text-slate-400 border-l border-slate-300 dark:border-slate-600 dark:text-slate-500 hover:text-slate-800 dark:hover:bg-slate-800;
 }
 
 .ts-wrapper.plugin-remove_button:not(.rtl) .item .remove {
-  @apply ml-2 border-l border-primary-300 dark:border-gray-600 text-primary-400 dark:text-gray-500 hover:text-primary-800 dark:hover:bg-gray-800;
+  @apply ml-2 border-l border-primary-300 dark:border-slate-600 text-primary-400 dark:text-slate-500 hover:text-primary-800 dark:hover:bg-slate-800;
 }
 .ts-wrapper.plugin-remove_button:not(.rtl) .item.active .remove {
-  @apply border-primary-300 dark:border-gray-600;
+  @apply border-primary-300 dark:border-slate-600;
 }
 .ts-wrapper.plugin-remove_button:not(.rtl).disabled .item .remove {
-  @apply border-white dark:border-gray-900;
+  @apply border-white dark:border-slate-900;
 }
 .ts-wrapper.plugin-remove_button.rtl .item .remove {
   border-right: 1px solid #d0d0d0;
@@ -217,7 +217,7 @@
 .ts-dropdown,
 .ts-control,
 .ts-control input {
-  @apply text-sm leading-5 text-gray-700 dark:text-gray-300;
+  @apply text-sm leading-5 text-slate-700 dark:text-slate-300;
 }
 
 .ts-control,
@@ -226,13 +226,13 @@
 }
 
 .ts-control {
-  @apply box-border relative z-10 flex flex-wrap w-full px-4 py-2 overflow-hidden bg-white border border-gray-300 rounded-md shadow-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 focus-visible:border-primary-500 focus-visible:ring-primary-500 dark:focus-visible:border-primary-500 focus-visible:outline-none;
+  @apply box-border relative z-10 flex flex-wrap w-full px-4 py-2 overflow-hidden bg-white border border-slate-300 rounded-md shadow-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 focus-visible:border-primary-500 focus-visible:ring-primary-500 dark:focus-visible:border-primary-500 focus-visible:outline-none;
 }
 .ts-wrapper.multi.has-items .ts-control {
   padding: 5px 8px 2px;
 }
 .full .ts-control {
-  @apply bg-white dark:bg-gray-900;
+  @apply bg-white dark:bg-slate-900;
 }
 .disabled .ts-control,
 .disabled .ts-control * {
@@ -246,14 +246,14 @@
   display: inline-block;
 }
 .ts-wrapper.multi .ts-control > div {
-  @apply cursor-pointer rounded m-0 mr-[3px] mb-[3px] py-[2px] px-[6px] bg-primary-100 text-primary-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 border border-primary-200;
+  @apply cursor-pointer rounded m-0 mr-[3px] mb-[3px] py-[2px] px-[6px] bg-primary-100 text-primary-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 border border-primary-200;
 }
 .ts-wrapper.multi .ts-control > div.active {
-  @apply bg-primary-200 dark:bg-gray-700 text-primary-700 dark:text-gray-300 border-primary-300 dark:border-gray-700;
+  @apply bg-primary-200 dark:bg-slate-700 text-primary-700 dark:text-slate-300 border-primary-300 dark:border-slate-700;
 }
 .ts-wrapper.multi.disabled .ts-control > div,
 .ts-wrapper.multi.disabled .ts-control > div.active {
-  @apply text-gray-600 bg-white border-0 border-white dark:text-gray-400 dark:bg-gray-800 dark:border-gray-700;
+  @apply text-slate-600 bg-white border-0 border-white dark:text-slate-400 dark:bg-slate-800 dark:border-slate-700;
 }
 .ts-control > input {
   flex: 1 1 auto;
@@ -294,7 +294,7 @@
   margin: 0px 4px 0px -2px !important;
 }
 .disabled .ts-control {
-  @apply bg-gray-100 opacity-50 dark:bg-gray-900;
+  @apply bg-slate-100 opacity-50 dark:bg-slate-900;
 }
 .input-hidden .ts-control > input {
   opacity: 0;
@@ -303,7 +303,7 @@
 }
 
 .ts-dropdown {
-  @apply box-border absolute left-0 z-50 w-full bg-white border border-t-0 border-gray-300 shadow-lg top-full dark:text-gray-300 rounded-b-md dark:border-gray-700 dark:bg-gray-900;
+  @apply box-border absolute left-0 z-50 w-full bg-white border border-t-0 border-slate-300 shadow-lg top-full dark:text-slate-300 rounded-b-md dark:border-slate-700 dark:bg-slate-900;
 }
 
 .ts-dropdown [data-selectable] {
@@ -340,19 +340,19 @@
 }
 
 .ts-dropdown .optgroup-header {
-  @apply mt-3 text-xs font-semibold text-gray-500 border-b border-gray-100 cursor-default dark:text-gray-400 dark:border-gray-700;
+  @apply mt-3 text-xs font-semibold text-slate-500 border-b border-slate-100 cursor-default dark:text-slate-400 dark:border-slate-700;
 }
 
 .ts-dropdown .active {
-  @apply text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-300;
+  @apply text-slate-700 bg-slate-50 dark:bg-slate-700 dark:text-slate-300;
 }
 
 .ts-dropdown .active.create {
-  @apply text-gray-800 dark:text-gray-200;
+  @apply text-slate-800 dark:text-slate-200;
 }
 
 .ts-dropdown .create {
-  @apply text-gray-700 dark:text-gray-300;
+  @apply text-slate-700 dark:text-slate-300;
 }
 
 .ts-dropdown .spinner {

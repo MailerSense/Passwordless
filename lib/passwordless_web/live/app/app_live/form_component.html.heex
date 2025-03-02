@@ -1,35 +1,33 @@
 <div>
   <% origin = "right" %>
   <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
-    <div class="flex flex-col gap-8">
-      <.form
-        id="edit-app-form"
-        for={@form}
-        phx-target={@myself}
-        phx-submit="save"
-        phx-change="validate"
-      >
-        <.field
-          field={@form[:name]}
-          placeholder={gettext("e.g. YourSite")}
-          autocomplete="organization"
-          required
-        />
-        <.field
-          type="url"
-          field={@form[:website]}
-          placeholder={gettext("e.g. https://gmail.com")}
-          autocomplete="url"
-          required
-        />
-        <.field
-          field={@form[:display_name]}
-          placeholder={gettext("e.g. YourApp")}
-          autocomplete="organization"
-          required
-        />
-      </.form>
-    </div>
+    <.form
+      id="edit-app-form"
+      for={@form}
+      phx-target={@myself}
+      phx-submit="save"
+      phx-change="validate"
+    >
+      <.field
+        field={@form[:name]}
+        placeholder={gettext("e.g. YourSite")}
+        autocomplete="organization"
+        required
+      />
+      <.field
+        type="url"
+        field={@form[:website]}
+        placeholder={gettext("e.g. https://gmail.com")}
+        autocomplete="url"
+        required
+      />
+      <.field
+        field={@form[:display_name]}
+        placeholder={gettext("e.g. YourApp")}
+        autocomplete="organization"
+        required
+      />
+    </.form>
 
     <:actions>
       <.button
