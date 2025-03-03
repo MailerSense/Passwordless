@@ -110,8 +110,6 @@ defmodule Passwordless.Organizations.OrgSeeder do
       end
     end
 
-    Passwordless.clear_tenant()
-
     org
   end
 
