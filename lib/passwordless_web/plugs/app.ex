@@ -17,8 +17,6 @@ defmodule PasswordlessWeb.Plugs.App do
       {%User{} = user, %Org{} = org} ->
         case load_app(org, get_session(conn, @app_key)) do
           %App{} = app ->
-            Repo.put_tenant_id(app)
-
             conn
             |> assign(:current_app, app)
             |> assign(:current_user, %User{user | current_app: app})

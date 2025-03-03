@@ -9,7 +9,7 @@
         phx-change="validate"
         phx-target={@myself}
       >
-        <.field field={@form[:domain]} label={gettext("New domain")} required />
+        <.field field={@form[:domain]} label={gettext("New domain")} required phx-debounce="blur" />
       </.form>
     </div>
 

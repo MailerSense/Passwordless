@@ -1,4 +1,4 @@
-defmodule Database.Multitenant do
+defmodule Database.Tenant do
   @moduledoc false
 
   import SqlFmt.Helpers
@@ -11,41 +11,6 @@ defmodule Database.Multitenant do
   @tenant_field Keyword.fetch!(@multitenant, :tenant_field)
   @tenant_prefix Keyword.fetch!(@multitenant, :tenant_prefix)
   @tenant_migrations Keyword.fetch!(@multitenant, :tenant_migrations)
-
-  defmacro __using__(_opts) do
-    quote do
-      alias Database.Multitenant
-      alias Passwordless.App
-
-      @tenant_key {__MODULE__, :tenant_id}
-
-      @impl Ecto.Repo
-      def default_options(_operation) do
-        if tenant_id = get_tenant_id(), do: [prefix: tenant_id], else: []
-      end
-
-      @doc """
-      Set the tenant_id on the process dictionary.
-      """
-      def put_tenant_id(%App{} = app) do
-        Process.put(@tenant_key, Multitenant.to_prefix(app))
-      end
-
-      @doc """
-      Get the tenant_id from the process dictionary.
-      """
-      def get_tenant_id do
-        Process.get(@tenant_key)
-      end
-
-      @doc """
-      Clear the tenant_id from the process dictionary.
-      """
-      def clear_tenant_id do
-        Process.delete(@tenant_key)
-      end
-    end
-  end
 
   @doc """
   Returns the list of reserved tenants.
@@ -186,7 +151,7 @@ defmodule Database.Multitenant do
   end
 
   defp error_message(msg) do
-    if Exception.exception?(msg) do
+    if Kernel.is_exception(msg) do
       Exception.message(msg)
     else
       msg
@@ -277,7 +242,7 @@ defmodule Database.Multitenant do
 
     result
     |> List.flatten()
-    |> Enum.filter(&(!reserved_tenant?(&1)))
+    |> Enum.reject(&reserved_tenant?/1)
   end
 
   @doc """
@@ -371,7 +336,7 @@ defmodule Database.Multitenant do
   def tenant_field(map) do
     map
     |> Map.get(@tenant_field)
-    |> Slug.slugify(separator: "_")
+    |> String.replace("-", "_")
   end
 
   defp reserved_message(tenant) do

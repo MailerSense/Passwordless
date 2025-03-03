@@ -27,7 +27,10 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   @impl true
   def handle_event("save", %{"actor" => actor_params}, socket) do
-    case Passwordless.update_actor(socket.assigns.actor, actor_params) do
+    app = socket.assigns.current_app
+    actor = socket.assigns.actor
+
+    case Passwordless.update_actor(app, actor, actor_params) do
       {:ok, actor} ->
         changeset =
           actor
@@ -46,7 +49,10 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   @impl true
   def handle_event("validate", %{"actor" => actor_params}, socket) do
-    case Passwordless.update_actor(socket.assigns.actor, actor_params) do
+    app = socket.assigns.current_app
+    actor = socket.assigns.actor
+
+    case Passwordless.update_actor(app, actor, actor_params) do
       {:ok, actor} ->
         changeset =
           actor
@@ -75,9 +81,10 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   @impl true
   def handle_event("delete_actor", _params, socket) do
+    app = socket.assigns.current_app
     actor = socket.assigns.actor
 
-    case Passwordless.delete_actor(actor) do
+    case Passwordless.delete_actor(app, actor) do
       {:ok, _actor} ->
         {:noreply,
          socket
@@ -115,10 +122,10 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   end
 
   defp assign_emails(socket, %Actor{} = actor) do
-    assign(socket, emails: Passwordless.list_emails(actor))
+    assign(socket, emails: Passwordless.list_emails(socket.assigns.current_app, actor))
   end
 
   defp assign_phones(socket, %Actor{} = actor) do
-    assign(socket, phones: Passwordless.list_phones(actor))
+    assign(socket, phones: Passwordless.list_phones(socket.assigns.current_app, actor))
   end
 end

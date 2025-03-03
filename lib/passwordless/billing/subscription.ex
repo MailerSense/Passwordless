@@ -28,7 +28,6 @@ defmodule Passwordless.Billing.Subscription do
     Flop.Schema,
     sortable: [:id], filterable: [:id]
   }
-  @schema_prefix "public"
   schema "billing_subscriptions" do
     field :state, Ecto.Enum, values: @states
     field :provider_id, :string

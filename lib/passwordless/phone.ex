@@ -76,6 +76,9 @@ defmodule Passwordless.Phone do
     number = fetch_field!(changeset, :number)
     region = fetch_field!(changeset, :region)
 
+    IO.inspect(number)
+    IO.inspect(region)
+
     with {:ok, phone_number} <- ExPhoneNumber.parse(number, region),
          true <- ExPhoneNumber.is_possible_number?(phone_number) do
       put_change(changeset, :canonical, ExPhoneNumber.format(phone_number, :e164))
@@ -85,7 +88,10 @@ defmodule Passwordless.Phone do
     end
   end
 
-  defp validate_regional_phone_number(changeset), do: changeset
+  defp validate_regional_phone_number(changeset) do
+    IO.inspect(changeset)
+    changeset
+  end
 
   defp validate_canonical_phone_number(%Ecto.Changeset{valid?: true} = changeset) do
     changeset = ChangesetExt.ensure_trimmed(changeset, :canonical)

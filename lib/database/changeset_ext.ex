@@ -142,6 +142,72 @@ defmodule Database.ChangesetExt do
     end)
   end
 
+  def validate_url(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
+    changeset
+    |> ensure_trimmed(field)
+    |> ensure_lowercase(field)
+    |> validate_length(field, min: 1, max: 1024)
+    |> validate_change(field, fn ^field, url ->
+      case URI.parse(url) do
+        %URI{scheme: nil} ->
+          [{field, "is missing a scheme (e.g. https)"}]
+
+        %URI{host: nil} ->
+          [{field, "is missing a host"}]
+
+        %URI{host: host} ->
+          case :inet.gethostbyname(Kernel.to_charlist(host)) do
+            {:ok, _} -> []
+            {:error, _} -> [{field, "invalid host"}]
+          end
+      end
+    end)
+  end
+
+  defp validate_protocol("http://" <> rest = url) do
+    {url, rest}
+  end
+
+  defp validate_protocol("https://" <> rest = url) do
+    {url, rest}
+  end
+
+  defp validate_protocol(_), do: :error
+
+  defp validate_host(:error), do: :error
+
+  defp validate_host({url, rest}) do
+    [domain | uri] = String.split(rest, "/")
+
+    domain =
+      case String.split(domain, ":") do
+        # ipv6
+        [_, _, _, _, _, _, _, _] -> domain
+        [domain, _port] -> domain
+        _ -> domain
+      end
+
+    erl_host = String.to_charlist(domain)
+
+    if :inet_parse.domain(erl_host) or
+         match?({:ok, _}, :inet_parse.ipv4strict_address(erl_host)) or
+         match?({:ok, _}, :inet_parse.ipv6strict_address(erl_host)) do
+      {url, Enum.join(uri, "/")}
+    else
+      :error
+    end
+  end
+
+  defp validate_uri(:error), do: :error
+
+  defp validate_uri({url, uri}) do
+    if uri == uri |> URI.encode() |> URI.decode() do
+      {:ok, url}
+    else
+      :error
+    end
+  end
+
   @doc """
   Validates the state and verifies it is allowed by the transitions.
   """

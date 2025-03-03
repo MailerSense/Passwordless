@@ -22,7 +22,6 @@ defmodule Passwordless.Accounts.Token do
   ]
   @contexts Keyword.keys(@lifetimes)
 
-  @schema_prefix "public"
   schema "user_tokens" do
     field :email, :string
     field :token, :binary

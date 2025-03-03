@@ -9,9 +9,8 @@ defmodule Passwordless.Methods.Authenticator do
 
   @derive {
     Flop.Schema,
-    filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
+    filterable: [:id], sortable: [:id]
   }
-  @schema_prefix "public"
   schema "authenticator_methods" do
     field :enabled, :boolean, default: true
     field :issuer_name, :string

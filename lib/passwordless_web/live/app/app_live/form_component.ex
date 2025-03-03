@@ -9,7 +9,15 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign_form(changeset)}
+     |> assign(uploaded_files: [])
+     |> assign_form(changeset)
+     |> allow_upload(:avatar,
+       # SETUP_TODO: Uncomment the line below if using an external provider (Cloudinary or S3)
+       # external: &@upload_provider.presign_upload/2,
+       accept: ~w(.jpg .jpeg .png .svg .webp),
+       max_entries: 1,
+       max_file_size: 5_242_880 * 2
+     )}
   end
 
   @impl true
@@ -24,6 +32,8 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
 
   @impl true
   def handle_event("save", %{"app" => app_params}, socket) do
+    IO.inspect(socket.assigns.live_action)
+    IO.inspect(app_params)
     save_app(socket, socket.assigns.live_action, app_params)
   end
 
@@ -43,6 +53,8 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   end
 
   defp save_app(socket, :new, app_params) do
+    IO.inspect(app_params)
+
     case Passwordless.create_full_app(socket.assigns.current_org, app_params) do
       {:ok, _app} ->
         {:noreply,

@@ -19,7 +19,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
      |> allow_upload(:avatar,
        # SETUP_TODO: Uncomment the line below if using an external provider (Cloudinary or S3)
        # external: &@upload_provider.presign_upload/2,
-       accept: ~w(.jpg .jpeg .png .gif .svg .webp),
+       accept: ~w(.jpg .jpeg .png .svg .webp),
        max_entries: 1,
        max_file_size: 5_242_880 * 2
      )}

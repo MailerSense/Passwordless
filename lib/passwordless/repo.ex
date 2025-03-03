@@ -5,5 +5,4 @@ defmodule Passwordless.Repo do
 
   use Database.RepoExt
   use Database.SoftDelete
-  use Database.Multitenant
 end

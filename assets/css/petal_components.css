@@ -679,7 +679,7 @@
   @apply w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2;
 }
 .pc-select-input {
-  @apply ps-10 block w-full px-3.5 py-2 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none;
+  @apply ps-10 block w-full px-3.5 py-2.5 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none;
 }
 .pc-select {
   @apply block w-full py-2 pl-3 pr-10 text-base border-slate-300 rounded-md cursor-pointer focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed focus:outline-none sm:text-sm dark:disabled:bg-slate-700 dark:text-slate-300 dark:bg-slate-800;
@@ -1041,7 +1041,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply py-6 w-64 lg:w-72 flex flex-col select-none shrink-0 border-r border-slate-200 dark:border-slate-700;
 }
 .pc-sidebar__menu-item {
-  @apply flex items-center px-6 py-3 text-base font-medium tracking-tight gap-4 transition duration-200;
+  @apply flex items-center px-6 py-[11px] text-base font-medium tracking-tight gap-4 transition duration-200;
 }
 .pc-sidebar__menu-item--active {
   @apply bg-primary-50 text-primary-800 dark:bg-slate-700 dark:text-white dark:hover:text-white;
@@ -1552,13 +1552,12 @@ input[type="color" i]::-moz-color-swatch {
   @apply rounded-lg shadow-1 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-700/30;
 }
 .pc-data-table {
-  @apply overflow-x-scroll;
+  @apply overflow-x-auto;
 }
 .pc-data-table__wrapper {
-  @apply overflow-x-scroll;
+  @apply overflow-x-auto;
 }
 .pc-stream-table__wrapper {
-  @apply overflow-hidden;
 }
 .pc-table__th {
   @apply text-xs text-left font-medium select-none;

@@ -18,9 +18,8 @@ defmodule Passwordless.Methods.Passkey do
 
   @derive {
     Flop.Schema,
-    filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
+    filterable: [:id], sortable: [:id]
   }
-  @schema_prefix "public"
   schema "passkey_methods" do
     field :enabled, :boolean, default: true
     field :relying_party_id, :string

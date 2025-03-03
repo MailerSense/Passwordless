@@ -42,13 +42,13 @@ defmodule Database.SoftDelete do
       end
 
   """
-  @callback soft_delete(struct_or_changeset :: Ecto.Schema.t() | Ecto.Changeset.t()) ::
+  @callback soft_delete(struct_or_changeset :: Ecto.Schema.t() | Ecto.Changeset.t(), opts :: keyword()) ::
               {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
 
   @doc """
   Same as `c:soft_delete/1` but returns the struct or raises if the changeset is invalid.
   """
-  @callback soft_delete!(struct_or_changeset :: Ecto.Schema.t() | Ecto.Changeset.t()) ::
+  @callback soft_delete!(struct_or_changeset :: Ecto.Schema.t() | Ecto.Changeset.t(), opts :: keyword()) ::
               Ecto.Schema.t()
 
   defmacro __using__(_opts) do
@@ -59,16 +59,16 @@ defmodule Database.SoftDelete do
         update_all(queryable, set: [deleted_at: DateTime.utc_now()])
       end
 
-      def soft_delete(struct_or_changeset) do
+      def soft_delete(struct_or_changeset, opts \\ []) do
         struct_or_changeset
         |> Ecto.Changeset.change(deleted_at: DateTime.utc_now())
-        |> update()
+        |> __MODULE__.update(opts)
       end
 
-      def soft_delete!(struct_or_changeset) do
+      def soft_delete!(struct_or_changeset, opts \\ []) do
         struct_or_changeset
         |> Ecto.Changeset.change(deleted_at: DateTime.utc_now())
-        |> update!()
+        |> __MODULE__.update!(opts)
       end
 
       @doc """

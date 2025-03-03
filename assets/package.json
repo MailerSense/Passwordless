@@ -16,7 +16,6 @@
     "apexcharts": "^4.5.0",
     "phoenix_typed_hook": "^0.18.2",
     "tippy.js": "^6.3.7",
-    "tom-select": "^2.4.3",
     "topbar": "^3.0.0"
   },
   "devDependencies": {

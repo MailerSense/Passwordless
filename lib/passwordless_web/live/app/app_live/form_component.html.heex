@@ -2,17 +2,26 @@
   <% origin = "right" %>
   <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
     <.form
-      id="edit-app-form"
+      id="manage-app-form"
       for={@form}
       phx-target={@myself}
       phx-submit="save"
       phx-change="validate"
     >
+      <.image_input
+        upload={@uploads.avatar}
+        label={gettext("Logo")}
+        current_image_src={nil}
+        placeholder_icon="hero-user-solid"
+        on_delete="clear_avatar"
+        automatic_help_text
+      />
       <.field
         field={@form[:name]}
         placeholder={gettext("e.g. YourSite")}
         autocomplete="organization"
         required
+        phx-debounce="blur"
       />
       <.field
         type="url"
@@ -20,12 +29,14 @@
         placeholder={gettext("e.g. https://gmail.com")}
         autocomplete="url"
         required
+        phx-debounce="blur"
       />
       <.field
         field={@form[:display_name]}
         placeholder={gettext("e.g. YourApp")}
         autocomplete="organization"
         required
+        phx-debounce="blur"
       />
     </.form>
 
@@ -38,10 +49,10 @@
         phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
       />
       <.button
-        id="edit-app-form-submit"
+        id="manage-app-form-submit"
         size="wide"
         type="submit"
-        form="edit-app-form"
+        form="manage-app-form"
         disabled={not @form.source.valid?}
         label={
           if @live_action == :new,

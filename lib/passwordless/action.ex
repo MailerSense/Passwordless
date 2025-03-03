@@ -8,6 +8,7 @@ defmodule Passwordless.Action do
   import Ecto.Query
 
   alias Passwordless.Actor
+  alias Passwordless.App
   alias Passwordless.Challenge
 
   @outcomes ~w(allow timeout block challenge)a
@@ -28,6 +29,13 @@ defmodule Passwordless.Action do
   end
 
   def outcomes, do: @outcomes
+
+  @doc """
+  Get by app.
+  """
+  def get_by_app(query \\ __MODULE__, %App{} = app) do
+    from q in query, prefix: ^Database.Tenant.to_prefix(app)
+  end
 
   @doc """
   Get by actor.

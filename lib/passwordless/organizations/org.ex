@@ -17,9 +17,8 @@ defmodule Passwordless.Organizations.Org do
 
   @derive {
     Flop.Schema,
-    filterable: [], sortable: [:id]
+    filterable: [:id], sortable: [:id]
   }
-  @schema_prefix "public"
   schema "orgs" do
     field :name, :string
     field :email, :string

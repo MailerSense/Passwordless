@@ -9,10 +9,29 @@ defmodule PasswordlessWeb.App.ActorLive.FormComponent do
     changeset = Passwordless.change_actor(actor)
     languages = Enum.map(Passwordless.Locale.languages(), fn {code, name} -> {name, code} end)
 
+    country_codes =
+      ExPhoneNumber.Metadata.get_supported_regions()
+      |> Enum.map(fn code ->
+        code = String.downcase(code)
+        country = Keyword.get(Passwordless.Locale.countries(), String.to_atom(code))
+
+        if country do
+          country_code = ExPhoneNumber.Metadata.get_country_code_for_region_code(code)
+          {"#{country} (+#{country_code})", code}
+        end
+      end)
+      |> Enum.reject(&is_nil/1)
+      |> Enum.sort(fn {name1, _}, {name2, _} -> name1 < name2 end)
+
+    flag_mapping = fn
+      nil -> "flag-#{elem(List.first(country_codes), 1)}"
+      code -> "flag-#{code}"
+    end
+
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(languages: languages)
+     |> assign(languages: languages, country_codes: country_codes, flag_mapping: flag_mapping)
      |> assign_form(changeset)}
   end
 
@@ -34,7 +53,10 @@ defmodule PasswordlessWeb.App.ActorLive.FormComponent do
   # Private
 
   defp save_actor(socket, :edit, actor_params) do
-    case Passwordless.update_actor(socket.assigns.actor, actor_params) do
+    app = socket.assigns.current_app
+    actor = socket.assigns.actor
+
+    case Passwordless.update_actor(app, actor, actor_params) do
       {:ok, _actor} ->
         {:noreply,
          socket

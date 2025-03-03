@@ -2,14 +2,13 @@
   <% origin = "right" %>
   <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
     <.form
-      id="edit-actor-form"
+      id="manage-actor-form"
       for={@form}
       phx-target={@myself}
       phx-submit="save"
       phx-change="validate"
     >
-      <.field field={@form[:name]} autocomplete="name" phx-debounce="blur" required />
-      <.field type="select" field={@form[:language]} options={@languages} required />
+      <.field field={@form[:name]} autocomplete="name" required />
     </.form>
 
     <:actions>
@@ -21,10 +20,10 @@
         phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
       />
       <.button
-        id="edit-actor-form-submit"
+        id="manage-actor-form-submit"
         size="wide"
         type="submit"
-        form="edit-actor-form"
+        form="manage-actor-form"
         disabled={not @form.source.valid?}
         label={
           if @live_action == :new,

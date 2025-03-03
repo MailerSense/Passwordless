@@ -46,10 +46,9 @@
         {Actor.email(actor)}
       </:col>
       <:col :let={actor} field={:phone} sortable>
-        <div class="flex items-center gap-2">
-          <.icon name={"flag-#{Actor.phone_region(actor)}"} class="pc-flag-icon" /> {Actor.phone(
-            actor
-          )}
+        <% phone = Actor.phone(actor) %>
+        <div :if={Util.present?(phone)} class="flex items-center gap-2">
+          <.icon name={"flag-#{Actor.phone_region(actor)}"} class="pc-flag-icon" /> {phone}
         </div>
       </:col>
       <:col :let={actor} field={:state} sortable switchable filterable={[:==]}>

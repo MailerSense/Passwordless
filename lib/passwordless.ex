@@ -9,7 +9,7 @@ defmodule Passwordless do
 
   import Util.Crud
 
-  alias Database.Multitenant
+  alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.Actor
   alias Passwordless.App
@@ -44,20 +44,6 @@ defmodule Passwordless do
 
   def config(key, default \\ nil) when is_atom(key) do
     Application.get_env(:passwordless, key, default)
-  end
-
-  ## Tenant
-
-  def get_tenand_id do
-    Repo.get_tenant_id()
-  end
-
-  def set_tenant(%App{} = app) do
-    Repo.put_tenant_id(app)
-  end
-
-  def clear_tenant do
-    Repo.clear_tenant_id()
   end
 
   ## Methods
@@ -228,13 +214,13 @@ defmodule Passwordless do
   # Actor
 
   def get_actor!(%App{} = app, id) when is_binary(id) do
-    Repo.get!(Actor, id, prefix: Multitenant.to_prefix(app))
+    Repo.get!(Actor, id, prefix: Tenant.to_prefix(app))
   end
 
   def create_actor(%App{} = app, attrs \\ %{}) do
     %Actor{}
     |> Actor.changeset(attrs)
-    |> Repo.insert(prefix: Multitenant.to_prefix(app))
+    |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
   def change_actor(%Actor{} = actor, attrs \\ %{}) do
@@ -245,55 +231,55 @@ defmodule Passwordless do
     end
   end
 
-  def update_actor(%Actor{} = actor, attrs) do
+  def update_actor(%App{} = app, %Actor{} = actor, attrs) do
     actor
     |> Actor.changeset(attrs)
-    |> Repo.update()
+    |> Repo.update(prefix: Tenant.to_prefix(app))
   end
 
-  def delete_actor(%Actor{} = actor) do
-    Repo.soft_delete(actor)
+  def delete_actor(%App{} = app, %Actor{} = actor) do
+    Repo.soft_delete(actor, prefix: Tenant.to_prefix(app))
   end
 
-  def add_email(%Actor{} = actor, attrs \\ %{}) do
+  def add_email(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
     actor
     |> Ecto.build_assoc(:emails)
     |> Email.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
-  def add_regional_phone(%Actor{} = actor, attrs \\ %{}) do
+  def add_regional_phone(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
     actor
     |> Ecto.build_assoc(:phones)
     |> Phone.regional_changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
-  def add_canonical_phone(%Actor{} = actor, attrs \\ %{}) do
+  def add_canonical_phone(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
     actor
     |> Ecto.build_assoc(:phones)
     |> Phone.canonical_changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
-  def list_emails(%Actor{} = actor) do
+  def list_emails(%App{} = app, %Actor{} = actor) do
     actor
     |> Ecto.assoc(:emails)
-    |> Repo.all()
+    |> Repo.all(prefix: Tenant.to_prefix(app))
   end
 
-  def list_phones(%Actor{} = actor) do
+  def list_phones(%App{} = app, %Actor{} = actor) do
     actor
     |> Ecto.assoc(:phones)
-    |> Repo.all()
+    |> Repo.all(prefix: Tenant.to_prefix(app))
   end
 
   # Action
 
-  def create_action(%Actor{} = actor, attrs \\ %{}) do
+  def create_action(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
     actor
     |> Ecto.build_assoc(:actions)
     |> Action.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insertl(prefix: Tenant.to_prefix(app))
   end
 end

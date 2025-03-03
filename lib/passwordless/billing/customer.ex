@@ -16,7 +16,6 @@ defmodule Passwordless.Billing.Customer do
     Flop.Schema,
     sortable: [:id], filterable: [:id]
   }
-  @schema_prefix "public"
   schema "billing_customers" do
     field :provider, Ecto.Enum, values: @providers
     field :provider_id, :string

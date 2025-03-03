@@ -20,7 +20,6 @@ defmodule Passwordless.Organizations.AuthToken do
     Flop.Schema,
     sortable: [:id, :name, :scopes, :state, :inserted_at], filterable: [:id]
   }
-  @schema_prefix "public"
   schema "auth_tokens" do
     field :key, :binary
     field :name, :string

@@ -72,9 +72,10 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   @impl true
   def handle_event("delete_actor", %{"id" => id}, socket) do
-    actor = Passwordless.get_actor!(socket.assigns.current_app, id)
+    app = socket.assigns.current_app
+    actor = Passwordless.get_actor!(app, id)
 
-    case Passwordless.delete_actor(actor) do
+    case Passwordless.delete_actor(app, actor) do
       {:ok, _actor} ->
         {:noreply,
          socket
@@ -153,8 +154,9 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
     query =
       case socket.assigns[:current_app] do
         %App{} = app ->
-          Actor
-          |> Actor.join_details()
+          app
+          |> Actor.get_by_app()
+          |> Actor.join_details(prefix: Database.Tenant.to_prefix(app))
           |> Actor.preload_details()
 
         _ ->

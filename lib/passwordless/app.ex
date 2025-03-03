@@ -16,7 +16,6 @@ defmodule Passwordless.App do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  @schema_prefix "public"
   schema "apps" do
     field :name, :string
     field :website, :string
@@ -80,9 +79,7 @@ defmodule Passwordless.App do
   end
 
   defp validate_website(changeset) do
-    changeset
-    |> ChangesetExt.ensure_trimmed(:website)
-    |> validate_length(:name, min: 1, max: 1024)
+    ChangesetExt.validate_url(changeset, :website)
   end
 
   defp validate_display_name(changeset) do

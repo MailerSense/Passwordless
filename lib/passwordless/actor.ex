@@ -9,6 +9,7 @@ defmodule Passwordless.Actor do
 
   alias Database.ChangesetExt
   alias Passwordless.Action
+  alias Passwordless.App
   alias Passwordless.Challenge
   alias Passwordless.Email
   alias Passwordless.Locale
@@ -64,27 +65,18 @@ defmodule Passwordless.Actor do
   @doc """
   Get the handle of the actor.
   """
-  def handle(%__MODULE__{name: name}) when is_binary(name) and not is_nil(name), do: name
-
-  def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address) and not is_nil(address), do: address
-
-  def handle(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical) and not is_nil(canonical),
-    do: canonical
-
+  def handle(%__MODULE__{name: name}) when is_binary(name), do: name
+  def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
+  def handle(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical), do: canonical
   def handle(%__MODULE__{}), do: nil
 
-  def email(%__MODULE__{email: %Email{address: address}}) when is_binary(address) and not is_nil(address), do: address
-
+  def email(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
   def email(%__MODULE__{}), do: nil
 
-  def phone(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical) and not is_nil(canonical),
-    do: canonical
-
+  def phone(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical), do: canonical
   def phone(%__MODULE__{}), do: nil
 
-  def phone_region(%__MODULE__{phone: %Phone{region: region}}) when is_binary(region) and not is_nil(region),
-    do: String.downcase(region)
-
+  def phone_region(%__MODULE__{phone: %Phone{region: region}}) when is_binary(region), do: String.downcase(region)
   def phone_region(%__MODULE__{}), do: nil
 
   @doc """
@@ -92,6 +84,13 @@ defmodule Passwordless.Actor do
   """
   def get_none(query \\ __MODULE__) do
     from q in query, where: false
+  end
+
+  @doc """
+  Get by app.
+  """
+  def get_by_app(query \\ __MODULE__, %App{} = app) do
+    from q in query, prefix: ^Database.Tenant.to_prefix(app)
   end
 
   @doc """
@@ -104,14 +103,18 @@ defmodule Passwordless.Actor do
   @doc """
   Join the details.
   """
-  def join_details(query \\ __MODULE__) do
+  def join_details(query \\ __MODULE__, opts \\ []) do
+    prefix = Keyword.get(opts, :prefix, "public")
+
     email =
       from e in Email,
+        prefix: ^prefix,
         where: e.actor_id == parent_as(:actor).id and e.primary,
         select: %{email: e.address}
 
     phone =
       from p in Phone,
+        prefix: ^prefix,
         where: p.actor_id == parent_as(:actor).id and p.primary,
         select: %{phone: p.canonical}
 
@@ -147,8 +150,15 @@ defmodule Passwordless.Actor do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields ++ [:name])
     |> validate_name()
-    |> cast_assoc(:email)
-    |> cast_assoc(:phone)
+    |> cast_assoc(:emails,
+      sort_param: :email_sort,
+      drop_param: :email_drop
+    )
+    |> cast_assoc(:phones,
+      sort_param: :phone_sort,
+      drop_param: :phone_drop,
+      with: &Phone.regional_changeset/2
+    )
   end
 
   @doc """

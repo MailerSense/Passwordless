@@ -16,7 +16,6 @@ defmodule Passwordless.Accounts.User do
 
   @states ~w(inactive locked active)a
 
-  @schema_prefix "public"
   schema "users" do
     field :name, :string
     field :email, :string

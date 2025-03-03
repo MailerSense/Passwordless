@@ -15,7 +15,6 @@ defmodule Passwordless.Organizations.Invitation do
     Flop.Schema,
     sortable: [:id, :email], filterable: [:id]
   }
-  @schema_prefix "public"
   schema "org_invitations" do
     field :email, :string
 

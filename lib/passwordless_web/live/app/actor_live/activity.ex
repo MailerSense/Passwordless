@@ -35,7 +35,10 @@ defmodule PasswordlessWeb.App.ActorLive.Activity do
 
   @impl true
   def handle_event("save", %{"actor" => actor_params}, socket) do
-    case Passwordless.update_actor(socket.assigns.actor, actor_params) do
+    app = socket.assigns.current_app
+    actor = socket.assigns.actor
+
+    case Passwordless.update_actor(app, actor, actor_params) do
       {:ok, actor} ->
         changeset =
           actor
@@ -54,7 +57,10 @@ defmodule PasswordlessWeb.App.ActorLive.Activity do
 
   @impl true
   def handle_event("validate", %{"actor" => actor_params}, socket) do
-    case Passwordless.update_actor(socket.assigns.actor, actor_params) do
+    app = socket.assigns.current_app
+    actor = socket.assigns.actor
+
+    case Passwordless.update_actor(app, actor, actor_params) do
       {:ok, actor} ->
         changeset =
           actor
@@ -73,9 +79,10 @@ defmodule PasswordlessWeb.App.ActorLive.Activity do
 
   @impl true
   def handle_event("delete_actor", _params, socket) do
+    app = socket.assigns.current_app
     actor = socket.assigns.actor
 
-    case Passwordless.delete_actor(actor) do
+    case Passwordless.delete_actor(app, actor) do
       {:ok, _actor} ->
         {:noreply,
          socket
@@ -95,7 +102,10 @@ defmodule PasswordlessWeb.App.ActorLive.Activity do
     if socket.assigns.finished do
       {:noreply, socket}
     else
-      query = Action.get_by_actor(socket.assigns.actor)
+      query =
+        socket.assigns.current_app
+        |> Action.get_by_app()
+        |> Action.get_by_actor(socket.assigns.actor)
 
       assigns = Map.take(socket.assigns, ~w(cursor)a)
 
@@ -157,7 +167,10 @@ defmodule PasswordlessWeb.App.ActorLive.Activity do
   end
 
   defp assign_actions(socket, actor, params) do
-    query = Action.get_by_actor(actor)
+    query =
+      socket.assigns.current_app
+      |> Action.get_by_app()
+      |> Action.get_by_actor(actor)
 
     params = Map.take(params, ~w(filters order_by order_directions))
 

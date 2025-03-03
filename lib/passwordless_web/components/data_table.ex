@@ -246,18 +246,7 @@ defmodule PasswordlessWeb.Components.DataTable do
           </.tr>
         </thead>
         <tbody id={@id} phx-update="stream" phx-viewport-bottom={!@finished && "load_more"}>
-          <.tr
-            :for={{id, item} <- @items}
-            id={id}
-            class="pc-table__tr-striped"
-            phx-mounted={
-              Phoenix.LiveView.JS.transition(
-                {"transition ease-in-out duration-150", "opacity-0 translate-y-2",
-                 "opacity-100 translate-y-0"},
-                time: 150
-              )
-            }
-          >
+          <.tr :for={{id, item} <- @items} id={id} class="pc-table__tr-striped">
             <.td
               :for={col <- @col}
               class={[

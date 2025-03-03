@@ -3,7 +3,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
   Generates dummy orgs for the development environment.
   """
 
-  alias Database.Multitenant
+  alias Database.Tenant
   alias Passwordless.Accounts.User
   alias Passwordless.Action
   alias Passwordless.Actor
@@ -76,9 +76,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
       {:ok, _} = Passwordless.create_domain_record(domain, r)
     end
 
-    {:ok, _tenant} = Multitenant.create(app)
-
-    Passwordless.set_tenant(app)
+    {:ok, _tenant} = Tenant.create(app)
 
     for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1_000) do
       {:ok, actor} =

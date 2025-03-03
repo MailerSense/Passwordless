@@ -108,8 +108,6 @@ defmodule PasswordlessWeb.UserAuth do
       Activity.log_async(:user, :"user.sign_out", %{user: user})
     end
 
-    Repo.clear_tenant_id()
-
     conn
     |> renew_session()
     |> redirect(to: "/")

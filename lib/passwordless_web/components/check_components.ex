@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.CheckComponents do
+defmodule PasswordlessWeb.DashboardComponents do
   @moduledoc false
   use Phoenix.Component
   use PasswordlessWeb, :verified_routes

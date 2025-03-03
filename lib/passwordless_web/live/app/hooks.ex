@@ -18,7 +18,6 @@ defmodule PasswordlessWeb.App.Hooks do
       socket
       |> assign_current_app(session)
       |> assign_current_app_user()
-      |> assign_current_tenant_id()
 
     {:cont, socket}
   end
@@ -41,11 +40,4 @@ defmodule PasswordlessWeb.App.Hooks do
   end
 
   defp assign_current_app_user(socket), do: socket
-
-  defp assign_current_tenant_id(%{assigns: %{current_app: %App{} = current_app}} = socket) do
-    Repo.put_tenant_id(current_app)
-    socket
-  end
-
-  defp assign_current_tenant_id(socket), do: socket
 end

@@ -233,6 +233,73 @@ defmodule PasswordlessWeb.Components.Field do
     """
   end
 
+  def field(%{type: "select"} = assigns) do
+    ~H"""
+    <.field_wrapper errors={@errors} name={@name} class={@wrapper_class} no_margin={@no_margin}>
+      <.field_label
+        :if={Util.present?(@label)}
+        required={@required}
+        required_asterix={@required_asterix}
+        for={@id}
+        class={@label_class}
+      >
+        {@label}
+      </.field_label>
+
+      <%= cond do %>
+        <% @icon -> %>
+          <div class="pc-select-input__wrapper">
+            <Icon.icon name={@icon} class={@icon_class} />
+            <select
+              id={@id}
+              name={@name}
+              class={["pc-select-input", @class]}
+              multiple={@multiple}
+              required={@required}
+              disabled={@disabled}
+              {@rest}
+            >
+              <option :if={@prompt} value="">{@prompt}</option>
+              {Phoenix.HTML.Form.options_for_select(@options, @selected || @value)}
+            </select>
+          </div>
+        <% @icon_mapping -> %>
+          <div class="pc-select-input__wrapper">
+            <Icon.icon name={@icon_mapping.(@selected || @value)} class={@icon_class} />
+            <select
+              id={@id}
+              name={@name}
+              class={["pc-select-input", @class]}
+              multiple={@multiple}
+              required={@required}
+              disabled={@disabled}
+              {@rest}
+            >
+              <option :if={@prompt} value="">{@prompt}</option>
+              {Phoenix.HTML.Form.options_for_select(@options, @selected || @value)}
+            </select>
+          </div>
+        <% true -> %>
+          <select
+            id={@id}
+            name={@name}
+            class={[get_class_for_type(@type, @size), @class]}
+            multiple={@multiple}
+            required={@required}
+            disabled={@disabled}
+            {@rest}
+          >
+            <option :if={@prompt} value="">{@prompt}</option>
+            {Phoenix.HTML.Form.options_for_select(@options, @selected || @value)}
+          </select>
+      <% end %>
+
+      <.field_error :for={msg <- @errors}>{msg}</.field_error>
+      <.field_help_text help_text={@help_text} />
+    </.field_wrapper>
+    """
+  end
+
   def field(%{type: "textarea"} = assigns) do
     ~H"""
     <.field_wrapper errors={@errors} name={@name} class={@wrapper_class} no_margin={@no_margin}>

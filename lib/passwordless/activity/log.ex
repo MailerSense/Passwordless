@@ -71,7 +71,6 @@ defmodule Passwordless.Activity.Log do
       ]
     ]
   }
-  @schema_prefix "public"
   schema "activity_logs" do
     field :action, Ecto.Enum, values: @actions
     field :domain, Ecto.Enum, values: @domains

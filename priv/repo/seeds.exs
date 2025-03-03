@@ -9,7 +9,7 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
-alias Database.Multitenant
+alias Database.Tenant
 alias Passwordless.Accounts.Token
 alias Passwordless.Accounts.TOTP
 alias Passwordless.Accounts.User
@@ -29,7 +29,8 @@ if Mix.env() == :dev do
   Passwordless.Repo.delete_all(Token)
   Passwordless.Repo.delete_all(User)
 
-  Enum.each(Multitenant.all(), &Multitenant.drop_schema/1)
+  Enum.each(Tenant.all(), &Tenant.drop_schema/1)
+
   admin = UserSeeder.admin()
 
   normal_user =

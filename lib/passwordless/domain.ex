@@ -3,6 +3,8 @@ defmodule Passwordless.Domain do
 
   use Passwordless.Schema
 
+  import Ecto.Query
+
   alias Database.ChangesetExt
   alias Passwordless.DomainRecord
 
@@ -24,7 +26,6 @@ defmodule Passwordless.Domain do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  @schema_prefix "public"
   schema "domains" do
     field :name, :string
     field :kind, Ecto.Enum, values: @kinds, default: :sub_domain
@@ -67,6 +68,10 @@ defmodule Passwordless.Domain do
   """
   def verified_by_aws?(%__MODULE__{state: :aws_success}), do: true
   def verified_by_aws?(%__MODULE__{}), do: false
+
+  def get_by_state(query \\ __MODULE__, state) do
+    from q in query, where: q.state == ^state
+  end
 
   @fields ~w(
     name

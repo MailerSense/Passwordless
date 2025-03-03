@@ -204,6 +204,21 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create index(:apps, [:org_id], where: "deleted_at is null")
 
+    ## Branding
+
+    create table(:app_brandings, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :website, :string, null: false
+      add :display_name, :string, null: false
+      add :primary_button_color, :string, null: false
+      add :secondary_button_color, :string, null: false
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
     ## Domain
 
     create table(:domains, primary_key: false) do
