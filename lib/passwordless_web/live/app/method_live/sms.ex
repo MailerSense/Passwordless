@@ -4,12 +4,15 @@ defmodule PasswordlessWeb.App.MethodLive.SMS do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.App
+  alias Passwordless.Locale
+  alias Passwordless.Methods.SMS
   alias Passwordless.Repo
 
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
     sms = Repo.preload(app, :sms).sms
     changeset = Passwordless.change_sms(sms)
+    languages = Enum.map(SMS.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
 
     preview = """
     Your #{app.display_name} verification code is 123456. To stop receiving these messages, visit #{app.website}/sms-opt-out?code=#{app.id}.
@@ -18,7 +21,7 @@ defmodule PasswordlessWeb.App.MethodLive.SMS do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(sms: sms, preview: preview)
+     |> assign(sms: sms, preview: preview, languages: languages)
      |> assign_form(changeset)}
   end
 

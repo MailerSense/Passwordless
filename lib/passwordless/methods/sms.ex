@@ -6,6 +6,9 @@ defmodule Passwordless.Methods.SMS do
   use Passwordless.Schema
 
   alias Passwordless.App
+  alias Passwordless.Locale
+
+  @languages ~w(en de fr)a
 
   @derive {
     Flop.Schema,
@@ -14,6 +17,7 @@ defmodule Passwordless.Methods.SMS do
   schema "sms_methods" do
     field :enabled, :boolean, default: true
     field :expires, :integer, default: 5
+    field :language, Ecto.Enum, values: @languages, default: :en, virtual: true
 
     belongs_to :app, App, type: :binary_id
 
@@ -23,9 +27,12 @@ defmodule Passwordless.Methods.SMS do
   @fields ~w(
     enabled
     expires
+    language
     app_id
   )a
   @required_fields @fields
+
+  def languages, do: @languages
 
   @doc """
   A changeset.

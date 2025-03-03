@@ -29,13 +29,13 @@ defmodule Passwordless.Identity.Deleter do
         Logger.warning("Soft deleting domain #{domain.name}")
         Repo.soft_delete(domain, prefix: Database.Tenant.to_prefix(app))
 
-        with %AWS.Client{} = client <- Cloud.get_client(),
-             {:ok, %{}, _} <- AWS.SESv2.delete_email_identity(client, domain.name, %{}) do
-          Logger.info("Deleted domain #{domain.name} from SES")
-        else
-          {:error, error} ->
-            Logger.error("Failed to delete domain #{domain.name} from SES: #{inspect(error)}")
-        end
+        # with %AWS.Client{} = client <- Cloud.get_client(),
+        #      {:ok, %{}, _} <- AWS.SESv2.delete_email_identity(client, domain.name, %{}) do
+        #   Logger.info("Deleted domain #{domain.name} from SES")
+        # else
+        #   {:error, error} ->
+        #     Logger.error("Failed to delete domain #{domain.name} from SES: #{inspect(error)}")
+        # end
 
         :ok
 
