@@ -40,17 +40,12 @@
           wrapper_class="!mb-0"
         />
       </div>
-      <div class="pc-form-field-wrapper">
-        <.form_label>{gettext("Template")}</.form_label>
-        <.button
-          size="xs"
-          type="button"
-          color="light"
-          icon="custom-edit"
-          label={gettext("Open email editor")}
-          disabled={not @enabled}
-        />
-      </div>
+      <.a
+        to={~p"/app/home"}
+        class="pc-user-badge"
+        label={gettext("Edit email template")}
+        link_type="live_redirect"
+      />
       <.form_separator />
       <.form_header title="Advanced" />
       <.field

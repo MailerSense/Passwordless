@@ -246,6 +246,11 @@ defmodule PasswordlessWeb.Components.DataTable do
           </.tr>
         </thead>
         <tbody id={@id} phx-update="stream" phx-viewport-bottom={!@finished && "load_more"}>
+          <.tr class="only:block hidden">
+            <td class="pc-table__td--only" colspan={length(@col)}>
+              {if Util.present?(@if_empty), do: render_slot(@if_empty), else: "No results"}
+            </td>
+          </.tr>
           <.tr :for={{id, item} <- @items} id={id} class="pc-table__tr-striped">
             <.td
               :for={col <- @col}
@@ -264,11 +269,6 @@ defmodule PasswordlessWeb.Components.DataTable do
                   <Cell.render column={col} item={item} />
               <% end %>
             </.td>
-          </.tr>
-          <.tr class="only:block hidden">
-            <td class="pc-table__td--only" colspan={length(@col)}>
-              {if Util.present?(@if_empty), do: render_slot(@if_empty), else: "No results"}
-            </td>
           </.tr>
         </tbody>
       </.table>

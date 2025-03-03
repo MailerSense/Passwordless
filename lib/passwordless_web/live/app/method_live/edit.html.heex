@@ -1,0 +1,64 @@
+<.layout current_user={@current_user} current_page={:methods} current_section={:app}>
+  <div class="px-6 xl:px-8 py-12">
+    <.form id="edit-status-page-form" for={@form} phx-change="validate" phx-submit="save">
+      <div class="mb-12 flex justify-between items-center h-12">
+        <div class="relative">
+          <.field type="editor" field={@form[:name]} />
+          <div class="pc-editor-field-icon">
+            <.icon name="remix-pencil-line" class="pc-editor-field-icon__icon" />
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <.button
+            to={~p"/app/methods/magic-link"}
+            size="md"
+            type="button"
+            color="light"
+            label={gettext("Cancel")}
+            link_type="live_redirect"
+          />
+          <.button
+            size="md"
+            type="button"
+            icon="remix-eye-line"
+            color="primary"
+            label={gettext("Save")}
+            link_type="live_patch"
+          />
+        </div>
+      </div>
+      <div class="flex items-start gap-4">
+        <div class="flex flex-col w-80 xl:w-[400px] bg-white dark:bg-background-950 rounded-lg shadow-1">
+          <div class="flex flex-col px-4 py-6 gap-6">
+            <div>
+              <.form_header title="Template" />
+              <.field
+                type="select"
+                icon_mapping={@icon_mapping}
+                field={@form[:visibility]}
+                options={@visibilities}
+                required
+                required_asterix={false}
+              />
+              <.field
+                field={@form[:address]}
+                label={gettext("Site URL")}
+                prefix={gettext("https://")}
+                readonly
+                copyable={true}
+              />
+              <.field
+                :if={@needs_password?}
+                type="password"
+                field={@form[:password]}
+                autocomplete="new-password"
+                required
+              />
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-200 dark:bg-background-950 rounded-lg px-6 py-6 grow"></div>
+      </div>
+    </.form>
+  </div>
+</.layout>
