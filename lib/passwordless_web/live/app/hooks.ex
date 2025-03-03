@@ -11,7 +11,6 @@ defmodule PasswordlessWeb.App.Hooks do
   alias Passwordless.Accounts.User
   alias Passwordless.App
   alias Passwordless.Organizations.Org
-  alias Passwordless.Repo
 
   def on_mount(:fetch_current_app, _params, session, socket) do
     socket =

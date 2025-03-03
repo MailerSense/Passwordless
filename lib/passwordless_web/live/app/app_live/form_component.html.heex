@@ -9,11 +9,11 @@
       phx-change="validate"
     >
       <.image_input
-        upload={@uploads.avatar}
+        upload={@uploads.logo}
         label={gettext("Logo")}
-        current_image_src={nil}
+        current_image_src={@logo_src}
         placeholder_icon="hero-user-solid"
-        on_delete="clear_avatar"
+        on_delete="clear_logo"
         automatic_help_text
       />
       <.field
@@ -54,11 +54,7 @@
         type="submit"
         form="manage-app-form"
         disabled={not @form.source.valid?}
-        label={
-          if @live_action == :new,
-            do: gettext("Create"),
-            else: gettext("Save")
-        }
+        label={gettext("Create")}
       />
     </:actions>
   </.slide_over>

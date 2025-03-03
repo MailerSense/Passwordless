@@ -7,6 +7,7 @@ defmodule Passwordless do
   if it comes from the database, an external API or others.
   """
 
+  import Ecto.Query
   import Util.Crud
 
   alias Database.Tenant
@@ -16,6 +17,9 @@ defmodule Passwordless do
   alias Passwordless.Domain
   alias Passwordless.DomainRecord
   alias Passwordless.Email
+  alias Passwordless.EmailTemplate
+  alias Passwordless.EmailTemplates
+  alias Passwordless.EmailTemplateVersion
   alias Passwordless.Methods
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
@@ -242,17 +246,21 @@ defmodule Passwordless do
   end
 
   def add_email(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     actor
     |> Ecto.build_assoc(:emails)
-    |> Email.changeset(attrs)
-    |> Repo.insert(prefix: Tenant.to_prefix(app))
+    |> Email.changeset(attrs, opts)
+    |> Repo.insert(opts)
   end
 
   def add_regional_phone(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     actor
     |> Ecto.build_assoc(:phones)
-    |> Phone.regional_changeset(attrs)
-    |> Repo.insert(prefix: Tenant.to_prefix(app))
+    |> Phone.regional_changeset(attrs, opts)
+    |> Repo.insert(opts)
   end
 
   def add_canonical_phone(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
@@ -280,6 +288,73 @@ defmodule Passwordless do
     actor
     |> Ecto.build_assoc(:actions)
     |> Action.changeset(attrs)
-    |> Repo.insertl(prefix: Tenant.to_prefix(app))
+    |> Repo.insert(prefix: Tenant.to_prefix(app))
+  end
+
+  # Email templates
+
+  def get_email_template(%App{} = app, kind) when is_atom(kind) do
+    query =
+      app
+      |> Ecto.assoc(:email_templates)
+      |> where(kind: ^kind)
+      |> preload(:versions)
+
+    Repo.transact(fn ->
+      case Repo.one(query) do
+        %EmailTemplate{} = email_template ->
+          {:ok, email_template}
+
+        _ ->
+          with {:ok, template} <- create_email_template(app, %{kind: kind}),
+               {:ok, version} <- create_email_template_version(template, EmailTemplates.template(app, kind, :en)),
+               do: {:ok, %EmailTemplate{template | versions: [version]}}
+      end
+    end)
+  end
+
+  def get_email_template_version(%App{} = app, %EmailTemplate{kind: kind} = email_template, language) do
+    query =
+      email_template
+      |> Ecto.assoc(:versions)
+      |> where(language: ^language)
+
+    Repo.transact(fn ->
+      case Repo.one(query) do
+        %EmailTemplateVersion{} = email_template_version ->
+          {:ok, email_template_version}
+
+        _ ->
+          create_email_template_version(email_template, EmailTemplates.template(app, kind, language))
+      end
+    end)
+  end
+
+  def create_email_template_version(%EmailTemplate{} = email_template, attrs \\ %{}) do
+    email_template
+    |> Ecto.build_assoc(:versions)
+    |> EmailTemplateVersion.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_email_template(%App{} = app, attrs \\ %{}) do
+    app
+    |> Ecto.build_assoc(:email_templates)
+    |> EmailTemplate.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_email_template(%EmailTemplate{} = email_template, attrs \\ %{}) do
+    email_template
+    |> EmailTemplate.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def email_template_exists?(%App{} = app, kind) do
+    Repo.exists?(
+      app
+      |> Ecto.build_assoc(:email_templates)
+      |> where(kind: ^kind)
+    )
   end
 end

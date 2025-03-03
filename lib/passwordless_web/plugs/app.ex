@@ -8,7 +8,6 @@ defmodule PasswordlessWeb.Plugs.App do
   alias Passwordless.App
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Org
-  alias Passwordless.Repo
 
   @app_key "app_id"
 

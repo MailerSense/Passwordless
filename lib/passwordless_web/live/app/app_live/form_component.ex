@@ -2,16 +2,18 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
+  @upload_provider Passwordless.FileUploads.Local
+
   @impl true
   def update(%{app: app} = assigns, socket) do
-    changeset = Passwordless.change_app(app, %{})
+    changeset = Passwordless.change_app(app)
 
     {:ok,
      socket
      |> assign(assigns)
      |> assign(uploaded_files: [])
      |> assign_form(changeset)
-     |> allow_upload(:avatar,
+     |> allow_upload(:logo,
        # SETUP_TODO: Uncomment the line below if using an external provider (Cloudinary or S3)
        # external: &@upload_provider.presign_upload/2,
        accept: ~w(.jpg .jpeg .png .svg .webp),
@@ -32,29 +34,28 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
 
   @impl true
   def handle_event("save", %{"app" => app_params}, socket) do
-    IO.inspect(socket.assigns.live_action)
-    IO.inspect(app_params)
-    save_app(socket, socket.assigns.live_action, app_params)
+    app_params = maybe_add_logo(app_params, socket)
+    save_app(socket, app_params)
+  end
+
+  @impl true
+  def handle_event("clear_logo", _params, socket) do
+    save_app(socket, %{logo: nil})
   end
 
   # Private
 
-  defp save_app(socket, :edit, app_params) do
-    case Passwordless.update_app(socket.assigns.app, app_params) do
-      {:ok, _app} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, gettext("App updated."))
-         |> push_navigate(to: socket.assigns.return_to)}
+  defp maybe_add_logo(user_params, socket) do
+    uploaded_files = @upload_provider.consume_uploaded_entries(socket, :logo)
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+    if length(uploaded_files) > 0 do
+      Map.put(user_params, "logo", hd(uploaded_files))
+    else
+      user_params
     end
   end
 
-  defp save_app(socket, :new, app_params) do
-    IO.inspect(app_params)
-
+  defp save_app(socket, app_params) do
     case Passwordless.create_full_app(socket.assigns.current_org, app_params) do
       {:ok, _app} ->
         {:noreply,
@@ -68,6 +69,8 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   end
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    assign(socket, form: to_form(changeset))
+    socket
+    |> assign(form: to_form(changeset))
+    |> assign(logo_src: Ecto.Changeset.get_field(changeset, :logo))
   end
 end

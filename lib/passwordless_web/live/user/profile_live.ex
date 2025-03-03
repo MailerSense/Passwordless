@@ -8,8 +8,6 @@ defmodule PasswordlessWeb.User.ProfileLive do
   alias Passwordless.Accounts.User
   alias Passwordless.Activity
 
-  @upload_provider Passwordless.Media.Upload.Local
-
   @impl true
   def mount(_params, _session, socket) do
     {:ok, apply_action(socket, socket.assigns.live_action)}

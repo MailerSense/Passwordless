@@ -14,6 +14,13 @@ defmodule PasswordlessWeb.App.MethodLive.SMS do
     changeset = Passwordless.change_sms(sms)
     languages = Enum.map(SMS.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
 
+    flag_mapping = fn
+      nil -> "flag-us"
+      "en" -> "flag-us"
+      :en -> "flag-us"
+      code -> "flag-#{code}"
+    end
+
     preview = """
     Your #{app.display_name} verification code is 123456. To stop receiving these messages, visit #{app.website}/sms-opt-out?code=#{app.id}.
     """
@@ -21,7 +28,7 @@ defmodule PasswordlessWeb.App.MethodLive.SMS do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(sms: sms, preview: preview, languages: languages)
+     |> assign(sms: sms, preview: preview, languages: languages, flag_mapping: flag_mapping)
      |> assign_form(changeset)}
   end
 

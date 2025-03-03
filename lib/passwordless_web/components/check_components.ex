@@ -142,7 +142,7 @@ defmodule PasswordlessWeb.DashboardComponents do
     ~H"""
     <.box
       class={["flex flex-col divide-y divide-slate-200 dark:divide-slate-700 overflow-hidden", @class]}
-      shadow_class="shadow-m2"
+      shadow_class="shadow-1"
       {@rest}
     >
       <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-slate-700">

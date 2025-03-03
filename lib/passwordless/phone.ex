@@ -42,27 +42,27 @@ defmodule Passwordless.Phone do
   @doc """
   A regional changeset.
   """
-  def regional_changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
+  def regional_changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
     excluded = [:canonical]
 
     actor_email
     |> cast(attrs, @fields -- excluded)
     |> validate_required(@required_fields -- excluded)
     |> validate_regional_phone_number()
-    |> base_changeset()
+    |> base_changeset(opts)
   end
 
   @doc """
   A canonical changeset.
   """
-  def canonical_changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
+  def canonical_changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
     excluded = [:number, :region]
 
     actor_email
     |> cast(attrs, @fields -- excluded)
     |> validate_required(@required_fields -- excluded)
     |> validate_canonical_phone_number()
-    |> base_changeset()
+    |> base_changeset(opts)
   end
 
   # Private
@@ -76,9 +76,6 @@ defmodule Passwordless.Phone do
     number = fetch_field!(changeset, :number)
     region = fetch_field!(changeset, :region)
 
-    IO.inspect(number)
-    IO.inspect(region)
-
     with {:ok, phone_number} <- ExPhoneNumber.parse(number, region),
          true <- ExPhoneNumber.is_possible_number?(phone_number) do
       put_change(changeset, :canonical, ExPhoneNumber.format(phone_number, :e164))
@@ -88,10 +85,7 @@ defmodule Passwordless.Phone do
     end
   end
 
-  defp validate_regional_phone_number(changeset) do
-    IO.inspect(changeset)
-    changeset
-  end
+  defp validate_regional_phone_number(changeset), do: changeset
 
   defp validate_canonical_phone_number(%Ecto.Changeset{valid?: true} = changeset) do
     changeset = ChangesetExt.ensure_trimmed(changeset, :canonical)
@@ -110,15 +104,24 @@ defmodule Passwordless.Phone do
 
   defp validate_canonical_phone_number(changeset), do: changeset
 
-  defp base_changeset(changeset) do
+  defp base_changeset(changeset, opts \\ []) do
     changeset
     |> validate_channels()
     |> unique_constraint([:actor_id, :primary], error_key: :primary)
     |> unique_constraint([:actor_id, :canonical], error_key: :canonical)
     |> unique_constraint([:actor_id, :region, :number], error_key: :number)
-    |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo, error_key: :primary)
-    |> unsafe_validate_unique([:actor_id, :canonical], Passwordless.Repo, error_key: :canonical)
-    |> unsafe_validate_unique([:actor_id, :region, :number], Passwordless.Repo, error_key: :number)
+    |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo,
+      error_key: :primary,
+      prefix: Keyword.get(opts, :prefix)
+    )
+    |> unsafe_validate_unique([:actor_id, :canonical], Passwordless.Repo,
+      error_key: :canonical,
+      prefix: Keyword.get(opts, :prefix)
+    )
+    |> unsafe_validate_unique([:actor_id, :region, :number], Passwordless.Repo,
+      error_key: :number,
+      prefix: Keyword.get(opts, :prefix)
+    )
     |> assoc_constraint(:actor)
   end
 

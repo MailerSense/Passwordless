@@ -141,6 +141,9 @@ defmodule PasswordlessWeb.Router do
       live "/methods/security-key", App.MethodLive.Index, :security_key
       live "/methods/passkey", App.MethodLive.Index, :passkey
 
+      # Email
+      live "/email/edit", App.EmailLive.Edit, :index
+
       # Reports
       live "/reports", App.ReportLive.Index, :index
 

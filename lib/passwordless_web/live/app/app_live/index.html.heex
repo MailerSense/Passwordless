@@ -3,11 +3,11 @@
 
   <.form id="edit-app-form" for={@form} phx-submit="save" phx-change="validate">
     <.image_input
-      upload={@uploads.avatar}
+      upload={@uploads.logo}
       label={gettext("Logo")}
-      current_image_src={nil}
+      current_image_src={@current_app.logo}
       placeholder_icon="hero-user-solid"
-      on_delete="clear_avatar"
+      on_delete="clear_logo"
       automatic_help_text
     />
     <.field

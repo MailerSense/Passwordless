@@ -6,7 +6,6 @@ defmodule Passwordless.Methods.SMS do
   use Passwordless.Schema
 
   alias Passwordless.App
-  alias Passwordless.Locale
 
   @languages ~w(en de fr)a
 

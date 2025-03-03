@@ -205,6 +205,16 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
+  def get_link(:email_editor = name, _user) do
+    %{
+      name: name,
+      label: gettext("Email"),
+      path: ~p"/app/email/edit",
+      icon: "remix-database-2-line",
+      link_type: "live_patch"
+    }
+  end
+
   def get_link(:reports = name, _user) do
     %{
       name: name,

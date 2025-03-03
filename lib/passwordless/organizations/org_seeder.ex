@@ -86,14 +86,14 @@ defmodule Passwordless.Organizations.OrgSeeder do
         })
 
       {:ok, _email} =
-        Passwordless.add_email(actor, %{
+        Passwordless.add_email(app, actor, %{
           address: email,
           primary: true,
           verified: true
         })
 
       {:ok, _phone} =
-        Passwordless.add_regional_phone(actor, %{
+        Passwordless.add_regional_phone(app, actor, %{
           region: "US",
           number: phone,
           primary: true,
@@ -102,7 +102,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
       for _ <- 1..1 do
         {:ok, _action} =
-          Passwordless.create_action(actor, %{
+          Passwordless.create_action(app, actor, %{
             name: Enum.random(~w(signIn withdraw placeOrder)),
             method: Enum.random(Passwordless.methods()),
             outcome: Enum.random(Action.outcomes())

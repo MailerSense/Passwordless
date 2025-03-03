@@ -16,7 +16,6 @@ defmodule PasswordlessWeb.UserAuth do
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
-  alias Passwordless.Repo
 
   require Logger
 

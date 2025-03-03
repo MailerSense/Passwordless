@@ -25,6 +25,8 @@
         field={@form[:language]}
         type="select"
         options={@languages}
+        icon_class="pc-select-input__flag"
+        icon_mapping={@flag_mapping}
         disabled={not @enabled}
         required
         required_asterix={false}
