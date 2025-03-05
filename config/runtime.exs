@@ -24,7 +24,7 @@ if config_env() == :prod do
     ssl: true,
     ssl_opts: AwsRdsCAStore.ssl_opts(database_url),
     timeout: if(System.get_env("DATABASE_MIGRATION"), do: :timer.seconds(60), else: :timer.seconds(15)),
-    pool_size: String.to_integer(System.get_env("POOL_SIZE", "10")),
+    pool_size: String.to_integer(System.get_env("POOL_SIZE", "20")),
     queue_target: :timer.seconds(5),
     socket_options: maybe_ipv6
 

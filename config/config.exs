@@ -107,13 +107,13 @@ config :passwordless, :media,
 config :passwordless, :emails,
   support: [
     name: "Passwordless",
-    email: "noreply@support.getlivecheck.com",
+    email: "noreply@support.passwordlesstools.com",
     reply_to: "hello@passwordless.tools",
     reply_to_name: "Passwordless Support"
   ],
   alerts: [
     name: "Passwordless Alert",
-    email: "noreply@alerts.getlivecheck.com",
+    email: "noreply@alerts.passwordlesstools.com",
     reply_to: "hello@passwordless.tools",
     reply_to_name: "Passwordless Support"
   ]
@@ -807,6 +807,11 @@ config :passwordless, :languages,
   io: "Ido",
   or: "Oriya",
   bi: "Bislama"
+
+config :passwordless, :email_templates,
+  magic_link_first_sign_in: [
+    subject: "Welcome to Passwordless"
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

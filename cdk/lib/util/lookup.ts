@@ -3,12 +3,12 @@ import { Environment } from "./environment";
 export type DevDomain =
   | "cdn.dev.passwordless.tools"
   | "dev.passwordless.tools"
-  | "dev.getlivecheck.com"
+  | "dev.passwordlesstools.com"
   | "www.dev.passwordless.tools";
 export type ProdDomain =
   | "cdn.passwordless.tools"
   | "passwordless.tools"
-  | "getlivecheck.com"
+  | "passwordlesstools.com"
   | "www.passwordless.tools";
 
 export interface HostedZoneConfig<D extends string> {
@@ -60,8 +60,8 @@ export const lookupMap: EnvConfigMap = {
     hostedZoneCom: {
       hostedZoneId: "",
       domains: {
-        primary: "dev.getlivecheck.com",
-        email: "dev.getlivecheck.com",
+        primary: "dev.passwordlesstools.com",
+        email: "dev.passwordlesstools.com",
       },
     },
   },
@@ -88,8 +88,8 @@ export const lookupMap: EnvConfigMap = {
     hostedZoneCom: {
       hostedZoneId: "Z05899811FOGMTHC2HEW3",
       domains: {
-        primary: "getlivecheck.com",
-        email: "getlivecheck.com",
+        primary: "passwordlesstools.com",
+        email: "passwordlesstools.com",
       },
     },
   },
