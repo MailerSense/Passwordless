@@ -33,6 +33,10 @@ defmodule Passwordless.EmailTemplateVersion do
 
   def languages, do: @languages
 
+  def put_current_language(%__MODULE__{} = version, language) do
+    %__MODULE__{version | current_language: language}
+  end
+
   @fields ~w(
     language
     current_language

@@ -1,4 +1,4 @@
-<.layout current_user={@current_user} current_page={:email_editor} current_section={:app}>
+<.layout current_user={@current_user} current_page={:methods} current_section={:app}>
   <div class="my-12 flex justify-between items-center h-12">
     <.form
       id="edit-template"
@@ -40,7 +40,7 @@
       <.tab_menu
         class="mb-6"
         variant="native"
-        menu_items={email_menu_items(@template)}
+        menu_items={email_menu_items(@template, @language)}
         current_tab={@live_action}
       />
       <.live_component
@@ -50,7 +50,6 @@
         template={@template}
         version={@version}
         language={@language}
-        languages={@languages}
         version_form={@version_form}
         module={@module}
       />

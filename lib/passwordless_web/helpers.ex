@@ -148,18 +148,18 @@ defmodule PasswordlessWeb.Helpers do
     ]
   end
 
-  def email_menu_items(%EmailTemplate{} = email_template) do
+  def email_menu_items(%EmailTemplate{} = email_template, language \\ :en) do
     [
       %{
         name: :edit,
         label: gettext("Email"),
-        path: ~p"/app/email/#{email_template}/edit",
+        path: ~p"/app/email/#{email_template}/#{language}/edit",
         link_type: "live_patch"
       },
       %{
         name: :styles,
         label: gettext("Styles"),
-        path: ~p"/app/email/#{email_template}/styles",
+        path: ~p"/app/email/#{email_template}/#{language}/styles",
         link_type: "live_patch"
       }
     ]

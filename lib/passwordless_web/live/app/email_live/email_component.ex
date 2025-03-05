@@ -2,18 +2,21 @@ defmodule PasswordlessWeb.App.EmailLive.EmailComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
+  alias Passwordless.EmailTemplateVersion
   alias Passwordless.Locale
 
   @impl true
   def update(assigns, socket) do
     language = assigns.language
-    languages = assigns.languages
+
+    languages =
+      Enum.map(EmailTemplateVersion.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
 
     {:ok,
      socket
      |> assign(assigns)
      |> assign(
-       languages: Enum.map(languages, fn code -> {Keyword.fetch!(Locale.languages(), code), code} end),
+       languages: languages,
        flag_icon: get_flag_icon(language)
      )}
   end

@@ -16,22 +16,21 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   end
 
   @impl true
-  def handle_params(%{"id" => id}, _url, socket) do
+  def handle_params(%{"id" => id, "language" => language}, _url, socket) do
     app = socket.assigns.current_app
     template = Passwordless.get_email_template!(app, id)
-    languages = EmailTemplateVersion.languages()
-    language = List.first(languages)
-    version = Passwordless.get_email_template_version(template, language)
+    language = String.to_existing_atom(language)
+    version = Passwordless.get_or_create_email_template_version(app, template, language)
+    version = EmailTemplateVersion.put_current_language(version, language)
     module = Keyword.fetch!(@components, socket.assigns.live_action)
 
     {:noreply,
      socket
      |> assign(
+       module: module,
        version: version,
        template: template,
-       language: language,
-       languages: languages,
-       module: module
+       language: language
      )
      |> assign_template_form(EmailTemplate.changeset(template))
      |> assign_version_form(EmailTemplateVersion.changeset(version))
@@ -65,7 +64,6 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
       |> Passwordless.change_email_template_version(version_params)
       |> Map.put(:action, :validate)
 
-    app = socket.assigns.current_app
     template = socket.assigns.template
     language = socket.assigns.language
     current_language = Ecto.Changeset.get_field(changeset, :current_language)
@@ -73,12 +71,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
     if language == current_language do
       {:noreply, assign_version_form(socket, changeset)}
     else
-      version = Passwordless.get_or_create_email_template_version(app, template, current_language)
-
-      {:noreply,
-       socket
-       |> assign(version: version, language: current_language)
-       |> assign_version_form(EmailTemplateVersion.changeset(version))}
+      {:noreply, push_patch(socket, to: ~p"/app/email/#{template}/#{current_language}/edit")}
     end
   end
 
@@ -123,8 +116,4 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
         {:noreply, assign_template_form(socket, changeset)}
     end
   end
-
-  defp get_flag_icon(:en), do: "flag-us"
-  defp get_flag_icon(:de), do: "flag-de"
-  defp get_flag_icon(:fr), do: "flag-fr"
 end
