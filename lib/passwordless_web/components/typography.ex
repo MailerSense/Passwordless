@@ -119,20 +119,11 @@ defmodule PasswordlessWeb.Components.Typography do
 
   attr(:class, :any, default: "", doc: "CSS class")
   attr(:rest, :global)
-  attr(:no_margin, :boolean, default: false, doc: "removes margin from headings")
   slot(:inner_block, required: false)
 
   def p(assigns) do
     ~H"""
-    <p
-      class={[
-        "pc-text",
-        "pc-text--#{@size}",
-        @class,
-        if(@no_margin, do: "", else: "pc-p--margin")
-      ]}
-      {@rest}
-    >
+    <p class={["pc-text", "pc-text--#{@size}", @class]} {@rest}>
       {render_slot(@inner_block)}
     </p>
     """

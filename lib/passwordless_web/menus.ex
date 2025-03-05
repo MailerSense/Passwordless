@@ -59,7 +59,7 @@ defmodule PasswordlessWeb.Menus do
   def main_menu_items(_section, _user), do: []
 
   def user_menu_items(%User{current_org: %Org{}} = current_user),
-    do: build_menu([:app, :team, :billing, :sign_out], current_user)
+    do: build_menu([:app, :team, :billing, :domain, :sign_out], current_user)
 
   def user_menu_items(_user), do: []
 

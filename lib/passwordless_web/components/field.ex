@@ -2,6 +2,7 @@ defmodule PasswordlessWeb.Components.Field do
   @moduledoc false
   use Phoenix.Component
 
+  alias PasswordlessWeb.Components.Alert
   alias PasswordlessWeb.Components.Icon
 
   @doc """
@@ -37,6 +38,8 @@ defmodule PasswordlessWeb.Components.Field do
   attr :prefix, :string, default: nil, doc: "the icon mapping for select inputs"
 
   attr :suffix, :string, default: nil, doc: "the icon mapping for select inputs"
+
+  attr :badge, :map, default: %{}, doc: "the icon mapping for select inputs"
 
   attr :option_func, :any, default: nil, doc: "the icon mapping for select inputs"
 
@@ -769,8 +772,8 @@ defmodule PasswordlessWeb.Components.Field do
               {@rest}
             />
           </div>
-        <% Util.present?(@prefix) or Util.present?(@suffix) -> %>
-          <div class="flex">
+        <% Util.present?(@prefix) or Util.present?(@suffix) or Util.present?(@badge) -> %>
+          <.div_wrapper class="flex" wrap={true}>
             <span :if={Util.present?(@prefix)} class="pc-field-prefix">
               {@prefix}
             </span>
@@ -781,7 +784,7 @@ defmodule PasswordlessWeb.Components.Field do
               value={Phoenix.HTML.Form.normalize_value(@type, @value)}
               class={[
                 if(Util.present?(@prefix), do: "!rounded-l-none"),
-                if(Util.present?(@suffix), do: "!rounded-r-none"),
+                if(Util.present?(@suffix) or Util.present?(@badge), do: "!rounded-r-none"),
                 @class
               ]}
               required={@required}
@@ -789,10 +792,11 @@ defmodule PasswordlessWeb.Components.Field do
               {input_parameters(@type)}
               {@rest}
             />
+            <Alert.alert :if={Util.present?(@badge)} {@badge} />
             <span :if={Util.present?(@suffix)} class="pc-field-suffix">
               {@suffix}
             </span>
-          </div>
+          </.div_wrapper>
         <% true -> %>
           <input
             type={@type}
@@ -811,6 +815,22 @@ defmodule PasswordlessWeb.Components.Field do
       <.field_success :for={msg <- @successes}>{msg}</.field_success>
       <.field_help_text help_text={@help_text} />
     </.field_wrapper>
+    """
+  end
+
+  attr :wrap, :boolean, default: false
+  attr :class, :any, default: nil
+  slot :inner_block, required: true
+
+  defp div_wrapper(assigns) do
+    ~H"""
+    <%= if @wrap do %>
+      <div class={@class}>
+        {render_slot(@inner_block)}
+      </div>
+    <% else %>
+      {render_slot(@inner_block)}
+    <% end %>
     """
   end
 

@@ -10,6 +10,7 @@
     <.field
       type="select"
       field={@version_form[:current_language]}
+      label={gettext("Language")}
       options={@languages}
       icon={@flag_icon}
       icon_class="pc-select-input__flag"
@@ -44,7 +45,6 @@
       icon="remix-mail-send-line"
       color="light"
       phx-click="send_preview"
-      phx-target={@myself}
     />
   </div>
 </div>

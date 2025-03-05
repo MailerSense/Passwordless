@@ -165,6 +165,23 @@ defmodule PasswordlessWeb.Helpers do
     ]
   end
 
+  def domain_menu_items do
+    [
+      %{
+        name: :edit,
+        label: gettext("Email sending"),
+        path: ~p"/app/domain/send",
+        link_type: "live_patch"
+      },
+      %{
+        name: :styles,
+        label: gettext("Email tracking"),
+        path: ~p"/app/domain/track",
+        link_type: "live_patch"
+      }
+    ]
+  end
+
   def org_menu_items(%User{} = user) do
     user
     |> Organizations.list_orgs()

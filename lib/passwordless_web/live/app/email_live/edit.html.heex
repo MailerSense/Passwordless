@@ -23,7 +23,7 @@
         link_type="live_redirect"
       />
       <.button
-        to={~p"/app/email/#{@template}/reset"}
+        to={~p"/app/email/#{@template}/#{@language}/#{@live_action}?delete=true"}
         type="button"
         label={gettext("Reset")}
         icon="remix-delete-bin-line"
@@ -31,7 +31,14 @@
         variant="outline"
         link_type="live_patch"
       />
-      <.button size="md" icon="remix-save-line" label={gettext("Save")} />
+      <.button
+        size="md"
+        type="submit"
+        form="edit-template-version"
+        icon="remix-save-line"
+        label={gettext("Save")}
+        disabled={not @version_form.source.valid? or Enum.empty?(@version_form.source.changes)}
+      />
     </div>
   </div>
 
@@ -59,3 +66,31 @@
     </.box>
   </div>
 </.layout>
+
+<%= cond do %>
+  <% @delete? -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light-flat"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Reset \"%{name}\"", name: @template.name)}
+          color="danger"
+          phx-click="delete_actor"
+        />
+      </div>
+    </.modal>
+  <% true -> %>
+<% end %>

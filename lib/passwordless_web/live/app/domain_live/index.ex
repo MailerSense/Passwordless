@@ -136,6 +136,28 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
     )
   end
 
+  defp domain_state_badge(%Domain{verified: true}),
+    do: %{
+      size: "md",
+      label: gettext("Domain ready"),
+      color: "success",
+      variant: "rectangle",
+      with_icon: true,
+      override: true,
+      class: "pc-field-badge"
+    }
+
+  defp domain_state_badge(_),
+    do: %{
+      size: "md",
+      label: gettext("Pending DNS configuration"),
+      color: "warning",
+      variant: "rectangle",
+      with_icon: true,
+      override: true,
+      class: "pc-field-badge"
+    }
+
   defp default_domain_records(domain) do
     {:ok, %{subdomain: subdomain}} = Domainatrex.parse(domain)
 

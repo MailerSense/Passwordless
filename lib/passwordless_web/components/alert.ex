@@ -10,6 +10,7 @@ defmodule PasswordlessWeb.Components.Alert do
   )
 
   attr(:with_icon, :boolean, default: false, doc: "adds some icon base classes")
+  attr(:override, :boolean, default: false, doc: "adds some icon base classes")
   attr(:class, :any, default: "", doc: "CSS class for parent div")
   attr(:heading, :string, default: nil, doc: "label your heading")
   attr(:label, :string, default: nil, doc: "label your alert")
@@ -61,14 +62,15 @@ defmodule PasswordlessWeb.Components.Alert do
   defp alert_classes(opts) do
     opts = %{
       color: opts[:color] || "info",
-      class: opts[:class] || ""
+      class: opts[:class] || "",
+      override: opts[:override] || false
     }
 
     base_classes = "pc-alert-base-classes"
     color_css = get_color_classes(opts.color)
     custom_classes = opts.class
 
-    [base_classes, color_css, custom_classes]
+    [unless(opts[:override], do: base_classes), color_css, custom_classes]
   end
 
   defp get_color_classes("info"), do: "pc-alert--info"
@@ -89,25 +91,28 @@ defmodule PasswordlessWeb.Components.Alert do
 
   defp get_icon(%{color: "info"} = assigns) do
     ~H"""
-    <Icon.icon name="remix-information-line" class="w-6 h-6" />
+    <Icon.icon name="remix-information-fill" class="w-6 h-6 text-info-400 dark:text-info-500" />
     """
   end
 
   defp get_icon(%{color: "success"} = assigns) do
     ~H"""
-    <Icon.icon name="remix-checkbox-circle-line" class="w-6 h-6" />
+    <Icon.icon
+      name="remix-checkbox-circle-fill"
+      class="w-6 h-6 text-success-400 dark:text-success-500"
+    />
     """
   end
 
   defp get_icon(%{color: "warning"} = assigns) do
     ~H"""
-    <Icon.icon name="remix-alert-line" class="w-6 h-6" />
+    <Icon.icon name="remix-alert-fill" class="w-6 h-6 text-warning-400 dark:text-warning-500" />
     """
   end
 
   defp get_icon(%{color: "danger"} = assigns) do
     ~H"""
-    <Icon.icon name="remix-close-circle-line" class="w-6 h-6" />
+    <Icon.icon name="remix-close-circle-fill" class="w-6 h-6 text-danger-400 dark:text-danger-500" />
     """
   end
 end

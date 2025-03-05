@@ -351,6 +351,12 @@ defmodule Passwordless do
     end
   end
 
+  def update_email_template_version(%EmailTemplateVersion{} = version, attrs \\ %{}) do
+    version
+    |> EmailTemplateVersion.changeset(attrs)
+    |> Repo.update()
+  end
+
   def create_email_template(%App{} = app, attrs \\ %{}) do
     app
     |> Ecto.build_assoc(:email_templates)

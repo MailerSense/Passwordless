@@ -18,7 +18,7 @@ class EditorHook extends Hook {
   }
 
   private run(_lifecycleMethod: "mounted" | "updated", el: HTMLElement) {
-    let place: HTMLElement | null = el.querySelector(".editor");
+    const place: HTMLElement | null = el.querySelector(".editor");
     if (place === null) {
       throw new Error("Editor element not found");
     }

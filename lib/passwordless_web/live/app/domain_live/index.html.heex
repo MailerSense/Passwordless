@@ -1,12 +1,15 @@
 <.tabbed_settings_layout current_page={:domain} current_user={@current_user}>
   <div class="flex flex-col gap-6">
+    <.tab_menu variant="native" menu_items={domain_menu_items()} current_tab={:edit} />
+    <.p>
+      Domain used for email sending ensures your emails are branded correctly and are less likely to be marked as spam. You can add a domain to your app, and we'll guide you through the process of verifying it.
+    </.p>
     <%= case @mode do %>
       <% :new -> %>
         <.form id="new-domain-form" for={@form} phx-submit="save" phx-change="validate">
           <.field
             field={@form[:name]}
             label={gettext("Domain")}
-            prefix={gettext("https://")}
             required
             placeholder={gettext("e.g. auth.%{root}", root: URI.parse(@current_app.website).host)}
           />
@@ -20,19 +23,11 @@
           </div>
         </.form>
       <% :edit -> %>
-        <.alert :if={not @domain.verified} with_icon color="warning">
-          Domain not verified yet. Ensure the
-          <.a to={~p"/app/domain/dns"} class="underline" link_type="live_patch">
-            DNS records
-          </.a>
-          have been addedd to your domain provider.
-        </.alert>
-
         <.form id="edit-domain-form" for={@form} phx-submit="save" phx-change="validate">
           <.field
             field={@form[:name]}
             label={gettext("Domain")}
-            prefix={gettext("https://")}
+            badge={domain_state_badge(@domain)}
             readonly
           />
         </.form>
@@ -44,6 +39,7 @@
             class="text-sm underline text-slate-600 dark:text-slate-300"
             link_type="live_patch"
           />
+
           <.button
             to={~p"/app/domain/change"}
             size="md"
