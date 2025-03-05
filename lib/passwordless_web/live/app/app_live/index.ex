@@ -39,7 +39,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
       {:error, _} ->
         {:noreply,
          socket
-         |> LiveToast.put_toast(:error, gettext("Failed to delete app!"))
+         |> put_toast(:error, gettext("Failed to delete app!"), title: gettext("Error"))
          |> push_patch(to: ~p"/app/app")}
     end
   end
@@ -124,7 +124,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
       {:ok, app} ->
         socket =
           socket
-          |> LiveToast.put_toast(:info, gettext("App updated."))
+          |> put_toast(:info, gettext("App settings have been saved."), title: gettext("Success"))
           |> assign(current_app: app)
           |> assign_form(Passwordless.change_app(app))
 

@@ -2,11 +2,11 @@
   <.page_header title={gettext("Home")}>
     <div class="flex gap-3">
       <.button
-        to={~p"/app/reports"}
+        to={~p"/app/embed/api-usage"}
         size="md"
         color="light"
-        label={gettext("View reports")}
-        icon="remix-pie-chart-line"
+        label={gettext("Start building")}
+        icon="remix-terminal-box-line"
         link_type="live_patch"
       />
       <.button
@@ -14,14 +14,14 @@
         size="md"
         color="light"
         label={gettext("Manage users")}
-        icon="remix-user-line"
+        icon="remix-group-line"
         link_type="live_patch"
       />
       <.button
         to={~p"/app/methods/magic-link"}
         size="md"
         color="primary"
-        label={gettext("Setup methods")}
+        label={gettext("Authenticate")}
         icon="remix-shield-user-line"
         link_type="live_patch"
       />

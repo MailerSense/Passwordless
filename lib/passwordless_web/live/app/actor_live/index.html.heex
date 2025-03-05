@@ -2,7 +2,7 @@
   <.page_header title={gettext("Users")}>
     <div class="flex gap-3">
       <.button
-        to={~p"/app/users/import"}
+        to={apply_filters(@filters, @meta, ~p"/app/users/import")}
         size="md"
         color="light"
         label={gettext("Import")}
@@ -10,7 +10,7 @@
         link_type="live_patch"
       />
       <.button
-        to={~p"/app/users/new"}
+        to={apply_filters(@filters, @meta, ~p"/app/users/new")}
         size="md"
         color="primary"
         label={gettext("Create")}
@@ -68,7 +68,10 @@
             <.icon name="remix-pencil-line" class="w-6 h-6 shrink-0" />
             {gettext("Edit")}
           </.dropdown_menu_item>
-          <.dropdown_menu_item link_type="live_patch" to={~p"/app/users/#{actor}/delete"}>
+          <.dropdown_menu_item
+            link_type="live_patch"
+            to={apply_filters(@filters, @meta, ~p"/app/users/#{actor}/delete")}
+          >
             <.icon
               name="remix-delete-bin-line"
               class="w-6 h-6 shrink-0 text-danger-700 dark:text-danger-400"

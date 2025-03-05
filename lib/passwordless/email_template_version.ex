@@ -15,6 +15,7 @@ defmodule Passwordless.EmailTemplateVersion do
   }
   schema "email_template_versions" do
     field :language, Ecto.Enum, values: @languages, default: :en
+    field :current_language, Ecto.Enum, values: @languages, default: :en, virtual: true
 
     field :subject, :string
     field :preheader, :string
@@ -34,6 +35,7 @@ defmodule Passwordless.EmailTemplateVersion do
 
   @fields ~w(
     language
+    current_language
     subject
     preheader
     text_body

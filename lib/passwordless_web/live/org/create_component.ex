@@ -3,7 +3,6 @@ defmodule PasswordlessWeb.Org.CreateComponent do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.Accounts.User
-  alias Passwordless.Activity
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Org
 
@@ -34,30 +33,12 @@ defmodule PasswordlessWeb.Org.CreateComponent do
 
   # Private
 
-  defp save_org(socket, :edit, org_params) do
-    case Organizations.update_org(socket.assigns.org, org_params) do
-      {:ok, org} ->
-        Activity.log_async(:org, :"org.update_profile", %{user: socket.assigns.current_user, org: org})
-
-        current_user = assign_current_org(socket.assigns.current_user, org)
-
-        {:noreply,
-         socket
-         |> assign(current_user: current_user)
-         |> put_flash(:info, gettext("Organization updated."))
-         |> push_navigate(to: socket.assigns.return_to)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
-    end
-  end
-
   defp save_org(socket, :new, org_params) do
     case Organizations.create_org_with_owner(socket.assigns.current_user, org_params) do
       {:ok, _org, _membership} ->
         {:noreply,
          socket
-         |> put_flash(:info, gettext("Organization created."))
+         |> put_toast(:info, gettext("Organization created."), title: gettext("Success"))
          |> push_navigate(to: socket.assigns.return_to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

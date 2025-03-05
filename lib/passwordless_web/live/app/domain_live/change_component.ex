@@ -38,17 +38,18 @@ defmodule PasswordlessWeb.App.DomainLive.ChangeComponent do
           {:ok, _} ->
             {:noreply,
              socket
-             |> put_flash(:info, gettext("Domain changed successfully."))
+             |> put_toast(:info, gettext("Domain has been changed successfully."), title: gettext("Success"))
              |> push_navigate(to: ~p"/app/domain")}
 
           {:error, %Ecto.Changeset{} = changeset} ->
             {:noreply,
              socket
-             |> put_flash(
+             |> put_toast(
                :error,
                gettext("Failed to change domain: %{error}",
                  error: Jason.encode!(Util.humanize_changeset_errors(changeset))
-               )
+               ),
+               title: gettext("Error")
              )
              |> push_navigate(to: ~p"/app/domain")}
         end

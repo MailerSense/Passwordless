@@ -17,7 +17,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
   import PasswordlessWeb.Helpers
 
   attr :max_width, :string,
-    default: "lg",
+    default: "xl",
     values: ["sm", "md", "lg", "xl", "full"],
     doc: "sets container max-width"
 
@@ -43,7 +43,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
     default: "/",
     doc: "The path to the home page. When a user clicks the logo, they will be taken to this path."
 
-  attr :header_bg_class, :string, default: "bg-white/70 dark:bg-slate-900/70 backdrop-blur-md shadow-m2"
+  attr :header_bg_class, :string, default: "bg-white/70 dark:bg-slate-900/70 backdrop-blur-md"
 
   attr :header_border_class, :string, default: "border-b border-slate-200 dark:border-slate-700"
 
@@ -54,7 +54,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
 
   def stacked_layout(assigns) do
     ~H"""
-    <div class="h-screen overflow-y-auto bg-slate-100 dark:bg-slate-900">
+    <div class="h-screen overflow-y-auto bg-slate-50 dark:bg-slate-900">
       <header
         class={[
           @header_bg_class,
@@ -244,7 +244,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
   defp dropdown_item_class(false), do: ""
 
   defp main_menu_item_base_class,
-    do: "inline-flex items-center px-1 text-sm font-medium leading-5 transition duration-150 ease-in-out top-menu-item"
+    do: "inline-flex items-center px-1 text-sm font-medium transition duration-150 ease-in-out top-menu-item"
 
   defp main_menu_item_class(true), do: ["active text-slate-900 dark:text-slate-100", main_menu_item_base_class()]
 

@@ -45,13 +45,13 @@ defmodule Passwordless.FileUploads.S3 do
       |> allow_upload(:avatar,
           accept: ~w(.jpg .jpeg .png .gif .svg .webp),
           max_entries: 1,
-          external: &PetalPro.FileUploads.S3.presign_upload/2
+          external: &Passwordless.FileUploads.S3.presign_upload/2
         )}
 
   When you want to retrieve the URLs:
 
       def handle_event("submit", %{"user" => user_params}, socket) do
-        uploaded_files = PetalPro.FileUploads.S3.consume_uploaded_entries(socket, :avatar)
+        uploaded_files = Passwordless.FileUploads.S3.consume_uploaded_entries(socket, :avatar)
         # => ["http://your-bucket.s3.your-region.amazonaws.com/file"]
 
         # Do something with the uploaded files
@@ -106,14 +106,14 @@ defmodule Passwordless.FileUploads.S3 do
   @spec presign_upload(map(), map()) :: {:ok, map(), map()} | {:error, term()}
   def presign_upload(entry, socket) do
     uploads = socket.assigns.uploads
-    scheme = PetalPro.config([:s3, :scheme])
-    bucket = PetalPro.config([:s3, :bucket])
+    scheme = Passwordless.config([:s3, :scheme])
+    bucket = Passwordless.config([:s3, :bucket])
     key = Ecto.UUID.generate() <> Path.extname(entry.client_name)
 
     config = %{
-      region: PetalPro.config([:s3, :region]),
-      access_key_id: PetalPro.config([:s3, :access_key]),
-      secret_access_key: PetalPro.config([:s3, :secret])
+      region: Passwordless.config([:s3, :region]),
+      access_key_id: Passwordless.config([:s3, :access_key]),
+      secret_access_key: Passwordless.config([:s3, :secret])
     }
 
     {:ok, fields} =
@@ -143,9 +143,9 @@ defmodule Passwordless.FileUploads.S3 do
 
   @spec file_id_to_url(any) :: String.t()
   defp file_id_to_url(key) do
-    scheme = PetalPro.config([:s3, :scheme])
-    bucket = PetalPro.config([:s3, :bucket])
-    region = PetalPro.config([:s3, :region])
+    scheme = Passwordless.config([:s3, :scheme])
+    bucket = Passwordless.config([:s3, :bucket])
+    region = Passwordless.config([:s3, :region])
     "#{scheme}://#{bucket}.s3.#{region}.amazonaws.com/#{key}"
   end
 

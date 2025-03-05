@@ -28,7 +28,6 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
   def handle_params(params, _url, socket) do
     {:noreply,
      socket
-     |> assign_filters(params)
      |> assign_logs(params)
      |> assign_config()
      |> apply_action(socket.assigns.live_action)}
@@ -37,31 +36,6 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
   @impl true
   def handle_event("close_modal", _params, socket) do
     {:noreply, push_patch(socket, to: ~p"/app/billing")}
-  end
-
-  @impl true
-  def handle_event("clear_filters", _params, socket) do
-    {:noreply, push_navigate(socket, to: ~p"/app/billing")}
-  end
-
-  @impl true
-  def handle_event("update_filters", %{"filters" => filter_params}, socket) do
-    flop =
-      case Flop.validate(filter_params) do
-        {:ok, %Flop{} = flop} -> flop
-        _ -> nil
-      end
-
-    filtered? = flop && Enum.any?(flop.filters, fn x -> x.value end)
-
-    socket = assign(socket, current_flop: flop)
-
-    if filtered? do
-      {:noreply,
-       push_patch(socket, to: ~p"/app/billing?#{DataTable.build_filter_params(socket.assigns.meta, filter_params)}")}
-    else
-      {:noreply, push_patch(socket, to: ~p"/app/billing")}
-    end
   end
 
   @impl true
@@ -153,13 +127,6 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
     assign(socket, plans: plans, billing: config)
   end
 
-  defp apply_filters(filters, %Flop.Meta{} = meta, path)
-       when is_map(filters) and map_size(filters) > 0 and is_binary(path) do
-    path <> "?" <> Plug.Conn.Query.encode(DataTable.build_params(meta, filters))
-  end
-
-  defp apply_filters(_filters, _meta, path) when is_binary(path), do: path
-
   defp assign_logs(socket, params) do
     case socket.assigns[:current_org] do
       %Org{} = org ->
@@ -171,17 +138,5 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
       _ ->
         socket
     end
-  end
-
-  defp assign_filters(socket, params) do
-    params = Map.take(params, ~w(filters order_by order_directions))
-
-    flop =
-      case Flop.validate(params) do
-        {:ok, %Flop{} = flop} -> flop
-        _ -> nil
-      end
-
-    assign(socket, filters: params, last_flop: flop)
   end
 end

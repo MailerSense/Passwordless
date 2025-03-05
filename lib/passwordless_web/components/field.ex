@@ -42,8 +42,9 @@ defmodule PasswordlessWeb.Components.Field do
 
   attr :type, :string,
     default: "text",
-    values: ~w(checkbox checkbox-group color date datetime-local email file hidden month number password
-               range radio-group radio-card radio-card-group search select switch tel text textarea time url week editor),
+    values:
+      ~w(checkbox checkbox-group color date datetime-local email file hidden month number password
+               range radio-group radio-card radio-card-group search select switch tel text textarea time url week editor editor-select),
     doc: "the type of input"
 
   attr :size, :string,
@@ -233,69 +234,21 @@ defmodule PasswordlessWeb.Components.Field do
     """
   end
 
-  def field(%{type: "select"} = assigns) do
+  def field(%{type: "editor-select"} = assigns) do
     ~H"""
-    <.field_wrapper errors={@errors} name={@name} class={@wrapper_class} no_margin={@no_margin}>
-      <.field_label
-        :if={Util.present?(@label)}
+    <.field_wrapper errors={@errors} name={@name} class={@wrapper_class} no_margin={true}>
+      <select
+        id={@id}
+        name={@name}
+        class={[@class, "pc-editor-select-field"]}
+        multiple={@multiple}
         required={@required}
-        required_asterix={@required_asterix}
-        for={@id}
-        class={@label_class}
+        disabled={@disabled}
+        {@rest}
       >
-        {@label}
-      </.field_label>
-
-      <%= cond do %>
-        <% @icon -> %>
-          <div class="pc-select-input__wrapper">
-            <Icon.icon name={@icon} class={@icon_class} />
-            <select
-              id={@id}
-              name={@name}
-              class={["pc-select-input", @class]}
-              multiple={@multiple}
-              required={@required}
-              disabled={@disabled}
-              {@rest}
-            >
-              <option :if={@prompt} value="">{@prompt}</option>
-              {Phoenix.HTML.Form.options_for_select(@options, @selected || @value)}
-            </select>
-          </div>
-        <% @icon_mapping -> %>
-          <div class="pc-select-input__wrapper">
-            <Icon.icon name={@icon_mapping.(@selected || @value)} class={@icon_class} />
-            <select
-              id={@id}
-              name={@name}
-              class={["pc-select-input", @class]}
-              multiple={@multiple}
-              required={@required}
-              disabled={@disabled}
-              {@rest}
-            >
-              <option :if={@prompt} value="">{@prompt}</option>
-              {Phoenix.HTML.Form.options_for_select(@options, @selected || @value)}
-            </select>
-          </div>
-        <% true -> %>
-          <select
-            id={@id}
-            name={@name}
-            class={[get_class_for_type(@type, @size), @class]}
-            multiple={@multiple}
-            required={@required}
-            disabled={@disabled}
-            {@rest}
-          >
-            <option :if={@prompt} value="">{@prompt}</option>
-            {Phoenix.HTML.Form.options_for_select(@options, @selected || @value)}
-          </select>
-      <% end %>
-
-      <.field_error :for={msg <- @errors}>{msg}</.field_error>
-      <.field_help_text help_text={@help_text} />
+        <option :if={@prompt} value="">{@prompt}</option>
+        {Phoenix.HTML.Form.options_for_select(@options, @selected || @value)}
+      </select>
     </.field_wrapper>
     """
   end

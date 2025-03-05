@@ -4,6 +4,7 @@ defmodule PasswordlessWeb.App.EmbedLive.Index do
 
   @methods [
     secrets: PasswordlessWeb.App.EmbedLive.Secrets,
+    api_usage: PasswordlessWeb.App.EmbedLive.Secrets,
     login_page: PasswordlessWeb.App.EmbedLive.Secrets,
     auth_guard: PasswordlessWeb.App.EmbedLive.Secrets
   ]

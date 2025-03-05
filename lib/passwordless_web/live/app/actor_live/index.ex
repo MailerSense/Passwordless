@@ -80,12 +80,12 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
         {:noreply,
          socket
          |> put_flash(:info, gettext("User deleted successfully."))
-         |> push_navigate(to: ~p"/app/users")}
+         |> push_patch(to: ~p"/app/users")}
 
       {:error, _} ->
         {:noreply,
          socket
-         |> LiveToast.put_toast(:error, gettext("Failed to delete user!"))
+         |> put_toast(:error, gettext("Failed to delete user!"), title: gettext("Error"))
          |> push_patch(to: ~p"/app/users")}
     end
   end

@@ -1,0 +1,50 @@
+<div>
+  <.form
+    id="edit-template-version"
+    for={@version_form}
+    phx-change="validate_version"
+    phx-submit="save_version"
+  >
+    <.field field={@version_form[:subject]} required required_asterix={false} />
+    <.field field={@version_form[:preheader]} />
+    <.field
+      type="select"
+      field={@version_form[:current_language]}
+      options={@languages}
+      icon={@flag_icon}
+      icon_class="pc-select-input__flag"
+      required
+      required_asterix={false}
+    />
+    <.p class="mb-6">
+      Emails can be personalized with help of template variables.
+    </.p>
+    <.a
+      class="text-info-600 dark:text-info-300 underline"
+      label={gettext("Learn about variables")}
+      link_type="live_redirect"
+    />
+  </.form>
+  <.form_separator />
+  <.form_header title={gettext("Preview")} />
+  <.p class="mb-6">
+    Send a test email to your account email address to see how it looks.
+  </.p>
+  <.field
+    type="email"
+    name="email"
+    label={gettext("Email")}
+    value={user_email(@current_user)}
+    readonly
+  />
+  <div class="flex">
+    <.button
+      type="button"
+      label={gettext("Send")}
+      icon="remix-mail-send-line"
+      color="light"
+      phx-click="send_preview"
+      phx-target={@myself}
+    />
+  </div>
+</div>

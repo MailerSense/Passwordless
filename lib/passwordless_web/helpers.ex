@@ -11,10 +11,14 @@ defmodule PasswordlessWeb.Helpers do
   alias Passwordless.Activity.Log
   alias Passwordless.Actor
   alias Passwordless.App
+  alias Passwordless.EmailTemplate
   alias Passwordless.Organizations
   alias Passwordless.Organizations.AuthToken
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
+
+  def actor_name(nil), do: nil
+  def actor_name(%Actor{} = actor), do: actor.name
 
   def actor_state_badge(nil), do: {nil, "gray"}
 
@@ -71,15 +75,22 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :security_key,
         label: "Security key",
-        icon: "remix-shield-keyhole-line",
+        icon: "remix-usb-line",
         path: ~p"/app/methods/security-key",
         link_type: "live_patch"
       },
       %{
         name: :passkey,
         label: "Passkey",
-        icon: "remix-pass-valid-line",
+        icon: "remix-fingerprint-line",
         path: ~p"/app/methods/passkey",
+        link_type: "live_patch"
+      },
+      %{
+        name: :recovery_codes,
+        label: "Recovery codes",
+        icon: "remix-file-list-line",
+        path: ~p"/app/methods/recovery-codes",
         link_type: "live_patch"
       }
     ]
@@ -114,6 +125,13 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
+        name: :api_usage,
+        label: "API usage",
+        icon: "remix-terminal-box-line",
+        path: ~p"/app/embed/api-usage",
+        link_type: "live_patch"
+      },
+      %{
         name: :login_page,
         label: "Login page",
         icon: "remix-window-line",
@@ -125,6 +143,23 @@ defmodule PasswordlessWeb.Helpers do
         label: "Auth guard",
         icon: "remix-shield-user-line",
         path: ~p"/app/embed/auth-guard",
+        link_type: "live_patch"
+      }
+    ]
+  end
+
+  def email_menu_items(%EmailTemplate{} = email_template) do
+    [
+      %{
+        name: :edit,
+        label: gettext("Email"),
+        path: ~p"/app/email/#{email_template}/edit",
+        link_type: "live_patch"
+      },
+      %{
+        name: :styles,
+        label: gettext("Styles"),
+        path: ~p"/app/email/#{email_template}/styles",
         link_type: "live_patch"
       }
     ]

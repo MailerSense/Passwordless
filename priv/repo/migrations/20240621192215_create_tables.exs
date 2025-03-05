@@ -328,12 +328,24 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create unique_index(:passkey_methods, [:app_id])
 
+    create table(:recovery_codes_methods, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :enabled, :boolean, null: false, default: true
+      add :hide_on_enrollment, :boolean, null: false, default: false
+      add :skip_on_programatic, :boolean, null: false, default: false
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:recovery_codes_methods, [:app_id])
+
     ## Email
 
     create table(:email_templates, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :kind, :string, null: false
-      add :editor, :string, null: false
+      add :name, :string, null: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 
@@ -342,7 +354,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create index(:email_templates, [:app_id])
-    create unique_index(:email_templates, [:app_id, :kind])
 
     create table(:email_template_versions, primary_key: false) do
       add :id, :uuid, primary_key: true

@@ -1,5 +1,18 @@
 <.layout current_user={@current_user} current_page={:email_editor} current_section={:app}>
-  <.page_header title={@page_title}>
+  <div class="my-12 flex justify-between items-center h-12">
+    <.form
+      id="edit-template"
+      for={@template_form}
+      phx-change="validate_template"
+      phx-submit="save_template"
+    >
+      <div class="relative">
+        <.field type="editor" field={@template_form[:name]} phx-debounce="blur" />
+        <div class="pc-editor-field-icon">
+          <.icon name="remix-pencil-line" class="pc-editor-field-icon__icon" />
+        </div>
+      </div>
+    </.form>
     <div class="flex gap-3">
       <.button
         to={~p"/app/users"}
@@ -10,7 +23,7 @@
         link_type="live_redirect"
       />
       <.button
-        to={~p"/app/email/reset"}
+        to={~p"/app/email/#{@template}/reset"}
         type="button"
         label={gettext("Reset")}
         icon="remix-delete-bin-line"
@@ -20,52 +33,30 @@
       />
       <.button size="md" icon="remix-save-line" label={gettext("Save")} />
     </div>
-  </.page_header>
+  </div>
 
   <div class="flex flex-col lg:flex-row gap-4">
-    <.box padded class="grow lg:flex-none lg:w-[400px]">
-      <.form
-        id="edit-template"
-        for={@template_form}
-        phx-change="validate_template"
-        phx-submit="save_template"
-      >
-        <.form_header title={gettext("Template")} />
-        <.field
-          type="select"
-          field={@template_form[:kind]}
-          label={gettext("Name")}
-          options={@kinds}
-          required
-          required_asterix={false}
-        />
-        <.field
-          type="select"
-          field={@template_form[:editor]}
-          options={@editors}
-          required
-          required_asterix={false}
-        />
-      </.form>
-      <.form
-        id="edit-template-version"
-        for={@version_form}
-        phx-change="validate_version"
-        phx-submit="save_version"
-      >
-        <.form_separator />
-        <.form_header title={gettext("Personalization")} />
-        <.field
-          type="select"
-          field={@version_form[:language]}
-          options={@languages}
-          icon_class="pc-select-input__flag"
-          icon_mapping={@flag_mapping}
-          required
-          required_asterix={false}
-        />
-      </.form>
+    <.box padded class="grow lg:flex-none lg:w-[380px]">
+      <.tab_menu
+        class="mb-6"
+        variant="native"
+        menu_items={email_menu_items(@template)}
+        current_tab={@live_action}
+      />
+      <.live_component
+        id={@live_action}
+        current_app={@current_app}
+        current_user={@current_user}
+        template={@template}
+        version={@version}
+        language={@language}
+        languages={@languages}
+        version_form={@version_form}
+        module={@module}
+      />
     </.box>
-    <.box padded class="grow"></.box>
+    <.box id="block-container" phx-hook="EditorHook" padded class="grow">
+      <div id="block-editor" class="editor" style="min-height: 25vh;" phx-update="ignore"></div>
+    </.box>
   </div>
 </.layout>

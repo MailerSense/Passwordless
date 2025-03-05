@@ -140,15 +140,18 @@ defmodule PasswordlessWeb.Router do
       live "/methods/authenticator", App.MethodLive.Index, :authenticator
       live "/methods/security-key", App.MethodLive.Index, :security_key
       live "/methods/passkey", App.MethodLive.Index, :passkey
+      live "/methods/recovery-codes", App.MethodLive.Index, :recovery_codes
 
       # Email
-      live "/email/edit", App.EmailLive.Edit, :index
+      live "/email/:id/edit", App.EmailLive.Edit, :edit
+      live "/email/:id/styles", App.EmailLive.Edit, :styles
 
       # Reports
       live "/reports", App.ReportLive.Index, :index
 
       # Embed & API
       live "/embed/secrets", App.EmbedLive.Index, :secrets
+      live "/embed/api-usage", App.EmbedLive.Index, :api_usage
       live "/embed/login-page", App.EmbedLive.Index, :login_page
       live "/embed/auth-guard", App.EmbedLive.Index, :auth_guard
 

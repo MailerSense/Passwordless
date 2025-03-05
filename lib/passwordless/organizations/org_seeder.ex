@@ -76,6 +76,8 @@ defmodule Passwordless.Organizations.OrgSeeder do
       {:ok, _} = Passwordless.create_domain_record(domain, r)
     end
 
+    {:ok, _template} = Passwordless.seed_email_template(app, :magic_link_sign_in, :en)
+
     {:ok, _tenant} = Tenant.create(app)
 
     for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1_000) do

@@ -27,46 +27,12 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   @impl true
   def handle_event("save", %{"actor" => actor_params}, socket) do
-    app = socket.assigns.current_app
-    actor = socket.assigns.actor
-
-    case Passwordless.update_actor(app, actor, actor_params) do
-      {:ok, actor} ->
-        changeset =
-          actor
-          |> Passwordless.change_actor()
-          |> Map.put(:action, :validate)
-
-        {:noreply,
-         socket
-         |> assign(actor: actor)
-         |> assign_form(changeset)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
-    end
+    save_actor(socket, actor_params)
   end
 
   @impl true
   def handle_event("validate", %{"actor" => actor_params}, socket) do
-    app = socket.assigns.current_app
-    actor = socket.assigns.actor
-
-    case Passwordless.update_actor(app, actor, actor_params) do
-      {:ok, actor} ->
-        changeset =
-          actor
-          |> Passwordless.change_actor()
-          |> Map.put(:action, :validate)
-
-        {:noreply,
-         socket
-         |> assign(actor: actor)
-         |> assign_form(changeset)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
-    end
+    save_actor(socket, actor_params)
   end
 
   @impl true
@@ -85,16 +51,18 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     actor = socket.assigns.actor
 
     case Passwordless.delete_actor(app, actor) do
-      {:ok, _actor} ->
+      {:ok, actor} ->
         {:noreply,
          socket
-         |> put_flash(:info, gettext("actor deleted successfully."))
+         |> put_toast(:info, gettext("User \"%{name}\" has been deleted.", name: actor_name(actor)),
+           title: gettext("Success")
+         )
          |> push_navigate(to: ~p"/app/users")}
 
       {:error, _} ->
         {:noreply,
          socket
-         |> LiveToast.put_toast(:error, gettext("Failed to delete actor!"))
+         |> put_toast(:error, gettext("Failed to delete actor!"), title: gettext("Error"))
          |> push_patch(to: ~p"/app/users/#{actor}/edit")}
     end
   end
@@ -127,5 +95,26 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   defp assign_phones(socket, %Actor{} = actor) do
     assign(socket, phones: Passwordless.list_phones(socket.assigns.current_app, actor))
+  end
+
+  defp save_actor(socket, actor_params) do
+    app = socket.assigns.current_app
+    actor = socket.assigns.actor
+
+    case Passwordless.update_actor(app, actor, actor_params) do
+      {:ok, actor} ->
+        changeset =
+          actor
+          |> Passwordless.change_actor()
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         socket
+         |> assign(actor: actor)
+         |> assign_form(changeset)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
   end
 end

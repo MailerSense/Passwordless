@@ -5,33 +5,28 @@ defmodule Passwordless.EmailTemplates do
 
   alias Passwordless.App
 
-  def template(_app, _kind, _language, opts \\ [])
+  def get_seed(%App{} = app, kind, language \\ :en) do
+    seeds = seeds(app)
+    fallback = get_in(seeds, [kind, :en])
 
-  def template(%App{} = app, :magic_link_first_sign_in, :en, _opts) do
-    %{
-      subject: gettext("Welcome to %{name}", name: app.display_name),
-      preheader: gettext("Click the link below to confirm your email address.")
-    }
+    get_in(seeds, [kind, Access.key(language, fallback)])
   end
 
-  def template(%App{} = app, :magic_link_sign_in, :en, _opts) do
-    %{
-      subject: gettext("Sign in to %{name}", name: app.display_name),
-      preheader: gettext("Click the link below to sign in.")
+  def seeds(%App{} = app),
+    do: %{
+      magic_link_sign_in: %{
+        en: %{
+          name: gettext("Magic link email template"),
+          subject: gettext("Sign in to %{name}", name: app.display_name),
+          preheader: gettext("Click the link below to sign in.")
+        }
+      },
+      email_otp_sign_in: %{
+        en: %{
+          name: gettext("Email OTP email template"),
+          subject: gettext("Sign in to %{name}", name: app.display_name),
+          preheader: gettext("Use the code below to sign in.")
+        }
+      }
     }
-  end
-
-  def template(%App{} = app, :email_otp_first_sign_in, :en, _opts) do
-    %{
-      subject: gettext("Welcome to %{name}", name: app.display_name),
-      preheader: gettext("Use the code below to confirm your email address.")
-    }
-  end
-
-  def template(%App{} = app, :email_otp_sign_in, :en, _opts) do
-    %{
-      subject: gettext("Sign in to %{name}", name: app.display_name),
-      preheader: gettext("Use the code below to sign in.")
-    }
-  end
 end

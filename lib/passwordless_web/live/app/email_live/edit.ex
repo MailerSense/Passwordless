@@ -4,7 +4,11 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateVersion
-  alias Passwordless.Locale
+
+  @components [
+    edit: PasswordlessWeb.App.EmailLive.EmailComponent,
+    styles: PasswordlessWeb.App.EmailLive.StylesComponent
+  ]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -12,41 +16,22 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   end
 
   @impl true
-  def handle_params(_params, _url, socket) do
+  def handle_params(%{"id" => id}, _url, socket) do
     app = socket.assigns.current_app
-    kind = List.first(EmailTemplate.kinds())
-    editors = Enum.map(EmailTemplate.editors(), fn editor -> {Phoenix.Naming.humanize(editor), editor} end)
+    template = Passwordless.get_email_template!(app, id)
     languages = EmailTemplateVersion.languages()
-    {:ok, template} = Passwordless.get_email_template(app, kind)
-    {:ok, version} = Passwordless.get_email_template_version(app, template, List.first(languages))
-
-    languages_view = Enum.map(languages, fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
-
-    kinds_view =
-      Enum.map(EmailTemplate.hierarchical_kinds(), fn {kind, vals} ->
-        {Phoenix.Naming.humanize(kind),
-         Enum.map(vals, fn val ->
-           Phoenix.Naming.humanize("#{kind}: #{val}")
-         end)}
-      end)
-
-    flag_mapping = fn
-      nil -> "flag-us"
-      "en" -> "flag-us"
-      :en -> "flag-us"
-      code -> "flag-#{code}"
-    end
+    language = List.first(languages)
+    version = Passwordless.get_email_template_version(template, language)
+    module = Keyword.fetch!(@components, socket.assigns.live_action)
 
     {:noreply,
      socket
      |> assign(
-       kind: kind,
-       editors: editors,
-       kinds: kinds_view,
        version: version,
        template: template,
-       languages: languages_view,
-       flag_mapping: flag_mapping
+       language: language,
+       languages: languages,
+       module: module
      )
      |> assign_template_form(EmailTemplate.changeset(template))
      |> assign_version_form(EmailTemplateVersion.changeset(version))
@@ -61,6 +46,40 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   @impl true
   def handle_event("close_slide_over", _params, socket) do
     {:noreply, push_patch(socket, to: ~p"/app/methods/magic-link")}
+  end
+
+  @impl true
+  def handle_event("save_template", %{"email_template" => template_params}, socket) do
+    save_template(socket, template_params)
+  end
+
+  @impl true
+  def handle_event("validate_template", %{"email_template" => template_params}, socket) do
+    save_template(socket, template_params)
+  end
+
+  @impl true
+  def handle_event("validate_version", %{"email_template_version" => version_params}, socket) do
+    changeset =
+      socket.assigns.version
+      |> Passwordless.change_email_template_version(version_params)
+      |> Map.put(:action, :validate)
+
+    app = socket.assigns.current_app
+    template = socket.assigns.template
+    language = socket.assigns.language
+    current_language = Ecto.Changeset.get_field(changeset, :current_language)
+
+    if language == current_language do
+      {:noreply, assign_version_form(socket, changeset)}
+    else
+      version = Passwordless.get_or_create_email_template_version(app, template, current_language)
+
+      {:noreply,
+       socket
+       |> assign(version: version, language: current_language)
+       |> assign_version_form(EmailTemplateVersion.changeset(version))}
+    end
   end
 
   @impl true
@@ -84,4 +103,28 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
       page_subtitle: gettext("Edit email template")
     )
   end
+
+  defp save_template(socket, template_params) do
+    template = socket.assigns.template
+
+    case Passwordless.update_email_template(template, template_params) do
+      {:ok, template} ->
+        changeset =
+          template
+          |> Passwordless.change_email_template()
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         socket
+         |> assign(template: template)
+         |> assign_template_form(changeset)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_template_form(socket, changeset)}
+    end
+  end
+
+  defp get_flag_icon(:en), do: "flag-us"
+  defp get_flag_icon(:de), do: "flag-de"
+  defp get_flag_icon(:fr), do: "flag-fr"
 end

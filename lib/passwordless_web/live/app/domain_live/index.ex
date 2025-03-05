@@ -79,9 +79,10 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
             socket =
               socket
-              |> LiveToast.put_toast(
+              |> put_toast(
                 :info,
-                gettext("Domain added. Please add required DNS records in your domain provider.")
+                gettext("Domain added. Please add required DNS records in your domain provider."),
+                title: gettext("Success")
               )
               |> assign(mode: :edit, domain: domain, records: records)
               |> assign_form(changeset)

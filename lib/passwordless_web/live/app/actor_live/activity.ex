@@ -83,16 +83,18 @@ defmodule PasswordlessWeb.App.ActorLive.Activity do
     actor = socket.assigns.actor
 
     case Passwordless.delete_actor(app, actor) do
-      {:ok, _actor} ->
+      {:ok, actor} ->
         {:noreply,
          socket
-         |> put_flash(:info, gettext("User deleted successfully."))
+         |> put_toast(:info, gettext("User \"%{name}\" has been deleted.", name: actor_name(actor)),
+           title: gettext("Success")
+         )
          |> push_navigate(to: ~p"/app/users")}
 
       {:error, _} ->
         {:noreply,
          socket
-         |> LiveToast.put_toast(:error, gettext("Failed to delete user!"))
+         |> put_toast(:error, gettext("Failed to delete user!"), title: gettext("Error"))
          |> push_patch(to: ~p"/app/users/#{actor}/activity")}
     end
   end

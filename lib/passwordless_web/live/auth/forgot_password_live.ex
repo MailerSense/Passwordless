@@ -36,7 +36,7 @@ defmodule PasswordlessWeb.Auth.ForgotPasswordLive do
 
         {:noreply,
          socket
-         |> put_flash(:info, info)
+         |> put_toast(:info, info, title: gettext("Success"))
          |> push_navigate(to: ~p"/auth/sign-in")}
 
       {:error, %Ecto.Changeset{} = changeset} ->

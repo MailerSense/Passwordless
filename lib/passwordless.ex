@@ -188,7 +188,8 @@ defmodule Passwordless do
       sms: Methods.SMS,
       authenticator: Methods.Authenticator,
       security_key: Methods.SecurityKey,
-      passkey: Methods.Passkey
+      passkey: Methods.Passkey,
+      recovery_codes: Methods.RecoveryCodes
     ]
 
     Repo.transact(fn ->
@@ -214,6 +215,7 @@ defmodule Passwordless do
   crud(:authenticator, :authenticator, Passwordless.Methods.Authenticator)
   crud(:security_key, :security_key, Passwordless.Methods.SecurityKey)
   crud(:passkey, :passkey, Passwordless.Methods.Passkey)
+  crud(:recovery_codes, :recovery_codes, Passwordless.Methods.RecoveryCodes)
 
   # Actor
 
@@ -293,41 +295,45 @@ defmodule Passwordless do
 
   # Email templates
 
-  def get_email_template(%App{} = app, kind) when is_atom(kind) do
-    query =
-      app
-      |> Ecto.assoc(:email_templates)
-      |> where(kind: ^kind)
-      |> preload(:versions)
-
+  def seed_email_template(%App{} = app, preset, language) do
     Repo.transact(fn ->
-      case Repo.one(query) do
-        %EmailTemplate{} = email_template ->
-          {:ok, email_template}
+      settings = EmailTemplates.template(app, preset, language)
+      version_settings = Map.merge(%{language: language}, Map.take(settings, [:subject, :preheader]))
 
-        _ ->
-          with {:ok, template} <- create_email_template(app, %{kind: kind}),
-               {:ok, version} <- create_email_template_version(template, EmailTemplates.template(app, kind, :en)),
-               do: {:ok, %EmailTemplate{template | versions: [version]}}
-      end
+      with {:ok, template} <- create_email_template(app, Map.take(settings, [:name])),
+           {:ok, version} <- create_email_template_version(template, version_settings),
+           do: {:ok, %EmailTemplate{template | versions: [version]}}
     end)
   end
 
-  def get_email_template_version(%App{} = app, %EmailTemplate{kind: kind} = email_template, language) do
-    query =
-      email_template
-      |> Ecto.assoc(:versions)
-      |> where(language: ^language)
+  def get_email_template_version(%EmailTemplate{} = email_template, language) do
+    email_template
+    |> Ecto.assoc(:versions)
+    |> where(language: ^language)
+    |> Repo.one()
+  end
 
-    Repo.transact(fn ->
-      case Repo.one(query) do
-        %EmailTemplateVersion{} = email_template_version ->
-          {:ok, email_template_version}
+  def get_email_template!(%App{} = app, id) do
+    app
+    |> Ecto.assoc(:email_templates)
+    |> Repo.get!(id)
+  end
 
-        _ ->
-          create_email_template_version(email_template, EmailTemplates.template(app, kind, language))
-      end
-    end)
+  def get_or_create_email_template_version(%App{} = app, %EmailTemplate{} = email_template, language) do
+    case get_email_template_version(email_template, language) do
+      %EmailTemplateVersion{} = version ->
+        version
+
+      nil ->
+        preset = :magic_link_sign_in
+        settings = EmailTemplates.get_seed(app, preset, language)
+        attrs = Map.merge(%{language: language}, Map.take(settings, [:subject, :preheader]))
+
+        email_template
+        |> Ecto.build_assoc(:versions)
+        |> EmailTemplateVersion.changeset(attrs)
+        |> Repo.insert!()
+    end
   end
 
   def create_email_template_version(%EmailTemplate{} = email_template, attrs \\ %{}) do
@@ -337,11 +343,27 @@ defmodule Passwordless do
     |> Repo.insert()
   end
 
+  def change_email_template_version(%EmailTemplateVersion{} = version, attrs \\ %{}) do
+    if Ecto.get_meta(version, :state) == :loaded do
+      EmailTemplateVersion.changeset(version, attrs)
+    else
+      EmailTemplateVersion.changeset(version, attrs)
+    end
+  end
+
   def create_email_template(%App{} = app, attrs \\ %{}) do
     app
     |> Ecto.build_assoc(:email_templates)
     |> EmailTemplate.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def change_email_template(%EmailTemplate{} = email_template, attrs \\ %{}) do
+    if Ecto.get_meta(email_template, :state) == :loaded do
+      EmailTemplate.changeset(email_template, attrs)
+    else
+      EmailTemplate.changeset(email_template, attrs)
+    end
   end
 
   def update_email_template(%EmailTemplate{} = email_template, attrs \\ %{}) do

@@ -8,7 +8,8 @@ defmodule PasswordlessWeb.App.MethodLive.Index do
     email: PasswordlessWeb.App.MethodLive.Email,
     authenticator: PasswordlessWeb.App.MethodLive.Authenticator,
     security_key: PasswordlessWeb.App.MethodLive.SecurityKey,
-    passkey: PasswordlessWeb.App.MethodLive.Passkey
+    passkey: PasswordlessWeb.App.MethodLive.Passkey,
+    recovery_codes: PasswordlessWeb.App.MethodLive.RecoveryCodes
   ]
 
   @impl true

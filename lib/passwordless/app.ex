@@ -33,6 +33,7 @@ defmodule Passwordless.App do
     has_one :authenticator, Methods.Authenticator
     has_one :security_key, Methods.SecurityKey
     has_one :passkey, Methods.Passkey
+    has_one :recovery_codes, Methods.RecoveryCodes
 
     has_many :email_templates, EmailTemplate
 

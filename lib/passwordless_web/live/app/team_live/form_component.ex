@@ -49,7 +49,7 @@ defmodule PasswordlessWeb.Org.TeamLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, gettext("Member updated."))
+         |> put_toast(:info, gettext("Member has been updated."), title: gettext("Success"))
          |> push_navigate(to: socket.assigns.return_to)}
 
       {:error, changeset} ->

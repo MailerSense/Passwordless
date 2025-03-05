@@ -86,7 +86,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
 
         {:noreply,
          socket
-         |> put_flash(:info, gettext("Invitation sent successfully."))
+         |> put_toast(:info, gettext("Invitation sent to the given email address."), title: gettext("Success"))
          |> push_patch(to: ~p"/app/team")}
 
       {:error, changeset} ->
@@ -104,9 +104,10 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
         if membership.user_id == socket.assigns.current_user.id do
           {:noreply,
            socket
-           |> LiveToast.put_toast(
+           |> put_toast(
              :info,
-             gettext("You have left %{org_name}!", org_name: org.name)
+             gettext("You have left %{org_name}!", org_name: org.name),
+             title: gettext("Success")
            )
            |> push_navigate(to: PasswordlessWeb.Helpers.home_path(socket.assigns.current_user))}
         else
@@ -114,14 +115,14 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
 
           {:noreply,
            socket
-           |> LiveToast.put_toast(:info, gettext("Member deleted successfully."))
+           |> put_toast(:info, gettext("Member has been deleted."), title: gettext("Success"))
            |> push_patch(to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/team"))}
         end
 
       {:error, _changeset} ->
         {:noreply,
          socket
-         |> LiveToast.put_toast(:error, gettext("Failed to delete member!"))
+         |> put_toast(:error, gettext("Failed to delete member!"), title: gettext("Error"))
          |> push_patch(to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/team"))}
     end
   end

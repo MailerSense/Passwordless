@@ -3,7 +3,7 @@
     <.form id="edit-actor-form" for={@form} phx-change="validate" phx-submit="save">
       <div class="mb-12 flex justify-between items-center h-12">
         <div class="relative">
-          <.field type="editor" field={@form[:name]} />
+          <.field type="editor" field={@form[:name]} phx-debounce="blur" />
           <div class="pc-editor-field-icon">
             <.icon name="remix-pencil-line" class="pc-editor-field-icon__icon" />
           </div>
