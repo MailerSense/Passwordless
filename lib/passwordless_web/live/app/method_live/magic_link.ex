@@ -13,11 +13,17 @@ defmodule PasswordlessWeb.App.MethodLive.MagicLink do
     changeset = Passwordless.change_magic_link(magic_link)
 
     email_template = Repo.first(Passwordless.EmailTemplate)
+    email_version = Passwordless.get_email_template_version(email_template, :en)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(magic_link: magic_link, domain: domain, email_template: email_template)
+     |> assign(
+       magic_link: magic_link,
+       domain: domain,
+       email_template: email_template,
+       email_version: email_version
+     )
      |> assign_form(changeset)}
   end
 

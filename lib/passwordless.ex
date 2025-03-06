@@ -299,9 +299,8 @@ defmodule Passwordless do
   def seed_email_template(%App{} = app, preset, language) do
     Repo.transact(fn ->
       settings = EmailTemplates.get_seed(app, preset, language)
-
-      version_settings =
-        Map.merge(%{language: language}, settings)
+      html_body = Passwordless.MJML.format!(settings[:mjml_body])
+      version_settings = Map.merge(%{language: language, html_body: html_body}, settings)
 
       with {:ok, template} <- create_email_template(app, Map.take(settings, [:name])),
            {:ok, version} <- create_email_template_version(template, version_settings),

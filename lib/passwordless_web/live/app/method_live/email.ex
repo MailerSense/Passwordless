@@ -13,11 +13,17 @@ defmodule PasswordlessWeb.App.MethodLive.Email do
     changeset = Passwordless.change_email(email)
 
     email_template = Repo.first(Passwordless.EmailTemplate)
+    email_version = Passwordless.get_email_template_version(email_template, :en)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(email: email, domain: domain, email_template: email_template)
+     |> assign(
+       email: email,
+       domain: domain,
+       email_template: email_template,
+       email_version: email_version
+     )
      |> assign_form(changeset)}
   end
 

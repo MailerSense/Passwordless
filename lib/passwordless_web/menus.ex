@@ -9,28 +9,11 @@ defmodule PasswordlessWeb.Menus do
   alias Passwordless.Organizations.Org
 
   # Public menu (marketing related pages)
-  def public_menu_items,
-    do: [
-      %{label: gettext("Product"), path: ~p"/product"},
-      %{path: "/", label: gettext("Developers"), menu_items: []},
-      %{label: gettext("Pricing"), path: ~p"/pricing"}
-    ]
+  def public_menu_items, do: []
 
-  def public_mobile_menu_items(%User{}),
-    do: [
-      %{label: gettext("Product"), path: ~p"/product"},
-      %{label: gettext("Pricing"), path: ~p"/pricing"},
-      %{label: gettext("Open App"), path: ~p"/app/home"},
-      %{label: gettext("Contact"), path: ~p"/contact"}
-    ]
+  def public_mobile_menu_items(%User{}), do: []
 
-  def public_mobile_menu_items(_),
-    do: [
-      %{label: gettext("Product"), path: ~p"/product"},
-      %{label: gettext("Pricing"), path: ~p"/pricing"},
-      %{label: gettext("Sign In"), path: ~p"/auth/sign-in"},
-      %{label: gettext("Contact"), path: ~p"/contact"}
-    ]
+  def public_mobile_menu_items(_), do: []
 
   def main_menu_items(:app, %User{} = current_user),
     do: build_menu([:home, :users, :methods, :embed, :settings], current_user)

@@ -43,7 +43,7 @@
       <.email_preview
         to={~p"/app/email/#{@email_template}/en/edit"}
         name={gettext("Edit email template")}
-        image_src={~p"/images/example-template.webp"}
+        preview={@email_version.html_body}
         link_type="live_redirect"
       />
       <.a

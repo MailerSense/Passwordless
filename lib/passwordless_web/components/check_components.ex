@@ -231,7 +231,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   attr :to, :string, default: nil, doc: "link path"
   attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
   attr :name, :string, default: "", doc: "any extra CSS class for the parent container"
-  attr :image_src, :string, required: true, doc: "any extra CSS class for the parent container"
+  attr :preview, :string, required: true, doc: "any extra CSS class for the parent container"
 
   attr :link_type, :string,
     default: "a",
@@ -240,21 +240,33 @@ defmodule PasswordlessWeb.DashboardComponents do
   attr :rest, :global
 
   def email_preview(assigns) do
+    assigns =
+      assign_new(assigns, :id, fn -> "email-review-#{:rand.uniform(10_000_000) + 1}" end)
+
     ~H"""
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
       <.form_label>{gettext("Preview")}</.form_label>
       <.a
         to={@to}
-        class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 overflow-hidden max-h-[275px]"
+        class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 max-h-[300px] overflow-hidden"
         link_type={@link_type}
       >
-        <img
-          src={@image_src}
-          alt={@name}
-          name={@name}
-          class="w-3/4 lg:w-1/2 mt-6 rounded-lg shadow-0"
+        <iframe
+          id={"html-preview-#{@id}"}
+          src="about:blank"
+          class="w-full origin-top h-lvh pointer-events-none"
+          scrolling="no"
+          data-source={"html-preview-data-#{@id}"}
         />
       </.a>
+      <div
+        id={"html-preview-data-#{@id}"}
+        phx-hook="HTMLPreviewHook"
+        class="hidden"
+        data-iframe={"html-preview-#{@id}"}
+      >
+        {@preview}
+      </div>
     </div>
     """
   end
