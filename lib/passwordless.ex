@@ -82,7 +82,8 @@ defmodule Passwordless do
              create_methods(app, %{
                magic_link: %{
                  sender: "notifications",
-                 sender_name: app.name
+                 sender_name: app.name,
+                 redirect_urls: [%{url: app.website}]
                },
                email: %{
                  sender: "notifications",
@@ -297,8 +298,10 @@ defmodule Passwordless do
 
   def seed_email_template(%App{} = app, preset, language) do
     Repo.transact(fn ->
-      settings = EmailTemplates.template(app, preset, language)
-      version_settings = Map.merge(%{language: language}, Map.take(settings, [:subject, :preheader]))
+      settings = EmailTemplates.get_seed(app, preset, language)
+
+      version_settings =
+        Map.merge(%{language: language}, settings)
 
       with {:ok, template} <- create_email_template(app, Map.take(settings, [:name])),
            {:ok, version} <- create_email_template_version(template, version_settings),
@@ -327,7 +330,7 @@ defmodule Passwordless do
       nil ->
         preset = :magic_link_sign_in
         settings = EmailTemplates.get_seed(app, preset, language)
-        attrs = Map.merge(%{language: language}, Map.take(settings, [:subject, :preheader]))
+        attrs = Map.merge(%{language: language}, settings)
 
         email_template
         |> Ecto.build_assoc(:versions)

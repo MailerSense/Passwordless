@@ -31,19 +31,20 @@
       </div>
     </.form>
     <.tab_menu
-      class="mb-8"
+      class="mb-6"
       menu_items={actor_menu_items(@actor)}
       current_tab={:activity}
       variant="buttons"
     />
-    <.stream_table id="actions" meta={@meta} items={@streams.actions} finished={@finished}>
+    <.stream_table
+      id="actions"
+      meta={@meta}
+      items={@streams.actions}
+      finished={@finished}
+      title={gettext("User actions")}
+    >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-      <:col
-        :let={action}
-        label={gettext("Action")}
-        field={:name}
-        body_class="!font-medium !text-slate-900 dark:!text-white"
-      >
+      <:col :let={action} label={gettext("Action")} field={:name}>
         {action.name}
       </:col>
       <:col :let={action} label={gettext("Details")} field={:details}>

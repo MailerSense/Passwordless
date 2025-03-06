@@ -12,7 +12,9 @@ defmodule PasswordlessWeb.App.MethodLive.SMS do
   def update(%{app: %App{} = app} = assigns, socket) do
     sms = Repo.preload(app, :sms).sms
     changeset = Passwordless.change_sms(sms)
-    languages = Enum.map(SMS.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
+
+    languages =
+      Enum.map(SMS.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
 
     flag_mapping = fn
       nil -> "flag-us"
@@ -66,24 +68,5 @@ defmodule PasswordlessWeb.App.MethodLive.SMS do
     socket
     |> assign(form: to_form(changeset))
     |> assign(enabled: Ecto.Changeset.fetch_field!(changeset, :enabled))
-  end
-
-  attr :content, :string, required: true, doc: "The content to render as markdown."
-  attr :class, :string, doc: "The class to apply to the rendered markdown.", default: ""
-
-  defp unsafe_markdown(assigns) do
-    ~H"""
-    <div class={[
-      "prose dark:prose-invert prose-img:rounded-xl prose-img:mx-auto prose-a:text-primary-600 prose-a:dark:text-primary-300",
-      @class
-    ]}>
-      {raw(
-        Passwordless.MarkdownRenderer.to_html(@content, %Earmark.Options{
-          code_class_prefix: "language-",
-          escape: false
-        })
-      )}
-    </div>
-    """
   end
 end

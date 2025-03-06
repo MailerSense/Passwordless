@@ -24,6 +24,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-m2", doc: "CSS class to add to the table"
   attr :base_url_params, :map, required: false
 
   attr :form_target, :string,
@@ -105,7 +106,7 @@ defmodule PasswordlessWeb.Components.DataTable do
         search_field={@search_field}
         switch_items={@switch_items}
       />
-      <div class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
+      <div class={["pc-table__wrapper", "pc-data-table__wrapper", @shadow_class, @class]}>
         <.table_header
           :if={Util.present?(@title) or Util.present?(@title_func)}
           meta={@meta}
@@ -195,6 +196,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :items, :any, required: true
   attr :title, :string, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-m2", doc: "CSS class to add to the table"
   attr :finished, :boolean, default: false
 
   slot :col, required: true do
@@ -220,7 +222,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   def stream_table(assigns) do
     ~H"""
-    <div class={["pc-table__wrapper", "pc-stream-table__wrapper", @class]}>
+    <div class={["pc-table__wrapper", "pc-stream-table__wrapper", @shadow_class, @class]}>
       <%= if Util.present?(@header) do %>
         {render_slot(@header)}
       <% end %>
@@ -281,6 +283,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :items, :any, required: true
   attr :title, :string, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-m2", doc: "CSS class to add to the table"
 
   slot :col, required: true do
     attr :label, :string
@@ -307,7 +310,7 @@ defmodule PasswordlessWeb.Components.DataTable do
       assign_new(assigns, :id, fn -> "simple-table-#{:rand.uniform(10_000_000) + 1}" end)
 
     ~H"""
-    <div class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
+    <div class={["pc-table__wrapper", "pc-data-table__wrapper", @shadow_class, @class]}>
       <.table_header :if={@title} title={@title} />
       <.table class="pc-data-table">
         <thead class="pc-table__thead-striped">

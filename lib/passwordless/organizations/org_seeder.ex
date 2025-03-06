@@ -52,7 +52,8 @@ defmodule Passwordless.Organizations.OrgSeeder do
         magic_link: %{
           sender: "notifications",
           sender_name: app.name,
-          domain_id: domain.id
+          domain_id: domain.id,
+          redirect_urls: [%{url: app.website}]
         },
         email: %{
           sender: "notifications",

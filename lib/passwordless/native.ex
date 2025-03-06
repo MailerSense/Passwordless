@@ -7,21 +7,10 @@ defmodule Passwordless.Native do
     otp_app: :passwordless,
     skip_compilation?: Mix.env() in [:prod, :test]
 
-  alias Passwordless.Scheduler.BalancedConfig
-  alias Passwordless.Scheduler.GreedyConfig
-  alias Passwordless.Scheduler.Task
+  alias Passwordless.MJML.RenderOptions
 
-  @doc """
-  Takes a list of tasks and returns a greedy schedule.
-  """
-  @spec greedy_schedule(GreedyConfig.t()) :: list(Task.t()) | atom()
-  def greedy_schedule(_config), do: :erlang.nif_error(:nif_not_loaded)
-
-  @doc """
-  Takes a list of tasks and returns a balanced schedule.
-  """
-  @spec balanced_schedule(BalancedConfig.t()) :: list(Task.t()) | atom()
-  def balanced_schedule(_config), do: :erlang.nif_error(:nif_not_loaded)
+  @spec mjml_to_html(binary(), RenderOptions.t()) :: {:ok, binary()} | {:error, any()}
+  def mjml_to_html(_mjml, _render_options), do: :erlang.nif_error(:nif_not_loaded)
 
   @doc """
   Takes rgba data as a binary in u8 rgba format flattened with 4 values per pixel.

@@ -248,6 +248,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :sender_name, :string, null: false
       add :email_tracking, :boolean, null: false, default: false
       add :fingerprint_device, :boolean, null: false, default: false
+      add :redirect_urls, :map, null: false, default: %{}
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
       add :domain_id, references(:domains, type: :uuid, on_delete: :nilify_all)
@@ -362,10 +363,10 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :subject, :string, null: false
       add :preheader, :string
 
-      add :text_body, :string
-      add :html_body, :string
-      add :json_body, :string
-      add :mjml_body, :string
+      add :text_body, :text
+      add :html_body, :text
+      add :json_body, :text
+      add :mjml_body, :text
 
       add :email_template_id, references(:email_templates, type: :uuid, on_delete: :delete_all),
         null: false

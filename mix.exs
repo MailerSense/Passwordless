@@ -71,7 +71,7 @@ defmodule Passwordless.MixProject do
       {:flop, "~> 0.26.1"},
       {:email_checker, "~> 0.2.4"},
       {:live_toast, "~> 0.7.0"},
-      {:rustler, "~> 0.34.0"},
+      {:rustler, "~> 0.36.1"},
       {:floki, "~> 0.37.0"},
 
       # Emails
@@ -128,6 +128,7 @@ defmodule Passwordless.MixProject do
       {:domainatrex, "~> 3.0"},
       {:sizeable, "~> 1.0"},
       {:crontab, "~> 1.1"},
+      {:typed_struct, "~> 0.3.0"},
 
       # Markdown
       {:earmark, "~> 1.4"},

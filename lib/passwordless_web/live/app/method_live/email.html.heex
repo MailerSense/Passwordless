@@ -40,9 +40,15 @@
           wrapper_class="!mb-0"
         />
       </div>
+      <.email_preview
+        to={~p"/app/email/#{@email_template}/en/edit"}
+        name={gettext("Edit email template")}
+        image_src={~p"/images/example-template.webp"}
+        link_type="live_redirect"
+      />
       <.a
         to={~p"/app/email/#{@email_template}/en/edit"}
-        class="text-info-600 dark:text-info-300 underline"
+        class="pc-user-badge"
         label={gettext("Edit email template")}
         link_type="live_redirect"
       />
@@ -53,7 +59,7 @@
         field={@form[:email_tracking]}
         help_text={
           gettext(
-            "Links first go to a server that logs the link as clicked, and then redirect to the actual URL requested."
+            "Track users who successfully received your email and opened it in their email clients."
           )
         }
         disabled={not @enabled}

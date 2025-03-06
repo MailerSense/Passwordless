@@ -40,9 +40,15 @@
           wrapper_class="!mb-0"
         />
       </div>
+      <.email_preview
+        to={~p"/app/email/#{@email_template}/en/edit"}
+        name={gettext("Edit email template")}
+        image_src={~p"/images/example-template.webp"}
+        link_type="live_redirect"
+      />
       <.a
         to={~p"/app/email/#{@email_template}/en/edit"}
-        class="text-info-600 dark:text-info-300 underline"
+        class="pc-user-badge"
         label={gettext("Edit email template")}
         link_type="live_redirect"
       />
@@ -53,7 +59,7 @@
         field={@form[:email_tracking]}
         help_text={
           gettext(
-            "Links first go to a server that logs the link as clicked, and then redirect to the actual URL requested."
+            "Track users who successfully received your email and opened it in their email clients."
           )
         }
         disabled={not @enabled}
@@ -68,6 +74,52 @@
         }
         disabled={not @enabled}
       />
+      <div class="pc-form-field-wrapper">
+        <.form_label>{gettext("Redirect URLs")}</.form_label>
+        <div class="flex flex-col gap-y-2">
+          <.inputs_for :let={redirect_url} field={@form[:redirect_urls]}>
+            <input
+              type="hidden"
+              name="magic_link[redirect_urls_sort][]"
+              value={redirect_url.index}
+            />
+            <div class="flex items-center grow gap-2">
+              <.field
+                type="url"
+                label=""
+                field={redirect_url[:url]}
+                required
+                disabled={not @enabled}
+                wrapper_class="!mb-0 w-full grow"
+              />
+              <.icon_form_button
+                size="sm"
+                name="magic_link[redirect_urls_drop][]"
+                type="button"
+                icon="custom-trash"
+                title={gettext("Remove")}
+                value={redirect_url.index}
+                event={JS.dispatch("change")}
+                disabled={not @enabled}
+              />
+            </div>
+          </.inputs_for>
+        </div>
+        <div class="flex mt-4">
+          <.button
+            size="xs"
+            type="button"
+            color="light"
+            icon="remix-add-circle-line"
+            label={gettext("Add URL")}
+            name="magic_link[redirect_urls_sort][]"
+            value="new"
+            disabled={not @enabled}
+            phx-click={JS.dispatch("change")}
+          />
+        </div>
+        <input type="hidden" name="magic_link[redirect_urls_drop][]" />
+      </div>
     </div>
   </.form>
 </div>

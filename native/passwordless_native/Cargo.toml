@@ -10,8 +10,5 @@ path = "src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-rand = "0.8.5"
-rayon = "1.10.0"
-rustler = "0.34.0"
-rand_distr = "0.4.3"
-plotters = "0.3.7"
+mrml = { version = "5.0.0", default-features = false, features = ["parse", "render"] }
+rustler = "0.36.1"

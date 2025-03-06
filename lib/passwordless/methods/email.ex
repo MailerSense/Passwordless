@@ -21,7 +21,7 @@ defmodule Passwordless.Methods.Email do
     field :expires, :integer, default: 15
     field :sender, :string
     field :sender_name, :string
-    field :email_tracking, :boolean, default: false
+    field :email_tracking, :boolean, default: true
 
     belongs_to :app, App, type: :binary_id
     belongs_to :domain, Domain, type: :binary_id

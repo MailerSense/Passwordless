@@ -5,6 +5,7 @@ import ChartHook from "./chart-hook";
 import ClipboardHook from "./clipboard-hook";
 import ColorSchemeHook from "./color-scheme-hook";
 import EditorHook from "./editor-hook";
+import HTMLPreviewHook from "./html-preview-hook";
 import ProgressInput from "./progress-input";
 import ResetColorSchemeHook from "./reset-color-scheme-hook";
 import TippyHook from "./tippy-hook";
@@ -18,5 +19,6 @@ export default {
   ChartHook,
   ProgressInput,
   EditorHook,
+  HTMLPreviewHook,
   LiveToast: createLiveToastHook(),
 };

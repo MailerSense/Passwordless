@@ -144,6 +144,7 @@ defmodule PasswordlessWeb.Router do
 
       # Email
       live "/email/:id/:language/edit", App.EmailLive.Edit, :edit
+      live "/email/:id/:language/code", App.EmailLive.Edit, :code
       live "/email/:id/:language/styles", App.EmailLive.Edit, :styles
 
       # Reports

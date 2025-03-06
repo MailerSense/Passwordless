@@ -61,7 +61,6 @@ defmodule Passwordless.Methods.SecurityKey do
     expected_origin
     |> cast(attrs, [:url])
     |> validate_required([:url])
-    |> ChangesetExt.ensure_trimmed(:url)
-    |> validate_length(:url, min: 1, max: 1024)
+    |> ChangesetExt.validate_url(:url)
   end
 end

@@ -76,7 +76,7 @@
     display: block;
     height: 2px;
     bottom: 0;
-    @apply bg-primary-500 dark:bg-primary-400 w-full transform left-1/2 -translate-x-1/2 rounded-full;
+    @apply bg-primary-500 dark:bg-primary-400 w-full transform left-1/2 -translate-x-1/2;
   }
 
   .tabbed-menu-active {
@@ -93,6 +93,17 @@
     bottom: 0;
     background: transparent;
     @apply bg-primary-600 dark:bg-primary-400;
+  } */
+
+  /*   .pc-sidebar__menu-item--active::after {
+    position: absolute;
+    content: "";
+    display: block;
+    width: 2px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    @apply bg-primary-500 dark:bg-primary-400;
   } */
 
   input[type="range"] {
@@ -116,14 +127,12 @@
 
   input[type="range"]::-webkit-slider-runnable-track {
     @apply h-2 rounded-full;
-    background:
-      linear-gradient(#2e90fa, #2e90fa) 0 / var(--sx) 100% no-repeat,
+    background: linear-gradient(#2e90fa, #2e90fa) 0 / var(--sx) 100% no-repeat,
       #f1f5f9;
   }
 
   .dark input[type="range"]::-webkit-slider-runnable-track {
-    background:
-      linear-gradient(#2e90fa, #2e90fa) 0 / var(--sx) 100% no-repeat,
+    background: linear-gradient(#2e90fa, #2e90fa) 0 / var(--sx) 100% no-repeat,
       rgba(51, 65, 85, 0.5);
   }
 
@@ -132,8 +141,7 @@
     border: 1px solid #b2b2b2;
     border-radius: 0.5em;
     box-shadow: none;
-    background:
-      linear-gradient(#1570ef, #1570ef) 0 / var(--sx) 100% no-repeat,
+    background: linear-gradient(#1570ef, #1570ef) 0 / var(--sx) 100% no-repeat,
       #efefef;
   }
 

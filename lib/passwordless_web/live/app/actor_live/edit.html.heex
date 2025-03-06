@@ -29,17 +29,39 @@
           />
         </div>
       </div>
-
       <.tab_menu
-        class="mb-8"
+        class="mb-6"
         menu_items={actor_menu_items(@actor)}
         current_tab={:details}
         variant="buttons"
       />
       <div class="flex flex-col gap-4">
-        <.box padded>
-          <.form_header title="Authenticators" />
-        </.box>
+        <.simple_table items={[]} title={gettext("Authenticators")}>
+          <:if_empty>
+            {gettext("No %{models} enrolled yet", models: gettext("authenticators"))}
+          </:if_empty>
+          <:col field={:address} label={gettext("Name")} />
+
+          <:col actions></:col>
+          <:actions :let={email}>
+            <.icon_button
+              to={~p"/app/users/#{@actor}/emails/#{email}/delete"}
+              size="sm"
+              icon="custom-trash"
+              color="light"
+              title={gettext("Remove")}
+              link_type="live_patch"
+            />
+            <.icon_button
+              to={~p"/app/users/#{@actor}/emails/#{email}/edit"}
+              size="sm"
+              icon="custom-edit"
+              color="light"
+              title={gettext("Edit")}
+              link_type="live_patch"
+            />
+          </:actions>
+        </.simple_table>
       </div>
     </.form>
   </div>

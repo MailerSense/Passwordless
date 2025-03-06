@@ -4,6 +4,8 @@ defmodule PasswordlessWeb.DashboardComponents do
   use PasswordlessWeb, :verified_routes
   use Gettext, backend: PasswordlessWeb.Gettext
 
+  import PasswordlessWeb.Components.Avatar
+  import PasswordlessWeb.Components.Form
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Link
   import PasswordlessWeb.Components.PageComponents, only: [box: 1]
@@ -142,6 +144,7 @@ defmodule PasswordlessWeb.DashboardComponents do
     ~H"""
     <.box
       class={["flex flex-col divide-y divide-slate-200 dark:divide-slate-700 overflow-hidden", @class]}
+      shadow_class="shadow-m2"
       {@rest}
     >
       <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-slate-700">
@@ -222,6 +225,111 @@ defmodule PasswordlessWeb.DashboardComponents do
         </span>
       </div>
     </article>
+    """
+  end
+
+  attr :to, :string, default: nil, doc: "link path"
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :name, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :image_src, :string, required: true, doc: "any extra CSS class for the parent container"
+
+  attr :link_type, :string,
+    default: "a",
+    values: ["a", "live_patch", "live_redirect", "button"]
+
+  attr :rest, :global
+
+  def email_preview(assigns) do
+    ~H"""
+    <div class={["pc-form-field-wrapper", @class]} {@rest}>
+      <.form_label>{gettext("Preview")}</.form_label>
+      <.a
+        to={@to}
+        class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 overflow-hidden max-h-[275px]"
+        link_type={@link_type}
+      >
+        <img
+          src={@image_src}
+          alt={@name}
+          name={@name}
+          class="w-3/4 lg:w-1/2 mt-6 rounded-lg shadow-0"
+        />
+      </.a>
+    </div>
+    """
+  end
+
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :preview, :string, default: "", doc: "any extra CSS class for the parent container"
+
+  attr :rest, :global
+
+  def sms_preview(assigns) do
+    ~H"""
+    <div class={["pc-form-field-wrapper", @class]} {@rest}>
+      <.form_label>{gettext("Preview")}</.form_label>
+
+      <div class="flex flex-col gap-y-12 flex-auto flex-shrink-0 p-4 bg-slate-100 rounded-lg dark:bg-slate-700/50">
+        <div class="flex flex-row items-center max-w-md ml-4">
+          <.avatar name="AU" size="md" color="success" class="flex-shrink-0" />
+          <div class="relative px-4 py-2 ml-3 text-sm bg-white shadow-0 dark:bg-slate-600 rounded-xl">
+            <.unsafe_markdown content={@preview} class="text-black dark:text-white" />
+          </div>
+        </div>
+
+        <div class="flex flex-row items-center flex-grow w-full h-auto px-4">
+          <div class="mr-4">
+            <button
+              type="button"
+              id="microphone"
+              class="size-[36px] flex items-center justify-center text-sm text-slate-600 bg-white rounded-full shadow dark:text-white hover:bg-slate-100 ring-slate-300 dark:bg-slate-700 ring-1 dark:ring-slate-500 group dark:hover:bg-slate-600 active:ring-4 active:ring-blue-300 dark:focus:bg-slate-700 active:animate-pulse active:bg-red-400 dark:active:bg-red-500"
+            >
+              <.icon name="hero-microphone-solid" class="w-4 h-4" />
+            </button>
+          </div>
+          <div class="flex-grow" id="chat-box">
+            <div class="relative w-full">
+              <input
+                id="chat-message"
+                name="reply"
+                value=""
+                type="textarea"
+                rows="1"
+                class="flex w-full pl-4 border min-h-10 rounded-xl focus:outline-none border border-slate-300 dark:border-slate-600"
+              />
+            </div>
+          </div>
+          <div class="ml-4">
+            <button
+              type="submit"
+              id="submit-button"
+              class="size-[36px] flex items-center justify-center text-sm text-slate-600 rounded-full shadow dark:text-white ring-slate-300 hover:bg-slate-100 focus:bg-white ring-1 dark:ring-slate-300 group dark:hover:bg-slate-400 bg-white dark:bg-transparent"
+            >
+              <.icon id="icon" name="hero-paper-airplane-solid" class={["w-4 h-4"]} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  attr :content, :string, required: true, doc: "The content to render as markdown."
+  attr :class, :string, doc: "The class to apply to the rendered markdown.", default: ""
+
+  defp unsafe_markdown(assigns) do
+    ~H"""
+    <div class={[
+      "prose dark:prose-invert prose-img:rounded-xl prose-img:mx-auto prose-a:text-primary-600 prose-a:dark:text-primary-300",
+      @class
+    ]}>
+      {Phoenix.HTML.raw(
+        Passwordless.MarkdownRenderer.to_html(@content, %Earmark.Options{
+          code_class_prefix: "language-",
+          escape: false
+        })
+      )}
+    </div>
     """
   end
 end

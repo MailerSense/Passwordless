@@ -1,4 +1,4 @@
-<div>
+<div class="px-6 pb-6">
   <.form
     id="edit-template-version"
     for={@version_form}
@@ -20,11 +20,7 @@
     <.p class="mb-6">
       Emails can be personalized with help of template variables.
     </.p>
-    <.a
-      class="text-info-600 dark:text-info-300 underline"
-      label={gettext("Learn about variables")}
-      link_type="live_redirect"
-    />
+    <.a class="pc-user-badge" label={gettext("Learn about variables")} link_type="live_redirect" />
   </.form>
   <.form_separator />
   <.form_header title={gettext("Preview")} />

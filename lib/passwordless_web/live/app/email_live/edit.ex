@@ -7,6 +7,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
   @components [
     edit: PasswordlessWeb.App.EmailLive.EmailComponent,
+    code: PasswordlessWeb.App.EmailLive.CodeComponent,
     styles: PasswordlessWeb.App.EmailLive.StylesComponent
   ]
 
@@ -17,25 +18,40 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
   @impl true
   def handle_params(%{"id" => id, "language" => language} = params, _url, socket) do
-    app = socket.assigns.current_app
-    template = Passwordless.get_email_template!(app, id)
-    language = String.to_existing_atom(language)
-    version = Passwordless.get_or_create_email_template_version(app, template, language)
-    version = EmailTemplateVersion.put_current_language(version, language)
+    socket =
+      if socket.assigns[:edit?] do
+        socket
+      else
+        app = socket.assigns.current_app
+        template = Passwordless.get_email_template!(app, id)
+        language = String.to_existing_atom(language)
+        version = Passwordless.get_or_create_email_template_version(app, template, language)
+        version = EmailTemplateVersion.put_current_language(version, language)
+
+        {:ok, preview} = Passwordless.MJML.format(version.mjml_body)
+
+        socket
+        |> assign(
+          edit?: true,
+          version: version,
+          template: template,
+          language: language,
+          preview: preview
+        )
+        |> assign_template_form(EmailTemplate.changeset(template))
+        |> assign_version_form(EmailTemplateVersion.changeset(version))
+      end
+
     module = Keyword.fetch!(@components, socket.assigns.live_action)
     delete? = Map.has_key?(params, "delete")
 
     {:noreply,
      socket
      |> assign(
+       edit?: true,
        delete?: delete?,
-       module: module,
-       version: version,
-       template: template,
-       language: language
+       module: module
      )
-     |> assign_template_form(EmailTemplate.changeset(template))
-     |> assign_version_form(EmailTemplateVersion.changeset(version))
      |> apply_action(socket.assigns.live_action, params)}
   end
 
@@ -97,11 +113,24 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
     template = socket.assigns.template
     language = socket.assigns.language
     current_language = Ecto.Changeset.get_field(changeset, :current_language)
+    mjml_body = Ecto.Changeset.get_field(changeset, :mjml_body)
 
     if language == current_language do
+      socket =
+        case Passwordless.MJML.format(mjml_body) do
+          {:ok, preview} ->
+            assign(socket, preview: preview)
+
+          {:error, _} ->
+            put_toast(socket, :error, "MJML compilation failed.", title: gettext("Error"))
+        end
+
       {:noreply, assign_version_form(socket, changeset)}
     else
-      {:noreply, push_patch(socket, to: ~p"/app/email/#{template}/#{current_language}/edit")}
+      {:noreply,
+       socket
+       |> assign(edit?: false)
+       |> push_patch(to: ~p"/app/email/#{template}/#{current_language}/edit")}
     end
   end
 

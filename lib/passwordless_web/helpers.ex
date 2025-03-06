@@ -101,7 +101,7 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :details,
         label: "Details",
-        icon: "remix-shield-keyhole-line",
+        icon: "remix-shield-user-line",
         path: ~p"/app/users/#{actor}/edit",
         link_type: "live_patch"
       },
@@ -157,8 +157,14 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
+        name: :code,
+        label: gettext("Code"),
+        path: ~p"/app/email/#{email_template}/#{language}/code",
+        link_type: "live_patch"
+      },
+      %{
         name: :styles,
-        label: gettext("Styles"),
+        label: gettext("Style"),
         path: ~p"/app/email/#{email_template}/#{language}/styles",
         link_type: "live_patch"
       }

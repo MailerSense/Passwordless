@@ -273,7 +273,7 @@ config :passwordless, :content_security_policy, %{
       end
 }
 
-config :flop, repo: Passwordless.Repo, default_limit: 15
+config :flop, repo: Passwordless.Repo, default_limit: 10
 config :tesla, :adapter, {Tesla.Adapter.Finch, name: Passwordless.Finch}
 
 config :hammer,

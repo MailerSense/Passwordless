@@ -19,6 +19,27 @@
         required
         required_asterix={false}
       />
+      <.field
+        type="select"
+        field={@form[:uplift_prompt_interval]}
+        options={@intervals}
+        required
+        required_asterix={false}
+        disabled={not @enabled}
+        help_text={gettext("Specifies how frequently users will be asked to add a passkey.")}
+      />
+      <.form_separator />
+      <.form_header title="Advanced" />
+      <.field
+        type="checkbox"
+        field={@form[:require_user_verification]}
+        help_text={
+          gettext(
+            "When required, an additional authentication factor - such as biometric auth, pin or password - must always be provided when using the passkey."
+          )
+        }
+        disabled={not @enabled}
+      />
       <div class="pc-form-field-wrapper">
         <.form_label>{gettext("Expected origins")}</.form_label>
         <div class="flex flex-col gap-y-2">
@@ -65,27 +86,6 @@
         </div>
         <input type="hidden" name="passkey[expected_origins_drop][]" />
       </div>
-      <.field
-        type="select"
-        field={@form[:uplift_prompt_interval]}
-        options={@intervals}
-        required
-        required_asterix={false}
-        disabled={not @enabled}
-        help_text={gettext("Specifies how frequently users will be asked to add a passkey.")}
-      />
-      <.form_separator />
-      <.form_header title="Advanced" />
-      <.field
-        type="checkbox"
-        field={@form[:require_user_verification]}
-        help_text={
-          gettext(
-            "When required, an additional authentication factor - such as biometric auth, pin or password - must always be provided when using the passkey."
-          )
-        }
-        disabled={not @enabled}
-      />
     </div>
   </.form>
 </div>

@@ -1,553 +1,94 @@
-use full_palette::GREY;
-use plotters::prelude::*;
-use rand::prelude::*;
-use rand_distr::{Distribution, Normal};
-use rayon::prelude::*;
 use rustler::types::binary::Binary;
-use rustler::{Error as RustlerError, NifStruct};
-use std::cmp;
-use std::cmp::Ordering;
-use std::cmp::Reverse;
-use std::collections::BinaryHeap;
-use std::error::Error;
+use rustler::{Encoder, Env, NifResult, NifStruct, Term};
+use std::borrow::Cow;
+use std::borrow::Cow::Owned;
+use std::collections::HashMap;
 use std::f32::consts::PI;
 use std::io::Read;
 
-pub trait Validatable
-where
-    Self: Sized,
-{
-    fn validate(&self) -> Result<(), RustlerError>;
-}
-
-#[derive(Clone, Debug, Default, NifStruct)]
-#[module = "LiveCheck.Scheduler.GreedyConfig"]
-pub struct GreedyConfig {
-    pub interval: u32,
-    pub mean_runtime: f64,
-    pub runtime_variance: f64,
-    pub constraints: Vec<SchedulerConstraint>,
-    pub schedule_window: u32,
-    pub schedule_start: u32,
-    pub schedule_end: u32,
-}
-
-#[derive(Clone, Debug, Default, NifStruct)]
-#[module = "LiveCheck.Scheduler.BalancedConfig"]
-pub struct BalancedConfig {
-    // Algo-specific Parameters
-    pub pool_size: usize,
-    pub schedule_start: u32,
-    pub schedule_end: u32,
-    pub reschedule_range: u32,
-    pub constraints: Vec<SchedulerConstraint>,
-    // Genetic Algorithm Parameters
-    pub pop_size: usize,
-    pub elitism_size: usize,
-    pub selection_size: usize,
-    pub mutation_rate: f64,
-    pub max_generations: usize,
-    pub max_good_runs: usize,
-    // Jitter Parameters
-    pub jitter_mean: f64,
-    pub jitter_std_dev: f64,
-}
-
-#[derive(Clone, Debug, Default, NifStruct)]
-#[module = "LiveCheck.Scheduler.Constraint"]
-pub struct SchedulerConstraint {
-    pub interval: u32,
-    pub start_time: u32,
-    pub mean_runtime: f64,
-    pub runtime_variance: f64,
-}
-
-#[derive(Clone, Debug, Default)]
-pub struct Schedule {
-    pub genes: Vec<Task>,
-    pub fitness: f64,
-}
-
-#[derive(Clone, Debug, Default, NifStruct)]
-#[module = "LiveCheck.Scheduler.Task"]
-pub struct Task {
-    pub run: u32,
-    pub start: u32,
-    pub runtime: u32,
-    pub blocking_time: u32,
-}
-
-impl Validatable for GreedyConfig {
-    fn validate(&self) -> Result<(), RustlerError> {
-        if self.constraints.is_empty() {
-            return Err(RustlerError::Atom("empty_constraints"));
-        }
-
-        if self.schedule_end == 0 {
-            return Err(RustlerError::Atom("invalid_schedule_end"));
-        }
-
-        if self.interval == 0 {
-            return Err(RustlerError::Atom("invalid_interval"));
-        }
-
-        if self.schedule_start >= self.schedule_end {
-            return Err(RustlerError::Atom("invalid_schedule_range"));
-        }
-
-        Ok(())
+mod atoms {
+    rustler::atoms! {
+      ok,
+      error
     }
 }
 
-impl Validatable for BalancedConfig {
-    fn validate(&self) -> Result<(), RustlerError> {
-        if self.constraints.is_empty() {
-            return Err(RustlerError::Atom("empty_constraints"));
-        }
-
-        if self.schedule_end == 0 {
-            return Err(RustlerError::Atom("invalid_schedule_end"));
-        }
-
-        if self.schedule_start >= self.schedule_end {
-            return Err(RustlerError::Atom("invalid_schedule_range"));
-        }
-
-        if self.pool_size == 0 {
-            return Err(RustlerError::Atom("invalid_pool_size"));
-        }
-
-        if self.pop_size == 0 {
-            return Err(RustlerError::Atom("invalid_pop_size"));
-        }
-
-        if self.elitism_size == 0 {
-            return Err(RustlerError::Atom("invalid_elitism_size"));
-        }
-
-        if self.selection_size == 0 {
-            return Err(RustlerError::Atom("invalid_selection_size"));
-        }
-
-        if self.mutation_rate < 0.0 || self.mutation_rate > 1.0 {
-            return Err(RustlerError::Atom("invalid_mutation_rate"));
-        }
-
-        if self.selection_size > self.pop_size {
-            return Err(RustlerError::Atom("selection_size_larger_than_pop"));
-        }
-
-        Ok(())
-    }
+#[derive(Clone, Debug, NifStruct)]
+#[module = "Passwordless.MJML.RenderOptions"]
+pub struct RenderOptions<'a> {
+    pub keep_comments: bool,
+    pub social_icon_path: Option<String>,
+    pub fonts: Option<HashMap<Term<'a>, Term<'a>>>,
 }
 
-impl Schedule {
-    fn new(config: &BalancedConfig) -> Self {
-        let mut rng = thread_rng();
-        let mut genes = Vec::with_capacity(config.constraints.len());
-        let jitter = Normal::new(config.jitter_mean, config.jitter_std_dev).unwrap();
+#[rustler::nif]
+pub fn mjml_to_html<'a>(
+    env: Env<'a>,
+    mjml: String,
+    render_options: RenderOptions,
+) -> NifResult<Term<'a>> {
+    return match mrml::parse(&mjml) {
+        Ok(parsed) => {
+            let options = mrml::prelude::render::RenderOptions {
+                disable_comments: !render_options.keep_comments,
+                social_icon_origin: social_icon_origin_option(render_options.social_icon_path),
+                fonts: fonts_option(render_options.fonts),
+            };
 
-        for (i, constraint) in config.constraints.iter().enumerate() {
-            let runtime = Normal::new(constraint.mean_runtime, constraint.runtime_variance)
-                .unwrap()
-                .sample(&mut rng)
-                .trunc() as u32;
-            let offset = jitter.sample(&mut rng).trunc() as i32;
-            let schedule = (constraint.start_time.saturating_add_signed(offset))
-                .clamp(
-                    constraint
-                        .start_time
-                        .saturating_add_signed(-(config.reschedule_range as i32)),
-                    constraint
-                        .start_time
-                        .saturating_add_signed(config.reschedule_range as i32),
-                )
-                .clamp(config.schedule_start, config.schedule_end);
-
-            genes.push(Task {
-                run: i as u32,
-                start: schedule,
-                runtime: runtime,
-                ..Default::default()
-            });
-        }
-
-        Self {
-            genes,
-            ..Default::default()
-        }
-    }
-
-    fn fitness(&mut self, config: &BalancedConfig) {
-        let mut worker_pool: BinaryHeap<Reverse<u32>> = BinaryHeap::with_capacity(config.pool_size);
-        let mut max_blocking_time = 0;
-
-        self.genes.sort_unstable_by_key(|k| k.start);
-
-        let &Task { run: a, .. } = self.genes.first().unwrap();
-        let &Task { run: b, .. } = self.genes.last().unwrap();
-
-        let schedule_min = config.constraints[a as usize].start_time;
-        let schedule_max = config.constraints[b as usize].start_time;
-
-        let mut deviation = 0;
-
-        for _ in 0..config.pool_size {
-            worker_pool.push(Reverse(0));
-        }
-
-        for schedule in self.genes.iter_mut() {
-            let Reverse(soonest_end_time) = worker_pool.pop().unwrap();
-
-            if soonest_end_time > schedule.start {
-                schedule.blocking_time = soonest_end_time - schedule.start;
-                max_blocking_time = max_blocking_time.max(schedule.blocking_time);
-            } else {
-                schedule.blocking_time = 0;
-            }
-
-            worker_pool.push(Reverse(soonest_end_time + schedule.runtime));
-
-            deviation += u64::pow(
-                schedule.start as u64 - config.constraints[schedule.run as usize].start_time as u64,
-                2,
-            );
-        }
-
-        let utilization = match max_blocking_time {
-            0 => 1.0,
-            t => 1.0 / t as f64,
-        };
-
-        let normalized_deviation = (deviation as f64 / config.constraints.len() as f64).sqrt()
-            / (schedule_max - schedule_min) as f64;
-
-        self.fitness = utilization * (1.0 - normalized_deviation);
-        self.genes.sort_unstable_by_key(|k| k.run);
-    }
-
-    fn mutate(&mut self, config: &BalancedConfig) {
-        let mut rng = thread_rng();
-        let jitter = Normal::new(config.jitter_mean, config.jitter_std_dev).unwrap();
-
-        for schedule in self.genes.iter_mut() {
-            if rng.gen_bool(config.mutation_rate) {
-                let constraint = &config.constraints[schedule.run as usize];
-                let offset = jitter.sample(&mut rng).trunc() as i32;
-                let start = (schedule.start.saturating_add_signed(offset))
-                    .clamp(
-                        constraint
-                            .start_time
-                            .saturating_add_signed(-(config.reschedule_range as i32)),
-                        constraint
-                            .start_time
-                            .saturating_add_signed(config.reschedule_range as i32),
-                    )
-                    .clamp(config.schedule_start, config.schedule_end);
-
-                schedule.start = start;
-            }
-        }
-    }
-}
-
-fn generate_population(config: &BalancedConfig) -> Vec<Schedule> {
-    (0..config.pop_size)
-        .into_par_iter()
-        .map(|_| Schedule::new(config))
-        .collect()
-}
-
-fn mutate(mut population: Vec<Schedule>, config: &BalancedConfig) -> Vec<Schedule> {
-    population
-        .par_iter_mut()
-        .for_each(|chromosome| chromosome.mutate(config));
-    population
-}
-
-fn evaluate(mut population: Vec<Schedule>, config: &BalancedConfig) -> Vec<Schedule> {
-    population
-        .par_iter_mut()
-        .for_each(|chromosome| chromosome.fitness(config));
-    population
-        .sort_unstable_by(|a, b| b.fitness.partial_cmp(&a.fitness).unwrap_or(Ordering::Equal));
-    population
-}
-
-fn crossover(chromosomes: &[Schedule]) -> Vec<Schedule> {
-    chromosomes
-        .par_chunks_exact(2)
-        .flat_map(|pair| {
-            let (p1, p2) = (&pair[0], &pair[1]);
-            let (c1, c2) = perform_two_point_crossover(p1, p2);
-            vec![c1, c2]
-        })
-        .collect()
-}
-
-fn perform_single_point_crossover(p_1: &Schedule, p_2: &Schedule) -> (Schedule, Schedule) {
-    let m = thread_rng().gen_range(0..p_1.genes.len());
-    let mut genes_1 = Vec::with_capacity(p_1.genes.len());
-    let mut genes_2 = Vec::with_capacity(p_1.genes.len());
-
-    genes_1.extend_from_slice(&p_1.genes[..m]);
-    genes_2.extend_from_slice(&p_2.genes[..m]);
-    genes_1.extend_from_slice(&p_2.genes[m..]);
-    genes_2.extend_from_slice(&p_1.genes[m..]);
-
-    (
-        Schedule {
-            genes: genes_1,
-            ..Default::default()
-        },
-        Schedule {
-            genes: genes_2,
-            ..Default::default()
-        },
-    )
-}
-
-fn perform_two_point_crossover(p_1: &Schedule, p_2: &Schedule) -> (Schedule, Schedule) {
-    let mut rng = thread_rng();
-    let m_1 = rng.gen_range(0..p_1.genes.len());
-    let m_2 = rng.gen_range(m_1..p_1.genes.len());
-    let mut genes_1 = Vec::with_capacity(p_1.genes.len());
-    let mut genes_2 = Vec::with_capacity(p_1.genes.len());
-
-    genes_1.extend_from_slice(&p_1.genes[..m_1]);
-    genes_2.extend_from_slice(&p_2.genes[..m_1]);
-    genes_1.extend_from_slice(&p_2.genes[m_1..m_2]);
-    genes_2.extend_from_slice(&p_1.genes[m_1..m_2]);
-    genes_1.extend_from_slice(&p_1.genes[m_2..]);
-    genes_2.extend_from_slice(&p_2.genes[m_2..]);
-
-    (
-        Schedule {
-            genes: genes_1,
-            ..Default::default()
-        },
-        Schedule {
-            genes: genes_2,
-            ..Default::default()
-        },
-    )
-}
-
-fn natural_selection(chromosomes: &[Schedule], n: usize) -> Vec<Schedule> {
-    chromosomes[..std::cmp::min(n, chromosomes.len())].to_vec()
-}
-
-fn elitism(chromosomes: &[Schedule], n: usize) -> Vec<Schedule> {
-    chromosomes[..std::cmp::min(n, chromosomes.len())].to_vec()
-}
-
-fn evolve(
-    mut population: Vec<Schedule>,
-    config: &BalancedConfig,
-    mut terminate: impl FnMut(&[Schedule], usize) -> bool,
-) -> Vec<Schedule> {
-    let mut generation = 0;
-
-    loop {
-        population = evaluate(population, config);
-        if terminate(&population, generation) {
-            break;
-        }
-
-        let selected = natural_selection(&population, config.selection_size);
-        let elites = elitism(&population, config.elitism_size);
-        let children = crossover(&selected);
-
-        population = elites;
-        population.extend(mutate(children, config));
-
-        generation += 1;
-    }
-
-    population
-}
-
-#[rustler::nif(schedule = "DirtyCpu")]
-fn greedy_schedule(config: GreedyConfig) -> Result<u32, RustlerError> {
-    if let Err(err) = config.validate() {
-        return Err(err);
-    }
-
-    let mut rng = thread_rng();
-    let runtime = Normal::new(config.mean_runtime, config.runtime_variance)
-        .unwrap()
-        .sample(&mut rng)
-        .trunc() as u32;
-
-    let mut contention: Vec<u32> = vec![0; config.schedule_window as usize];
-
-    for &SchedulerConstraint {
-        interval,
-        start_time,
-        mean_runtime,
-        runtime_variance,
-    } in config.constraints.iter()
-    {
-        let runtime = Normal::new(mean_runtime, runtime_variance).unwrap();
-
-        for i in 0..(config.schedule_window / interval) {
-            let start = start_time + i * interval;
-            let end = (start + runtime.sample(&mut rng).trunc() as u32).min(config.schedule_end);
-
-            for j in start..end {
-                contention[j as usize] += 1;
-            }
-        }
-    }
-
-    let mut minimal_contention = u32::MAX;
-    let mut minimal_contention_start = config.schedule_start;
-
-    for i in config.schedule_start..=config.schedule_end {
-        let mut contention_sum = 0;
-
-        for j in 0..cmp::min(config.schedule_window / config.interval, 4) {
-            let start_index = i as usize + j as usize * config.interval as usize;
-            let start_mod = start_index % contention.len();
-            let end_mod = (start_index + runtime as usize) % contention.len();
-
-            contention_sum += if start_mod > end_mod {
-                contention[start_mod..(config.schedule_window as usize)]
-                    .iter()
-                    .sum::<u32>()
-                    + contention[0..end_mod].iter().sum::<u32>()
-            } else {
-                contention[start_mod..end_mod].iter().sum::<u32>()
+            return match parsed.element.render(&options) {
+                Ok(content) => Ok((atoms::ok(), content).encode(env)),
+                Err(error) => Ok((atoms::error(), error.to_string()).encode(env)),
             };
         }
-
-        if contention_sum < minimal_contention {
-            minimal_contention = contention_sum;
-            minimal_contention_start = i;
-        }
-    }
-
-    Ok(minimal_contention_start)
+        Err(error) => Ok((atoms::error(), error.to_string()).encode(env)),
+    };
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
-fn balanced_schedule(config: BalancedConfig) -> Result<Vec<Task>, RustlerError> {
-    if let Err(err) = config.validate() {
-        return Err(err);
-    }
+fn social_icon_origin_option(option_value: Option<String>) -> Option<Cow<'static, str>> {
+    option_value.map_or(
+        mrml::prelude::render::RenderOptions::default().social_icon_origin,
+        |origin| Some(Owned(origin)),
+    )
+}
 
-    let population = generate_population(&config);
-    let mut original = population.first().unwrap().clone();
-    original.fitness(&config);
+fn fonts_option<'a>(
+    option_values: Option<HashMap<Term<'a>, Term<'a>>>,
+) -> HashMap<String, Cow<'static, str>> {
+    option_values.map_or(
+        mrml::prelude::render::RenderOptions::default().fonts,
+        |fonts| -> HashMap<String, Cow<'static, str>> {
+            let mut options: HashMap<String, Cow<'static, str>> = HashMap::new();
 
-    visualize_schedule(&original.genes, "original.png").unwrap();
-
-    let mut best_fitness = 0.0;
-    let mut best_fitness_count = 0;
-
-    let population = evolve(population, &config, |population, generation| -> bool {
-        if let Some(best) = population.first() {
-            if best_fitness < best.fitness {
-                best_fitness = best.fitness;
-                best_fitness_count = 0;
-            } else {
-                best_fitness_count += 1;
+            for (key, value) in fonts {
+                let (k, v) = font_option(key, value);
+                options.insert(k, v);
             }
-        }
 
-        generation == config.max_generations || best_fitness_count == config.max_good_runs
-    });
-
-    let genes = population.first().unwrap().genes.clone();
-
-    visualize_schedule(&genes, "schedule.png").unwrap();
-
-    Ok(genes)
+            return options;
+        },
+    )
 }
 
-fn visualize_schedule(schedule: &[Task], output_path: &str) -> Result<(), Box<dyn Error>> {
-    // Create a drawing area for the chart.
-    let root = BitMapBackend::new(output_path, (2000, 2000)).into_drawing_area();
-    root.fill(&WHITE)?;
+fn font_option<'a>(key: Term<'a>, value: Term<'a>) -> (String, Cow<'static, str>) {
+    (
+        match key.atom_to_string() {
+            Ok(s) => s,
+            Err(_) => panic!(
+                "Keys for the `fonts` render option must be of type Atom, got {:?}.
+                 Please use a Map like this: %{{\"My Font Name\": \"https://myfonts.example.com/css\"}}",
+                key.get_type()
+            )
 
-    let max_schedules = schedule.len();
-
-    // Determine the range of backends and time.
-    let max_time = schedule
-        .iter()
-        .map(|s| s.start + s.blocking_time + s.runtime)
-        .max()
-        .unwrap_or(0);
-
-    // Define the chart area and margins.
-    let mut chart = ChartBuilder::on(&root)
-        .caption("Check Schedule", ("sans-serif", 30))
-        .margin(10)
-        .x_label_area_size(40)
-        .y_label_area_size(40)
-        .build_cartesian_2d(0..max_time, 0..max_schedules + 1)?;
-
-    // Configure the chart's x and y labels.
-    chart
-        .configure_mesh()
-        .disable_x_mesh()
-        .disable_y_mesh()
-        .x_desc("Time")
-        .y_desc("Backend")
-        .y_labels(max_schedules + 1)
-        .x_labels(10)
-        .draw()?;
-
-    // Draw each job as a bar in the chart.
-    for &Task {
-        run,
-        start,
-        runtime,
-        blocking_time,
-        ..
-    } in schedule.iter()
-    {
-        let color = Palette99::pick(run as usize).to_rgba();
-
-        let bars = if blocking_time > 0 {
-            vec![
-                Rectangle::new(
-                    [
-                        (start, run as usize),
-                        (start + blocking_time, run as usize + 1),
-                    ],
-                    GREY.filled(),
-                ),
-                Rectangle::new(
-                    [
-                        (start + blocking_time, run as usize),
-                        (start + blocking_time + runtime, run as usize + 1),
-                    ],
-                    color.filled(),
-                ),
-            ]
-        } else {
-            vec![Rectangle::new(
-                [(start, run as usize), (start + runtime, run as usize + 1)],
-                color.filled(),
-            )]
-        };
-
-        chart
-            .draw_series(bars)?
-            .label(format!("Run {}", run))
-            .legend(move |(x, y)| Rectangle::new([(x, y - 5), (x + 10, y + 5)], color.filled()));
-    }
-
-    // Configure the legend for the chart.
-    chart
-        .configure_series_labels()
-        .border_style(&BLACK)
-        .draw()?;
-
-    // Save the result to the specified output path.
-    root.present()?;
-    Ok(())
+        },
+        match value.decode::<String>() {
+            Ok(s) => Owned(s),
+            Err(_) => panic!(
+                "Values for the `fonts` render option must be of type String, got {:?}.
+                 Please use a Map like this: %{{\"My Font Name\": \"https://myfonts.example.com/css\"}}",
+                value.get_type()
+            )
+        }
+    )
 }
 
 /// Encodes an RGBA image to a ThumbHash. RGB should not be premultiplied by A.
@@ -884,4 +425,4 @@ pub fn thumb_hash_to_approximate_aspect_ratio(hash: &[u8]) -> Result<f32, ()> {
     Ok(lx as f32 / ly as f32)
 }
 
-rustler::init!("Elixir.LiveCheck.Native");
+rustler::init!("Elixir.Passwordless.Native");

@@ -7,7 +7,9 @@ defmodule PasswordlessWeb.Components.Card do
   attr :to, :string, default: nil, doc: "link path"
   attr :class, :string, default: "", doc: "CSS class"
   attr :variant, :string, default: "card", values: ["card", "link"]
+
   attr :rest, :global, include: ~w(method download hreflang ping referrerpolicy rel target type title)
+
   slot :inner_block, required: false
 
   def card(assigns) do

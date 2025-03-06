@@ -1,12 +1,5 @@
-import Delimiter from "@coolbytes/editorjs-delimiter";
-import EditorJS from "@editorjs/editorjs";
-import Header from "@editorjs/header";
-import Marker from "@editorjs/marker";
-import List from "@editorjs/nested-list";
-import Quote from "@editorjs/quote";
-import Table from "@editorjs/table";
-import Warning from "@editorjs/warning";
 import { Hook, makeHook } from "phoenix_typed_hook";
+import { MjmlEditor } from "../lib/mjml/editor";
 
 class EditorHook extends Hook {
   public mounted() {
@@ -23,52 +16,12 @@ class EditorHook extends Hook {
       throw new Error("Editor element not found");
     }
 
-    const editor = new EditorJS({
-      holder: place,
-      tools: {
-        table: Table,
-        header: {
-          class: Header,
-          config: {
-            placeholder: "Enter a header",
-            levels: [2, 3, 4],
-            defaultLevel: 3,
-          },
-        },
-        quote: {
-          class: Quote,
-          inlineToolbar: true,
-        },
-        list: {
-          class: List,
-          inlineToolbar: true,
-        },
-        marker: Marker,
-        delimiter: Delimiter,
-        warning: {
-          class: Warning,
-          inlineToolbar: true,
-          config: {
-            titlePlaceholder: "Title",
-            messagePlaceholder: "Message",
-          },
-        },
-      },
-      onChange() {},
-    });
+    const source: HTMLInputElement | null = el.querySelector(".source");
+    if (source === null) {
+      throw new Error("Editor element not found");
+    }
 
-    place.addEventListener("focusout", () => {
-      editor
-        .save()
-        .then((outputData) => {})
-        .catch((error) => {
-          console.warn("Error saving editor content", error);
-        });
-    });
-
-    place.addEventListener("mouseleave", () => {
-      editor.toolbar.close();
-    });
+    new MjmlEditor(place, source);
   }
 }
 
