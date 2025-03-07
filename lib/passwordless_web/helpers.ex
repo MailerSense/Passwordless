@@ -153,19 +153,19 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :edit,
         label: gettext("Email"),
-        path: ~p"/app/email/#{email_template}/#{language}/edit",
+        path: ~p"/app/emails/#{email_template}/#{language}/edit",
         link_type: "live_patch"
       },
       %{
         name: :code,
         label: gettext("Code"),
-        path: ~p"/app/email/#{email_template}/#{language}/code",
+        path: ~p"/app/emails/#{email_template}/#{language}/code",
         link_type: "live_patch"
       },
       %{
         name: :styles,
         label: gettext("Style"),
-        path: ~p"/app/email/#{email_template}/#{language}/styles",
+        path: ~p"/app/emails/#{email_template}/#{language}/styles",
         link_type: "live_patch"
       }
     ]
@@ -174,14 +174,14 @@ defmodule PasswordlessWeb.Helpers do
   def domain_menu_items do
     [
       %{
-        name: :edit,
+        name: :sending,
         label: gettext("Email sending"),
         path: ~p"/app/domain/send",
         link_type: "live_patch"
       },
       %{
-        name: :styles,
-        label: gettext("Email tracking"),
+        name: :branding,
+        label: gettext("Link branding"),
         path: ~p"/app/domain/track",
         link_type: "live_patch"
       }
@@ -408,15 +408,6 @@ defmodule PasswordlessWeb.Helpers do
       "x-data": "",
       "x-init": "$nextTick(() => { $el.focus() });"
     }
-  end
-
-  @doc """
-  When you want to display code in a heex template, you can use this helper to escape it.
-  """
-  def code_block(code) do
-    Phoenix.HTML.raw("""
-    <pre>#{code}</pre>
-    """)
   end
 
   ## SEO

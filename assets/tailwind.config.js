@@ -116,6 +116,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+        mono: ["JetBrains Mono", ...defaultTheme.fontFamily.mono],
         display: ["Sora", ...defaultTheme.fontFamily.sans],
       },
     },

@@ -1,15 +1,26 @@
+use markup_fmt::config::{LanguageOptions, LayoutOptions, LineBreak};
+use markup_fmt::{config::FormatOptions, format_text as format_markup, Language};
 use rustler::types::binary::Binary;
-use rustler::{Encoder, Env, NifResult, NifStruct, Term};
+use rustler::{Atom, Encoder, Env, NifResult, NifStruct, Term};
 use std::borrow::Cow;
 use std::borrow::Cow::Owned;
 use std::collections::HashMap;
 use std::f32::consts::PI;
 use std::io::Read;
+use std::path::Path;
+
+use dprint_plugin_typescript::configuration::{
+    ConfigurationBuilder, NextControlFlowPosition, QuoteStyle,
+};
+use dprint_plugin_typescript::format_text as format_typescript;
 
 mod atoms {
     rustler::atoms! {
       ok,
-      error
+      error,
+      javascript,
+      typescript,
+      html
     }
 }
 
@@ -89,6 +100,50 @@ fn font_option<'a>(key: Term<'a>, value: Term<'a>) -> (String, Cow<'static, str>
             )
         }
     )
+}
+
+#[rustler::nif]
+pub fn format_code(raw: String, language: Atom) -> String {
+    match language {
+        lang if lang == atoms::typescript() => format_ts("virtual.ts", "ts", raw),
+        lang if lang == atoms::javascript() => format_ts("virtual.js", "js", raw),
+        lang if lang == atoms::html() => format_html(raw),
+        _ => raw,
+    }
+}
+
+fn format_ts(file_name: &str, ext: &str, raw: String) -> String {
+    let config = ConfigurationBuilder::new()
+        .line_width(120)
+        .prefer_hanging(true)
+        .prefer_single_line(false)
+        .quote_style(QuoteStyle::PreferSingle)
+        .next_control_flow_position(NextControlFlowPosition::SameLine)
+        .build();
+
+    format_typescript(Path::new(file_name), Some(ext), raw, &config)
+        .ok()
+        .flatten()
+        .unwrap_or_default() // If there's an error or None, return an empty string
+}
+
+fn format_html(code: String) -> String {
+    let options = FormatOptions {
+        layout: LayoutOptions {
+            print_width: 160,
+            use_tabs: false,
+            indent_width: 2,
+            line_break: LineBreak::Lf,
+        },
+        language: LanguageOptions::default(),
+    };
+
+    match format_markup(&code, Language::Html, &options, |code, _| {
+        Ok::<_, std::convert::Infallible>(code.into())
+    }) {
+        Ok(formatted) => formatted,
+        Err(_) => code,
+    }
 }
 
 /// Encodes an RGBA image to a ThumbHash. RGB should not be premultiplied by A.

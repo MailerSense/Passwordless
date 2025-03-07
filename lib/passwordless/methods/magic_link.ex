@@ -24,10 +24,6 @@ defmodule Passwordless.Methods.MagicLink do
     field :email_tracking, :boolean, default: true
     field :fingerprint_device, :boolean, default: false
 
-    embeds_many :redirect_urls, RedirectURL, on_replace: :delete do
-      field :url, :string
-    end
-
     belongs_to :app, App, type: :binary_id
     belongs_to :domain, Domain, type: :binary_id
 
@@ -52,12 +48,6 @@ defmodule Passwordless.Methods.MagicLink do
   def changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
     actor_email
     |> cast(attrs, @fields)
-    |> cast_embed(:redirect_urls,
-      with: &redirect_url_changeset/2,
-      sort_param: :redirect_urls_sort,
-      drop_param: :redirect_urls_drop,
-      required: true
-    )
     |> validate_required(@required_fields)
     |> validate_sender()
     |> validate_string(:sender_name)
@@ -86,12 +76,5 @@ defmodule Passwordless.Methods.MagicLink do
     else
       _ -> changeset
     end
-  end
-
-  defp redirect_url_changeset(redirect_url, attrs) do
-    redirect_url
-    |> cast(attrs, [:url])
-    |> validate_required([:url])
-    |> ChangesetExt.validate_url(:url)
   end
 end

@@ -4,6 +4,7 @@ defmodule PasswordlessWeb.CoreComponents do
   use PasswordlessWeb, :verified_routes
   use PasswordlessWeb.Components
   use Gettext, backend: PasswordlessWeb.Gettext
+  use Memoize
 
   import PasswordlessWeb.Helpers
 
@@ -141,7 +142,9 @@ defmodule PasswordlessWeb.CoreComponents do
       assigns
       |> assign_new(:home_path, fn -> home_path(assigns[:current_user]) end)
       |> assign_new(:user_menu_items, fn -> user_menu_items(assigns[:current_user]) end)
-      |> assign_new(:main_menu_items, fn -> main_menu_items(assigns[:current_section], assigns[:current_user]) end)
+      |> assign_new(:main_menu_items, fn ->
+        main_menu_items(assigns[:current_section], assigns[:current_user])
+      end)
       |> assign_new(:app_menu_items, fn -> app_menu_items(assigns[:current_user]) end)
 
     assigns =
@@ -278,6 +281,28 @@ defmodule PasswordlessWeb.CoreComponents do
       <.icon name="remix-error-warning-line" class="mt-0.5 h-5 w-5 flex-none fill-rose-500" />
       {render_slot(@inner_block)}
     </p>
+    """
+  end
+
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :code, :string, required: true
+  attr :language, :atom, values: [:javascript, :typescript], required: true
+  attr :language_class, :string, default: nil
+  attr :rest, :global
+
+  def code_block(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:language_class, fn -> "language-#{@language}" end)
+      |> assign_new(:id, fn -> "code-block-#{:rand.uniform(10_000_000) + 1}" end)
+      |> update(:code, fn code ->
+        Passwordless.Native.format_code(code, assigns[:language])
+      end)
+
+    ~H"""
+    <pre id={@id} phx-hook="HighlightHook">
+      <code class={[@class, @language_class, "text-sm font-mono rounded-lg"]}>{@code}</code>
+    </pre>
     """
   end
 

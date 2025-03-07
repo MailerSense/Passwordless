@@ -18,6 +18,11 @@
         disabled={not @enabled}
         required
         required_asterix={false}
+        help_text={
+          gettext(
+            "The relying party ID is a unique identifier for your application. It is used to generate the passkey and must be the same across all devices."
+          )
+        }
       />
       <.form_separator />
       <.form_header title="Advanced" />

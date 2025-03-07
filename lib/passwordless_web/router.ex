@@ -143,9 +143,9 @@ defmodule PasswordlessWeb.Router do
       live "/methods/recovery-codes", App.MethodLive.Index, :recovery_codes
 
       # Email
-      live "/email/:id/:language/edit", App.EmailLive.Edit, :edit
-      live "/email/:id/:language/code", App.EmailLive.Edit, :code
-      live "/email/:id/:language/styles", App.EmailLive.Edit, :styles
+      live "/emails/:id/:language/edit", App.EmailLive.Edit, :edit
+      live "/emails/:id/:language/code", App.EmailLive.Edit, :code
+      live "/emails/:id/:language/styles", App.EmailLive.Edit, :styles
 
       # Reports
       live "/reports", App.ReportLive.Index, :index

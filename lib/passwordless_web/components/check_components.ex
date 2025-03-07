@@ -248,7 +248,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       <.form_label>{gettext("Preview")}</.form_label>
       <.a
         to={@to}
-        class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 max-h-[300px] overflow-hidden"
+        class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 max-h-[280px] overflow-hidden px-6"
         link_type={@link_type}
       >
         <iframe

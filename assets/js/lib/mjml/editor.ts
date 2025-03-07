@@ -3,10 +3,10 @@ import { html } from "@codemirror/lang-html";
 import { EditorState } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import { basicSetup } from "codemirror";
-import { dracula } from "thememirror";
 
 import { indentAndAutocompleteWithTab, saveUpdates } from "./helpers";
 import tags from "./tags";
+import { dracula } from "./theme";
 
 export class MjmlEditor {
   private place: HTMLElement;

@@ -3,6 +3,7 @@
 @import "tailwindcss/utilities";
 @import "petal_components.css";
 @import "tippy.js/dist/tippy.css";
+@import "highlight.js/styles/monokai.css";
 
 .dark {
   color-scheme: dark;
@@ -38,6 +39,10 @@
   h6 {
     @apply text-[14px] leading-5 font-semibold;
   }
+}
+
+.cm-scroller {
+  @apply font-mono;
 }
 
 .tippy-box[data-theme~="light"] {
@@ -149,6 +154,18 @@
     -webkit-appearance: none;
     @apply h-4 w-4 shadow-0 rounded-full -mt-1;
     @apply bg-white ring-1 ring-slate-300 dark:ring-slate-400;
+  }
+
+  pre {
+    white-space: normal;
+  }
+
+  pre code {
+    white-space: pre;
+  }
+
+  code * {
+    @apply font-mono;
   }
 }
 

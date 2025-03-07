@@ -1,6 +1,9 @@
 import collapse from "@alpinejs/collapse";
 import persist from "@alpinejs/persist";
 import Alpine from "alpinejs";
+import hljs from "highlight.js/lib/core";
+import javascript from "highlight.js/lib/languages/javascript";
+import typescript from "highlight.js/lib/languages/typescript";
 import { Socket } from "phoenix";
 import "phoenix_html";
 import { LiveSocket, SocketOptions } from "phoenix_live_view";
@@ -8,6 +11,9 @@ import topbar from "topbar";
 
 import hooks from "./hooks";
 import uploaders from "./uploaders";
+
+hljs.registerLanguage("javascript", javascript);
+hljs.registerLanguage("typescript", typescript);
 
 // Enable dark mode
 const applyScheme = (scheme: "light" | "dark") => {

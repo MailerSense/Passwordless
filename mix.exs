@@ -7,7 +7,7 @@ defmodule Passwordless.MixProject do
     [
       app: :passwordless,
       version: @version,
-      elixir: "1.18.2",
+      elixir: "1.18.3",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -73,6 +73,7 @@ defmodule Passwordless.MixProject do
       {:live_toast, "~> 0.7.0"},
       {:rustler, "~> 0.36.1"},
       {:floki, "~> 0.37.0"},
+      {:memoize, "~> 1.4"},
 
       # Emails
       {:phoenix_swoosh, "~> 1.2"},
