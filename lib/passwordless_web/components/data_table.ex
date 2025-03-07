@@ -24,7 +24,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-m2", doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
   attr :base_url_params, :map, required: false
 
   attr :form_target, :string,
@@ -196,7 +196,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :items, :any, required: true
   attr :title, :string, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-m2", doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
   attr :finished, :boolean, default: false
 
   slot :col, required: true do
@@ -283,7 +283,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :items, :any, required: true
   attr :title, :string, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-m2", doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
 
   slot :col, required: true do
     attr :label, :string

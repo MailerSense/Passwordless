@@ -54,7 +54,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
 
   def stacked_layout(assigns) do
     ~H"""
-    <div class="h-screen overflow-y-auto dark:bg-slate-900">
+    <div class="h-screen overflow-y-auto bg-slate-50 dark:bg-slate-900">
       <header
         class={[
           @header_bg_class,
