@@ -96,7 +96,7 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
           case l[:kind] do
             :admin -> "text-danger-700 dark:text-danger-400"
             :oban -> "text-yellow-500 dark:text-yellow-400"
-            _ -> "text-slate-500 dark:text-slate-400"
+            _ -> "text-gray-500 dark:text-gray-400"
           end,
           "text-xs font-medium"
         ]}

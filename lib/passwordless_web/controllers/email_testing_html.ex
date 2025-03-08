@@ -6,9 +6,9 @@ defmodule PasswordlessWeb.EmailTestingHTML do
   def menu_item_classes(is_active) do
     active_classes =
       if is_active do
-        "bg-slate-200 text-slate-900 dark:bg-slate-800 dark:text-slate-100"
+        "bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-gray-100"
       else
-        "text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+        "text-gray-600 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
       end
 
     active_classes <>

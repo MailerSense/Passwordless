@@ -1,18 +1,5 @@
 <.layout current_user={@current_user} current_page={:methods} current_section={:app}>
-  <div class="my-12 flex justify-between items-center h-12">
-    <.form
-      id="edit-template"
-      for={@template_form}
-      phx-change="validate_template"
-      phx-submit="save_template"
-    >
-      <div class="relative">
-        <.field type="editor" field={@template_form[:name]} phx-debounce="blur" />
-        <div class="pc-editor-field-icon">
-          <.icon name="remix-pencil-line" class="pc-editor-field-icon__icon" />
-        </div>
-      </div>
-    </.form>
+  <.page_header title={@template.name}>
     <div class="flex gap-3">
       <.button
         to={~p"/app/users"}
@@ -40,9 +27,9 @@
         disabled={not @version_form.source.valid? or Enum.empty?(@version_form.source.changes)}
       />
     </div>
-  </div>
+  </.page_header>
 
-  <.box class="flex flex-col lg:flex-row divide-x divide-slate-200 dark:divide-slate-700">
+  <.box class="flex flex-col lg:flex-row divide-x divide-gray-200 dark:divide-gray-700">
     <div class={[
       "grow lg:flex-none",
       "transition-all duration-150 ease-linear",
@@ -70,7 +57,6 @@
         id="html-preview"
         src="about:blank"
         class="w-full h-lvh"
-        scrolling="no"
         data-source="html-preview-data"
       >
       </iframe>

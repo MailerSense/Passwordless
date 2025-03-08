@@ -65,7 +65,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
     <section
       {@rest}
       class={[
-        "bg-slate-900 md:px-6 lg:px-10 pb-8 md:pb-10",
+        "bg-gray-900 md:px-6 lg:px-10 pb-8 md:pb-10",
         if(@pad_top, do: "pt-10")
       ]}
     >
@@ -111,7 +111,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
 
   def sidebar_tabs_container(assigns) do
     ~H"""
-    <.box class="flex flex-col border border-slate-200 divide-y divide-slate-200 dark:border-none dark:divide-slate-700 md:divide-y-0 md:divide-x md:flex-row">
+    <.box class="flex flex-col border border-gray-200 divide-y divide-gray-200 dark:border-none dark:divide-gray-700 md:divide-y-0 md:divide-x md:flex-row">
       <div class="flex-shrink-0 py-6 md:w-72">
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </div>

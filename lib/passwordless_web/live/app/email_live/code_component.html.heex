@@ -4,8 +4,19 @@
     for={@version_form}
     phx-change="validate_version"
     phx-submit="save_version"
+    class="m-6"
   >
     <.field type="hidden" field={@version_form[:mjml_body]} class="source" />
+    <.field
+      type="select"
+      icon="remix-palette-line"
+      field={@version_form[:current_style]}
+      label={gettext("Style")}
+      options={@styles}
+      required
+      required_asterix={false}
+      help_text={gettext("Pick an MJML template you can further modify below.")}
+    />
   </.form>
   <div id="mjml-editor-container" class="editor" phx-update="ignore"></div>
 </div>

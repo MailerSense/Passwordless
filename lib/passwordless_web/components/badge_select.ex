@@ -99,7 +99,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
       </Field.field_label>
       <button
         type="button"
-        class="custom-select relative block w-full h-[46px] px-3.5 py-2 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-600 focus:ring-4 focus:ring-primary-600 dark:focus:ring-primary-700/50 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-950 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none"
+        class="custom-select relative block w-full h-[46px] px-3.5 py-2 border border-gray-300 rounded-lg shadow-m2 focus:border-primary-600 focus:ring-4 focus:ring-primary-600 dark:focus:ring-primary-700/50 dark:border-gray-600 dark:focus:border-primary-500 text-base disabled:bg-gray-100 disabled:cursor-not-allowed dark:bg-gray-950 dark:text-gray-300 dark:disabled:bg-gray-700 focus:outline-none"
         x-ref="button"
         disabled={@disabled}
         @click="open = !open"
@@ -117,11 +117,11 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
           <span class="absolute inset-y-0 right-0 flex items-center pr-2 ml-3 pointer-events-none">
             <Icon.icon
               name="remix-arrow-down-s-line"
-              class="w-5 h-5 text-slate-400 dark:text-slate-500"
+              class="w-5 h-5 text-gray-400 dark:text-gray-500"
             />
           </span>
         <% else %>
-          <span class="text-slate-400 dark:text-slate-500 flex">{@placeholder}</span>
+          <span class="text-gray-400 dark:text-gray-500 flex">{@placeholder}</span>
         <% end %>
       </button>
 
@@ -130,7 +130,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
         x-transition:leave="transition ease-in duration-100"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        class="absolute z-20 w-full mt-1 overflow-auto text-base bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2 rounded-lg"
+        class="absolute z-20 w-full mt-1 overflow-auto text-base bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-2 rounded-lg"
         @click.away="open = false"
         tabindex="-1"
         role="listbox"
@@ -139,8 +139,8 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
           :if={not @required}
           role="option"
           class={[
-            if(@selected_idx == nil, do: "bg-slate-50 dark:bg-slate-700"),
-            "relative py-2 pl-3 text-slate-900 dark:text-white cursor-pointer select-none pr-9 hover:bg-slate-50 dark:hover:bg-slate-700"
+            if(@selected_idx == nil, do: "bg-gray-50 dark:bg-gray-700"),
+            "relative py-2 pl-3 text-gray-900 dark:text-white cursor-pointer select-none pr-9 hover:bg-gray-50 dark:hover:bg-gray-700"
           ]}
           {li_assigns(nil)}
         >
@@ -152,8 +152,8 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
           :for={{option, idx} <- Enum.with_index(@options)}
           role="option"
           class={[
-            if(idx == @selected_idx, do: "bg-slate-50 dark:bg-slate-700"),
-            "relative py-2 pl-3 text-slate-900 dark:text-white cursor-pointer select-none pr-9 hover:bg-slate-50 dark:hover:bg-slate-700"
+            if(idx == @selected_idx, do: "bg-gray-50 dark:bg-gray-700"),
+            "relative py-2 pl-3 text-gray-900 dark:text-white cursor-pointer select-none pr-9 hover:bg-gray-50 dark:hover:bg-gray-700"
           ]}
           {li_assigns(idx)}
         >

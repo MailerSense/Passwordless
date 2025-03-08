@@ -28,15 +28,12 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
         version = Passwordless.get_or_create_email_template_version(app, template, language)
         version = EmailTemplateVersion.put_current_language(version, language)
 
-        {:ok, preview} = Passwordless.MJML.format(version.mjml_body)
-
         socket
         |> assign(
           edit?: true,
           version: version,
           template: template,
-          language: language,
-          preview: preview
+          language: language
         )
         |> assign_template_form(EmailTemplate.changeset(template))
         |> assign_version_form(EmailTemplateVersion.changeset(version))
@@ -113,18 +110,8 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
     template = socket.assigns.template
     language = socket.assigns.language
     current_language = Ecto.Changeset.get_field(changeset, :current_language)
-    mjml_body = Ecto.Changeset.get_field(changeset, :mjml_body)
 
     if language == current_language do
-      socket =
-        case Passwordless.MJML.format(mjml_body) do
-          {:ok, preview} ->
-            assign(socket, preview: preview)
-
-          {:error, _} ->
-            put_toast(socket, :error, "MJML compilation failed.", title: gettext("Error"))
-        end
-
       {:noreply, assign_version_form(socket, changeset)}
     else
       {:noreply,
@@ -140,6 +127,22 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   end
 
   @impl true
+  def handle_event("format_code", _params, socket) do
+    case get_in(socket.assigns, [Access.key(:version_form), Access.key(:source)]) do
+      %Ecto.Changeset{valid?: true} = changeset ->
+        formatted =
+          changeset
+          |> Ecto.Changeset.get_field(:mjml_body)
+          |> Passwordless.Native.format_code(:html)
+
+        {:noreply, push_event(socket, "get_formatted_code", %{code: formatted})}
+
+      _ ->
+        {:noreply, socket}
+    end
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
@@ -151,7 +154,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   end
 
   defp assign_version_form(socket, %Ecto.Changeset{} = changeset) do
-    assign(socket, version_form: to_form(changeset))
+    assign(socket, version_form: to_form(changeset), preview: Ecto.Changeset.get_field(changeset, :html_body))
   end
 
   defp apply_action(socket, _action, %{"delete" => _}) do

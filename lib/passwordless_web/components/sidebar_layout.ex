@@ -66,10 +66,10 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
     default: "w-64",
     doc: "The width of the sidebar. Must have the lg: prefix."
 
-  attr :sidebar_bg_class, :string, default: "bg-slate-100 dark:bg-slate-700/30"
-  attr :sidebar_border_class, :string, default: "border-slate-200 dark:border-slate-700"
-  attr :header_bg_class, :string, default: "bg-white dark:bg-slate-900"
-  attr :header_border_class, :string, default: "border-slate-200 dark:border-slate-700"
+  attr :sidebar_bg_class, :string, default: "bg-gray-100 dark:bg-gray-700/30"
+  attr :sidebar_border_class, :string, default: "border-gray-200 dark:border-gray-700"
+  attr :header_bg_class, :string, default: "bg-white dark:bg-gray-900"
+  attr :header_border_class, :string, default: "border-gray-200 dark:border-gray-700"
 
   slot :inner_block, required: true, doc: "The main content of the page."
 
@@ -82,7 +82,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
   def sidebar_layout(assigns) do
     ~H"""
     <div
-      class="flex h-screen overflow-hidden bg-white dark:bg-slate-800"
+      class="flex h-screen overflow-hidden bg-white dark:bg-gray-800"
       x-data={"{sidebarOpen: $persist(true), isCollapsible: #{@collapsible}, #{x_persist_collapsed(assigns)}}"}
     >
       <div class={["relative z-40"]} x-show="sidebarOpen">
@@ -94,7 +94,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
             @sidebar_lg_width_class
           ]}
         >
-          <div class="flex items-center justify-between px-8 py-6 border-b border-slate-200 dark:border-slate-700 h-[88px]">
+          <div class="flex items-center justify-between px-8 py-6 border-b border-gray-200 dark:border-gray-700 h-[88px]">
             <.link navigate={@home_path}>
               {render_slot(@logo)}
             </.link>
@@ -116,12 +116,12 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
       </div>
 
       <div class={[
-        "bg-white dark:bg-slate-900",
+        "bg-white dark:bg-gray-900",
         "flex flex-col flex-1 overflow-y-auto no-scrollbar",
-        "border-l border-slate-200 dark:border-slate-700"
+        "border-l border-gray-200 dark:border-gray-700"
       ]}>
         <header class={[
-          "z-30 border-b border-slate-200 dark:border-slate-700",
+          "z-30 border-b border-gray-200 dark:border-gray-700",
           @header_bg_class,
           @header_border_class
         ]}>
@@ -151,7 +151,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
             />
 
             <.user_topbar_menu
-              class="flex items-center gap-3 h-full ml-auto border-l border-slate-200 dark:border-slate-700"
+              class="flex items-center gap-3 h-full ml-auto border-l border-gray-200 dark:border-gray-700"
               current_user={@current_user}
               user_menu_items={@user_menu_items}
             />

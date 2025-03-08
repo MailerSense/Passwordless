@@ -28,101 +28,92 @@
     </div>
   </.page_header>
 
-  <div class="flex flex-col gap-6">
-    <.action_stat
-      legend={[
-        %{color: "bg-success-500", label: gettext("Allow")},
-        %{color: "bg-warning-500", label: gettext("Timeout")},
-        %{color: "bg-danger-500", label: gettext("Block")}
-      ]}
-      items={[
-        %{
-          name: "Sign in",
-          value: 21323,
-          progress: %{
-            max: 100,
-            items: [
-              %{value: 70, color: "success"},
-              %{value: 20, color: "warning"},
-              %{value: 10, color: "danger"}
-            ]
+  <.stream_table id="actions" meta={@meta} items={@streams.actions} finished={@finished}>
+    <:header>
+      <.action_stat
+        legend={[
+          %{color: "bg-success-500", label: gettext("Allow")},
+          %{color: "bg-warning-500", label: gettext("Timeout")},
+          %{color: "bg-danger-500", label: gettext("Block")}
+        ]}
+        items={[
+          %{
+            name: "Sign in",
+            value: 21323,
+            progress: %{
+              max: 100,
+              items: [
+                %{value: 70, color: "success"},
+                %{value: 20, color: "warning"},
+                %{value: 10, color: "danger"}
+              ]
+            },
+            to: ~p"/app/reports"
           },
-          to: ~p"/app/reports"
-        },
-        %{
-          name: "Withdrawal",
-          value: 21323,
-          progress: %{
-            max: 100,
-            items: [
-              %{value: 70, color: "success"},
-              %{value: 20, color: "warning"},
-              %{value: 10, color: "danger"}
-            ]
+          %{
+            name: "Withdrawal",
+            value: 21323,
+            progress: %{
+              max: 100,
+              items: [
+                %{value: 70, color: "success"},
+                %{value: 20, color: "warning"},
+                %{value: 10, color: "danger"}
+              ]
+            },
+            to: ~p"/app/reports"
           },
-          to: ~p"/app/reports"
-        },
-        %{
-          name: "Order placed",
-          value: 21323,
-          progress: %{
-            max: 100,
-            items: [
-              %{value: 70, color: "success"},
-              %{value: 20, color: "warning"},
-              %{value: 10, color: "danger"}
-            ]
-          },
-          to: ~p"/app/reports"
-        }
-      ]}
-    />
-    <.stream_table
-      id="actions"
-      meta={@meta}
-      title="All actions"
-      items={@streams.actions}
-      finished={@finished}
-    >
-      <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-      <:col :let={action} label={gettext("User")} field={:user}>
-        <.a
-          to={~p"/app/users/#{action.actor}/edit"}
-          class="pc-user-badge"
-          label={Actor.handle(action.actor)}
-          link_type="live_redirect"
-        />
-      </:col>
-      <:col :let={action} label={gettext("Action")} field={:name}>
-        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
-      </:col>
-      <:col :let={action} label={gettext("Details")} field={:details}>
-        Requested a Magic Link
-      </:col>
-      <:col :let={action} label={gettext("State")} field={:state}>
-        <% {badge_label, badge_color} = action_state_badge(action) %>
-        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-      </:col>
-      <:col :let={action} label={gettext("Where")} field={:location}>
-        <div class="flex items-center gap-2">
-          <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
-        </div>
-      </:col>
-      <:col :let={action} label={gettext("When")} field={:inserted_at}>
-        {Timex.from_now(action.inserted_at)}
-      </:col>
-      <:col actions></:col>
-      <:actions :let={action}>
-        <.dropdown placement="left">
-          <:trigger_element>
-            <.icon name="custom-more-dots" class="w-5 h-5" />
-          </:trigger_element>
-          <.dropdown_menu_item link_type="live_redirect" to={~p"/app/users/#{action.actor}/edit"}>
-            <.icon name="remix-pencil-line" class="w-6 h-6 shrink-0" />
-            {gettext("Edit user")}
-          </.dropdown_menu_item>
-        </.dropdown>
-      </:actions>
-    </.stream_table>
-  </div>
+          %{
+            name: "Order placed",
+            value: 21323,
+            progress: %{
+              max: 100,
+              items: [
+                %{value: 70, color: "success"},
+                %{value: 20, color: "warning"},
+                %{value: 10, color: "danger"}
+              ]
+            },
+            to: ~p"/app/reports"
+          }
+        ]}
+      />
+    </:header>
+    <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+    <:col :let={action} label={gettext("User")} field={:user}>
+      <.a
+        to={~p"/app/users/#{action.actor}/edit"}
+        class="pc-user-badge"
+        label={Actor.handle(action.actor)}
+        link_type="live_redirect"
+      />
+    </:col>
+    <:col :let={action} label={gettext("Action")} field={:name}>
+      {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+    </:col>
+    <:col :let={action} label={gettext("State")} field={:state}>
+      <% {badge_label, badge_color} = action_state_badge(action) %>
+      <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+    </:col>
+    <:col :let={action} label={gettext("Where")} field={:location}>
+      <div class="flex items-center gap-2">
+        <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
+      </div>
+    </:col>
+    <:col :let={action} label={gettext("When")} field={:inserted_at}>
+      {Timex.from_now(action.inserted_at)}
+    </:col>
+    <:col actions></:col>
+    <:actions :let={action}>
+      <.dropdown placement="left">
+        <:trigger_element>
+          <.icon name="custom-more-dots" class="w-5 h-5" />
+        </:trigger_element>
+        <.dropdown_menu_item link_type="live_redirect" to={~p"/app/users/#{action.actor}/edit"}>
+          <.icon name="remix-pencil-line" class="w-6 h-6 shrink-0" />
+          {gettext("Edit user")}
+        </.dropdown_menu_item>
+      </.dropdown>
+    </:actions>
+  </.stream_table>
 </.layout>

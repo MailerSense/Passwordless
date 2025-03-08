@@ -12,6 +12,14 @@ export const indentAndAutocompleteWithTab = {
   },
 };
 
+export const formatCode = (callback: (e: EditorView) => boolean) => ({
+  key: "Mod-s",
+  preventDefault: true,
+  run: (e: EditorView) => {
+    return callback(e);
+  },
+});
+
 export const saveUpdates = (source: HTMLInputElement) => {
   return EditorView.updateListener.of((e) => {
     if (e.docChanged) {

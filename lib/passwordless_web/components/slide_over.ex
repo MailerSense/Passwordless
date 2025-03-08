@@ -83,7 +83,7 @@ defmodule PasswordlessWeb.Components.SlideOver do
                   class="pc-slideover__header__button"
                 >
                   <div class="sr-only">Close</div>
-                  <Icon.icon name="remix-close-line" class="w-8 h-8 text-slate-900 dark:text-white" />
+                  <Icon.icon name="remix-close-line" class="w-8 h-8 text-gray-900 dark:text-white" />
                 </button>
               </div>
             </div>

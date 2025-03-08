@@ -43,9 +43,9 @@ defmodule PasswordlessWeb.Components.StackedLayout do
     default: "/",
     doc: "The path to the home page. When a user clicks the logo, they will be taken to this path."
 
-  attr :header_bg_class, :string, default: "bg-white/70 dark:bg-slate-900/70 backdrop-blur-md"
+  attr :header_bg_class, :string, default: "bg-white/70 dark:bg-gray-900/70 backdrop-blur-md"
 
-  attr :header_border_class, :string, default: "border-b border-slate-200 dark:border-slate-700"
+  attr :header_border_class, :string, default: "border-b border-gray-200 dark:border-gray-700"
 
   slot :inner_block, required: true, doc: "The main content of the page."
 
@@ -54,7 +54,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
 
   def stacked_layout(assigns) do
     ~H"""
-    <div class="h-screen overflow-y-auto bg-slate-50 dark:bg-slate-900">
+    <div class="relative h-screen overflow-y-auto bg-gray-50 dark:bg-gray-900">
       <header
         class={[
           @header_bg_class,
@@ -68,7 +68,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
           <div
             class={[
               "lg:hidden absolute w-screen top-[65px] left-0",
-              "bg-white dark:bg-slate-800 shadow-lg z-10"
+              "bg-white dark:bg-gray-800 shadow-lg z-10"
             ]}
             @click.away="mobileMenuOpen = false"
             x-cloak
@@ -101,14 +101,14 @@ defmodule PasswordlessWeb.Components.StackedLayout do
               <% end %>
             </div>
 
-            <div class="pt-4 pb-3 border-t border-slate-200 dark:border-slate-700">
+            <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
               <div class="flex items-center justify-between px-4">
                 <div class="flex items-center">
                   <div class="flex-shrink-0">
                     <.avatar name={user_name(@current_user)} color="primary" />
                   </div>
                   <div class="ml-3">
-                    <div class="text-base font-medium text-slate-800 dark:text-slate-200">
+                    <div class="text-base font-medium text-gray-800 dark:text-gray-200">
                       {user_name(@current_user)}
                     </div>
                   </div>
@@ -154,7 +154,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
           <div class="flex items-center -mr-2 lg:hidden">
             <button
               type="button"
-              class="inline-flex items-center justify-center p-2 text-slate-400 rounded-md dark:text-slate-600 hover:text-slate-500 hover:bg-slate-100 dark:hover:text-slate-400 dark:hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+              class="inline-flex items-center justify-center p-2 text-gray-400 rounded-md dark:text-gray-600 hover:text-gray-500 hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
               aria-controls="mobile-menu"
               @click="mobileMenuOpen = !mobileMenuOpen"
               x-bind:aria-expanded="mobileMenuOpen.toString()"
@@ -215,7 +215,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
             {@menu_item.label}
             <.icon
               name="remix-arrow-down-s-line"
-              class="w-4 h-4 ml-1 -mr-1 text-slate-400 dark:text-slate-100"
+              class="w-4 h-4 ml-1 -mr-1 text-gray-400 dark:text-gray-100"
             />
           </div>
         </:trigger_element>
@@ -240,17 +240,17 @@ defmodule PasswordlessWeb.Components.StackedLayout do
       end)
   end
 
-  defp dropdown_item_class(true), do: "bg-slate-100 dark:bg-slate-700"
+  defp dropdown_item_class(true), do: "bg-gray-100 dark:bg-gray-700"
   defp dropdown_item_class(false), do: ""
 
   defp main_menu_item_base_class,
     do: "inline-flex items-center px-1 text-sm font-medium transition duration-150 ease-in-out top-menu-item"
 
-  defp main_menu_item_class(true), do: ["active text-slate-900 dark:text-slate-100", main_menu_item_base_class()]
+  defp main_menu_item_class(true), do: ["active text-gray-900 dark:text-gray-100", main_menu_item_base_class()]
 
   defp main_menu_item_class(false),
     do: [
-      "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 dark:focus:text-slate-300 dark:text-slate-400",
+      "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 dark:focus:text-gray-300 dark:text-gray-400",
       main_menu_item_base_class()
     ]
 
@@ -260,5 +260,5 @@ defmodule PasswordlessWeb.Components.StackedLayout do
 
   defp mobile_menu_item_class(_, _),
     do:
-      "block py-2 pl-3 pr-4 text-base font-medium text-slate-500 border-l-4 border-transparent hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:bg-slate-800 dark:hover:bg-slate-700 dark:hover:border-slate-700 dark:hover:text-slate-300"
+      "block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:hover:text-gray-300"
 end

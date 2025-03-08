@@ -7,6 +7,7 @@ defmodule Passwordless.EmailTemplateVersion do
 
   alias Passwordless.EmailTemplate
 
+  @styles ~w(clean card)a
   @languages ~w(en de fr)a
 
   @derive {
@@ -15,6 +16,7 @@ defmodule Passwordless.EmailTemplateVersion do
   }
   schema "email_template_versions" do
     field :language, Ecto.Enum, values: @languages, default: :en
+    field :current_style, Ecto.Enum, values: @styles, default: :clean, virtual: true
     field :current_language, Ecto.Enum, values: @languages, default: :en, virtual: true
 
     field :subject, :string
@@ -31,6 +33,7 @@ defmodule Passwordless.EmailTemplateVersion do
     soft_delete_timestamp()
   end
 
+  def styles, do: @styles
   def languages, do: @languages
 
   def put_current_language(%__MODULE__{} = version, language) do
@@ -39,6 +42,7 @@ defmodule Passwordless.EmailTemplateVersion do
 
   @fields ~w(
     language
+    current_style
     current_language
     subject
     preheader
@@ -62,10 +66,20 @@ defmodule Passwordless.EmailTemplateVersion do
     template
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> update_html_body()
     |> unique_constraint([:email_template_id, :language], error_key: :language)
     |> unsafe_validate_unique([:email_template_id, :language], Passwordless.Repo, error_key: :language)
     |> assoc_constraint(:email_template)
   end
 
   # Private
+
+  defp update_html_body(changeset) do
+    with {_, mjml_body} when is_binary(mjml_body) <- fetch_field(changeset, :mjml_body),
+         {:ok, html_body} <- Passwordless.MJML.format(mjml_body) do
+      put_change(changeset, :html_body, html_body)
+    else
+      _ -> changeset
+    end
+  end
 end
