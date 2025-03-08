@@ -195,6 +195,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :meta, Flop.Meta, required: true
   attr :items, :any, required: true
   attr :title, :string, default: nil
+  attr :badge, :string, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
   attr :shadow_class, :string, default: "shadow-2", doc: "CSS class to add to the table"
   attr :finished, :boolean, default: false
@@ -226,7 +227,7 @@ defmodule PasswordlessWeb.Components.DataTable do
       <%= if Util.present?(@header) do %>
         {render_slot(@header)}
       <% end %>
-      <.table_header :if={@title} title={@title} />
+      <.table_header :if={@title} badge={@badge} title={@title} />
       <.table>
         <thead class="pc-table__thead-striped">
           <.tr>
@@ -369,6 +370,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   # Private
 
   attr :meta, Flop.Meta, default: nil
+  attr :badge, :string, default: nil
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
 
@@ -377,6 +379,18 @@ defmodule PasswordlessWeb.Components.DataTable do
       case assigns[:title_func] do
         fun when is_function(fun, 1) -> assign(assigns, :title, fun.(assigns[:meta]))
         nil -> assigns
+      end
+
+    assigns =
+      cond do
+        Util.present?(assigns[:badge]) ->
+          assigns
+
+        Util.present?(assigns[:meta]) ->
+          assign(assigns, :badge, Passwordless.Locale.Number.to_string!(assigns[:meta].total_count))
+
+        true ->
+          assigns
       end
 
     ~H"""
@@ -388,12 +402,7 @@ defmodule PasswordlessWeb.Components.DataTable do
         <h3 class="text-lg font-medium text-gray-900 dark:text-white">
           {@title}
         </h3>
-        <.badge
-          :if={Util.present?(@meta)}
-          size="sm"
-          color="primary"
-          label={Passwordless.Locale.Number.to_string!(@meta.total_count)}
-        />
+        <.badge :if={Util.present?(@badge)} size="sm" color="primary" label={@badge} />
       </div>
     </div>
     """

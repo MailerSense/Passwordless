@@ -16,7 +16,7 @@ defmodule Passwordless.EmailTemplates do
     do: %{
       magic_link_sign_in: %{
         en: %{
-          name: gettext("Magic link email template"),
+          name: gettext("Magic link template"),
           subject: gettext("Sign in to %{name}", name: app.display_name),
           preheader: gettext("Click the link below to sign in."),
           mjml_body:
@@ -150,7 +150,7 @@ defmodule Passwordless.EmailTemplates do
       },
       email_otp_sign_in: %{
         en: %{
-          name: gettext("Email OTP email template"),
+          name: gettext("Email OTP template"),
           subject: gettext("Sign in to %{name}", name: app.display_name),
           preheader: gettext("Use the code below to sign in."),
           mjml_body:

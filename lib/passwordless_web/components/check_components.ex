@@ -5,6 +5,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   use Gettext, backend: PasswordlessWeb.Gettext
 
   import PasswordlessWeb.Components.Avatar
+  import PasswordlessWeb.Components.Button
   import PasswordlessWeb.Components.Form
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Link
@@ -30,18 +31,18 @@ defmodule PasswordlessWeb.DashboardComponents do
         {@rest}
         class={[
           "hover:shadow-2 active:shadow-3 transition-all duration-150 ease-in-out",
-          "border border-gray-200 dark:border-gray-700"
+          "border border-slate-200 dark:border-slate-700"
         ]}
       >
         <section class={[
           "p-6 rounded-lg flex flex-col gap-4",
-          "bg-white dark:bg-gray-700/30",
+          "bg-white dark:bg-slate-700/30",
           @class
         ]}>
-          <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold leading-tight">
+          <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
             {@badge}
           </badge>
-          <h4 class="text-gray-900 dark:text-white text-2xl font-bold">
+          <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
             {@content}
           </h4>
         </section>
@@ -50,16 +51,16 @@ defmodule PasswordlessWeb.DashboardComponents do
       <section
         class={[
           "p-6 rounded-lg flex flex-col gap-4",
-          "border border-gray-200 dark:border-gray-700",
-          "bg-white dark:bg-gray-700/30",
+          "border border-slate-200 dark:border-slate-700",
+          "bg-white dark:bg-slate-700/30",
           @class
         ]}
         {@rest}
       >
-        <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold leading-tight">
+        <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
           {@badge}
         </badge>
-        <h4 class="text-gray-900 dark:text-white text-2xl font-bold">
+        <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
           {@content}
         </h4>
       </section>
@@ -83,20 +84,20 @@ defmodule PasswordlessWeb.DashboardComponents do
     <.a
       to={@to}
       class={[
-        "p-6 bg-white dark:bg-gray-800",
+        "p-6 bg-white dark:bg-slate-800",
         "flex rounded-lg shadow-m2 justify-between",
         "hover:shadow-2 active:shadow-3 select-none",
         "transition duration-150 ease-in-out",
-        "border border-gray-200 dark:border-gray-700",
+        "border border-slate-200 dark:border-slate-700",
         @class
       ]}
       link_type={@link_type}
     >
       <div class="flex flex-col justify-between">
-        <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold leading-tight">
+        <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
           {@label}
         </badge>
-        <h4 class="text-gray-900 dark:text-white text-2xl font-bold">
+        <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
           {Passwordless.Locale.Number.to_string!(@value)}
         </h4>
       </div>
@@ -107,7 +108,7 @@ defmodule PasswordlessWeb.DashboardComponents do
             cy="18"
             r="16"
             fill="none"
-            class="stroke-current text-gray-100 dark:text-gray-700"
+            class="stroke-current text-slate-100 dark:text-slate-700"
             stroke-width="3.5"
           >
           </circle>
@@ -143,13 +144,13 @@ defmodule PasswordlessWeb.DashboardComponents do
     ~H"""
     <div
       class={[
-        "flex flex-col divide-y divide-gray-200 dark:divide-gray-700 overflow-hidden",
-        "border-b border-gray-200 dark:border-gray-700",
+        "flex flex-col divide-y divide-slate-200 dark:divide-slate-700",
+        "border-b border-slate-200 dark:border-slate-700",
         @class
       ]}
       {@rest}
     >
-      <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-200 dark:divide-gray-700">
+      <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-slate-700">
         <.a
           :for={item <- @items}
           to={item.to}
@@ -157,13 +158,13 @@ defmodule PasswordlessWeb.DashboardComponents do
           class={[
             "flex flex-col gap-4 p-6",
             "transition duration-150 ease-in-out",
-            "hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700"
+            "hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-700"
           ]}
         >
-          <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold leading-tight">
+          <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
             {item.name}
           </badge>
-          <h4 class="text-gray-900 dark:text-white text-2xl font-bold">
+          <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
             {Passwordless.Locale.Number.to_string!(item.value)}
           </h4>
           <%= case item.progress do %>
@@ -174,11 +175,25 @@ defmodule PasswordlessWeb.DashboardComponents do
           <% end %>
         </.a>
       </div>
-      <div class="flex p-6 gap-6 items-center flex-wrap">
-        <div :for={item <- @legend} class="flex gap-2 items-center">
-          <span class={["w-4 h-2 rounded-full", item.color]}></span>
-          <p class="text-gray-600 dark:text-gray-300 text-xs font-semibold">{item.label}</p>
+      <div class="flex justify-between items-center">
+        <div class="flex p-6 gap-6 items-center flex-wrap">
+          <div :for={item <- @legend} class="flex gap-2 items-center">
+            <span class={["w-4 h-2 rounded-full", item.color]}></span>
+            <p class="text-slate-600 dark:text-slate-300 text-xs font-semibold">{item.label}</p>
+          </div>
         </div>
+
+        <.button
+          size="xs"
+          title={gettext("View statistics")}
+          color="light"
+          class="mr-6"
+          with_icon
+          to={~p"/app/reports"}
+          link_type="live_redirect"
+        >
+          {gettext("View statistics")}<.icon name="remix-arrow-right-line" class="w-4 h-4" />
+        </.button>
       </div>
     </div>
     """
@@ -202,8 +217,8 @@ defmodule PasswordlessWeb.DashboardComponents do
     ~H"""
     <article
       class={[
-        "p-6 bg-white dark:bg-gray-700/50 rounded-lg shadow-m2 flex flex-col gap-4",
-        "border border-gray-200 dark:border-gray-700",
+        "p-6 bg-white dark:bg-slate-700/50 rounded-lg shadow-m2 flex flex-col gap-4",
+        "border border-slate-200 dark:border-slate-700",
         @class
       ]}
       {@rest}
@@ -211,10 +226,10 @@ defmodule PasswordlessWeb.DashboardComponents do
       <div class="flex items-center gap-4">
         <div class={["w-1 h-full rounded-lg", @color_class]}></div>
         <div class="flex flex-col gap-4">
-          <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold leading-tight">
+          <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
             {@label}
           </badge>
-          <h3 class="text-gray-900 dark:text-white text-2xl font-bold leading-6">
+          <h3 class="text-slate-900 dark:text-white text-2xl font-bold leading-6">
             {@value}
           </h3>
         </div>
@@ -222,7 +237,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       <div class="flex items-center gap-1">
         <.icon name="custom-rise-line" class={["w-4 h-4", @change_class, @change_icon_class]} />
         <span class={["text-xs font-bold", @change_class]}>{"#{@change_symbol}#{@change}"}</span>
-        <span class="text-gray-500 dark:text-gray-400 text-xs font-normal">
+        <span class="text-slate-500 dark:text-slate-400 text-xs font-normal">
           change since last period
         </span>
       </div>
@@ -250,7 +265,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       <.form_label>{gettext("Preview")}</.form_label>
       <.a
         to={@to}
-        class="flex items-start justify-center bg-gray-100 rounded-lg dark:bg-gray-700/50 max-h-[280px] overflow-hidden"
+        class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 max-h-[280px] overflow-hidden"
         link_type={@link_type}
       >
         <iframe
@@ -283,10 +298,10 @@ defmodule PasswordlessWeb.DashboardComponents do
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
       <.form_label>{gettext("Preview")}</.form_label>
 
-      <div class="flex flex-col gap-y-12 flex-auto flex-shrink-0 p-4 bg-gray-100 rounded-lg dark:bg-gray-700/50">
+      <div class="flex flex-col gap-y-12 flex-auto flex-shrink-0 p-4 bg-slate-100 rounded-lg dark:bg-slate-700/50">
         <div class="flex flex-row items-center max-w-md ml-4">
           <.avatar name="AU" size="md" color="success" class="flex-shrink-0" />
-          <div class="relative px-4 py-2 ml-3 text-sm bg-white shadow-0 dark:bg-gray-600 rounded-xl">
+          <div class="relative px-4 py-2 ml-3 text-sm bg-white shadow-0 dark:bg-slate-600 rounded-xl">
             <.unsafe_markdown content={@preview} class="text-black dark:text-white" />
           </div>
         </div>
@@ -296,7 +311,7 @@ defmodule PasswordlessWeb.DashboardComponents do
             <button
               type="button"
               id="microphone"
-              class="size-[36px] flex items-center justify-center text-sm text-gray-600 bg-white rounded-full shadow dark:text-white hover:bg-gray-100 ring-gray-300 dark:bg-gray-700 ring-1 dark:ring-gray-500 group dark:hover:bg-gray-600 active:ring-4 active:ring-blue-300 dark:focus:bg-gray-700 active:animate-pulse active:bg-red-400 dark:active:bg-red-500"
+              class="size-[36px] flex items-center justify-center text-sm text-slate-600 bg-white rounded-full shadow dark:text-white hover:bg-slate-100 ring-slate-300 dark:bg-slate-700 ring-1 dark:ring-slate-500 group dark:hover:bg-slate-600 active:ring-4 active:ring-blue-300 dark:focus:bg-slate-700 active:animate-pulse active:bg-red-400 dark:active:bg-red-500"
             >
               <.icon name="hero-microphone-solid" class="w-4 h-4" />
             </button>
@@ -309,7 +324,7 @@ defmodule PasswordlessWeb.DashboardComponents do
                 value=""
                 type="textarea"
                 rows="1"
-                class="flex w-full pl-4 border min-h-10 rounded-xl focus:outline-none border border-gray-300 dark:border-gray-600"
+                class="flex w-full pl-4 border min-h-10 rounded-xl focus:outline-none border border-slate-300 dark:border-slate-600"
               />
             </div>
           </div>
@@ -317,7 +332,7 @@ defmodule PasswordlessWeb.DashboardComponents do
             <button
               type="submit"
               id="submit-button"
-              class="size-[36px] flex items-center justify-center text-sm text-gray-600 rounded-full shadow dark:text-white ring-gray-300 hover:bg-gray-100 focus:bg-white ring-1 dark:ring-gray-300 group dark:hover:bg-gray-400 bg-white dark:bg-transparent"
+              class="size-[36px] flex items-center justify-center text-sm text-slate-600 rounded-full shadow dark:text-white ring-slate-300 hover:bg-slate-100 focus:bg-white ring-1 dark:ring-slate-300 group dark:hover:bg-slate-400 bg-white dark:bg-transparent"
             >
               <.icon id="icon" name="hero-paper-airplane-solid" class={["w-4 h-4"]} />
             </button>

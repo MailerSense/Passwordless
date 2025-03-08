@@ -8,7 +8,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   @data_table_opts [
     for: Action,
-    count: 0,
     default_limit: 30,
     default_order: %{
       order_by: [:id],

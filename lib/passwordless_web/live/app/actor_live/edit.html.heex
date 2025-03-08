@@ -62,6 +62,66 @@
             />
           </:actions>
         </.simple_table>
+
+        <.simple_table items={@emails} title={gettext("User emails")}>
+          <:if_empty>{gettext("No %{models} defined yet", models: gettext("emails"))}</:if_empty>
+          <:col field={:address} label={gettext("Email")} body_class="w-full" />
+          <:col :let={email} field={:verified}>
+            <.field type="checkbox" name="" label="" value={email.verified} readonly />
+          </:col>
+          <:col :let={email} field={:primary}>
+            <.field type="checkbox" name="" label="" value={email.primary} readonly />
+          </:col>
+          <:col actions></:col>
+          <:actions :let={email}>
+            <.icon_button
+              to={~p"/app/users/#{@actor}/emails/#{email}/delete"}
+              size="sm"
+              icon="custom-trash"
+              color="light"
+              title={gettext("Remove")}
+              link_type="live_patch"
+            />
+            <.icon_button
+              to={~p"/app/users/#{@actor}/emails/#{email}/edit"}
+              size="sm"
+              icon="custom-edit"
+              color="light"
+              title={gettext("Edit")}
+              link_type="live_patch"
+            />
+          </:actions>
+        </.simple_table>
+
+        <.simple_table items={@phones} title={gettext("User phones")}>
+          <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
+          <:col field={:canonical} label={gettext("Phone")} body_class="w-full" />
+          <:col :let={phone} field={:verified}>
+            <.field type="checkbox" name="" label="" value={phone.verified} readonly />
+          </:col>
+          <:col :let={phone} field={:primary}>
+            <.field type="checkbox" name="" label="" value={phone.primary} readonly />
+          </:col>
+          <:col actions></:col>
+          <:actions :let={phone}>
+            <.icon_button
+              to={~p"/app/users/#{@actor}/phones/#{phone}/delete"}
+              size="sm"
+              icon="custom-trash"
+              color="light"
+              title={gettext("Remove")}
+              link_type="live_patch"
+            />
+            <.icon_button
+              to={~p"/app/users/#{@actor}/phones/#{phone}/edit"}
+              size="sm"
+              icon="custom-edit"
+              color="light"
+              title={gettext("Edit")}
+              link_type="live_patch"
+            />
+          </:actions>
+        </.simple_table>
       </div>
     </.form>
   </div>
