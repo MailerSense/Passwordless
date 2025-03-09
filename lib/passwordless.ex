@@ -221,7 +221,9 @@ defmodule Passwordless do
   # Actor
 
   def get_actor!(%App{} = app, id) when is_binary(id) do
-    Repo.get!(Actor, id, prefix: Tenant.to_prefix(app))
+    Actor
+    |> Repo.get!(id, prefix: Tenant.to_prefix(app))
+    |> Actor.put_active()
   end
 
   def create_actor(%App{} = app, attrs \\ %{}) do

@@ -164,9 +164,9 @@ defmodule PasswordlessWeb.DashboardComponents do
           <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
             {item.name}
           </badge>
-          <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
+          <h2 class="text-slate-900 dark:text-white text-2xl font-bold">
             {Passwordless.Locale.Number.to_string!(item.value)}
-          </h4>
+          </h2>
           <%= case item.progress do %>
             <% %{max: max, items: items} when is_list(items) -> %>
               <.multi_progress max={max} class="flex-grow" items={items} />

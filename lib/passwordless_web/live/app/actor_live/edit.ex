@@ -92,6 +92,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     |> assign(form: to_form(changeset))
     |> assign(user_name: Ecto.Changeset.get_field(changeset, :name))
     |> assign(user_state: Ecto.Changeset.get_field(changeset, :state))
+    |> assign(user_active: Ecto.Changeset.get_field(changeset, :active))
   end
 
   defp apply_action(socket, :edit, %Actor{} = actor) do
@@ -133,5 +134,9 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
     end
+  end
+
+  defp user_title(name) do
+    if Util.present?(name), do: name, else: gettext("User")
   end
 end

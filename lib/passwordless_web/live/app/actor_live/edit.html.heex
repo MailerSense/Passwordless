@@ -1,5 +1,5 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
-  <.page_header title={gettext("Edit user")}>
+  <.subpage_header title={user_title(@user_name)}>
     <div class="flex gap-3">
       <.button
         to={~p"/app/users"}
@@ -29,20 +29,12 @@
         disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
       />
     </div>
-  </.page_header>
+  </.subpage_header>
 
   <div class="flex flex-col gap-6">
     <.box padded>
       <.form id="edit-actor-form" for={@form} phx-change="validate" phx-submit="save">
-        <.field
-          field={@form[:state]}
-          label=""
-          type="radio-group"
-          options={@states}
-          disabled_options={[:stale]}
-          required
-          required_asterix={false}
-        />
+        <.field type="checkbox" field={@form[:active]} disabled={@user_state == :stale} />
         <.p class="mb-6">
           <%= case @user_state do %>
             <% :active -> %>
@@ -78,6 +70,7 @@
         </div>
       </.form>
     </.box>
+
     <.simple_table
       items={@emails}
       title={gettext("Emails")}
@@ -153,6 +146,83 @@
         />
         <.icon_button
           to={~p"/app/users/#{@actor}/phones/#{phone}/edit"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.simple_table>
+
+    <.simple_table items={[]} title={gettext("Passkeys")}>
+      <:if_empty>{gettext("No %{models} defined yet", models: gettext("passkeys"))}</:if_empty>
+      <:col field={:address} label={gettext("Name")} body_class="w-full" />
+
+      <:col actions></:col>
+      <:actions :let={email}>
+        <.icon_button
+          to={~p"/app/users/#{@actor}/emails/#{email}/delete"}
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          link_type="live_patch"
+        />
+        <.icon_button
+          to={~p"/app/users/#{@actor}/emails/#{email}/edit"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.simple_table>
+
+    <.simple_table items={[]} title={gettext("Authenticator apps")}>
+      <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
+      <:col field={:address} label={gettext("Name")} body_class="w-full" />
+
+      <:col actions></:col>
+      <:actions :let={email}>
+        <.icon_button
+          to={~p"/app/users/#{@actor}/emails/#{email}/delete"}
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          link_type="live_patch"
+        />
+        <.icon_button
+          to={~p"/app/users/#{@actor}/emails/#{email}/edit"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.simple_table>
+
+    <.simple_table items={[]} title={gettext("Security keys")}>
+      <:if_empty>
+        {gettext("No %{models} defined yet", models: gettext("security keys"))}
+      </:if_empty>
+      <:col field={:address} label={gettext("Name")} body_class="w-full" />
+
+      <:col actions></:col>
+      <:actions :let={email}>
+        <.icon_button
+          to={~p"/app/users/#{@actor}/emails/#{email}/delete"}
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          link_type="live_patch"
+        />
+        <.icon_button
+          to={~p"/app/users/#{@actor}/emails/#{email}/edit"}
           size="sm"
           icon="custom-edit"
           color="light"

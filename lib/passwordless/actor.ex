@@ -49,6 +49,8 @@ defmodule Passwordless.Actor do
     field :state, Ecto.Enum, values: @states, default: :active
     field :language, Ecto.Enum, values: Locale.language_codes(), default: :en
 
+    field :active, :boolean, default: true, virtual: true
+
     has_one :email, Email, where: [primary: true]
     has_one :phone, Phone, where: [primary: true]
 
@@ -104,6 +106,10 @@ defmodule Passwordless.Actor do
     from q in query, preload: [:email, :phone]
   end
 
+  def put_active(%__MODULE__{state: state} = actor) do
+    %__MODULE__{actor | active: state == :active}
+  end
+
   @doc """
   Join the details.
   """
@@ -140,10 +146,12 @@ defmodule Passwordless.Actor do
     name
     state
     language
+    active
   )a
   @required_fields ~w(
     state
     language
+    active
   )a
 
   @doc """
@@ -173,6 +181,7 @@ defmodule Passwordless.Actor do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_name()
+    |> validate_active()
   end
 
   @doc """
@@ -206,6 +215,14 @@ defmodule Passwordless.Actor do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
     |> validate_length(:name, min: 1, max: 512)
+  end
+
+  defp validate_active(changeset) do
+    case {get_field(changeset, :state), fetch_change(changeset, :active)} do
+      {:active, {:ok, false}} -> put_change(changeset, :state, :locked)
+      {:locked, {:ok, true}} -> put_change(changeset, :state, :active)
+      _ -> changeset
+    end
   end
 
   defp join_assoc(query, binding) do

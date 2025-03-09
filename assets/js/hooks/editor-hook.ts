@@ -5,6 +5,7 @@ import { keymap } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
 import { basicSetup, EditorView } from "codemirror";
 import { Hook, makeHook } from "phoenix_typed_hook";
+
 import {
   formatCode,
   indentAndAutocompleteWithTab,
@@ -45,12 +46,12 @@ class EditorHook extends Hook {
       throw new Error("Editor element not found");
     }
 
-    let formatExt = formatCode((source) => {
+    const formatExt = formatCode((source) => {
       this.pushEvent("format_code", {});
       return true;
     });
 
-    let state = EditorState.create({
+    const state = EditorState.create({
       doc: source.value,
       extensions: [
         basicSetup,

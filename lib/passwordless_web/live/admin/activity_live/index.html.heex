@@ -28,8 +28,8 @@
         <%= case Log.full_recipient_parts(log) do %>
           <% {:user, recipient_name, recipient} when is_binary(recipient_name) and is_binary(recipient) -> %>
             <span class="line-clamp-1 flex items-center gap-1">
-              <.icon name="remix-building-line" class="w-4 h-4 text-gray-900 dark:text-white" />
-              <span class="text-gray-900 dark:text-white font-medium shrink-0">
+              <.icon name="remix-building-line" class="w-4 h-4 text-slate-900 dark:text-white" />
+              <span class="text-slate-900 dark:text-white font-medium shrink-0">
                 {recipient_name}
               </span>
               <span>{"<#{recipient}>"}</span>

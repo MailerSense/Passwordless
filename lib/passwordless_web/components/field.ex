@@ -154,6 +154,7 @@ defmodule PasswordlessWeb.Components.Field do
           value="true"
           checked={@checked}
           required={@required}
+          disabled={@disabled}
           class={["pc-checkbox", @class]}
           {@rest}
         />
@@ -403,7 +404,6 @@ defmodule PasswordlessWeb.Components.Field do
               checked={
                 to_string(value) == to_string(@value) || to_string(value) == to_string(@checked)
               }
-              disabled={value in @disabled_options}
               class="pc-radio"
               {@rest}
             />
@@ -714,7 +714,7 @@ defmodule PasswordlessWeb.Components.Field do
       </.field_label>
       <div class={[
         "flex items-center gap-3 border",
-        "w-full px-3 py-2.5 border-gray-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:focus:border-primary-400 text-base disabled:bg-gray-100 disabled:cursor-not-allowed dark:bg-gray-900 dark:text-white dark:disabled:bg-gray-700 z-20"
+        "w-full px-3 py-2.5 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20"
       ]}>
         <input
           id={@id}

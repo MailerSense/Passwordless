@@ -65,7 +65,7 @@ defmodule PasswordlessWeb.Components.SidebarMenu do
     <nav>
       <p
         :if={Util.present?(@title)}
-        class="px-4 mb-3 text-xs font-semibold text-gray-500 uppercase select-none"
+        class="px-4 mb-3 text-xs font-semibold text-slate-500 uppercase select-none"
         x-bind:class="isCollapsed ? 'hidden' : 'block'"
       >
         {@title}
@@ -136,7 +136,7 @@ defmodule PasswordlessWeb.Components.SidebarMenu do
       </span>
       <div
         :if={@counters}
-        class="flex ml-auto px-1.5 rounded-full justify-center items-center bg-gray-900 dark:bg-primary-300 text-white dark:text-gray-900 text-xs font-semibold leading-[18px]"
+        class="flex ml-auto px-1.5 rounded-full justify-center items-center bg-slate-900 dark:bg-primary-300 text-white dark:text-slate-900 text-xs font-semibold leading-[18px]"
       >
         {elem(@counters, 0)}
       </div>
@@ -233,12 +233,12 @@ defmodule PasswordlessWeb.Components.SidebarMenu do
 
   # Active state
   defp menu_item_classes(page, page),
-    do: "#{menu_item_base()} text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-0"
+    do: "#{menu_item_base()} text-slate-900 dark:text-white bg-white dark:bg-slate-700 shadow-0"
 
   # Inactive state
   defp menu_item_classes(_current_page, _link_page),
     do:
-      "#{menu_item_base()} text-gray-600 dark:text-gray-400 hover:text-gray-900 hover:bg-white dark:hover:bg-gray-700 dark:hover:text-white hover:shadow-0"
+      "#{menu_item_base()} text-slate-600 dark:text-slate-400 hover:text-slate-900 hover:bg-white dark:hover:bg-slate-700 dark:hover:text-white hover:shadow-0"
 
   defp find_item(name, menu_items) when is_list(menu_items) do
     Enum.find(menu_items, fn menu_item ->

@@ -34,7 +34,7 @@ defmodule PasswordlessWeb.User.SecurityLive do
         </div>
 
         <div class="flex items-center justify-start px-4 py-8 sm:px-0">
-          <div class="p-5 border-4 border-gray-300 border-dashed rounded-lg dark:border-gray-700">
+          <div class="p-5 border-4 border-slate-300 border-dashed rounded-lg dark:border-slate-700">
             <div class="text-xl font-bold" id="totp-secret">
               {format_secret(@editing_totp.secret)}
             </div>
@@ -146,7 +146,7 @@ defmodule PasswordlessWeb.User.SecurityLive do
       <.a
         to={~p"/app/password"}
         label={gettext("Go to password settings")}
-        class="underline font-semibold text-gray-900 dark:text-white"
+        class="underline font-semibold text-slate-900 dark:text-white"
         link_type="live_redirect"
       />
     <% end %>
@@ -166,7 +166,7 @@ defmodule PasswordlessWeb.User.SecurityLive do
 
       <div class="grid grid-cols-1 gap-3 mt-5 mb-10 md:grid-cols-2">
         <%= for backup_code <- @backup_codes do %>
-          <div class="flex items-center justify-center p-3 font-mono bg-gray-300 rounded dark:bg-gray-700">
+          <div class="flex items-center justify-center p-3 font-mono bg-slate-300 rounded dark:bg-slate-700">
             <h4>
               <%= if backup_code.used_at do %>
                 <del class="line-through">{backup_code.code}</del>

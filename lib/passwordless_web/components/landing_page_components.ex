@@ -19,7 +19,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
 
   def hero(assigns) do
     ~H"""
-    <section class="bg-gray-900 border-t border-t-1 border-gray-950" role="banner">
+    <section class="bg-slate-900 border-t border-t-1 border-slate-950" role="banner">
       <.hero_text max_width={@max_width} current_user={@current_user} />
       <.hero_image max_width={@max_width} />
     </section>
@@ -105,7 +105,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
         loading="lazy"
       />
 
-      <div class="rounded-3xl p-4 bg-gray-950 max-w-[900px] xl:max-w-[1000px] mx-auto relative z-1">
+      <div class="rounded-3xl p-4 bg-slate-950 max-w-[900px] xl:max-w-[1000px] mx-auto relative z-1">
         <.a to={~p"/product"} title={gettext("Learn more about Passwordless")}>
           <img
             src={static_url(PasswordlessWeb.Endpoint, ~p"/images/landing_page/hero.webp")}
@@ -131,7 +131,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
 
   def hero_image_header(assigns) do
     ~H"""
-    <div class="px-4 md:px-16 lg:px-0 h-[150px] sm:h-[250px] md:h-[300px] lg:h-[380px] relative overflow-hidden bg-gray-900">
+    <div class="px-4 md:px-16 lg:px-0 h-[150px] sm:h-[250px] md:h-[300px] lg:h-[380px] relative overflow-hidden bg-slate-900">
       <img
         src={static_url(PasswordlessWeb.Endpoint, ~p"/images/landing_page/chart-line.svg")}
         alt={Passwordless.config(:app_name)}
@@ -140,7 +140,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
         loading="lazy"
       />
 
-      <div class="rounded-3xl p-4 bg-gray-950 max-w-[900px] xl:max-w-[1000px] mx-auto relative z-1">
+      <div class="rounded-3xl p-4 bg-slate-950 max-w-[900px] xl:max-w-[1000px] mx-auto relative z-1">
         <img
           src={static_url(PasswordlessWeb.Endpoint, @image_src)}
           alt={@image_alt}
@@ -163,8 +163,8 @@ defmodule PasswordlessWeb.LandingPageComponents do
   def hero_header(assigns) do
     ~H"""
     <section class={[
-      "flex flex-col items-center py-8 md:py-16 px-4 md:px-0 border-t border-t-1 border-gray-950",
-      "bg-gray-900",
+      "flex flex-col items-center py-8 md:py-16 px-4 md:px-0 border-t border-t-1 border-slate-950",
+      "bg-slate-900",
       @class
     ]}>
       <badge class="text-center text-primary-300 text-xs font-semibold uppercase mb-2">
@@ -187,7 +187,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
 
   def hero_error(assigns) do
     ~H"""
-    <section class="bg-gray-900" role="banner">
+    <section class="bg-slate-900" role="banner">
       <div class="flex flex-col items-between h-full">
         {render_slot(@inner_block)}
         <div class="px-4 md:px-16 lg:px-0 h-[200px] sm:h-[300px] md:h-[350px] lg:h-[500px] relative overflow-hidden mt-auto">
@@ -199,7 +199,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
             loading="lazy"
           />
 
-          <div class="rounded-3xl p-4 bg-gray-950 max-w-[900px] xl:max-w-[1000px] mx-auto relative z-1">
+          <div class="rounded-3xl p-4 bg-slate-950 max-w-[900px] xl:max-w-[1000px] mx-auto relative z-1">
             <img
               src={static_url(PasswordlessWeb.Endpoint, ~p"/images/landing_page/hero.webp")}
               alt={gettext("Uptime Monitoring Service Made For Developers")}
@@ -225,11 +225,11 @@ defmodule PasswordlessWeb.LandingPageComponents do
     <div class={["flex flex-col items-center", @class]}>
       <badge
         :if={@badge}
-        class="text-center text-gray-500 dark:text-white/60 text-xs font-semibold uppercase mb-2"
+        class="text-center text-slate-500 dark:text-white/60 text-xs font-semibold uppercase mb-2"
       >
         {@badge}
       </badge>
-      <h2 class="text-gray-900 dark:text-white text-center text-3xl md:text-5xl font-semibold font-display">
+      <h2 class="text-slate-900 dark:text-white text-center text-3xl md:text-5xl font-semibold font-display">
         {@title}
       </h2>
     </div>
@@ -244,11 +244,11 @@ defmodule PasswordlessWeb.LandingPageComponents do
   def area_wide_header(assigns) do
     ~H"""
     <div class={["flex flex-col items-center", @class]}>
-      <badge class="text-center text-gray-500 text-xs font-semibold uppercase mb-2">{@badge}</badge>
-      <h1 class="text-gray-900 text-center text-4xl md:text-5xl font-semibold font-display mb-4">
+      <badge class="text-center text-slate-500 text-xs font-semibold uppercase mb-2">{@badge}</badge>
+      <h1 class="text-slate-900 text-center text-4xl md:text-5xl font-semibold font-display mb-4">
         {@title}
       </h1>
-      <h4 class="text-gray-500 text-center text-xl font-normal font-display">
+      <h4 class="text-slate-500 text-center text-xl font-normal font-display">
         {@subtitle}
       </h4>
     </div>
@@ -279,9 +279,9 @@ defmodule PasswordlessWeb.LandingPageComponents do
 
         <div class="grid gap-12 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 my-12">
           <div :for={feature <- @minor_features} class="flex flex-col">
-            <.icon name={feature.icon} class="w-8 h-8 mb-4 text-gray-900" />
-            <h4 class="text-gray-900 text-lg font-semibold mb-[10px]">{feature.title}</h4>
-            <h5 class="text-gray-600 text-sm font-normal leading-tight">{feature.description}</h5>
+            <.icon name={feature.icon} class="w-8 h-8 mb-4 text-slate-900" />
+            <h4 class="text-slate-900 text-lg font-semibold mb-[10px]">{feature.title}</h4>
+            <h5 class="text-slate-600 text-sm font-normal leading-tight">{feature.description}</h5>
           </div>
         </div>
       </div>
@@ -312,9 +312,9 @@ defmodule PasswordlessWeb.LandingPageComponents do
 
       <div class="grid gap-12 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 my-12">
         <div :for={feature <- @minor_features} class="flex flex-col">
-          <.icon name={feature.icon} class="w-8 h-8 mb-4 text-gray-900" />
-          <h4 class="text-gray-900 text-lg font-semibold mb-[10px]">{feature.title}</h4>
-          <h5 class="text-gray-600 text-sm font-normal leading-tight">{feature.description}</h5>
+          <.icon name={feature.icon} class="w-8 h-8 mb-4 text-slate-900" />
+          <h4 class="text-slate-900 text-lg font-semibold mb-[10px]">{feature.title}</h4>
+          <h5 class="text-slate-600 text-sm font-normal leading-tight">{feature.description}</h5>
         </div>
       </div>
     </div>
@@ -342,7 +342,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
           <div class={["grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3"]}>
             <article
               :for={highlight <- @highligts}
-              class="flex flex-col justify-between p-8 bg-gray-900 rounded-xl gap-8"
+              class="flex flex-col justify-between p-8 bg-slate-900 rounded-xl gap-8"
             >
               <img
                 src={static_url(PasswordlessWeb.Endpoint, highlight.image)}
@@ -360,30 +360,30 @@ defmodule PasswordlessWeb.LandingPageComponents do
           </div>
 
           <div class="grid gap-8 lg:gap-[140px] grid-cols-1 lg:grid-cols-2">
-            <h3 class="text-gray-900 text-3xl font-semibold font-display leading-[38px]">
+            <h3 class="text-slate-900 text-3xl font-semibold font-display leading-[38px]">
               We offer more opportunities for an affordable price. Save time and money with our automated incident detection.
             </h3>
             <div class="flex flex-col gap-6">
-              <p class="text-gray-600 text-xl font-normal leading-[30px]">
+              <p class="text-slate-600 text-xl font-normal leading-[30px]">
                 Incidents happen even to the best of us. Our solution will augment your QA efforts to ensure bugs are caught before your users notice them!
               </p>
               <span class="flex items-center gap-2">
-                <p class="text-gray-600 text-xl font-normal leading-[30px]">
+                <p class="text-slate-600 text-xl font-normal leading-[30px]">
                   We monitor your websites from around the globe
                 </p>
-                <.icon name="remix-global-line" class="w-6 h-6 text-gray-600" />
+                <.icon name="remix-global-line" class="w-6 h-6 text-slate-600" />
               </span>
             </div>
           </div>
 
           <div class={[
-            "grid gap-12 md:gap-5 grid-cols-1 py-16 md:py-20 lg:grid-cols-3 border-t border-gray-200"
+            "grid gap-12 md:gap-5 grid-cols-1 py-16 md:py-20 lg:grid-cols-3 border-t border-slate-200"
           ]}>
             <div :for={quota <- @quotas} class="flex flex-col items-center gap-2 md:gap-6">
-              <h2 class="text-gray-900 text-center text-5xl md:text-7xl font-semibold font-display md:leading-[90px]">
+              <h2 class="text-slate-900 text-center text-5xl md:text-7xl font-semibold font-display md:leading-[90px]">
                 {quota.number}
               </h2>
-              <p class="text-center text-gray-600">
+              <p class="text-center text-slate-600">
                 {quota.description}
               </p>
             </div>
@@ -466,7 +466,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
   def testimonial_card(assigns) do
     ~H"""
     <article class={[
-      "px-6 py-8 grow bg-gray-50 rounded-xl flex flex-col justify-between",
+      "px-6 py-8 grow bg-slate-50 rounded-xl flex flex-col justify-between",
       "min-w-[500px] xl:min-w-[600px] min-h-[300px] lg:min-h-[400px] grow"
     ]}>
       <div class="flex flex-col gap-6">
@@ -474,10 +474,10 @@ defmodule PasswordlessWeb.LandingPageComponents do
           <.icon
             :for={i <- 1..5}
             name="remix-star-fill"
-            class={["w-5 h-5", if(i <= @rating, do: "text-[#FBBF10]", else: "text-gray-500")]}
+            class={["w-5 h-5", if(i <= @rating, do: "text-[#FBBF10]", else: "text-slate-500")]}
           />
         </div>
-        <p class="self-stretch text-gray-900 text-lg line-clamp-4">{@content}</p>
+        <p class="self-stretch text-slate-900 text-lg line-clamp-4">{@content}</p>
       </div>
       <div class="flex items-center gap-2">
         <div class="inline-flex flex-shrink-0 rounded-full">
@@ -490,10 +490,10 @@ defmodule PasswordlessWeb.LandingPageComponents do
           />
         </div>
         <div class="flex flex-col items-start gap-1">
-          <div class="text-gray-900 text-sm font-semibold leading-tight">
+          <div class="text-slate-900 text-sm font-semibold leading-tight">
             {@name}
           </div>
-          <div class="text-gray-600 text-sm font-normal leading-tight">
+          <div class="text-slate-600 text-sm font-normal leading-tight">
             {@title}
           </div>
         </div>
@@ -516,7 +516,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
     <.a
       to={@to}
       class={[
-        "flex items-center text-gray-900 text-xs font-semibold rounded-full p-1 select-none",
+        "flex items-center text-slate-900 text-xs font-semibold rounded-full p-1 select-none",
         @class,
         @color_secondary
       ]}
@@ -550,13 +550,13 @@ defmodule PasswordlessWeb.LandingPageComponents do
     ~H"""
     <.a to={@to} title={@title} class={@class} link_type={@link_type}>
       <article class={[
-        "h-[380px] 2xl:h-[400px] w-full p-8 bg-gray-50 rounded-3xl shadow border border-gray-200 justify-between inline-flex overflow-hidden",
-        "select-none transition duration-150 ease-in-out hover:shadow-2 focus:shadow-3 focus:bg-gray-100 active:bg-gray-100 active:shadow-3",
+        "h-[380px] 2xl:h-[400px] w-full p-8 bg-slate-50 rounded-3xl shadow border border-slate-200 justify-between inline-flex overflow-hidden",
+        "select-none transition duration-150 ease-in-out hover:shadow-2 focus:shadow-3 focus:bg-slate-100 active:bg-slate-100 active:shadow-3",
         if(@reverse, do: "flex-col-reverse", else: "flex-col")
       ]}>
         <div class={[if(not @reverse, do: "mb-8"), "flex flex-col gap-2.5"]}>
-          <h3 class="text-gray-900 text-lg font-semibold">{@title}</h3>
-          <h4 class="text-gray-600 text-sm font-normal leading-tight">{@description}</h4>
+          <h3 class="text-slate-900 text-lg font-semibold">{@title}</h3>
+          <h4 class="text-slate-600 text-sm font-normal leading-tight">{@description}</h4>
         </div>
         <img
           class={@image_class}
@@ -593,18 +593,18 @@ defmodule PasswordlessWeb.LandingPageComponents do
 
   def code_cta(assigns) do
     ~H"""
-    <section class="bg-gray-900 pb-8 md:pb-10">
+    <section class="bg-slate-900 pb-8 md:pb-10">
       <.container max_width={@max_width}>
         <div class="grid lg:grid-cols-2 lg:gap-[124px]">
           <div class="items-center justify-center hidden lg:flex">
-            <div class="flex items-center justify-center rounded-3xl p-4 bg-gray-950 relative">
+            <div class="flex items-center justify-center rounded-3xl p-4 bg-slate-950 relative">
               <div
                 id="demo-editor"
                 phx-hook="DemoEditorHook"
                 class="w-[300px] lg:w-[500px] 2xl:w-[560px]"
               >
               </div>
-              <div class="absolute bottom-7 right-7 flex items-center gap-2 bg-gray-950 p-2 rounded-lg">
+              <div class="absolute bottom-7 right-7 flex items-center gap-2 bg-slate-950 p-2 rounded-lg">
                 <.icon :for={l <- [:js, :ts]} name={"remix-#{l}"} class="w-6 h-6 rounded" />
               </div>
             </div>
@@ -638,7 +638,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
 
   def benefits_cta(assigns) do
     ~H"""
-    <section class="bg-gray-900 pb-10 overflow-hidden">
+    <section class="bg-slate-900 pb-10 overflow-hidden">
       <.container max_width={@max_width}>
         <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-[124px]">
           <div class="flex flex-col py-10 lg:py-[124px]">
@@ -671,7 +671,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
           </div>
 
           <div class="hidden flex flex-col justify-center lg:flex overflow-visible">
-            <div class="rounded-3xl p-4 bg-gray-950 z-10 lg:w-[902px]">
+            <div class="rounded-3xl p-4 bg-slate-950 z-10 lg:w-[902px]">
               <img
                 src={static_url(PasswordlessWeb.Endpoint, ~p"/images/landing_page/hero.webp")}
                 alt={Passwordless.config(:app_name)}
@@ -695,7 +695,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
     <div class={["flex flex-col gap-4", @class]} role="list">
       <div :for={item <- @items} class="items-center gap-[9px] inline-flex" role="listitem">
         <div class="flex w-6 h-6 p-[3px] bg-primary-300 rounded-full justify-center items-center">
-          <.icon name="remix-check-line" class="w-[18px] h-[18px] text-gray-900" />
+          <.icon name="remix-check-line" class="w-[18px] h-[18px] text-slate-900" />
         </div>
         <p class="text-[#F0FBC8] font-semibold">
           {item}
@@ -713,7 +713,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
     <div class={["flex flex-col gap-3", @class]} role="list">
       <div :for={item <- @items} class="flex items-center gap-4" role="listitem">
         <.icon name="custom-check-fancy" class="w-8 h-8 text-primary-500" />
-        <p class="text-gray-900 font-semibold font-display">
+        <p class="text-slate-900 font-semibold font-display">
           {item}
         </p>
       </div>
@@ -725,7 +725,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
 
   def pricing_cta(assigns) do
     ~H"""
-    <section class="bg-gray-100 pb-10" {pricing_js_data()}>
+    <section class="bg-slate-100 pb-10" {pricing_js_data()}>
       <.container max_width={@max_width}>
         <div class="flex flex-col py-10 md:py-[124px] gap-12">
           <.area_header badge={gettext("Pricing")} title={gettext("Simple, transparent pricing")} />
@@ -755,8 +755,8 @@ defmodule PasswordlessWeb.LandingPageComponents do
     ~H"""
     <article>
       <div class="flex flex-col gap-2.5">
-        <h3 class="text-gray-900 text-lg font-semibold">{@title}</h3>
-        <h4 class="text-gray-600 text-sm font-normal leading-tight">{@description}</h4>
+        <h3 class="text-slate-900 text-lg font-semibold">{@title}</h3>
+        <h4 class="text-slate-600 text-sm font-normal leading-tight">{@description}</h4>
       </div>
       <div>
         {render_slot(@inner_block)}
@@ -769,7 +769,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
 
   def hero_placeholder(assigns) do
     ~H"""
-    <div class="flex flex-col items-center px-4 md:px-16 lg:px-0 relative bg-gray-900 py-8 h-[300px] overflow-hidden rounded-xl">
+    <div class="flex flex-col items-center px-4 md:px-16 lg:px-0 relative bg-slate-900 py-8 h-[300px] overflow-hidden rounded-xl">
       <h4 class="text-white text-xl font-semibold font-display mb-4">{@title}</h4>
       <img
         src={static_url(PasswordlessWeb.Endpoint, ~p"/images/landing_page/chart-line.svg")}
@@ -777,7 +777,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
         title={Passwordless.config(:app_name)}
         class="absolute left-0 bottom-0 z-0 object-fill w-full"
       />
-      <div class="rounded-3xl p-4 bg-gray-950 max-w-[500px] relative z-1">
+      <div class="rounded-3xl p-4 bg-slate-950 max-w-[500px] relative z-1">
         <img
           src={static_url(PasswordlessWeb.Endpoint, ~p"/images/landing_page/hero.webp")}
           alt={gettext("Uptime Monitoring Service Made For Developers")}

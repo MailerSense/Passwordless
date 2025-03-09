@@ -1,12 +1,11 @@
-import { tags as t } from "@lezer/highlight";
-
 import {
   HighlightStyle,
-  TagStyle,
   syntaxHighlighting,
+  TagStyle,
 } from "@codemirror/language";
 import { Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
+import { tags as t } from "@lezer/highlight";
 
 interface Options {
   /**

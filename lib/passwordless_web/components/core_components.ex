@@ -41,7 +41,7 @@ defmodule PasswordlessWeb.CoreComponents do
     <nav>
       <p
         :if={Util.present?(@title)}
-        class="px-4 mb-3 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase select-none"
+        class="px-4 mb-3 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase select-none"
       >
         {@title}
       </p>
@@ -57,13 +57,13 @@ defmodule PasswordlessWeb.CoreComponents do
     ~H"""
     <footer class="pt-12 pb-8 bg-white">
       <.container max_width={@max_width}>
-        <div class="flex flex-wrap items-center pb-8 gap-20 border-b border-gray-200">
+        <div class="flex flex-wrap items-center pb-8 gap-20 border-b border-slate-200">
           <.a to="/" title={Passwordless.config(:app_name)}>
             <.logo variant="dark" class="h-6" />
           </.a>
           <ul class="items-center gap-8 hidden lg:inline-flex">
             <.list_menu_items
-              a_class="text-gray-900 text-base font-semibold leading-normal"
+              a_class="text-slate-900 text-base font-semibold leading-normal"
               menu_items={footer_menu_items()}
             />
           </ul>
@@ -86,11 +86,11 @@ defmodule PasswordlessWeb.CoreComponents do
           </div>
         </div>
         <div class="flex flex-wrap items-center justify-between mt-8">
-          <span class="text-sm text-gray-600 leading-tight">
+          <span class="text-sm text-slate-600 leading-tight">
             Copyright © {Timex.now().year} {Passwordless.config(:business_name) <>
               ". All rights reserved."}
           </span>
-          <span class="text-gray-600 text-xs font-normal gap-8 hidden md:flex">
+          <span class="text-slate-600 text-xs font-normal gap-8 hidden md:flex">
             <.a to={~p"/terms"} label={gettext("Terms of Service")} />
             <.a to={~p"/privacy"} label={gettext("Privacy Policy")} />
             <.a to={~p"/contact"} label={gettext("Contact")} />
@@ -111,12 +111,12 @@ defmodule PasswordlessWeb.CoreComponents do
     <.link
       href={@to}
       class={[
-        "group w-12 h-12 px-3 py-2 rounded-full text-gray-900 border border-gray-200 hover:bg-gray-900 hover:border-gray-900 justify-center items-center inline-flex transition duration-150 ease-in-out",
+        "group w-12 h-12 px-3 py-2 rounded-full text-slate-900 border border-slate-200 hover:bg-slate-900 hover:border-slate-900 justify-center items-center inline-flex transition duration-150 ease-in-out",
         @class
       ]}
       title={@platform}
     >
-      <.icon name={@icon} class="w-6 h-6 bg-gray-900 group-hover:bg-primary-300" />
+      <.icon name={@icon} class="w-6 h-6 bg-slate-900 group-hover:bg-primary-300" />
     </.link>
     """
   end

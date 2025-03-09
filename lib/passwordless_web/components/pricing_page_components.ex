@@ -30,26 +30,26 @@ defmodule PasswordlessWeb.PricingPageComponents do
     ~H"""
     <%= for {section, i} <- Enum.with_index(@sections) do %>
       <%= if i == 0 do %>
-        <div class="grid grid-cols-3 border-b-2 border-gray-200">
-          <h3 class="text-gray-900 text-lg font-semibold leading-7 py-8 tracking-tight">
+        <div class="grid grid-cols-3 border-b-2 border-slate-200">
+          <h3 class="text-slate-900 text-lg font-semibold leading-7 py-8 tracking-tight">
             {section.title}
           </h3>
           <h3
             :for={plan <- @plans}
-            class="text-gray-900 text-lg font-semibold leading-7 py-8 px-6 bg-primary-50 tracking-tight"
+            class="text-slate-900 text-lg font-semibold leading-7 py-8 px-6 bg-primary-50 tracking-tight"
           >
             {plan}
           </h3>
         </div>
       <% else %>
-        <div class="py-8 border-b-2 border-gray-200 gap-6 flex mt-5">
-          <h3 class="text-gray-900 text-lg font-semibold leading-7 tracking-tight">
+        <div class="py-8 border-b-2 border-slate-200 gap-6 flex mt-5">
+          <h3 class="text-slate-900 text-lg font-semibold leading-7 tracking-tight">
             {section.title}
           </h3>
         </div>
       <% end %>
 
-      <div :for={row <- section.rows} class="grid grid-cols-3 border-b border-gray-200">
+      <div :for={row <- section.rows} class="grid grid-cols-3 border-b border-slate-200">
         <%= for {col, i} <- Enum.with_index(row) do %>
           <%= cond do %>
             <% is_boolean(col) -> %>
@@ -60,7 +60,7 @@ defmodule PasswordlessWeb.PricingPageComponents do
                   else: "px-6"
                 ),
                 if(i != Enum.count(row) - 1,
-                  do: "border-r border-gray-200",
+                  do: "border-r border-slate-200",
                   else: ""
                 )
               ]}>
@@ -68,7 +68,7 @@ defmodule PasswordlessWeb.PricingPageComponents do
                   name={if col, do: "remix-checkbox-circle-fill", else: "remix-close-circle-fill"}
                   class={[
                     "w-6 h-6",
-                    if(col, do: "bg-gray-900", else: "bg-gray-300")
+                    if(col, do: "bg-slate-900", else: "bg-slate-300")
                   ]}
                 />
               </span>
@@ -76,14 +76,14 @@ defmodule PasswordlessWeb.PricingPageComponents do
               <span class={[
                 "h-[60px] flex items-center",
                 if(i != Enum.count(row) - 1,
-                  do: "border-r border-gray-200",
+                  do: "border-r border-slate-200",
                   else: ""
                 )
               ]}>
                 <p class={[
                   if(i == 0,
-                    do: "text-gray-600 text-sm font-normal",
-                    else: "px-6 text-gray-900 text-sm font-medium leading-tight"
+                    do: "text-slate-600 text-sm font-normal",
+                    else: "px-6 text-slate-900 text-sm font-medium leading-tight"
                   )
                 ]}>
                   {col}
@@ -93,7 +93,7 @@ defmodule PasswordlessWeb.PricingPageComponents do
               <span class={[
                 "h-[60px] flex items-center",
                 if(i != Enum.count(row) - 1,
-                  do: "border-r border-gray-200",
+                  do: "border-r border-slate-200",
                   else: ""
                 )
               ]}>
@@ -102,8 +102,8 @@ defmodule PasswordlessWeb.PricingPageComponents do
                   class={[
                     if(i == 0,
                       do:
-                        "text-gray-600 text-sm font-normal underline decoration-dashed cursor-help pr-2",
-                      else: "px-6 text-gray-900 text-sm font-medium leading-tight"
+                        "text-slate-600 text-sm font-normal underline decoration-dashed cursor-help pr-2",
+                      else: "px-6 text-slate-900 text-sm font-medium leading-tight"
                     )
                   ]}
                   style="text-decoration-style: dashed;"
@@ -128,7 +128,7 @@ defmodule PasswordlessWeb.PricingPageComponents do
   def pricing_tabs(assigns) do
     ~H"""
     <nav class={[
-      "p-1 bg-gray-200 rounded-xl justify-start items-center gap-1 inline-flex",
+      "p-1 bg-slate-200 rounded-xl justify-start items-center gap-1 inline-flex",
       @class
     ]}>
       <%= for option <- @options do %>
@@ -136,8 +136,8 @@ defmodule PasswordlessWeb.PricingPageComponents do
           @click={"#{@variable} = '#{option.id}'"}
           class="px-4 py-2 rounded-lg gap-2 flex items-center min-h-[38px] cursor-pointer select-none"
           x-bind:class={"{
-            'text-gray-900 bg-white shadow': #{@variable} === '#{option.id}',
-            'text-gray-600': #{@variable} !== '#{option.id}'
+            'text-slate-900 bg-white shadow': #{@variable} === '#{option.id}',
+            'text-slate-600': #{@variable} !== '#{option.id}'
           }"}
         >
           <p class="text-center text-sm font-semibold leading-tight">
@@ -145,7 +145,7 @@ defmodule PasswordlessWeb.PricingPageComponents do
           </p>
           <%= if option[:modifier] do %>
             <div class={[
-              "px-1 py-0.5 bg-gray-900 rounded justify-start gap-2.5 flex"
+              "px-1 py-0.5 bg-slate-900 rounded justify-start gap-2.5 flex"
             ]}>
               <p class="text-primary-300 text-xs font-bold">
                 {option.modifier}
@@ -171,16 +171,16 @@ defmodule PasswordlessWeb.PricingPageComponents do
       {@rest}
       x-data={"{ expanded: #{@expanded} }"}
       class={[
-        "bg-white border-b border-gray-200 justify-center items-center gap-4 flex flex-col rounded-3xl",
+        "bg-white border-b border-slate-200 justify-center items-center gap-4 flex flex-col rounded-3xl",
         @class
       ]}
     >
       <div
         class="flex gap-4 items-center justify-center cursor-pointer p-6 w-full select-none"
         @click="expanded = !expanded"
-        x-bind:class="{ 'border-b border-gray-200': expanded }"
+        x-bind:class="{ 'border-b border-slate-200': expanded }"
       >
-        <p class="text-gray-900 font-semibold">{gettext("Compare plans")}</p>
+        <p class="text-slate-900 font-semibold">{gettext("Compare plans")}</p>
         <.icon
           name="remix-arrow-down-s-line"
           class="w-6 h-6 transition duration-150 ease-in-out"
@@ -312,7 +312,7 @@ defmodule PasswordlessWeb.PricingPageComponents do
   defp pricing_check_tabs(assigns) do
     ~H"""
     <nav class={[
-      "p-1 bg-gray-100 rounded-lg items-center gap-1 flex",
+      "p-1 bg-slate-100 rounded-lg items-center gap-1 flex",
       @class
     ]}>
       <%= for option <- @options do %>
@@ -320,8 +320,8 @@ defmodule PasswordlessWeb.PricingPageComponents do
           @click={"#{@variable} = '#{option.id}'"}
           class="px-3 py-2 rounded-lg gap-2 flex items-center justify-center min-w-[40px] min-h-[34px] cursor-pointer"
           x-bind:class={"{
-            'text-primary-300 bg-gray-900': #{@variable} === '#{option.id}',
-            'text-gray-500': #{@variable} !== '#{option.id}'
+            'text-primary-300 bg-slate-900': #{@variable} === '#{option.id}',
+            'text-slate-500': #{@variable} !== '#{option.id}'
           }"}
         >
           <p class="text-center text-sm font-semibold">
@@ -362,10 +362,10 @@ defmodule PasswordlessWeb.PricingPageComponents do
           </div>
         <% _ -> %>
           <div class="flex flex-col gap-4">
-            <h3 class="text-gray-900 text-3xl font-semibold leading-[38px] line-clamp-1 tracking-tight">
+            <h3 class="text-slate-900 text-3xl font-semibold leading-[38px] line-clamp-1 tracking-tight">
               {@title}
             </h3>
-            <p :if={@description} class="text-gray-600 line-clamp-3">
+            <p :if={@description} class="text-slate-600 line-clamp-3">
               {@description}
             </p>
           </div>
@@ -375,13 +375,13 @@ defmodule PasswordlessWeb.PricingPageComponents do
         <% :enterprise -> %>
           <div class="h-[72px]" />
           <.button size="lg" variant="outline" label={@action_text} to={@action_path} link_type="a" />
-          <div class="flex flex-col gap-4 border-t border-gray-700 pt-8">
+          <div class="flex flex-col gap-4 border-t border-slate-700 pt-8">
             <.pricing_plan_list kind={:enterprise} features={@features} />
           </div>
         <% _ -> %>
           <div class="flex flex-col gap-2">
             <div class="flex gap-2 items-baseline">
-              <p class="text-gray-900 text-6xl font-semibold font-display leading-[72px] tracking-tight">
+              <p class="text-slate-900 text-6xl font-semibold font-display leading-[72px] tracking-tight">
                 <%= if @kind == :business do %>
                   <span x-text="formatCurrency(pricingTiers(chosenChecks, chosenPricing, chosenCurrency), chosenCurrency)">
                   </span>
@@ -389,7 +389,7 @@ defmodule PasswordlessWeb.PricingPageComponents do
                   <span x-text="formatCurrency(0, chosenCurrency)"></span>
                 <% end %>
               </p>
-              <p class="text-gray-600 text-lg font-medium font-display">
+              <p class="text-slate-600 text-lg font-medium font-display">
                 /{gettext("month")}
               </p>
             </div>
@@ -403,7 +403,7 @@ defmodule PasswordlessWeb.PricingPageComponents do
             link_type="a"
           />
 
-          <div class="flex flex-col gap-4 border-t border-gray-200 pt-8">
+          <div class="flex flex-col gap-4 border-t border-slate-200 pt-8">
             <.pricing_plan_list kind={@kind} features={@features} />
           </div>
       <% end %>
@@ -419,14 +419,14 @@ defmodule PasswordlessWeb.PricingPageComponents do
       assign(assigns,
         li_class:
           case assigns.kind do
-            :free -> "text-gray-900"
-            :business -> "text-gray-900"
+            :free -> "text-slate-900"
+            :business -> "text-slate-900"
             :enterprise -> "text-white"
           end,
         icon_class:
           case assigns.kind do
-            :free -> "bg-gray-300"
-            :business -> "bg-gray-900"
+            :free -> "bg-slate-300"
+            :business -> "bg-slate-900"
             :enterprise -> "bg-primary-300"
           end
       )
@@ -444,7 +444,7 @@ defmodule PasswordlessWeb.PricingPageComponents do
               "w-6 h-6",
               if(checked,
                 do: @icon_class,
-                else: "bg-gray-300"
+                else: "bg-slate-300"
               )
             ]}
           />
@@ -455,7 +455,7 @@ defmodule PasswordlessWeb.PricingPageComponents do
     """
   end
 
-  defp pricing_plan_class(:enterprise), do: "bg-gray-900 border-gray-200"
-  defp pricing_plan_class(:business), do: "bg-white border-gray-200 shadow-4"
-  defp pricing_plan_class(_), do: "bg-white border-gray-200"
+  defp pricing_plan_class(:enterprise), do: "bg-slate-900 border-slate-200"
+  defp pricing_plan_class(:business), do: "bg-white border-slate-200 shadow-4"
+  defp pricing_plan_class(_), do: "bg-white border-slate-200"
 end

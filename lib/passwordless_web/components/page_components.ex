@@ -3,6 +3,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
   use Phoenix.Component
 
   import PasswordlessWeb.Components.Container
+  import PasswordlessWeb.Components.Field
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Link
 
@@ -20,6 +21,31 @@ defmodule PasswordlessWeb.Components.PageComponents do
       <h1 class="pc-page-header--text">
         {@title}
       </h1>
+      <%= if @inner_block do %>
+        {render_slot(@inner_block)}
+      <% end %>
+    </div>
+    """
+  end
+
+  @doc """
+  Allows you to have a heading on the left side, and some action buttons on the right (default slot)
+  """
+
+  attr :class, :string, default: ""
+  attr :title, :string, required: true
+  slot :inner_block
+
+  def subpage_header(assigns) do
+    ~H"""
+    <div class={["pc-page-header", @class]}>
+      <div class="relative">
+        <.field type="editor" id={@title} name={@title} value={@title} readonly />
+        <div class="pc-editor-field-icon">
+          <.icon name="remix-pencil-line" class="pc-editor-field-icon__icon" />
+        </div>
+      </div>
+
       <%= if @inner_block do %>
         {render_slot(@inner_block)}
       <% end %>
@@ -65,7 +91,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
     <section
       {@rest}
       class={[
-        "bg-gray-900 md:px-6 lg:px-10 pb-8 md:pb-10",
+        "bg-slate-900 md:px-6 lg:px-10 pb-8 md:pb-10",
         if(@pad_top, do: "pt-10")
       ]}
     >
@@ -111,7 +137,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
 
   def sidebar_tabs_container(assigns) do
     ~H"""
-    <.box class="flex flex-col border border-gray-200 divide-y divide-gray-200 dark:border-none dark:divide-gray-700 md:divide-y-0 md:divide-x md:flex-row">
+    <.box class="flex flex-col border border-slate-200 divide-y divide-slate-200 dark:border-none dark:divide-slate-700 md:divide-y-0 md:divide-x md:flex-row">
       <div class="flex-shrink-0 py-6 md:w-72">
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </div>

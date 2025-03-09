@@ -106,7 +106,7 @@ defmodule PasswordlessWeb.ErrorHTML do
       <.h1 no_margin class="text-center">
         <span :if={@status} class={status_color(@status)}>{@status}</span> {@message}
       </.h1>
-      <.p class="text-sm text-gray-600 dark:text-gray-300 leading-tight text-center">
+      <.p class="text-sm text-slate-600 dark:text-slate-300 leading-tight text-center">
         {gettext("Route %{path} not found.", path: @path)}
       </.p>
       <.start_for_free_button to={~p"/"} label={gettext("Go to Homepage")} class="flex lg:hidden" />
@@ -119,5 +119,5 @@ defmodule PasswordlessWeb.ErrorHTML do
   defp status_color(404), do: "text-primary-500"
   defp status_color(status) when status in 400..499, do: "text-orange-500"
   defp status_color(status) when status >= 500, do: "text-red-500"
-  defp status_color(_status), do: "text-gray-600 dark:text-gray-300"
+  defp status_color(_status), do: "text-slate-600 dark:text-slate-300"
 end

@@ -37,10 +37,12 @@
       <:col :let={actor} field={:name}>
         <.a
           to={~p"/app/users/#{actor}/edit"}
-          class="pc-user-badge"
-          label={Actor.handle(actor)}
+          class="flex items-center gap-2 text-info-600 dark:text-info-300 hover:underline"
           link_type="live_redirect"
-        />
+        >
+          {Actor.handle(actor)}
+          <.icon name="remix-external-link-line" class="w-4 h-4" />
+        </.a>
       </:col>
       <:col :let={actor} field={:email} sortable>
         {Actor.email(actor)}
@@ -62,7 +64,7 @@
       <:actions :let={actor}>
         <.dropdown placement="left">
           <:trigger_element>
-            <.icon name="custom-more-dots" class="w-5 h-5" />
+            <.icon name="remix-more-fill" class="w-5 h-5" />
           </:trigger_element>
           <.dropdown_menu_item link_type="live_redirect" to={~p"/app/users/#{actor}/edit"}>
             <.icon name="remix-pencil-line" class="w-6 h-6 shrink-0" />

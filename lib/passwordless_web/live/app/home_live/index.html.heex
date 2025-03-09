@@ -83,13 +83,18 @@
     <:col :let={action} label={gettext("User")} field={:user}>
       <.a
         to={~p"/app/users/#{action.actor}/edit"}
-        class="pc-user-badge"
-        label={Actor.handle(action.actor)}
+        class="flex items-center gap-2 text-info-600 dark:text-info-300 hover:underline"
         link_type="live_redirect"
-      />
+      >
+        {Actor.handle(action.actor)}
+        <.icon name="remix-external-link-line" class="w-4 h-4" />
+      </.a>
     </:col>
     <:col :let={action} label={gettext("Action")} field={:name}>
       {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+    </:col>
+    <:col :let={action} label={gettext("Details")} field={:details}>
+      User requested a Magic Link
     </:col>
     <:col :let={action} label={gettext("State")} field={:state}>
       <% {badge_label, badge_color} = action_state_badge(action) %>
@@ -103,17 +108,5 @@
     <:col :let={action} label={gettext("When")} field={:inserted_at}>
       {Timex.from_now(action.inserted_at)}
     </:col>
-    <:col actions></:col>
-    <:actions :let={action}>
-      <.dropdown placement="left">
-        <:trigger_element>
-          <.icon name="custom-more-dots" class="w-5 h-5" />
-        </:trigger_element>
-        <.dropdown_menu_item link_type="live_redirect" to={~p"/app/users/#{action.actor}/edit"}>
-          <.icon name="remix-pencil-line" class="w-6 h-6 shrink-0" />
-          {gettext("Edit user")}
-        </.dropdown_menu_item>
-      </.dropdown>
-    </:actions>
   </.stream_table>
 </.layout>

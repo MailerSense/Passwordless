@@ -38,7 +38,7 @@ defmodule PasswordlessWeb.Components.RouteTree do
   def route(assigns) do
     ~H"""
     <div
-      class="relative flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800"
+      class="relative flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800"
       id={route_id(@route)}
       phx-hook="TippyHook"
       data-tippy-content={"Click to copy " <> get_route_helper(@route)}
@@ -59,7 +59,7 @@ defmodule PasswordlessWeb.Components.RouteTree do
         <div class="text-sm">
           {get_module(@route)}
         </div>
-        <div class="flex gap-3 text-sm text-gray-500 dark:text-gray-400">
+        <div class="flex gap-3 text-sm text-slate-500 dark:text-slate-400">
           {get_action(@route)}
           <div class="before-copied"></div>
           <div class="hidden text-success-600 after-copied dark:text-success-300">Copied!</div>

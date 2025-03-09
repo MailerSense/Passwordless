@@ -5,7 +5,7 @@
   id="main-page-header"
   phx-hook="ResetColorSchemeHook"
   x-data="{mobile: false}"
-  class="z-30 w-full bg-gray-900"
+  class="z-30 w-full bg-slate-900"
 >
   <.container max_width={max_width}>
     <div class="flex flex-wrap items-center justify-between sm:gap-10 lg:gap-20 py-5 md:py-0 md:h-[96px] lg:h-[124px] relative">
@@ -45,7 +45,7 @@
     </div>
 
     <nav x-bind:class="{ 'block' : mobile, 'hidden' : !mobile }" class="hidden">
-      <ul class="bg-gray-950 py-6 rounded-lg">
+      <ul class="bg-slate-950 py-6 rounded-lg">
         <.list_menu_items
           li_class="mb-6 last:mb-0 text-center"
           a_class="inline-block text-lg font-medium capitalize menu-item items-center text-white"
@@ -57,7 +57,7 @@
 </header>
 
 <main>
-  <section class="bg-gray-900">
+  <section class="bg-slate-900">
     {@inner_content}
   </section>
 

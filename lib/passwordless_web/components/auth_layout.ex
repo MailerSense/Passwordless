@@ -14,7 +14,7 @@ defmodule PasswordlessWeb.Components.AuthLayout do
 
   def auth_layout(assigns) do
     ~H"""
-    <section class="fixed w-full h-full overflow-y-scroll bg-gray-100 dark:bg-gray-900">
+    <section class="fixed w-full h-full overflow-y-scroll bg-slate-100 dark:bg-slate-900">
       <div class="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div class="text-center sm:mx-auto sm:w-full sm:max-w-md">
           <div class="flex justify-center mb-10">
@@ -36,7 +36,7 @@ defmodule PasswordlessWeb.Components.AuthLayout do
       </div>
 
       <div class="pb-20 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="px-4 py-8 bg-white shadow-1 sm:rounded-lg sm:px-10 dark:bg-gray-800">
+        <div class="px-4 py-8 bg-white shadow-1 sm:rounded-lg sm:px-10 dark:bg-slate-800">
           {render_slot(@inner_block)}
         </div>
 
@@ -58,10 +58,10 @@ defmodule PasswordlessWeb.Components.AuthLayout do
   def auth_header(assigns) do
     ~H"""
     <div class={["flex flex-col gap-2 mb-8 items-center", @class]} {@rest}>
-      <h4 :if={@subtitle} class="text-center text-gray-500 text-xs font-semibold uppercase">
+      <h4 :if={@subtitle} class="text-center text-slate-500 text-xs font-semibold uppercase">
         {@subtitle}
       </h4>
-      <h2 class="text-gray-900 text-center text-4xl md:text-5xl font-semibold font-display">
+      <h2 class="text-slate-900 text-center text-4xl md:text-5xl font-semibold font-display">
         {@title}
       </h2>
     </div>
