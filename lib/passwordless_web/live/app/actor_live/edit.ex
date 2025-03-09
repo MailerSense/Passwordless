@@ -3,6 +3,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   use PasswordlessWeb, :live_view
 
   alias Passwordless.Actor
+  alias Passwordless.Locale
 
   @impl true
   def mount(_params, _session, socket) do
@@ -13,12 +14,19 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   def handle_params(%{"id" => id}, _url, socket) do
     actor = Passwordless.get_actor!(socket.assigns.current_app, id)
     changeset = Passwordless.change_actor(actor)
-    languages = Enum.map(Passwordless.Locale.languages(), fn {code, name} -> {name, code} end)
+    languages = Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
     states = Enum.map(Actor.states(), fn state -> {Phoenix.Naming.humanize(state), state} end)
+
+    flag_mapping = fn
+      nil -> "flag-gb"
+      "en" -> "flag-gb"
+      :en -> "flag-gb"
+      code -> "flag-#{code}"
+    end
 
     {:noreply,
      socket
-     |> assign(actor: actor, states: states, languages: languages)
+     |> assign(actor: actor, states: states, languages: languages, flag_mapping: flag_mapping)
      |> assign_form(changeset)
      |> assign_emails(actor)
      |> assign_phones(actor)
@@ -32,7 +40,12 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   @impl true
   def handle_event("validate", %{"actor" => actor_params}, socket) do
-    save_actor(socket, actor_params)
+    changeset =
+      socket.assigns.actor
+      |> Passwordless.change_actor(actor_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign_form(socket, changeset)}
   end
 
   @impl true
@@ -75,7 +88,10 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   # Private
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    assign(socket, form: to_form(changeset))
+    socket
+    |> assign(form: to_form(changeset))
+    |> assign(user_name: Ecto.Changeset.get_field(changeset, :name))
+    |> assign(user_state: Ecto.Changeset.get_field(changeset, :state))
   end
 
   defp apply_action(socket, :edit, %Actor{} = actor) do
@@ -111,7 +127,8 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
         {:noreply,
          socket
          |> assign(actor: actor)
-         |> assign_form(changeset)}
+         |> assign_form(changeset)
+         |> put_toast(:info, "User saved.", title: gettext("Success"))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

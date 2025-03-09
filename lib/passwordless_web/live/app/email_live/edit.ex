@@ -19,7 +19,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   @impl true
   def handle_params(%{"id" => id, "language" => language} = params, _url, socket) do
     socket =
-      if socket.assigns[:edit?] do
+      if has_unsaved_changes?(socket) do
         socket
       else
         app = socket.assigns.current_app
@@ -29,12 +29,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
         version = EmailTemplateVersion.put_current_language(version, language)
 
         socket
-        |> assign(
-          edit?: true,
-          version: version,
-          template: template,
-          language: language
-        )
+        |> assign(version: version, template: template, language: language)
         |> assign_template_form(EmailTemplate.changeset(template))
         |> assign_version_form(EmailTemplateVersion.changeset(version))
       end
@@ -44,11 +39,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
     {:noreply,
      socket
-     |> assign(
-       edit?: true,
-       delete?: delete?,
-       module: module
-     )
+     |> assign(delete?: delete?, module: module)
      |> apply_action(socket.assigns.live_action, params)}
   end
 
@@ -116,7 +107,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
     else
       {:noreply,
        socket
-       |> assign(edit?: false)
+       |> assign(version_form: nil)
        |> push_patch(to: ~p"/app/emails/#{template}/#{current_language}/edit")}
     end
   end
@@ -169,6 +160,13 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
       page_title: gettext("Email"),
       page_subtitle: gettext("Edit email template")
     )
+  end
+
+  defp has_unsaved_changes?(socket) do
+    case get_in(socket.assigns, [Access.key(:version_form), Access.key(:source), Access.key(:changes)]) do
+      changes when is_map(changes) and map_size(changes) > 0 -> true
+      _ -> false
+    end
   end
 
   defp save_template(socket, template_params) do

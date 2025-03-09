@@ -16,7 +16,9 @@ defmodule Passwordless.Actor do
   alias Passwordless.Phone
   alias Passwordless.TOTP
 
-  @states ~w(active stale)a
+  @states ~w(active locked stale)a
+  @languages ~w(en de fr)a
+
   @derive {
     Flop.Schema,
     filterable: [:id, :search, :state],
@@ -61,6 +63,8 @@ defmodule Passwordless.Actor do
   end
 
   def states, do: @states
+
+  def languages, do: @languages
 
   @doc """
   Get the handle of the actor.

@@ -1,129 +1,166 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
-  <div class="py-12">
-    <.form id="edit-actor-form" for={@form} phx-change="validate" phx-submit="save">
-      <div class="mb-12 flex justify-between items-center h-12">
-        <div class="relative">
-          <.field type="editor" field={@form[:name]} phx-debounce="blur" />
-          <div class="pc-editor-field-icon">
-            <.icon name="remix-pencil-line" class="pc-editor-field-icon__icon" />
-          </div>
-        </div>
-        <div class="flex gap-3">
-          <.button
-            to={~p"/app/users"}
-            size="md"
-            type="button"
-            color="light"
-            label={gettext("Cancel")}
-            link_type="live_redirect"
-          />
-          <.button
-            to={~p"/app/users/#{@actor}/edit/delete"}
-            size="md"
-            type="button"
-            label={gettext("Delete")}
-            icon="remix-delete-bin-line"
-            color="danger"
-            variant="outline"
-            link_type="live_patch"
-          />
-        </div>
-      </div>
-      <.tab_menu
-        class="mb-6"
-        menu_items={actor_menu_items(@actor)}
-        current_tab={:details}
-        variant="buttons"
+  <.page_header title={gettext("Edit user")}>
+    <div class="flex gap-3">
+      <.button
+        to={~p"/app/users"}
+        size="md"
+        type="button"
+        color="light"
+        label={gettext("Cancel")}
+        link_type="live_redirect"
       />
-      <div class="flex flex-col gap-4">
-        <.simple_table items={[]} title={gettext("Authenticators")}>
-          <:if_empty>
-            {gettext("No %{models} enrolled yet", models: gettext("authenticators"))}
-          </:if_empty>
-          <:col field={:address} label={gettext("Name")} />
+      <.button
+        to={~p"/app/users/#{@actor}/edit/delete"}
+        size="md"
+        type="button"
+        label={gettext("Delete")}
+        icon="remix-delete-bin-line"
+        color="danger"
+        variant="outline"
+        link_type="live_patch"
+      />
+      <.button
+        size="md"
+        type="submit"
+        form="edit-actor-form"
+        color="primary"
+        label={gettext("Save")}
+        icon="remix-save-line"
+        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
+      />
+    </div>
+  </.page_header>
 
-          <:col actions></:col>
-          <:actions :let={email}>
-            <.icon_button
-              to={~p"/app/users/#{@actor}/emails/#{email}/delete"}
-              size="sm"
-              icon="custom-trash"
-              color="light"
-              title={gettext("Remove")}
-              link_type="live_patch"
-            />
-            <.icon_button
-              to={~p"/app/users/#{@actor}/emails/#{email}/edit"}
-              size="sm"
-              icon="custom-edit"
-              color="light"
-              title={gettext("Edit")}
-              link_type="live_patch"
-            />
-          </:actions>
-        </.simple_table>
+  <div class="flex flex-col gap-6">
+    <.box padded>
+      <.form id="edit-actor-form" for={@form} phx-change="validate" phx-submit="save">
+        <.field
+          field={@form[:state]}
+          label=""
+          type="radio-group"
+          options={@states}
+          disabled_options={[:stale]}
+          required
+          required_asterix={false}
+        />
+        <.p class="mb-6">
+          <%= case @user_state do %>
+            <% :active -> %>
+              {gettext(
+                "User is active and can use all authentication methods enabled for %{app}.",
+                app: @current_app.name
+              )}
+            <% :locked -> %>
+              {gettext("User is locked and cannot use any authentication methods.")}
+            <% :stale -> %>
+              {gettext("User is stale and will not be counted towards your monthly quota.")}
+          <% end %>
+        </.p>
+        <.form_separator />
+        <div class="grid gap-6 grid-cols-1 xl:grid-cols-2">
+          <.field
+            field={@form[:name]}
+            autocomplete="given-name family-name"
+            required
+            required_asterix={false}
+            wrapper_class="!mb-0"
+          />
+          <.field
+            field={@form[:language]}
+            type="select"
+            options={@languages}
+            icon_class="pc-select-input__flag"
+            icon_mapping={@flag_mapping}
+            required
+            required_asterix={false}
+            wrapper_class="!mb-0"
+          />
+        </div>
+      </.form>
+    </.box>
+    <.simple_table
+      items={@emails}
+      title={gettext("Emails")}
+      action_link={~p"/app/users/#{@actor}/emails/new"}
+    >
+      <:if_empty>{gettext("No %{models} defined yet", models: gettext("emails"))}</:if_empty>
+      <:col field={:address} label={gettext("Email")} body_class="w-full" />
+      <:col :let={email} field={:authenticators}>
+        <div class="flex items-center gap-2">
+          <.badge size="sm" label="Magic link" color="cyan" />
+          <.badge size="sm" label="Email OTP" color="pink" />
+        </div>
+      </:col>
+      <:col :let={email} field={:verified} body_class="text-center">
+        <.check_mark checked={email.verified} />
+      </:col>
+      <:col :let={email} field={:primary} body_class="text-center">
+        <.check_mark checked={email.primary} />
+      </:col>
+      <:col actions></:col>
+      <:actions :let={email}>
+        <.icon_button
+          to={~p"/app/users/#{@actor}/emails/#{email}/delete"}
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          link_type="live_patch"
+        />
+        <.icon_button
+          to={~p"/app/users/#{@actor}/emails/#{email}/edit"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.simple_table>
 
-        <.simple_table items={@emails} title={gettext("User emails")}>
-          <:if_empty>{gettext("No %{models} defined yet", models: gettext("emails"))}</:if_empty>
-          <:col field={:address} label={gettext("Email")} body_class="w-full" />
-          <:col :let={email} field={:verified}>
-            <.field type="checkbox" name="" label="" value={email.verified} readonly />
-          </:col>
-          <:col :let={email} field={:primary}>
-            <.field type="checkbox" name="" label="" value={email.primary} readonly />
-          </:col>
-          <:col actions></:col>
-          <:actions :let={email}>
-            <.icon_button
-              to={~p"/app/users/#{@actor}/emails/#{email}/delete"}
-              size="sm"
-              icon="custom-trash"
-              color="light"
-              title={gettext("Remove")}
-              link_type="live_patch"
-            />
-            <.icon_button
-              to={~p"/app/users/#{@actor}/emails/#{email}/edit"}
-              size="sm"
-              icon="custom-edit"
-              color="light"
-              title={gettext("Edit")}
-              link_type="live_patch"
-            />
-          </:actions>
-        </.simple_table>
-
-        <.simple_table items={@phones} title={gettext("User phones")}>
-          <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
-          <:col field={:canonical} label={gettext("Phone")} body_class="w-full" />
-          <:col :let={phone} field={:verified}>
-            <.field type="checkbox" name="" label="" value={phone.verified} readonly />
-          </:col>
-          <:col :let={phone} field={:primary}>
-            <.field type="checkbox" name="" label="" value={phone.primary} readonly />
-          </:col>
-          <:col actions></:col>
-          <:actions :let={phone}>
-            <.icon_button
-              to={~p"/app/users/#{@actor}/phones/#{phone}/delete"}
-              size="sm"
-              icon="custom-trash"
-              color="light"
-              title={gettext("Remove")}
-              link_type="live_patch"
-            />
-            <.icon_button
-              to={~p"/app/users/#{@actor}/phones/#{phone}/edit"}
-              size="sm"
-              icon="custom-edit"
-              color="light"
-              title={gettext("Edit")}
-              link_type="live_patch"
-            />
-          </:actions>
-        </.simple_table>
-      </div>
-    </.form>
+    <.simple_table
+      items={@phones}
+      title={gettext("Phones")}
+      action_link={~p"/app/users/#{@actor}/emails/new"}
+    >
+      <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
+      <:col :let={phone} label={gettext("Phone")} body_class="w-full">
+        <div class="flex items-center gap-2">
+          <.icon name={"flag-#{String.downcase(phone.region)}"} class="pc-flag-icon" /> {phone.canonical}
+        </div>
+      </:col>
+      <:col :let={email} field={:channels}>
+        <div class="flex items-center gap-2">
+          <.badge size="sm" label="SMS" color="purple" />
+          <.badge size="sm" label="Whatsapp" color="indigo" />
+        </div>
+      </:col>
+      <:col :let={phone} field={:verified} body_class="text-center">
+        <.check_mark checked={phone.verified} />
+      </:col>
+      <:col :let={phone} field={:primary} body_class="text-center">
+        <.check_mark checked={phone.primary} />
+      </:col>
+      <:col actions></:col>
+      <:actions :let={phone}>
+        <.icon_button
+          to={~p"/app/users/#{@actor}/phones/#{phone}/delete"}
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          link_type="live_patch"
+        />
+        <.icon_button
+          to={~p"/app/users/#{@actor}/phones/#{phone}/edit"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.simple_table>
   </div>
 </.layout>
 

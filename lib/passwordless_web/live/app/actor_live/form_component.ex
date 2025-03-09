@@ -3,14 +3,24 @@ defmodule PasswordlessWeb.App.ActorLive.FormComponent do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.Actor
+  alias Passwordless.Locale
 
   @impl true
   def update(%{actor: %Actor{} = actor} = assigns, socket) do
     changeset = Passwordless.change_actor(actor)
+    languages = Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
+
+    flag_mapping = fn
+      nil -> "flag-gb"
+      "en" -> "flag-gb"
+      :en -> "flag-gb"
+      code -> "flag-#{code}"
+    end
 
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(languages: languages, flag_mapping: flag_mapping)
      |> assign_form(changeset)}
   end
 

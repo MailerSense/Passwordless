@@ -306,6 +306,18 @@ defmodule PasswordlessWeb.CoreComponents do
     """
   end
 
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :checked, :boolean, required: true
+  attr :rest, :global
+
+  def check_mark(assigns) do
+    assigns = assign(assigns, :icon, if(assigns[:checked], do: "remix-check-line", else: "remix-close-line"))
+
+    ~H"""
+    <.icon name={@icon} class="w-5 h-5" />
+    """
+  end
+
   @doc """
   Translates an error message using gettext.
   """

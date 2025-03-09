@@ -9,6 +9,14 @@
       phx-change="validate"
     >
       <.field field={@form[:name]} autocomplete="name" required />
+      <.field
+        field={@form[:language]}
+        type="select"
+        options={@languages}
+        icon_class="pc-select-input__flag"
+        icon_mapping={@flag_mapping}
+        required
+      />
     </.form>
 
     <:actions>

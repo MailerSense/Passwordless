@@ -27,6 +27,7 @@ defmodule PasswordlessWeb.Helpers do
       {Phoenix.Naming.humanize(actor.state),
        case actor.state do
          :active -> "success"
+         :locked -> "danger"
          :stale -> "gray"
        end}
 
@@ -317,6 +318,8 @@ defmodule PasswordlessWeb.Helpers do
 
   def log_action_badge(%Log{action: action}),
     do: {translate_action(action), Enum.at(@common_colors, :erlang.phash2(action, length(@common_colors)))}
+
+  def random_color(term), do: Enum.at(@common_colors, :erlang.phash2(term, length(@common_colors)))
 
   @icon_mapping %{
     "create_auth_token" => "🔑",

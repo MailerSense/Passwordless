@@ -17,9 +17,9 @@ defmodule PasswordlessWeb.App.MethodLive.SMS do
       Enum.map(SMS.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
 
     flag_mapping = fn
-      nil -> "flag-us"
-      "en" -> "flag-us"
-      :en -> "flag-us"
+      nil -> "flag-gb"
+      "en" -> "flag-gb"
+      :en -> "flag-gb"
       code -> "flag-#{code}"
     end
 

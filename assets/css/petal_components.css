@@ -539,10 +539,10 @@
   @apply !text-success-600 dark:!text-success-300;
 }
 .pc-checkbox-label {
-  @apply inline-flex items-center gap-3 text-base font-normal text-gray-900 cursor-pointer dark:text-white;
+  @apply flex items-center gap-3 text-base font-normal text-gray-900 cursor-pointer dark:text-white peer-disabled:cursor-not-allowed;
 }
 .pc-switch-label {
-  @apply inline-flex items-center text-base font-normal text-gray-900 cursor-pointer dark:text-white;
+  @apply flex items-center text-base font-normal text-gray-900 cursor-pointer dark:text-white;
 }
 .pc-label {
   @apply block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200;
@@ -550,7 +550,7 @@
 .pc-label--for-checkbox {
   @apply !mb-0 font-normal;
 }
-.pc-label--required:before {
+.pc-label--required:after {
   color: #e32;
   content: "*";
   display: inline;
@@ -749,13 +749,12 @@ input[type="color" i]::-moz-color-swatch {
   @apply inline-flex items-center gap-3 cursor-pointer;
 }
 .pc-radio {
-  @apply w-4 h-4 border-2 border-gray-300 cursor-pointer text-primary-600 disabled:text-gray-300 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600;
+  @apply w-4 h-4 border-2 border-gray-300 cursor-pointer text-primary-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-300 focus:ring-primary-500 dark:bg-gray-800 dark:disabled:bg-gray-600 dark:border-gray-600;
 }
 .pc-radio-group {
-  @apply pt-2;
 }
 .pc-radio-group--row {
-  @apply flex flex-row gap-6 mb-3;
+  @apply flex flex-row gap-6;
 }
 .pc-radio-group--col {
   @apply flex flex-col gap-4 mb-3;
@@ -1587,7 +1586,7 @@ input[type="color" i]::-moz-color-swatch {
 .pc-stream-table__wrapper {
 }
 .pc-table__th {
-  @apply text-sm text-left font-medium select-none bg-gray-50 dark:bg-gray-700/50;
+  @apply text-xs text-left font-semibold select-none bg-gray-50/50 dark:bg-gray-700/50;
 }
 .pc-table__th--md {
   @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-3;

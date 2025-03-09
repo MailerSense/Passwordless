@@ -403,6 +403,7 @@ defmodule PasswordlessWeb.Components.Field do
               checked={
                 to_string(value) == to_string(@value) || to_string(value) == to_string(@checked)
               }
+              disabled={value in @disabled_options}
               class="pc-radio"
               {@rest}
             />

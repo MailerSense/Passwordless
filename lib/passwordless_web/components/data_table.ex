@@ -7,6 +7,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   use Gettext, backend: PasswordlessWeb.Gettext
 
   import PasswordlessWeb.Components.Badge
+  import PasswordlessWeb.Components.Button
   import PasswordlessWeb.Components.Field
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Pagination
@@ -24,7 +25,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-2", doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
   attr :base_url_params, :map, required: false
 
   attr :form_target, :string,
@@ -197,7 +198,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :badge, :string, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-2", doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
   attr :finished, :boolean, default: false
 
   slot :col, required: true do
@@ -283,8 +284,10 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :size, :string, default: "md", values: ["sm", "md", "lg"], doc: "table sizes"
   attr :items, :any, required: true
   attr :title, :string, default: nil
+  attr :action_link, :string, default: nil
+  attr :action_link_type, :string, default: "live_patch"
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-2", doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
 
   slot :col, required: true do
     attr :label, :string
@@ -312,7 +315,13 @@ defmodule PasswordlessWeb.Components.DataTable do
 
     ~H"""
     <div class={["pc-table__wrapper", "pc-data-table__wrapper", @shadow_class, @class]}>
-      <.table_header :if={@title} title={@title} />
+      <.table_header
+        :if={@title}
+        title={@title}
+        count={Enum.count(@items)}
+        action_link={@action_link}
+        action_link_type={@action_link_type}
+      />
       <.table class="pc-data-table">
         <thead class="pc-table__thead-striped">
           <.tr>
@@ -371,8 +380,11 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   attr :meta, Flop.Meta, default: nil
   attr :badge, :string, default: nil
+  attr :count, :integer, default: nil
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
+  attr :action_link, :string, default: nil
+  attr :action_link_type, :string, default: "live_patch"
 
   defp table_header(assigns) do
     assigns =
@@ -386,6 +398,9 @@ defmodule PasswordlessWeb.Components.DataTable do
         Util.present?(assigns[:badge]) ->
           assigns
 
+        Util.present?(assigns[:count]) ->
+          assign(assigns, :badge, Passwordless.Locale.Number.to_string!(assigns[:count]))
+
         Util.present?(assigns[:meta]) ->
           assign(assigns, :badge, Passwordless.Locale.Number.to_string!(assigns[:meta].total_count))
 
@@ -395,7 +410,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
     ~H"""
     <div class={[
-      "px-6 py-5 flex items-center gap-4",
+      "px-6 py-5 flex items-center justify-between gap-4",
       "border-b border-gray-200 dark:border-gray-700"
     ]}>
       <div class="flex items-center gap-2">
@@ -404,6 +419,16 @@ defmodule PasswordlessWeb.Components.DataTable do
         </h3>
         <.badge :if={Util.present?(@badge)} size="sm" color="primary" label={@badge} />
       </div>
+
+      <.button
+        :if={@action_link}
+        to={@action_link}
+        size="xs"
+        icon="remix-add-circle-line"
+        color="light"
+        label={gettext("Add")}
+        link_type={@action_link_type}
+      />
     </div>
     """
   end
