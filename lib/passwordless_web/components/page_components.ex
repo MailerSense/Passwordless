@@ -33,14 +33,14 @@ defmodule PasswordlessWeb.Components.PageComponents do
   """
 
   attr :class, :string, default: ""
-  attr :title, :string, required: true
+  attr :field, Phoenix.HTML.FormField, required: true
   slot :inner_block
 
   def subpage_header(assigns) do
     ~H"""
     <div class={["pc-page-header", @class]}>
       <div class="relative">
-        <.field type="editor" id={@title} name={@title} value={@title} readonly />
+        <.field type="editor" field={@field} />
         <div class="pc-editor-field-icon">
           <.icon name="remix-pencil-line" class="pc-editor-field-icon__icon" />
         </div>

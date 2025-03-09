@@ -111,7 +111,7 @@ defmodule PasswordlessWeb.Components.Form do
     doc: "The type of input"
   )
 
-  attr(:wrapper_classes, :string, default: "pc-form-field-wrapper", doc: "CSS class for wrapper")
+  attr :wrapper_classes, :string, default: "pc-form-field-wrapper", doc: "CSS class for wrapper"
   attr :rest, :global, include: @form_attrs
 
   @doc "Use this when you want to include the label and some margin."

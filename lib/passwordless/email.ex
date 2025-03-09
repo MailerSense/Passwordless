@@ -8,6 +8,13 @@ defmodule Passwordless.Email do
   alias Database.ChangesetExt
   alias Passwordless.Actor
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :address,
+             :primary,
+             :verified
+           ]}
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]

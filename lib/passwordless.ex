@@ -223,6 +223,7 @@ defmodule Passwordless do
   def get_actor!(%App{} = app, id) when is_binary(id) do
     Actor
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
+    |> Repo.preload([:totps, :emails, :phones])
     |> Actor.put_active()
   end
 

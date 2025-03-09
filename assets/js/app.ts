@@ -3,6 +3,7 @@ import persist from "@alpinejs/persist";
 import Alpine from "alpinejs";
 import hljs from "highlight.js/lib/core";
 import javascript from "highlight.js/lib/languages/javascript";
+import json from "highlight.js/lib/languages/json";
 import typescript from "highlight.js/lib/languages/typescript";
 import { Socket } from "phoenix";
 import "phoenix_html";
@@ -14,6 +15,7 @@ import uploaders from "./uploaders";
 
 hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("typescript", typescript);
+hljs.registerLanguage("json", json);
 
 // Enable dark mode
 const applyScheme = (scheme: "light" | "dark") => {

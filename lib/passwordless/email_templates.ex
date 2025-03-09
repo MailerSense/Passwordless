@@ -20,7 +20,7 @@ defmodule Passwordless.EmailTemplates do
           subject: gettext("Sign in to %{name}", name: app.display_name),
           preheader: gettext("Click the link below to sign in."),
           mjml_body:
-            Passwordless.Native.format_code(
+            Passwordless.Formatter.format!(
               ~S"""
               <mjml>
               <mj-head>
@@ -154,7 +154,7 @@ defmodule Passwordless.EmailTemplates do
           subject: gettext("Sign in to %{name}", name: app.display_name),
           preheader: gettext("Use the code below to sign in."),
           mjml_body:
-            Passwordless.Native.format_code(
+            Passwordless.Formatter.format!(
               ~S"""
               <mjml>
               <mj-head>

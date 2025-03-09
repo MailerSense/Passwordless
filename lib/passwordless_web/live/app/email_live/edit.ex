@@ -124,7 +124,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
         formatted =
           changeset
           |> Ecto.Changeset.get_field(:mjml_body)
-          |> Passwordless.Native.format_code(:html)
+          |> Passwordless.Formatter.format!(:html)
 
         {:noreply, push_event(socket, "get_formatted_code", %{code: formatted})}
 

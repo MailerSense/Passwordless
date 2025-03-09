@@ -285,8 +285,9 @@ defmodule PasswordlessWeb.CoreComponents do
   end
 
   attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
-  attr :code, :string, required: true
-  attr :language, :atom, values: [:javascript, :typescript], required: true
+  attr :code, :any, required: true
+  attr :label, :string, default: nil
+  attr :language, :atom, values: [:javascript, :typescript, :json, :html], required: true
   attr :language_class, :string, default: nil
   attr :rest, :global
 
@@ -296,13 +297,22 @@ defmodule PasswordlessWeb.CoreComponents do
       |> assign_new(:language_class, fn -> "language-#{@language}" end)
       |> assign_new(:id, fn -> "code-block-#{:rand.uniform(10_000_000) + 1}" end)
       |> update(:code, fn code ->
-        Passwordless.Native.format_code(code, assigns[:language])
+        Passwordless.Formatter.format!(code, assigns[:language])
       end)
 
     ~H"""
-    <pre id={@id} phx-hook="HighlightHook">
+    <%= if Util.present?(@label) do %>
+      <div class="pc-form-field-wrapper">
+        <.form_label>{@label}</.form_label>
+        <pre id={@id} phx-hook="HighlightHook">
+          <code class={[@class, @language_class, "text-sm font-mono rounded-lg"]}>{@code}</code>
+        </pre>
+      </div>
+    <% else %>
+      <pre id={@id} phx-hook="HighlightHook">
       <code class={[@class, @language_class, "text-sm font-mono rounded-lg"]}>{@code}</code>
     </pre>
+    <% end %>
     """
   end
 

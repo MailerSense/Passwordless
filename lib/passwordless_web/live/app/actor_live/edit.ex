@@ -107,11 +107,11 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   end
 
   defp assign_emails(socket, %Actor{} = actor) do
-    assign(socket, emails: Passwordless.list_emails(socket.assigns.current_app, actor))
+    assign(socket, emails: actor.emails)
   end
 
   defp assign_phones(socket, %Actor{} = actor) do
-    assign(socket, phones: Passwordless.list_phones(socket.assigns.current_app, actor))
+    assign(socket, phones: actor.phones)
   end
 
   defp save_actor(socket, actor_params) do

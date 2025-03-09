@@ -10,6 +10,13 @@ defmodule Passwordless.Phone do
 
   @channels ~w(sms whatsapp)a
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :canonical,
+             :primary,
+             :verified
+           ]}
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
