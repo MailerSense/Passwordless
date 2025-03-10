@@ -9,15 +9,12 @@
       phx-change="validate"
     >
       <.field field={@form[:address]} label={gettext("Email")} autocomplete="email" required />
-      <.form_separator />
-      <.form_header title="Properties" />
+
       <.field
         type="checkbox"
         field={@form[:primary]}
         help_text={
-          gettext(
-            "Track users who successfully received your email and opened it in their email clients."
-          )
+          gettext("User can have one primary email used for contact and authentication purposes.")
         }
       />
       <.field
@@ -25,10 +22,16 @@
         field={@form[:verified]}
         help_text={
           gettext(
-            "This cookie will then be sent automatically by the browser when the user clicks on the magic link, and we can verify the link was opened in the same browser it was requested."
+            "Email can be verified by initial authentication challenge (magic link, OTP) or explicit admin action."
           )
         }
       />
+      <.form_separator />
+      <.form_header title="Authenticators" />
+      <div class="flex items-center gap-2">
+        <.badge size="sm" label="Magic link" color="cyan" />
+        <.badge size="sm" label="Email OTP" color="pink" />
+      </div>
     </.form>
 
     <:actions>
