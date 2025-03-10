@@ -102,14 +102,12 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :details,
         label: "Details",
-        icon: "remix-shield-user-line",
         path: ~p"/app/users/#{actor}/edit",
         link_type: "live_patch"
       },
       %{
         name: :activity,
-        label: "Activity",
-        icon: "remix-file-list-3-line",
+        label: "Authenticators",
         path: ~p"/app/users/#{actor}/activity",
         link_type: "live_patch"
       }
@@ -320,6 +318,13 @@ defmodule PasswordlessWeb.Helpers do
     do: {translate_action(action), Enum.at(@common_colors, :erlang.phash2(action, length(@common_colors)))}
 
   def random_color(term), do: Enum.at(@common_colors, :erlang.phash2(term, length(@common_colors)))
+
+  def actor_state_details(:active), do: {gettext("User is active and can authenticate freely"), "success"}
+
+  def actor_state_details(:locked), do: {gettext("User is locked and cannot authenticate"), "danger"}
+
+  def actor_state_details(:stale),
+    do: {gettext("User is stale and will not be counted towards your monthly quota"), "gray"}
 
   @icon_mapping %{
     "create_auth_token" => "🔑",

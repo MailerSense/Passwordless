@@ -103,6 +103,12 @@ defmodule Passwordless.Organizations.OrgSeeder do
           verified: true
         })
 
+      {:ok, _identity} =
+        Passwordless.add_identity(app, actor, %{
+          system: "internal",
+          user_id: UUIDv7.autogenerate()
+        })
+
       for _ <- 1..1 do
         {:ok, _action} =
           Passwordless.create_action(app, actor, %{

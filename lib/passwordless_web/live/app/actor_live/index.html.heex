@@ -55,7 +55,7 @@
       </:col>
       <:col :let={actor} field={:state} sortable switchable filterable={[:==]}>
         <% {badge_label, badge_color} = actor_state_badge(actor) %>
-        <.badge size="sm" label={badge_label} color={badge_color} />
+        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
       <:col :let={actor} label={gettext("Joined")} field={:inserted_at} sortable>
         {format_date_time(actor.inserted_at)}

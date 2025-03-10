@@ -12,6 +12,7 @@ defmodule Passwordless.Actor do
   alias Passwordless.App
   alias Passwordless.Challenge
   alias Passwordless.Email
+  alias Passwordless.Identity
   alias Passwordless.Locale
   alias Passwordless.Phone
   alias Passwordless.TOTP
@@ -27,7 +28,8 @@ defmodule Passwordless.Actor do
              :language,
              :totps,
              :emails,
-             :phones
+             :phones,
+             :identities
            ]}
   @derive {
     Flop.Schema,
@@ -68,6 +70,7 @@ defmodule Passwordless.Actor do
     has_many :emails, Email
     has_many :phones, Phone
     has_many :actions, Action
+    has_many :identities, Identity
     has_many :challenges, Challenge
 
     timestamps()

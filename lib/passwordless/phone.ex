@@ -13,6 +13,8 @@ defmodule Passwordless.Phone do
   @derive {Jason.Encoder,
            only: [
              :id,
+             :number,
+             :region,
              :canonical,
              :primary,
              :verified

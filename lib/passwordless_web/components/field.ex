@@ -654,6 +654,7 @@ defmodule PasswordlessWeb.Components.Field do
               if(Util.present?(@prefix), do: "!rounded-l-none")
             ]}
             readonly
+            disabled={@disabled}
             {@rest}
           />
           <!-- Copy Button -->

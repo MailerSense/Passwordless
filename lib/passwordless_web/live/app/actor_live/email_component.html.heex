@@ -1,0 +1,56 @@
+<div>
+  <% origin = "right" %>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+    <.form
+      id="manage-email-form"
+      for={@form}
+      phx-target={@myself}
+      phx-submit="save"
+      phx-change="validate"
+    >
+      <.field field={@form[:address]} label={gettext("Email")} autocomplete="email" required />
+      <.form_separator />
+      <.form_header title="Properties" />
+      <.field
+        type="checkbox"
+        field={@form[:primary]}
+        help_text={
+          gettext(
+            "Track users who successfully received your email and opened it in their email clients."
+          )
+        }
+      />
+      <.field
+        type="checkbox"
+        field={@form[:verified]}
+        help_text={
+          gettext(
+            "This cookie will then be sent automatically by the browser when the user clicks on the magic link, and we can verify the link was opened in the same browser it was requested."
+          )
+        }
+      />
+    </.form>
+
+    <:actions>
+      <.button
+        size="wide"
+        type="submit"
+        color="light-flat"
+        label={gettext("Cancel")}
+        phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+      />
+      <.button
+        id="manage-email-form-submit"
+        size="wide"
+        type="submit"
+        form="manage-email-form"
+        disabled={not @form.source.valid?}
+        label={
+          if @live_action == :new_email,
+            do: gettext("Create"),
+            else: gettext("Save")
+        }
+      />
+    </:actions>
+  </.slide_over>
+</div>

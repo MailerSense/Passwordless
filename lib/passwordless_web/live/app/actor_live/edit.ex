@@ -11,11 +11,10 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   end
 
   @impl true
-  def handle_params(%{"id" => id}, _url, socket) do
+  def handle_params(%{"id" => id} = params, url, socket) do
     actor = Passwordless.get_actor!(socket.assigns.current_app, id)
     changeset = Passwordless.change_actor(actor)
     languages = Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
-    states = Enum.map(Actor.states(), fn state -> {Phoenix.Naming.humanize(state), state} end)
 
     flag_mapping = fn
       nil -> "flag-gb"
@@ -24,13 +23,43 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
       code -> "flag-#{code}"
     end
 
-    {:noreply,
-     socket
-     |> assign(actor: actor, states: states, languages: languages, flag_mapping: flag_mapping)
-     |> assign_form(changeset)
-     |> assign_emails(actor)
-     |> assign_phones(actor)
-     |> apply_action(socket.assigns.live_action, actor)}
+    socket =
+      socket
+      |> assign(actor: actor, languages: languages, flag_mapping: flag_mapping)
+      |> assign_form(changeset)
+      |> assign_emails(actor)
+      |> assign_phones(actor)
+      |> assign_identities(actor)
+      |> apply_action(socket.assigns.live_action, actor)
+
+    params
+    |> Map.drop(["id"])
+    |> handle_params(url, socket)
+  end
+
+  @impl true
+  def handle_params(%{"email_id" => email_id} = params, url, socket) do
+    email = Passwordless.get_email!(socket.assigns.current_app, socket.assigns.actor, email_id)
+    socket = assign(socket, email: email)
+
+    params
+    |> Map.drop(["email_id"])
+    |> handle_params(url, socket)
+  end
+
+  @impl true
+  def handle_params(%{"phone_id" => phone_id} = params, url, socket) do
+    phone = Passwordless.get_phone!(socket.assigns.current_app, socket.assigns.actor, phone_id)
+    socket = assign(socket, phone: phone)
+
+    params
+    |> Map.drop(["phone_id"])
+    |> handle_params(url, socket)
+  end
+
+  @impl true
+  def handle_params(_params, _url, socket) do
+    {:noreply, socket}
   end
 
   @impl true
@@ -106,12 +135,51 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     )
   end
 
+  defp apply_action(socket, :new_email, _actor) do
+    assign(socket,
+      page_title: gettext("Add email"),
+      page_subtitle: nil
+    )
+  end
+
+  defp apply_action(socket, :edit_email, _actor) do
+    assign(socket,
+      page_title: gettext("Edit email"),
+      page_subtitle: nil
+    )
+  end
+
+  defp apply_action(socket, :delete_email, _actor) do
+    assign(socket,
+      page_title: gettext("Are you sure?"),
+      page_subtitle: gettext("Are you sure you want to delete this email? This action cannot be undone.")
+    )
+  end
+
+  defp apply_action(socket, :edit_phone, _actor) do
+    assign(socket,
+      page_title: gettext("Edit phone"),
+      page_subtitle: gettext("Edit the phone number of this user.")
+    )
+  end
+
+  defp apply_action(socket, :delete_phone, _actor) do
+    assign(socket,
+      page_title: gettext("Are you sure?"),
+      page_subtitle: gettext("Are you sure you want to delete this phone? This action cannot be undone.")
+    )
+  end
+
   defp assign_emails(socket, %Actor{} = actor) do
     assign(socket, emails: actor.emails)
   end
 
   defp assign_phones(socket, %Actor{} = actor) do
     assign(socket, phones: actor.phones)
+  end
+
+  defp assign_identities(socket, %Actor{} = actor) do
+    assign(socket, identities: actor.identities)
   end
 
   defp save_actor(socket, actor_params) do

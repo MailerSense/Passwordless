@@ -20,6 +20,7 @@ defmodule Passwordless do
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateVersion
+  alias Passwordless.Identity
   alias Passwordless.Methods
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
@@ -223,7 +224,7 @@ defmodule Passwordless do
   def get_actor!(%App{} = app, id) when is_binary(id) do
     Actor
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
-    |> Repo.preload([:totps, :emails, :phones])
+    |> Repo.preload([:totps, :emails, :phones, :identities])
     |> Actor.put_active()
   end
 
@@ -270,10 +271,18 @@ defmodule Passwordless do
   end
 
   def add_canonical_phone(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     actor
     |> Ecto.build_assoc(:phones)
-    |> Phone.canonical_changeset(attrs)
-    |> Repo.insert(prefix: Tenant.to_prefix(app))
+    |> Phone.canonical_changeset(attrs, opts)
+    |> Repo.insert(opts)
+  end
+
+  def get_email!(%App{} = app, %Actor{} = actor, id) do
+    actor
+    |> Ecto.assoc(:emails)
+    |> Repo.get!(id, prefix: Tenant.to_prefix(app))
   end
 
   def list_emails(%App{} = app, %Actor{} = actor) do
@@ -282,10 +291,25 @@ defmodule Passwordless do
     |> Repo.all(prefix: Tenant.to_prefix(app))
   end
 
+  def get_phone!(%App{} = app, %Actor{} = actor, id) do
+    actor
+    |> Ecto.assoc(:phones)
+    |> Repo.get!(id, prefix: Tenant.to_prefix(app))
+  end
+
   def list_phones(%App{} = app, %Actor{} = actor) do
     actor
     |> Ecto.assoc(:phones)
     |> Repo.all(prefix: Tenant.to_prefix(app))
+  end
+
+  def add_identity(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    actor
+    |> Ecto.build_assoc(:identities)
+    |> Identity.changeset(attrs, opts)
+    |> Repo.insert(opts)
   end
 
   # Action

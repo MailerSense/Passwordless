@@ -67,6 +67,24 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     execute "create index phones_canonical_gin_trgm_idx on #{prefix()}.phones using gin (canonical gin_trgm_ops);"
 
+    ## Identities
+
+    create table(:identities, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :system, :string, null: false
+      add :user_id, :string, null: false
+
+      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create index(:identities, [:actor_id], where: "deleted_at is null")
+    create unique_index(:identities, [:actor_id, :system, :user_id], where: "deleted_at is null")
+
+    execute "create index identities_user_id_gin_trgm_idx on #{prefix()}.identities using gin (user_id gin_trgm_ops);"
+
     ## TOTPS
 
     create table(:totps, primary_key: false) do
