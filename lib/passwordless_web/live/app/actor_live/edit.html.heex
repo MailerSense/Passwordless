@@ -58,14 +58,6 @@
         required_asterix={false}
         disabled={not @user_active}
       />
-      <.field
-        field={@form[:id]}
-        class="font-mono"
-        label={gettext("Passwordless ID")}
-        copyable={true}
-        readonly
-        disabled={not @user_active}
-      />
     </.box>
   </.form>
   <div class="flex flex-col gap-6">
@@ -112,7 +104,7 @@
     <.simple_table
       items={@phones}
       title={gettext("Phones")}
-      action_link={~p"/app/users/#{@actor}/email/new"}
+      action_link={~p"/app/users/#{@actor}/edit/phone/new"}
     >
       <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
       <:col :let={phone} label={gettext("Phone")} body_class="w-full">
@@ -153,16 +145,20 @@
       </:actions>
     </.simple_table>
 
-    <.simple_table items={@identities} title={gettext("Identities")}>
+    <.simple_table
+      items={@identities}
+      title={gettext("Identities")}
+      action_link={~p"/app/users/#{@actor}/edit/identity/new"}
+    >
       <:if_empty>{gettext("No %{models} defined yet", models: gettext("identities"))}</:if_empty>
       <:col :let={identity} field={:system}>
         <.badge size="sm" label={identity.system} color={random_color(identity.system)} />
       </:col>
       <:col field={:user_id} body_class="w-full" />
       <:col actions></:col>
-      <:actions :let={email}>
+      <:actions :let={identity}>
         <.icon_button
-          to={~p"/app/users/#{@actor}/edit/emails/#{email}/delete"}
+          to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
           size="sm"
           icon="custom-trash"
           color="light"
@@ -170,7 +166,7 @@
           link_type="live_patch"
         />
         <.icon_button
-          to={~p"/app/users/#{@actor}/edit/emails/#{email}/edit"}
+          to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
           size="sm"
           icon="custom-edit"
           color="light"
@@ -205,6 +201,62 @@
       email={@email}
       app={@current_app}
       module={PasswordlessWeb.App.ActorLive.EmailComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_app={@current_app}
+      current_user={@current_user}
+      return_to={~p"/app/users/#{@actor}/edit"}
+    />
+  <% :new_phone -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      phone={Ecto.build_assoc(@actor, :phones)}
+      app={@current_app}
+      module={PasswordlessWeb.App.ActorLive.PhoneComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_app={@current_app}
+      current_user={@current_user}
+      return_to={~p"/app/users/#{@actor}/edit"}
+    />
+  <% :edit_phone -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      phone={@phone}
+      app={@current_app}
+      module={PasswordlessWeb.App.ActorLive.PhoneComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_app={@current_app}
+      current_user={@current_user}
+      return_to={~p"/app/users/#{@actor}/edit"}
+    />
+  <% :new_identity -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      identity={Ecto.build_assoc(@actor, :identities)}
+      app={@current_app}
+      module={PasswordlessWeb.App.ActorLive.IdentityComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_app={@current_app}
+      current_user={@current_user}
+      return_to={~p"/app/users/#{@actor}/edit"}
+    />
+  <% :edit_identity -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      identity={@identity}
+      app={@current_app}
+      module={PasswordlessWeb.App.ActorLive.IdentityComponent}
       live_action={@live_action}
       current_org={@current_org}
       current_app={@current_app}

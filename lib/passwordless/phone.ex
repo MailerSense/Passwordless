@@ -118,17 +118,12 @@ defmodule Passwordless.Phone do
     |> validate_channels()
     |> unique_constraint([:actor_id, :primary], error_key: :primary)
     |> unique_constraint([:actor_id, :canonical], error_key: :canonical)
-    |> unique_constraint([:actor_id, :region, :number], error_key: :number)
     |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo,
       error_key: :primary,
       prefix: Keyword.get(opts, :prefix)
     )
     |> unsafe_validate_unique([:actor_id, :canonical], Passwordless.Repo,
       error_key: :canonical,
-      prefix: Keyword.get(opts, :prefix)
-    )
-    |> unsafe_validate_unique([:actor_id, :region, :number], Passwordless.Repo,
-      error_key: :number,
       prefix: Keyword.get(opts, :prefix)
     )
     |> assoc_constraint(:actor)

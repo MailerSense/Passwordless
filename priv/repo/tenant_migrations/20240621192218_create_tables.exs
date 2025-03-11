@@ -63,7 +63,6 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create index(:phones, [:actor_id], where: "deleted_at is null")
     create unique_index(:phones, [:actor_id, :primary], where: "\"primary\"")
     create unique_index(:phones, [:actor_id, :canonical], where: "deleted_at is null")
-    create unique_index(:phones, [:actor_id, :region, :number], where: "deleted_at is null")
 
     execute "create index phones_canonical_gin_trgm_idx on #{prefix()}.phones using gin (canonical gin_trgm_ops);"
 

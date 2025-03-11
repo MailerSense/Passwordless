@@ -58,6 +58,16 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   end
 
   @impl true
+  def handle_params(%{"identity_id" => identity_id} = params, url, socket) do
+    identity = Passwordless.get_identity!(socket.assigns.current_app, socket.assigns.actor, identity_id)
+    socket = assign(socket, identity: identity)
+
+    params
+    |> Map.drop(["identity_id"])
+    |> handle_params(url, socket)
+  end
+
+  @impl true
   def handle_params(_params, _url, socket) do
     {:noreply, socket}
   end
@@ -138,14 +148,14 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   defp apply_action(socket, :new_email, _actor) do
     assign(socket,
       page_title: gettext("Add email"),
-      page_subtitle: nil
+      page_subtitle: gettext("Add an email address to this user.")
     )
   end
 
   defp apply_action(socket, :edit_email, _actor) do
     assign(socket,
       page_title: gettext("Edit email"),
-      page_subtitle: nil
+      page_subtitle: gettext("Edit the email address of this user.")
     )
   end
 
@@ -153,6 +163,13 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     assign(socket,
       page_title: gettext("Are you sure?"),
       page_subtitle: gettext("Are you sure you want to delete this email? This action cannot be undone.")
+    )
+  end
+
+  defp apply_action(socket, :new_phone, _actor) do
+    assign(socket,
+      page_title: gettext("Add phone"),
+      page_subtitle: nil
     )
   end
 
@@ -167,6 +184,20 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     assign(socket,
       page_title: gettext("Are you sure?"),
       page_subtitle: gettext("Are you sure you want to delete this phone? This action cannot be undone.")
+    )
+  end
+
+  defp apply_action(socket, :new_identity, _actor) do
+    assign(socket,
+      page_title: gettext("Add identity"),
+      page_subtitle: gettext("Add an external identity of this user.")
+    )
+  end
+
+  defp apply_action(socket, :edit_identity, _actor) do
+    assign(socket,
+      page_title: gettext("Edit identity"),
+      page_subtitle: gettext("Edit the external identity of this user.")
     )
   end
 

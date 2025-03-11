@@ -132,8 +132,12 @@ defmodule PasswordlessWeb.Router do
       live "/users/:id/edit/email/new", App.ActorLive.Edit, :new_email
       live "/users/:id/edit/email/:email_id/edit", App.ActorLive.Edit, :edit_email
       live "/users/:id/edit/email/:email_id/delete", App.ActorLive.Edit, :delete_email
+      live "/users/:id/edit/phone/new", App.ActorLive.Edit, :new_phone
       live "/users/:id/edit/phone/:phone_id/edit", App.ActorLive.Edit, :edit_phone
       live "/users/:id/edit/phone/:phone_id/delete", App.ActorLive.Edit, :delete_phone
+      live "/users/:id/edit/identity/new", App.ActorLive.Edit, :new_identity
+      live "/users/:id/edit/identity/:identity_id/edit", App.ActorLive.Edit, :edit_identity
+      live "/users/:id/edit/identity/:identity_id/delete", App.ActorLive.Edit, :delete_identity
       live "/users/:id/delete", App.ActorLive.Index, :delete
 
       # Methods

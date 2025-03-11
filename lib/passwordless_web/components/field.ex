@@ -760,7 +760,7 @@ defmodule PasswordlessWeb.Components.Field do
         <% Util.present?(@icon) -> %>
           <div class="relative">
             <div class="pc-field-icon">
-              <Icon.icon name={@icon} class="pc-field-icon__icon" />
+              <Icon.icon name={@icon} class={@icon_class} />
             </div>
             <input
               type={@type}

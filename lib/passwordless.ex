@@ -285,6 +285,11 @@ defmodule Passwordless do
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
   end
 
+  def change_actor_email(%App{} = app, %Email{} = email, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+    Email.changeset(email, attrs, opts)
+  end
+
   def list_emails(%App{} = app, %Actor{} = actor) do
     actor
     |> Ecto.assoc(:emails)
@@ -295,6 +300,11 @@ defmodule Passwordless do
     actor
     |> Ecto.assoc(:phones)
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
+  end
+
+  def change_actor_phone(%App{} = app, %Phone{} = phone, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+    Phone.canonical_changeset(phone, attrs, opts)
   end
 
   def list_phones(%App{} = app, %Actor{} = actor) do
@@ -310,6 +320,17 @@ defmodule Passwordless do
     |> Ecto.build_assoc(:identities)
     |> Identity.changeset(attrs, opts)
     |> Repo.insert(opts)
+  end
+
+  def get_identity!(%App{} = app, %Actor{} = actor, id) do
+    actor
+    |> Ecto.assoc(:identities)
+    |> Repo.get!(id, prefix: Tenant.to_prefix(app))
+  end
+
+  def change_actor_identity(%App{} = app, %Identity{} = identity, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+    Identity.changeset(identity, attrs, opts)
   end
 
   # Action

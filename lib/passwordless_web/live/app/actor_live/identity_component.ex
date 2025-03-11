@@ -1,13 +1,13 @@
-defmodule PasswordlessWeb.App.ActorLive.EmailComponent do
+defmodule PasswordlessWeb.App.ActorLive.IdentityComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
   alias Passwordless.App
-  alias Passwordless.Email
+  alias Passwordless.Identity
 
   @impl true
-  def update(%{app: %App{} = app, email: %Email{} = email} = assigns, socket) do
-    changeset = Passwordless.change_actor_email(app, email)
+  def update(%{app: %App{} = app, identity: %Identity{} = identity} = assigns, socket) do
+    changeset = Passwordless.change_actor_identity(app, identity)
 
     {:ok,
      socket
@@ -16,17 +16,17 @@ defmodule PasswordlessWeb.App.ActorLive.EmailComponent do
   end
 
   @impl true
-  def handle_event("validate", %{"email" => email_params}, socket) do
+  def handle_event("validate", %{"identity" => email_params}, socket) do
     changeset =
       socket.assigns.app
-      |> Passwordless.change_actor_email(socket.assigns.email, email_params)
+      |> Passwordless.change_actor_identity(socket.assigns.identity, email_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign_form(socket, changeset)}
   end
 
   @impl true
-  def handle_event("save", %{"email" => email_params}, socket) do
+  def handle_event("save", %{"identity" => email_params}, socket) do
     save_email(socket, socket.assigns.live_action, email_params)
   end
 
@@ -34,13 +34,13 @@ defmodule PasswordlessWeb.App.ActorLive.EmailComponent do
 
   defp save_email(socket, :edit, email_params) do
     app = socket.assigns.current_app
-    email = socket.assigns.email
+    identity = socket.assigns.identity
 
-    case Passwordless.update_email(app, email, email_params) do
+    case Passwordless.update_email(app, identity, email_params) do
       {:ok, _email} ->
         {:noreply,
          socket
-         |> put_toast(:info, gettext("Email has been updated."), title: gettext("Success"))
+         |> put_toast(:info, gettext("Identity has been updated."), title: gettext("Success"))
          |> push_patch(to: socket.assigns.return_to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -53,7 +53,7 @@ defmodule PasswordlessWeb.App.ActorLive.EmailComponent do
       {:ok, _email} ->
         {:noreply,
          socket
-         |> put_toast(:info, gettext("Email has been created."), title: gettext("Success"))
+         |> put_toast(:info, gettext("Identity has been created."), title: gettext("Success"))
          |> push_patch(to: socket.assigns.return_to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
