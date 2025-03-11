@@ -9,8 +9,6 @@
       phx-change="validate"
     >
       <.field field={@form[:address]} label={gettext("Email")} autocomplete="email" required />
-      <.form_separator />
-      <.form_header title="Settings" />
       <.field
         type="checkbox"
         field={@form[:primary]}
@@ -27,12 +25,6 @@
           )
         }
       />
-      <.form_separator />
-      <.form_header title="Authenticators" />
-      <div class="flex items-center gap-2">
-        <.badge size="sm" label="Magic link" color="cyan" />
-        <.badge size="sm" label="Email OTP" color="pink" />
-      </div>
     </.form>
 
     <:actions>

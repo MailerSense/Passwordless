@@ -2,18 +2,7 @@
   <:action></:action>
 
   <div class="flex flex-col gap-6">
-    <div class="flex items-center justify-between gap-3">
-      <h3 class={["text-lg font-semibold text-slate-900 dark:text-white"]}>
-        {gettext("Teammates")}
-      </h3>
-      <.button
-        link_type="live_redirect"
-        to={~p"/app/team/invite"}
-        icon="remix-add-circle-line"
-        label={gettext("Add teammate")}
-      />
-    </div>
-    <.data_table meta={@meta} items={@memberships}>
+    <.data_table meta={@meta} items={@memberships} title={gettext("Teammates")} shadow_class={nil}>
       <:if_empty>{gettext("No %{models} found", models: gettext("members"))}</:if_empty>
       <:col :let={membership} field={:name}>
         {user_name(membership.user)}
@@ -22,7 +11,7 @@
         {user_email(membership.user)}
       </:col>
       <:col :let={membership} field={:role}>
-        {user_role(membership)}
+        <.role_badge role={membership.role} />
       </:col>
       <:col actions></:col>
       <:actions :let={membership}>
@@ -56,7 +45,46 @@
           to={apply_filters(@filters, @meta, ~p"/app/team/#{membership}/edit")}
         />
       </:actions>
+      <:header_actions>
+        <.button
+          size="xs"
+          link_type="live_redirect"
+          to={~p"/app/team/invite"}
+          icon="remix-add-circle-line"
+          label={gettext("Invite")}
+          color="light"
+        />
+      </:header_actions>
     </.data_table>
+
+    <.simple_table items={@invitations} title={gettext("Invitations")} shadow_class={nil}>
+      <:if_empty>{gettext("No %{models} found", models: gettext("invitations"))}</:if_empty>
+      <:col field={:email} body_class="w-full" />
+      <:col :let={invitation} field={:inserted_at} label="Sent">
+        {format_date_time(invitation.inserted_at)}
+      </:col>
+      <:col actions></:col>
+      <:actions :let={invitation}>
+        <.icon_button
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          data-confirm={gettext("Are you sure you want to remove this invitation?")}
+          phx-value-id={invitation.id}
+          phx-click="delete_invitation"
+        />
+        <.icon_button
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Resend")}
+          data-confirm={gettext("Are you sure you want to resend this invitation?")}
+          phx-value-id={invitation.id}
+          phx-click="resend_invitation"
+        />
+      </:actions>
+    </.simple_table>
   </div>
 </.tabbed_settings_layout>
 
@@ -88,7 +116,6 @@
           required
           placeholder={gettext("eg. john@gmail.com")}
           autocomplete="email"
-          phx-debounce="blur"
         />
       </.form>
 
@@ -134,16 +161,6 @@
           phx-value-id={@membership.id}
         />
       </div>
-    </.modal>
-  <% :invitations -> %>
-    <.modal max_width="lg" title={@page_title} subtitle={@page_subtitle}>
-      <.live_component
-        id={@live_action}
-        module={PasswordlessWeb.Org.TeamLive.InvitationsComponent}
-        current_org={@current_org}
-        current_user={@current_user}
-        return_to={~p"/app/team"}
-      />
     </.modal>
   <% _ -> %>
 <% end %>

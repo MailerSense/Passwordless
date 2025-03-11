@@ -148,14 +148,14 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   defp apply_action(socket, :new_email, _actor) do
     assign(socket,
       page_title: gettext("Add email"),
-      page_subtitle: gettext("Add an email address to this user.")
+      page_subtitle: nil
     )
   end
 
   defp apply_action(socket, :edit_email, _actor) do
     assign(socket,
       page_title: gettext("Edit email"),
-      page_subtitle: gettext("Edit the email address of this user.")
+      page_subtitle: nil
     )
   end
 
@@ -176,7 +176,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   defp apply_action(socket, :edit_phone, _actor) do
     assign(socket,
       page_title: gettext("Edit phone"),
-      page_subtitle: gettext("Edit the phone number of this user.")
+      page_subtitle: nil
     )
   end
 
@@ -190,14 +190,20 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   defp apply_action(socket, :new_identity, _actor) do
     assign(socket,
       page_title: gettext("Add identity"),
-      page_subtitle: gettext("Add an external identity of this user.")
+      page_subtitle:
+        gettext(
+          "Users can have multiple identities, like your own application, social providers or similar. They can be useful to link users."
+        )
     )
   end
 
   defp apply_action(socket, :edit_identity, _actor) do
     assign(socket,
       page_title: gettext("Edit identity"),
-      page_subtitle: gettext("Edit the external identity of this user.")
+      page_subtitle:
+        gettext(
+          "Users can have multiple identities, like your own application, social providers or similar. They can be useful to link users."
+        )
     )
   end
 

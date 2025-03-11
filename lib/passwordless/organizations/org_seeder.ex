@@ -109,6 +109,8 @@ defmodule Passwordless.Organizations.OrgSeeder do
           user_id: UUIDv7.autogenerate()
         })
 
+      {:ok, _recovery_codes} = Passwordless.create_actor_recovery_codes(app, actor)
+
       for _ <- 1..1 do
         {:ok, _action} =
           Passwordless.create_action(app, actor, %{

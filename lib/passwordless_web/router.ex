@@ -166,7 +166,6 @@ defmodule PasswordlessWeb.Router do
       # Team
       live "/team", App.TeamLive.Index, :index
       live "/team/invite", App.TeamLive.Index, :invite
-      live "/team/invitations", App.TeamLive.Index, :invitations
       live "/team/:id/edit", App.TeamLive.Index, :edit
       live "/team/:id/delete", App.TeamLive.Index, :delete
 

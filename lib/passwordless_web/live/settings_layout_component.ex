@@ -10,6 +10,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
 
   attr :current_user, :map, required: true
   attr :current_page, :atom, required: true
+  attr :inner_class, :any, default: "p-6"
   slot :action, required: false
   slot :inner_block
 
@@ -40,7 +41,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
           </.form>
         </.dropdown>
       </.page_header>
-      <.tabbed_layout current_page={@current_page} menu_items={@menu_items} inner_class="p-6">
+      <.tabbed_layout current_page={@current_page} menu_items={@menu_items} inner_class={@inner_class}>
         {render_slot(@inner_block)}
       </.tabbed_layout>
     </.layout>

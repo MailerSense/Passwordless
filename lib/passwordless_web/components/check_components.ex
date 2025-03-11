@@ -5,6 +5,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   use Gettext, backend: PasswordlessWeb.Gettext
 
   import PasswordlessWeb.Components.Avatar
+  import PasswordlessWeb.Components.Badge
   import PasswordlessWeb.Components.Button
   import PasswordlessWeb.Components.Form
   import PasswordlessWeb.Components.Icon
@@ -346,7 +347,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   attr :content, :string, required: true, doc: "The content to render as markdown."
   attr :class, :string, doc: "The class to apply to the rendered markdown.", default: ""
 
-  defp unsafe_markdown(assigns) do
+  def unsafe_markdown(assigns) do
     ~H"""
     <div class={[
       "prose dark:prose-invert prose-img:rounded-xl prose-img:mx-auto prose-a:text-primary-600 prose-a:dark:text-primary-300",
@@ -358,6 +359,70 @@ defmodule PasswordlessWeb.DashboardComponents do
           escape: false
         })
       )}
+    </div>
+    """
+  end
+
+  attr :codes, :list, required: true, doc: "The content to render as markdown."
+  attr :class, :string, doc: "The class to apply to the rendered markdown.", default: ""
+
+  def recovery_codes(assigns) do
+    ~H"""
+    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <%= for backup_code <- @codes do %>
+        <div class="flex items-center justify-center p-3 font-mono bg-slate-300 rounded dark:bg-slate-700">
+          <h4>
+            <%= if backup_code.used_at do %>
+              <del class="line-through">{backup_code.code}</del>
+            <% else %>
+              {backup_code.code}
+            <% end %>
+          </h4>
+        </div>
+      <% end %>
+    </div>
+    """
+  end
+
+  attr :badge, :string, default: nil
+  attr :count, :integer, default: nil
+  attr :title, :string, default: nil
+  attr :action_link, :string, default: nil
+  attr :action_title, :string, default: nil
+  attr :action_link_type, :string, default: "live_patch"
+  attr :rest, :global
+
+  slot :inner_block
+
+  def action_header(assigns) do
+    assigns =
+      cond do
+        Util.present?(assigns[:badge]) ->
+          assigns
+
+        Util.present?(assigns[:count]) ->
+          assign(assigns, :badge, Passwordless.Locale.Number.to_string!(assigns[:count]))
+
+        true ->
+          assigns
+      end
+
+    ~H"""
+    <div
+      class={[
+        "px-6 py-5 flex items-center justify-between gap-4",
+        "border-b border-slate-200 dark:border-slate-700"
+      ]}
+      {@rest}
+    >
+      <div class="flex items-center gap-2">
+        <h3 class="text-lg font-medium text-slate-900 dark:text-white">
+          {@title}
+        </h3>
+        <.badge :if={Util.present?(@badge)} size="sm" color="primary" label={@badge} />
+      </div>
+
+      {render_slot(@inner_block)}
     </div>
     """
   end

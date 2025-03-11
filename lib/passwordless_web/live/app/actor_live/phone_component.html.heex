@@ -16,8 +16,6 @@
         autocomplete="tel"
         required
       />
-      <.form_separator />
-      <.form_header title="Settings" />
       <.field
         type="checkbox"
         field={@form[:primary]}
@@ -34,12 +32,6 @@
           )
         }
       />
-      <.form_separator />
-      <.form_header title="Channels" />
-      <div class="flex items-center gap-2">
-        <.badge size="sm" label="SMS" color="purple" />
-        <.badge size="sm" label="Whatsapp" color="indigo" />
-      </div>
     </.form>
 
     <:actions>

@@ -175,6 +175,34 @@
         />
       </:actions>
     </.simple_table>
+    <.box :if={Util.present?(@actor.recovery_codes)}>
+      <.action_header
+        badge={Enum.count(@actor.recovery_codes.codes)}
+        title={gettext("Recovery codes")}
+        action_link={~p"/app/users/#{@actor}/edit/recovery_codes/regenerate"}
+        action_title={gettext("Regenerate")}
+      >
+        <div class="flex items-center gap-3">
+          <.button
+            size="xs"
+            icon="remix-download-line"
+            color="light"
+            label={gettext("Download")}
+            link_type="live_patch"
+          />
+          <.button
+            size="xs"
+            icon="remix-refresh-line"
+            color="light"
+            label={gettext("Regenerate")}
+            link_type="live_patch"
+          />
+        </div>
+      </.action_header>
+      <div class="p-6">
+        <.recovery_codes codes={@actor.recovery_codes.codes} />
+      </div>
+    </.box>
   </div>
 </.layout>
 

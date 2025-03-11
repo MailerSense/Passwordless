@@ -25,7 +25,8 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
+  attr :shadow_class, :any, default: "shadow-1", doc: "CSS class to add to the table"
+  attr :wrapper_class, :any, default: "pc-table__wrapper pc-data-table__wrapper", doc: "CSS class to add to the table"
   attr :base_url_params, :map, required: false
 
   attr :form_target, :string,
@@ -61,6 +62,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   end
 
   slot :actions, required: false
+  slot :header_actions, required: false
   slot :if_empty, required: false
 
   def data_table(assigns) do
@@ -99,7 +101,7 @@ defmodule PasswordlessWeb.Components.DataTable do
       phx-submit="update_filters"
       {form_assigns(@form_target)}
     >
-      <div class={["pc-table__wrapper", "pc-data-table__wrapper", @shadow_class, @class]}>
+      <div class={[@wrapper_class, @shadow_class, @class]}>
         <.table_search_bar
           :if={@search_field || @switch_field}
           meta={@meta}
@@ -113,6 +115,7 @@ defmodule PasswordlessWeb.Components.DataTable do
           meta={@meta}
           title={@title}
           title_func={@title_func}
+          actions={@header_actions}
         />
         <div class="pc-data-table">
           <.table>
@@ -284,8 +287,6 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :size, :string, default: "md", values: ["sm", "md", "lg"], doc: "table sizes"
   attr :items, :any, required: true
   attr :title, :string, default: nil
-  attr :action_link, :string, default: nil
-  attr :action_link_type, :string, default: "live_patch"
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
   attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
 
@@ -315,13 +316,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
     ~H"""
     <div class={["pc-table__wrapper", "pc-data-table__wrapper", @shadow_class, @class]}>
-      <.table_header
-        :if={@title}
-        title={@title}
-        count={Enum.count(@items)}
-        action_link={@action_link}
-        action_link_type={@action_link_type}
-      />
+      <.table_header :if={@title} title={@title} count={Enum.count(@items)} />
       <.table class="pc-data-table">
         <thead class="pc-table__thead-striped">
           <.tr>
@@ -383,8 +378,8 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :count, :integer, default: nil
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
-  attr :action_link, :string, default: nil
-  attr :action_link_type, :string, default: "live_patch"
+
+  slot :actions, required: false
 
   defp table_header(assigns) do
     assigns =
@@ -420,15 +415,7 @@ defmodule PasswordlessWeb.Components.DataTable do
         <.badge :if={Util.present?(@badge)} size="sm" color="primary" label={@badge} />
       </div>
 
-      <.button
-        :if={@action_link}
-        to={@action_link}
-        size="xs"
-        icon="remix-add-circle-line"
-        color="light"
-        label={gettext("Add")}
-        link_type={@action_link_type}
-      />
+      {render_slot(@actions)}
     </div>
     """
   end

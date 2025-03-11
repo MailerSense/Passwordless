@@ -15,6 +15,7 @@ defmodule Passwordless.Actor do
   alias Passwordless.Identity
   alias Passwordless.Locale
   alias Passwordless.Phone
+  alias Passwordless.RecoveryCodes
   alias Passwordless.TOTP
 
   @states ~w(active locked stale)a
@@ -65,6 +66,8 @@ defmodule Passwordless.Actor do
 
     has_one :email, Email, where: [primary: true]
     has_one :phone, Phone, where: [primary: true]
+
+    has_one :recovery_codes, RecoveryCodes
 
     has_many :totps, TOTP
     has_many :emails, Email
@@ -212,13 +215,15 @@ defmodule Passwordless.Actor do
       query
       |> join_assoc(:email)
       |> join_assoc(:phone)
+      |> join_assoc(:identities)
 
     where(
       query,
-      [actor: a, email: e, phone: p],
+      [actor: a, email: e, phone: p, identities: i],
       ilike(a.name, ^value) or
         ilike(e.email, ^value) or
-        ilike(p.phone, ^value)
+        ilike(p.phone, ^value) or
+        ilike(i.user_id, ^value)
     )
   end
 
