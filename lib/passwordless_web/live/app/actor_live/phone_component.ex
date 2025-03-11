@@ -64,6 +64,6 @@ defmodule PasswordlessWeb.App.ActorLive.PhoneComponent do
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     socket
     |> assign(form: to_form(changeset))
-    |> assign(phone_region: changeset |> Ecto.Changeset.get_field(:region) |> String.downcase())
+    |> assign(phone_region: changeset |> Ecto.Changeset.get_field(:region) |> Util.trim_downcase())
   end
 end
