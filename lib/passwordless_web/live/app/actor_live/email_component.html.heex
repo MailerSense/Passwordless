@@ -9,7 +9,8 @@
       phx-change="validate"
     >
       <.field field={@form[:address]} label={gettext("Email")} autocomplete="email" required />
-
+      <.form_separator />
+      <.form_header title="Settings" />
       <.field
         type="checkbox"
         field={@form[:primary]}

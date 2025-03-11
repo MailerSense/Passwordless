@@ -10,13 +10,14 @@
     >
       <.field
         field={@form[:canonical]}
-        label={gettext("Phone (E.164)")}
+        label={gettext("Phone")}
         icon={"flag-#{@phone_region}"}
         icon_class="pc-flag-icon"
         autocomplete="tel"
         required
       />
-
+      <.form_separator />
+      <.form_header title="Settings" />
       <.field
         type="checkbox"
         field={@form[:primary]}
