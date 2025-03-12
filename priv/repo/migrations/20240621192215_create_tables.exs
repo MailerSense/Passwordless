@@ -238,6 +238,42 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create index(:domain_records, [:domain_id])
     create unique_index(:domain_records, [:domain_id, :kind, :name, :value])
 
+    ## Email
+
+    create table(:email_templates, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :name, :string, null: false
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create index(:email_templates, [:app_id])
+
+    create table(:email_template_versions, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :language, :string, null: false
+
+      add :subject, :string, null: false
+      add :preheader, :string
+
+      add :text_body, :text
+      add :html_body, :text
+      add :json_body, :text
+      add :mjml_body, :text
+
+      add :email_template_id, references(:email_templates, type: :uuid, on_delete: :delete_all),
+        null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create index(:email_template_versions, [:email_template_id])
+    create unique_index(:email_template_versions, [:email_template_id, :language])
+
     ## Methods
 
     create table(:magic_link_methods, primary_key: false) do
@@ -251,6 +287,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
       add :domain_id, references(:domains, type: :uuid, on_delete: :nilify_all)
+      add :email_template_id, references(:email_templates, type: :uuid, on_delete: :nilify_all)
 
       timestamps()
     end
@@ -280,6 +317,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
       add :domain_id, references(:domains, type: :uuid, on_delete: :nilify_all)
+      add :email_template_id, references(:email_templates, type: :uuid, on_delete: :nilify_all)
 
       timestamps()
     end
@@ -340,42 +378,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create unique_index(:recovery_codes_methods, [:app_id])
-
-    ## Email
-
-    create table(:email_templates, primary_key: false) do
-      add :id, :uuid, primary_key: true
-      add :name, :string, null: false
-
-      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
-
-      timestamps()
-      soft_delete_column()
-    end
-
-    create index(:email_templates, [:app_id])
-
-    create table(:email_template_versions, primary_key: false) do
-      add :id, :uuid, primary_key: true
-      add :language, :string, null: false
-
-      add :subject, :string, null: false
-      add :preheader, :string
-
-      add :text_body, :text
-      add :html_body, :text
-      add :json_body, :text
-      add :mjml_body, :text
-
-      add :email_template_id, references(:email_templates, type: :uuid, on_delete: :delete_all),
-        null: false
-
-      timestamps()
-      soft_delete_column()
-    end
-
-    create index(:email_template_versions, [:email_template_id])
-    create unique_index(:email_template_versions, [:email_template_id, :language])
 
     ## Activity Log
 

@@ -12,7 +12,7 @@ defmodule PasswordlessWeb.App.MethodLive.Email do
     domain = Repo.preload(app, :domain).domain
     changeset = Passwordless.change_email(email)
 
-    email_template = Repo.first(Passwordless.EmailTemplate)
+    email_template = Repo.preload(email, :email_template).email_template
     email_version = Passwordless.get_email_template_version(email_template, :en)
 
     {:ok,

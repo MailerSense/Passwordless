@@ -10,6 +10,7 @@ defmodule Passwordless.Methods.MagicLink do
   alias Database.ChangesetExt
   alias Passwordless.App
   alias Passwordless.Domain
+  alias Passwordless.EmailTemplate
   alias Passwordless.Repo
 
   @derive {
@@ -26,6 +27,7 @@ defmodule Passwordless.Methods.MagicLink do
 
     belongs_to :app, App, type: :binary_id
     belongs_to :domain, Domain, type: :binary_id
+    belongs_to :email_template, EmailTemplate, type: :binary_id
 
     timestamps()
   end
@@ -39,6 +41,7 @@ defmodule Passwordless.Methods.MagicLink do
     fingerprint_device
     app_id
     domain_id
+    email_template_id
   )a
   @required_fields @fields -- [:domain_id]
 
@@ -58,6 +61,7 @@ defmodule Passwordless.Methods.MagicLink do
     |> unsafe_validate_unique(:domain_id, Passwordless.Repo)
     |> assoc_constraint(:app)
     |> assoc_constraint(:domain)
+    |> assoc_constraint(:email_template)
   end
 
   # Private

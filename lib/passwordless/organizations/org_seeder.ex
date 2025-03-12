@@ -47,18 +47,23 @@ defmodule Passwordless.Organizations.OrgSeeder do
         kind: :sub_domain
       })
 
+    {:ok, magic_link_template} = Passwordless.seed_email_template(app, :magic_link_sign_in, :en)
+    {:ok, email_otp_template} = Passwordless.seed_email_template(app, :email_otp_sign_in, :en)
+
     {:ok, _methods} =
       Passwordless.create_methods(app, %{
         magic_link: %{
           sender: "verify",
           sender_name: app.name,
           domain_id: domain.id,
+          email_template_id: magic_link_template.id,
           redirect_urls: [%{url: app.website}]
         },
         email: %{
           sender: "verify",
           sender_name: app.name,
-          domain_id: domain.id
+          domain_id: domain.id,
+          email_template_id: email_otp_template.id
         },
         authenticator: %{
           issuer_name: app.name
@@ -76,8 +81,6 @@ defmodule Passwordless.Organizations.OrgSeeder do
     for r <- default_domain_records(domain.name) do
       {:ok, _} = Passwordless.create_domain_record(domain, r)
     end
-
-    {:ok, _template} = Passwordless.seed_email_template(app, :magic_link_sign_in, :en)
 
     {:ok, _tenant} = Tenant.create(app)
 
