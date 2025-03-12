@@ -215,15 +215,13 @@ defmodule Passwordless.Actor do
       query
       |> join_assoc(:email)
       |> join_assoc(:phone)
-      |> join_assoc(:identities)
 
     where(
       query,
-      [actor: a, email: e, phone: p, identities: i],
+      [actor: a, email: e, phone: p],
       ilike(a.name, ^value) or
         ilike(e.email, ^value) or
-        ilike(p.phone, ^value) or
-        ilike(i.user_id, ^value)
+        ilike(p.phone, ^value)
     )
   end
 
