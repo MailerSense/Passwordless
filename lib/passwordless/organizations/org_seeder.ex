@@ -43,20 +43,20 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
     {:ok, domain} =
       Passwordless.create_domain(app, %{
-        name: "auth.passwordless.tools",
+        name: "auth.passwordlesstools.com",
         kind: :sub_domain
       })
 
     {:ok, _methods} =
       Passwordless.create_methods(app, %{
         magic_link: %{
-          sender: "notifications",
+          sender: "verify",
           sender_name: app.name,
           domain_id: domain.id,
           redirect_urls: [%{url: app.website}]
         },
         email: %{
-          sender: "notifications",
+          sender: "verify",
           sender_name: app.name,
           domain_id: domain.id
         },

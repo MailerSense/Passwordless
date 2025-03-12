@@ -83,12 +83,12 @@ defmodule Passwordless do
            {:ok, _methods} <-
              create_methods(app, %{
                magic_link: %{
-                 sender: "notifications",
+                 sender: "verify",
                  sender_name: app.name,
                  redirect_urls: [%{url: app.website}]
                },
                email: %{
-                 sender: "notifications",
+                 sender: "verify",
                  sender_name: app.name
                },
                authenticator: %{
@@ -225,7 +225,7 @@ defmodule Passwordless do
   def get_actor!(%App{} = app, id) when is_binary(id) do
     Actor
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
-    |> Repo.preload([:totps, :emails, :phones, :identities, :recovery_codes])
+    |> Repo.preload([:totps, :email, :emails, :phone, :phones, :identities, :recovery_codes])
     |> Actor.put_active()
   end
 
@@ -332,6 +332,12 @@ defmodule Passwordless do
   def change_actor_identity(%App{} = app, %Identity{} = identity, attrs \\ %{}) do
     opts = [prefix: Tenant.to_prefix(app)]
     Identity.changeset(identity, attrs, opts)
+  end
+
+  def get_actor_recovery_codes!(%App{} = app, %Actor{} = actor) do
+    actor
+    |> Ecto.assoc(:recovery_codes)
+    |> Repo.one!(prefix: Tenant.to_prefix(app))
   end
 
   def create_actor_recovery_codes(%App{} = app, %Actor{} = actor) do

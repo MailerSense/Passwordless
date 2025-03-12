@@ -88,8 +88,8 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create table(:totps, primary_key: false) do
       add :id, :uuid, primary_key: true
+      add :name, :string, null: false
       add :secret, :binary, null: false
-      add :backup_codes, :map, null: false, default: %{}
 
       add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
 
@@ -98,8 +98,6 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create index(:totps, [:actor_id], where: "deleted_at is null")
-    create unique_index(:totps, [:secret], where: "deleted_at is null")
-    create unique_index(:totps, [:actor_id, :secret], where: "deleted_at is null")
 
     ## Recovery codes
 

@@ -104,6 +104,9 @@ defmodule PasswordlessWeb.Router do
     # DNS
     get "/domain/dns/download", DNSController, :download
 
+    # Recovery codes
+    get "/recovery-codes/download/:actor_id", RecoveryCodeController, :download
+
     live_session :app_onboarding_session,
       on_mount: [
         {PasswordlessWeb.User.Hooks, :require_authenticated_user},

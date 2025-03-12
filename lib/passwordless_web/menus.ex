@@ -204,7 +204,7 @@ defmodule PasswordlessWeb.Menus do
       label: gettext("Settings"),
       path: ~p"/app/app",
       icon: "remix-settings-2-line",
-      link_type: "live_redirect"
+      link_type: "live_patch"
     }
   end
 

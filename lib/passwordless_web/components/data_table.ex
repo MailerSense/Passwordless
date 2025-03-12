@@ -308,6 +308,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   end
 
   slot :actions, required: false
+  slot :header_actions, required: false
   slot :if_empty, required: false
 
   def simple_table(assigns) do
@@ -316,7 +317,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
     ~H"""
     <div class={["pc-table__wrapper", "pc-data-table__wrapper", @shadow_class, @class]}>
-      <.table_header :if={@title} title={@title} count={Enum.count(@items)} />
+      <.table_header :if={@title} title={@title} count={Enum.count(@items)} actions={@header_actions} />
       <.table class="pc-data-table">
         <thead class="pc-table__thead-striped">
           <.tr>

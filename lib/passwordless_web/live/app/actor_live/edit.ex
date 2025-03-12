@@ -30,6 +30,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
       |> assign_emails(actor)
       |> assign_phones(actor)
       |> assign_identities(actor)
+      |> assign_totps(actor)
       |> apply_action(socket.assigns.live_action, actor)
 
     params
@@ -207,6 +208,13 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     )
   end
 
+  defp apply_action(socket, :delete_identity, _actor) do
+    assign(socket,
+      page_title: gettext("Are you sure?"),
+      page_subtitle: gettext("Are you sure you want to delete this identity? This action cannot be undone.")
+    )
+  end
+
   defp assign_emails(socket, %Actor{} = actor) do
     assign(socket, emails: actor.emails)
   end
@@ -217,6 +225,10 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   defp assign_identities(socket, %Actor{} = actor) do
     assign(socket, identities: actor.identities)
+  end
+
+  defp assign_totps(socket, %Actor{} = actor) do
+    assign(socket, totps: actor.totps)
   end
 
   defp save_actor(socket, actor_params) do

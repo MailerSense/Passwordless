@@ -61,11 +61,7 @@
     </.box>
   </.form>
   <div class="flex flex-col gap-6">
-    <.simple_table
-      items={@emails}
-      title={gettext("Emails")}
-      action_link={~p"/app/users/#{@actor}/edit/email/new"}
-    >
+    <.simple_table items={@emails} title={gettext("Emails")}>
       <:if_empty>{gettext("No %{models} defined yet", models: gettext("emails"))}</:if_empty>
       <:col field={:address} label={gettext("Email")} body_class="w-full" />
       <:col :let={email} field={:authenticators}>
@@ -99,13 +95,19 @@
           link_type="live_patch"
         />
       </:actions>
+      <:header_actions>
+        <.button
+          size="xs"
+          link_type="live_patch"
+          to={~p"/app/users/#{@actor}/edit/email/new"}
+          icon="remix-add-circle-line"
+          label={gettext("Add")}
+          color="light"
+        />
+      </:header_actions>
     </.simple_table>
 
-    <.simple_table
-      items={@phones}
-      title={gettext("Phones")}
-      action_link={~p"/app/users/#{@actor}/edit/phone/new"}
-    >
+    <.simple_table items={@phones} title={gettext("Phones")}>
       <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
       <:col :let={phone} label={gettext("Phone")} body_class="w-full">
         <div class="flex items-center gap-2">
@@ -143,13 +145,19 @@
           link_type="live_patch"
         />
       </:actions>
+      <:header_actions>
+        <.button
+          size="xs"
+          link_type="live_patch"
+          to={~p"/app/users/#{@actor}/edit/phone/new"}
+          icon="remix-add-circle-line"
+          label={gettext("Add")}
+          color="light"
+        />
+      </:header_actions>
     </.simple_table>
 
-    <.simple_table
-      items={@identities}
-      title={gettext("Identities")}
-      action_link={~p"/app/users/#{@actor}/edit/identity/new"}
-    >
+    <.simple_table items={@identities} title={gettext("Identities")}>
       <:if_empty>{gettext("No %{models} defined yet", models: gettext("identities"))}</:if_empty>
       <:col :let={identity} field={:system}>
         <.badge size="sm" label={identity.system} color={random_color(identity.system)} />
@@ -174,21 +182,56 @@
           link_type="live_patch"
         />
       </:actions>
+      <:header_actions>
+        <.button
+          size="xs"
+          link_type="live_patch"
+          to={~p"/app/users/#{@actor}/edit/identity/new"}
+          icon="remix-add-circle-line"
+          label={gettext("Add")}
+          color="light"
+        />
+      </:header_actions>
     </.simple_table>
+
+    <.simple_table items={@totps} title={gettext("Authenticators (TOTPs)")}>
+      <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
+      <:col field={:name} body_class="w-full" />
+      <:col actions></:col>
+      <:actions :let={identity}>
+        <.icon_button
+          to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          link_type="live_patch"
+        />
+        <.icon_button
+          to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.simple_table>
+
     <.box :if={Util.present?(@actor.recovery_codes)}>
       <.action_header
         badge={Enum.count(@actor.recovery_codes.codes)}
         title={gettext("Recovery codes")}
-        action_link={~p"/app/users/#{@actor}/edit/recovery_codes/regenerate"}
-        action_title={gettext("Regenerate")}
       >
         <div class="flex items-center gap-3">
           <.button
+            to={~p"/app/recovery-codes/download/#{@actor}"}
             size="xs"
             icon="remix-download-line"
             color="light"
             label={gettext("Download")}
-            link_type="live_patch"
+            link_type="a"
+            download
           />
           <.button
             size="xs"
@@ -358,6 +401,30 @@
           icon="remix-delete-bin-line"
           size="md"
           label={gettext("Yes, Delete \"%{phone}\"", phone: @phone.canonical)}
+          color="danger"
+          phx-click="delete_email"
+        />
+      </div>
+    </.modal>
+  <% :delete_identity -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light-flat"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Delete \"%{identity}\"", phone: @identity.user_id)}
           color="danger"
           phx-click="delete_email"
         />
