@@ -252,8 +252,4 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
         {:noreply, assign_form(socket, changeset)}
     end
   end
-
-  defp user_title(name) do
-    if Util.present?(name), do: name, else: gettext("User")
-  end
 end

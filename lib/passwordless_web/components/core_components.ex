@@ -379,10 +379,6 @@ defmodule PasswordlessWeb.CoreComponents do
 
   # Private
 
-  defp menu_items_grouped?(menu_items) do
-    Enum.all?(menu_items, &Map.has_key?(&1, :title))
-  end
-
   defp map_active_path_to_menu_item(menu_items, current_path) do
     menu_items
     |> Enum.flat_map(fn menu_item ->

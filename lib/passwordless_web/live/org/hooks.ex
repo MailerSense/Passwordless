@@ -14,8 +14,6 @@ defmodule PasswordlessWeb.Org.Hooks do
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
 
-  @cache_ttl :timer.minutes(3 * 60)
-
   def on_mount(:fetch_current_org, _params, session, socket) do
     socket =
       socket

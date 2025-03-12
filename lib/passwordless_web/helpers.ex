@@ -380,8 +380,6 @@ defmodule PasswordlessWeb.Helpers do
     end
   end
 
-  def random_color(term, colors \\ @common_colors), do: Enum.at(colors, :erlang.phash2(term, length(colors)))
-
   def auth_token_scopes(%AuthToken{scopes: [_ | _] = scopes}) when length(scopes) > 2,
     do:
       scopes
