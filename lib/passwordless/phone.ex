@@ -103,7 +103,7 @@ defmodule Passwordless.Phone do
     with {:ok, phone_number} <- ExPhoneNumber.parse(canonical, ""),
          true <- ExPhoneNumber.is_possible_number?(phone_number) do
       changeset
-      |> put_change(:number, phone_number.national_number)
+      |> put_change(:number, to_string(phone_number.national_number))
       |> put_change(:region, ExPhoneNumber.Metadata.get_region_code_for_country_code(phone_number.country_code))
     else
       {:error, message} -> add_error(changeset, :canonical, message)

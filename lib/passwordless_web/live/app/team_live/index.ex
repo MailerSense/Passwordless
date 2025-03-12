@@ -31,16 +31,23 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   end
 
   @impl true
-  def handle_params(%{"id" => id} = params, _url, socket) do
+  def handle_params(%{"id" => id} = params, url, socket) do
     membership = Organizations.get_membership!(socket.assigns.current_org, id)
+    socket = assign(socket, membership: membership)
 
-    {:noreply,
-     socket
-     |> assign(membership: membership)
-     |> assign_filters(params)
-     |> assign_memberships(params)
-     |> assign_invitations()
-     |> apply_action(socket.assigns.live_action, Map.put(params, :membership, membership))}
+    params
+    |> Map.drop(["id"])
+    |> handle_params(url, socket)
+  end
+
+  @impl true
+  def handle_params(%{"invitation_id" => invitation_id} = params, url, socket) do
+    invitation = Organizations.get_invitation_by_org!(socket.assigns.current_org, invitation_id)
+    socket = assign(socket, invitation: invitation)
+
+    params
+    |> Map.drop(["invitation_id"])
+    |> handle_params(url, socket)
   end
 
   @impl true
@@ -119,7 +126,10 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
 
   @impl true
   def handle_event("resend_invitation", %{"id" => id}, socket) do
-    {:noreply, put_toast(socket, :info, gettext("Invitation resent successfully."), title: gettext("Success"))}
+    {:noreply,
+     socket
+     |> put_toast(:info, gettext("Invitation resent successfully."), title: gettext("Success"))
+     |> push_patch(to: ~p"/app/team")}
   end
 
   @impl true
@@ -213,10 +223,17 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
     )
   end
 
-  defp apply_action(socket, :invitations, _params) do
+  defp apply_action(socket, :resend_invitation, _params) do
     assign(socket,
-      page_title: gettext("Invitations"),
-      page_subtitle: gettext("View users that have been invited to your organization")
+      page_title: gettext("Resend invitation"),
+      page_subtitle: gettext("Resend an invitation to join your organization")
+    )
+  end
+
+  defp apply_action(socket, :delete_invitation, _params) do
+    assign(socket,
+      page_title: gettext("Delete invitation"),
+      page_subtitle: gettext("Delete an invitation to join your organization")
     )
   end
 

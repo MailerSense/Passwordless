@@ -10,78 +10,16 @@
     </.dropdown>
   </.page_header>
 
-  <div class="flex flex-col gap-6">
-    <.box class="flex flex-col">
-      <div class="flex items-center justify-between p-6 pb-6">
-        <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
-          {gettext("User actions")}
-        </h4>
-
-        <.dropdown size="sm" label="By action kind" placement="right">
-          <.dropdown_menu_item
-            :for={day <- ["By action kind", "By action outcome", "By authentication method"]}
-            label={day}
-            phx-click="change_agent"
-            phx-value-day={day}
-          />
-        </.dropdown>
-      </div>
-      <div id="chart" phx-hook="ChartHook" class="pl-2 pr-4"></div>
-    </.box>
-
-    <.action_stat
-      legend={[
-        %{color: "bg-blue-500", label: gettext("Magic Link")},
-        %{color: "bg-pink-500", label: gettext("SMS")},
-        %{color: "bg-purple-500", label: gettext("Email")},
-        %{color: "bg-cyan-500", label: gettext("Authenticator")},
-        %{color: "bg-emerald-500", label: gettext("WhatsApp")},
-        %{color: "bg-amber-500", label: gettext("Passkey")}
-      ]}
-      items={[
-        %{
-          name: "Magic Link",
-          value: 21323,
-          progress: %{max: 100, value: 80, color: "info"},
-          to: ~p"/app/reports"
-        },
-        %{
-          name: "SMS",
-          value: 11323,
-          progress: %{max: 100, value: 30, color: "pink"},
-          to: ~p"/app/reports"
-        },
-        %{
-          name: "Other",
-          value: 1323,
-          progress: %{
-            max: 100,
-            items: [
-              %{value: 20, color: "purple"},
-              %{value: 20, color: "emerald"},
-              %{value: 10, color: "amber", rounded: true},
-              %{value: 50, color: "neutral"}
-            ]
-          },
-          to: ~p"/app/reports"
-        }
-      ]}
+  <.box padded>
+    <.form_header title={gettext("Coming soon")} />
+    <.p class="mb-6">
+      {gettext("We are working on statistical data analysis. Stay tuned!")}
+    </.p>
+    <.a
+      class="pc-user-badge"
+      label={gettext("Back to home")}
+      to={~p"/app/home"}
+      link_type="live_redirect"
     />
-
-    <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      <.change_stat label={gettext("Sign in")} value={10} change={5} color_class="bg-success-500" />
-      <.change_stat
-        label={gettext("Withdraw")}
-        value={10}
-        change={5}
-        color_class="bg-success-500"
-      />
-      <.change_stat
-        label={gettext("Authenticate")}
-        value={10}
-        change={5}
-        color_class="bg-success-500"
-      />
-    </div>
-  </div>
+  </.box>
 </.layout>

@@ -155,7 +155,6 @@ defmodule PasswordlessWeb.Router do
       # Email
       live "/emails/:id/:language/edit", App.EmailLive.Edit, :edit
       live "/emails/:id/:language/code", App.EmailLive.Edit, :code
-      live "/emails/:id/:language/styles", App.EmailLive.Edit, :styles
 
       # Reports
       live "/reports", App.ReportLive.Index, :index
@@ -171,6 +170,8 @@ defmodule PasswordlessWeb.Router do
       live "/team/invite", App.TeamLive.Index, :invite
       live "/team/:id/edit", App.TeamLive.Index, :edit
       live "/team/:id/delete", App.TeamLive.Index, :delete
+      live "/team/invitation/:invitation_id/resend", App.TeamLive.Index, :resend_invitation
+      live "/team/invitation/:invitation_id/delete", App.TeamLive.Index, :delete_invitation
 
       # App
       live "/app", App.AppLive.Index, :index

@@ -16,7 +16,6 @@
       autocomplete="organization"
       required
       required_asterix={false}
-      phx-debounce="blur"
     />
     <.field
       type="url"
@@ -25,7 +24,6 @@
       autocomplete="url"
       required
       required_asterix={false}
-      phx-debounce="blur"
     />
     <.field
       field={@form[:display_name]}
@@ -33,7 +31,6 @@
       autocomplete="organization"
       required
       required_asterix={false}
-      phx-debounce="blur"
     />
     <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
       <.field
@@ -63,7 +60,7 @@
       <.button
         icon="remix-save-line"
         label={gettext("Save changes")}
-        disabled={not @form.source.valid?}
+        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
       />
     </div>
   </.form>

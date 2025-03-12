@@ -397,7 +397,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Domain"),
       path: ~p"/app/domain",
-      icon: "remix-global-line",
+      icon: "remix-earth-line",
       link_type: "live_patch"
     }
   end

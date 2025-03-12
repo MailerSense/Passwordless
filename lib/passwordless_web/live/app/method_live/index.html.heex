@@ -4,3 +4,15 @@
     <.live_component id={@live_action} app={@current_app} module={@module} />
   </.tabbed_layout>
 </.layout>
+
+<%= cond do %>
+  <% @sms_learn? -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      module={PasswordlessWeb.App.MethodLive.SMSLearnComponent}
+      live_action={@live_action}
+    />
+  <% true -> %>
+<% end %>

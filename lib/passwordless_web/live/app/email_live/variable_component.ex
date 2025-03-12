@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.EmailLive.StylesComponent do
+defmodule PasswordlessWeb.App.EmailLive.VariableComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 

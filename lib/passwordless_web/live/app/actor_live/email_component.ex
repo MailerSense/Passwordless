@@ -32,11 +32,11 @@ defmodule PasswordlessWeb.App.ActorLive.EmailComponent do
 
   # Private
 
-  defp save_email(socket, :edit, email_params) do
+  defp save_email(socket, :edit_email, email_params) do
     app = socket.assigns.current_app
     email = socket.assigns.email
 
-    case Passwordless.update_email(app, email, email_params) do
+    case Passwordless.update_actor_email(app, email, email_params) do
       {:ok, _email} ->
         {:noreply,
          socket
@@ -48,8 +48,11 @@ defmodule PasswordlessWeb.App.ActorLive.EmailComponent do
     end
   end
 
-  defp save_email(socket, :new, email_params) do
-    case Passwordless.create_email(socket.assigns.current_app, email_params) do
+  defp save_email(socket, :new_email, email_params) do
+    app = socket.assigns.current_app
+    actor = socket.assigns.actor
+
+    case Passwordless.create_actor_email(app, actor, email_params) do
       {:ok, _email} ->
         {:noreply,
          socket

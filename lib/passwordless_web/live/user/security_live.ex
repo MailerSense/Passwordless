@@ -135,6 +135,7 @@ defmodule PasswordlessWeb.User.SecurityLive do
           <.button
             icon="remix-lock-line"
             label={if @current_totp, do: gettext("Update 2FA"), else: gettext("Enable 2FA")}
+            disabled={not @user_form.source.valid?}
             phx-disable-with={gettext("Working...")}
           />
         </div>

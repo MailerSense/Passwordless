@@ -7,7 +7,6 @@
       autocomplete="given-name family-name"
       required
       required_asterix={false}
-      phx-debounce="blur"
     />
 
     <div class="flex items-center justify-between">
@@ -20,7 +19,7 @@
       <.button
         icon="remix-save-line"
         label={gettext("Save changes")}
-        disabled={not @form.source.valid?}
+        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
       />
     </div>
   </.form>

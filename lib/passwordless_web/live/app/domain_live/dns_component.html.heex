@@ -1,7 +1,7 @@
 <div>
   <% origin = "right" %>
   <.slide_over title={@title} subtitle={@subtitle} origin={origin} max_width="xl">
-    <.simple_table items={@records}>
+    <.simple_table items={@records} shadow_class="shadow-m2">
       <:if_empty>{gettext("No %{models} found", models: gettext("DNS records"))}</:if_empty>
       <:col :let={record} field={:name}>
         <div

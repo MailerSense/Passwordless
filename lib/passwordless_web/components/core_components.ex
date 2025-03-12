@@ -321,10 +321,8 @@ defmodule PasswordlessWeb.CoreComponents do
   attr :rest, :global
 
   def check_mark(assigns) do
-    assigns = assign(assigns, :icon, if(assigns[:checked], do: "remix-check-line", else: "remix-close-line"))
-
     ~H"""
-    <.icon name={@icon} class="w-5 h-5" />
+    <.icon :if={assigns[:checked]} name="remix-check-line" class="w-5 h-5" />
     """
   end
 

@@ -32,11 +32,11 @@ defmodule PasswordlessWeb.App.ActorLive.PhoneComponent do
 
   # Private
 
-  defp save_phone(socket, :edit, phone_params) do
+  defp save_phone(socket, :edit_phone, phone_params) do
     app = socket.assigns.current_app
     phone = socket.assigns.phone
 
-    case Passwordless.update_phone(app, phone, phone_params) do
+    case Passwordless.update_actor_phone(app, phone, phone_params) do
       {:ok, _phone} ->
         {:noreply,
          socket
@@ -48,8 +48,11 @@ defmodule PasswordlessWeb.App.ActorLive.PhoneComponent do
     end
   end
 
-  defp save_phone(socket, :new, phone_params) do
-    case Passwordless.create_phone(socket.assigns.current_app, phone_params) do
+  defp save_phone(socket, :new_phone, phone_params) do
+    app = socket.assigns.current_app
+    actor = socket.assigns.actor
+
+    case Passwordless.create_actor_phone(app, actor, phone_params) do
       {:ok, _phone} ->
         {:noreply,
          socket

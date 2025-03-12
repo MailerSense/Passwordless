@@ -5,6 +5,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateVersion
 
+  @default PasswordlessWeb.App.EmailLive.EmailComponent
   @components [
     edit: PasswordlessWeb.App.EmailLive.EmailComponent,
     code: PasswordlessWeb.App.EmailLive.CodeComponent,
@@ -34,12 +35,13 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
         |> assign_version_form(EmailTemplateVersion.changeset(version))
       end
 
-    module = Keyword.fetch!(@components, socket.assigns.live_action)
+    module = Keyword.get(@components, socket.assigns.live_action, @default)
     delete? = Map.has_key?(params, "delete")
+    variables? = Map.has_key?(params, "variables")
 
     {:noreply,
      socket
-     |> assign(delete?: delete?, module: module)
+     |> assign(delete?: delete?, variables?: variables?, module: module)
      |> apply_action(socket.assigns.live_action, params)}
   end
 
@@ -152,6 +154,16 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
     assign(socket,
       page_title: gettext("Reset email template"),
       page_subtitle: gettext("Are you sure you want to reset this email template? This action cannot be undone.")
+    )
+  end
+
+  defp apply_action(socket, _action, %{"variables" => _}) do
+    assign(socket,
+      page_title: gettext("Variables"),
+      page_subtitle:
+        gettext(
+          "Email templates can be personalized using dynamic variables, such as the user's name. Section below lists all available variables, their contexts and usage patterns."
+        )
     )
   end
 

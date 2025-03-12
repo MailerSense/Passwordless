@@ -25,7 +25,6 @@
       autocomplete="organization"
       required
       required_asterix={false}
-      phx-debounce="blur"
     />
     <.field
       type="email"
@@ -34,7 +33,6 @@
       autocomplete="email"
       required
       required_asterix={false}
-      phx-debounce="blur"
     />
 
     <div class="flex items-center justify-between">
@@ -44,11 +42,10 @@
         class="text-sm underline text-slate-600 dark:text-slate-300"
         link_type="live_redirect"
       />
-
       <.button
         icon="remix-save-line"
         label={gettext("Save changes")}
-        disabled={not @form.source.valid?}
+        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
       />
     </div>
   </.form>

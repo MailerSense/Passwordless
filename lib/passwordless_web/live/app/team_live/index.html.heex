@@ -75,18 +75,16 @@
           icon="custom-trash"
           color="light"
           title={gettext("Remove")}
-          data-confirm={gettext("Are you sure you want to remove this invitation?")}
-          phx-value-id={invitation.id}
-          phx-click="delete_invitation"
+          to={~p"/app/team/invitation/#{invitation}/delete"}
+          link_type="live_patch"
         />
         <.icon_button
           size="sm"
           icon="custom-edit"
           color="light"
           title={gettext("Resend")}
-          data-confirm={gettext("Are you sure you want to resend this invitation?")}
-          phx-value-id={invitation.id}
-          phx-click="resend_invitation"
+          to={~p"/app/team/invitation/#{invitation}/resend"}
+          link_type="live_patch"
         />
       </:actions>
     </.simple_table>
@@ -142,6 +140,55 @@
         />
       </:actions>
     </.slide_over>
+  <% :resend_invitation -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light-flat"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-send-plane-line"
+          size="md"
+          label={gettext("Resend")}
+          phx-click="resend_invitation"
+          phx-value-id={@invitation.id}
+        />
+      </div>
+    </.modal>
+  <% :delete_invitation -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light-flat"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Remove \"%{user}\"", user: @invitation.email)}
+          color="danger"
+          phx-click="delete_invitation"
+          phx-value-id={@invitation.id}
+        />
+      </div>
+    </.modal>
   <% :delete -> %>
     <.modal
       max_width="lg"
@@ -160,7 +207,7 @@
         <.button
           icon="remix-delete-bin-line"
           size="md"
-          label={gettext("Yes, Remove %{user}", user: user_name(@membership.user))}
+          label={gettext("Yes, Remove \"%{user}\"", user: user_name(@membership.user))}
           color="danger"
           phx-click="delete_member"
           phx-value-id={@membership.id}

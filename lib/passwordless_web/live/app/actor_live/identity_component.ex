@@ -32,7 +32,7 @@ defmodule PasswordlessWeb.App.ActorLive.IdentityComponent do
 
   # Private
 
-  defp save_email(socket, :edit, email_params) do
+  defp save_email(socket, :edit_identity, email_params) do
     app = socket.assigns.current_app
     identity = socket.assigns.identity
 
@@ -48,7 +48,7 @@ defmodule PasswordlessWeb.App.ActorLive.IdentityComponent do
     end
   end
 
-  defp save_email(socket, :new, email_params) do
+  defp save_email(socket, :new_identity, email_params) do
     case Passwordless.create_email(socket.assigns.current_app, email_params) do
       {:ok, _email} ->
         {:noreply,
