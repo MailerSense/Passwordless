@@ -5,31 +5,28 @@
     phx-target={@myself}
     phx-submit="save"
     phx-change="validate"
+    class="p-6"
   >
-    <div class="p-6">
-      <.field type="checkbox" field={@form[:enabled]} />
-      <.p class="mb-6">
-        Recovery codes are a list of single use codes that can be used as a backup authentication method.
-      </.p>
-      <.form_separator />
-      <.field
-        type="checkbox"
-        field={@form[:hide_on_enrollment]}
-        help_text={
-          gettext(
-            "Don't show recovery codes when the user enrolls their first authenticator (recovery codes will still be generated)."
-          )
-        }
-        disabled={not @enabled}
-      />
-      <.field
-        type="checkbox"
-        field={@form[:skip_on_programatic]}
-        help_text={
-          gettext("Don't generate recovery codes when enrolling a user programmatically.")
-        }
-        disabled={not @enabled}
-      />
-    </div>
+    <.field type="checkbox" field={@form[:enabled]} />
+    <.p class="mb-6">
+      Recovery codes are a list of single use codes that can be used as a backup authentication method.
+    </.p>
+    <.form_separator />
+    <.field
+      type="checkbox"
+      field={@form[:hide_on_enrollment]}
+      help_text={
+        gettext(
+          "Don't show recovery codes when the user enrolls their first authenticator (recovery codes will still be generated)."
+        )
+      }
+      disabled={not @enabled}
+    />
+    <.field
+      type="checkbox"
+      field={@form[:skip_on_programatic]}
+      help_text={gettext("Don't generate recovery codes when enrolling a user programmatically.")}
+      disabled={not @enabled}
+    />
   </.form>
 </div>

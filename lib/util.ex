@@ -44,6 +44,8 @@ defmodule Util do
     a == b
   end
 
+  def id(prefix \\ "el"), do: "#{prefix}-#{:rand.uniform(10_000_000) + 1}"
+
   @doc """
   Get a random string of given length.
   Returns a random url safe encoded64 string of the given length.

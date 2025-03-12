@@ -42,7 +42,7 @@ defmodule PasswordlessWeb.Components.Table do
         assign(assigns, row_id: assigns.row_id || fn {id, _item} -> id end)
       end
 
-    assigns = assign_new(assigns, :id, fn -> "table_#{:rand.uniform(10_000_000) + 1}" end)
+    assigns = assign_new(assigns, :id, fn -> Util.id("table") end)
 
     ~H"""
     <table class={["pc-table", @class]} {@rest}>

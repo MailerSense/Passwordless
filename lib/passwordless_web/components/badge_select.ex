@@ -73,7 +73,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
   def badge_select(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "badge-select-#{:rand.uniform(10_000_000) + 1}" end)
+      |> assign_new(:id, fn -> Util.id("badge-select") end)
       |> assign_new(:selected_idx, fn ->
         case {assigns[:options], assigns[:selected]} do
           {[_ | _] = options, %{value: value}} when not is_nil(value) ->

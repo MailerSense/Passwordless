@@ -258,8 +258,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   attr :rest, :global
 
   def email_preview(assigns) do
-    assigns =
-      assign_new(assigns, :id, fn -> "email-review-#{:rand.uniform(10_000_000) + 1}" end)
+    assigns = assign_new(assigns, :id, fn -> Util.id("email-review") end)
 
     ~H"""
     <div class={["pc-form-field-wrapper", @class]} {@rest}>

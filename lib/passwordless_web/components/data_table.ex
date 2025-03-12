@@ -88,7 +88,7 @@ defmodule PasswordlessWeb.Components.DataTable do
       |> assign(:col, Enum.reject(assigns.col, fn col -> col[:searchable] end))
       |> assign_new(:filter_changeset, fn -> FilterSet.changeset(%FilterSet{}) end)
       |> assign_new(:base_url_params, fn -> %{} end)
-      |> assign_new(:id, fn -> "data-table-#{:rand.uniform(10_000_000) + 1}" end)
+      |> assign_new(:id, fn -> Util.id("data-table") end)
 
     ~H"""
     <.form
@@ -311,8 +311,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   slot :if_empty, required: false
 
   def simple_table(assigns) do
-    assigns =
-      assign_new(assigns, :id, fn -> "simple-table-#{:rand.uniform(10_000_000) + 1}" end)
+    assigns = assign_new(assigns, :id, fn -> Util.id("simple-table") end)
 
     ~H"""
     <div class={["pc-table__wrapper", "pc-data-table__wrapper", @shadow_class, @class]}>

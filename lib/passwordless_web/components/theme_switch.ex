@@ -13,7 +13,7 @@ defmodule PasswordlessWeb.Components.ThemeSwitch do
       <.theme_switch />
   """
   def theme_switch(assigns) do
-    assigns = assign_new(assigns, :id, fn -> "theme_switch_#{:rand.uniform(10_000_000) + 1}" end)
+    assigns = assign_new(assigns, :id, fn -> Util.id("theme_switch") end)
 
     ~H"""
     <button
@@ -32,7 +32,7 @@ defmodule PasswordlessWeb.Components.ThemeSwitch do
   attr :class, :string, default: ""
 
   def wide_theme_switch(assigns) do
-    assigns = assign_new(assigns, :id, fn -> "theme_switch_#{:rand.uniform(10_000_000) + 1}" end)
+    assigns = assign_new(assigns, :id, fn -> Util.id("theme_switch") end)
 
     ~H"""
     <button

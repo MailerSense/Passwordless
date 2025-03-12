@@ -295,7 +295,7 @@ defmodule PasswordlessWeb.CoreComponents do
     assigns =
       assigns
       |> assign_new(:language_class, fn -> "language-#{@language}" end)
-      |> assign_new(:id, fn -> "code-block-#{:rand.uniform(10_000_000) + 1}" end)
+      |> assign_new(:id, fn -> Util.id("code-block") end)
       |> update(:code, fn code ->
         Passwordless.Formatter.format!(code, assigns[:language])
       end)

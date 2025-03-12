@@ -1,5 +1,6 @@
 import { createLiveToastHook } from "live_toast";
 
+import BackHook from "./back-hook";
 import BadgeSelectHook from "./badge-select-hook";
 import ChartHook from "./chart-hook";
 import ClipboardHook from "./clipboard-hook";
@@ -22,5 +23,6 @@ export default {
   EditorHook,
   HTMLPreviewHook,
   HighlightHook,
+  BackHook,
   LiveToast: createLiveToastHook(),
 };

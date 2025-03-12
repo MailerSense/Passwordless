@@ -186,7 +186,7 @@ defmodule PasswordlessWeb.Components.ComboBox do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "combo-box-#{:rand.uniform(10_000_000) + 1}" end)
+      |> assign_new(:id, fn -> Util.id("combo-box") end)
       |> assign(:tom_select_options_json, Jason.encode!(tom_select_options))
       |> assign(:tom_select_plugins_json, Jason.encode!(tom_select_plugins))
       |> assign(:maybe_multiple_name, maybe_multiple_name)

@@ -40,7 +40,7 @@
         size="wide"
         type="submit"
         form="manage-email-form"
-        disabled={not @form.source.valid?}
+        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
         label={
           if @live_action == :new_email,
             do: gettext("Create"),

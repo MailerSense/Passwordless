@@ -2,12 +2,13 @@
   <.page_header title={@template.name}>
     <div class="flex gap-3">
       <.button
-        to={~p"/app/users"}
+        id={Util.id()}
         size="md"
         type="button"
         color="light"
         label={gettext("Cancel")}
-        link_type="live_redirect"
+        phx-hook="BackHook"
+        data-fallback={~p"/app/methods/sms"}
       />
       <.button
         to={~p"/app/emails/#{@template}/#{@language}/#{@live_action}?delete=true"}

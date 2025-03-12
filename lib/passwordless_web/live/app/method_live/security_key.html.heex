@@ -5,73 +5,72 @@
     phx-target={@myself}
     phx-submit="save"
     phx-change="validate"
+    class="p-6"
   >
-    <div class="p-6">
-      <.field type="checkbox" field={@form[:enabled]} />
-      <.p class="mb-6">
-        Security keys (WebAuthn, FIDO) are physical devices that can be used to sign in. They are often in the form of a USB key or a Bluetooth device. When enabled, users can use a security key to sign in by plugging it into their computer or tapping it to their phone.
-      </.p>
-      <.form_separator />
-      <.field
-        field={@form[:relying_party_id]}
-        label={gettext("Relying Party ID")}
-        disabled={not @enabled}
-        required
-        required_asterix={false}
-        help_text={
-          gettext(
-            "The relying party ID is a unique identifier for your application. It is used to generate the passkey and must be the same across all devices."
-          )
-        }
-      />
-      <.form_separator />
-      <.form_header title="Advanced" />
-      <div class="pc-form-field-wrapper">
-        <.form_label>{gettext("Expected origins")}</.form_label>
-        <div class="flex flex-col gap-y-2">
-          <.inputs_for :let={expected_origin} field={@form[:expected_origins]}>
-            <input
-              type="hidden"
-              name="security_key[expected_origins_sort][]"
-              value={expected_origin.index}
-            />
-            <div class="flex items-center grow gap-2">
-              <.field
-                type="url"
-                label=""
-                field={expected_origin[:url]}
-                required
-                wrapper_class="!mb-0 w-full grow"
-                disabled={not @enabled}
-              />
-              <.icon_form_button
-                size="sm"
-                name="security_key[expected_origins_drop][]"
-                type="button"
-                icon="custom-trash"
-                title={gettext("Remove")}
-                value={expected_origin.index}
-                event={JS.dispatch("change")}
-                disabled={not @enabled}
-              />
-            </div>
-          </.inputs_for>
-        </div>
-        <div class="flex mt-4">
-          <.button
-            size="xs"
-            type="button"
-            color="light"
-            icon="remix-add-circle-line"
-            label={gettext("Add origin")}
+    <.field type="checkbox" field={@form[:enabled]} />
+    <.p class="mb-6">
+      Security keys (WebAuthn, FIDO) are physical devices that can be used to sign in. They are often in the form of a USB key or a Bluetooth device. When enabled, users can use a security key to sign in by plugging it into their computer or tapping it to their phone.
+    </.p>
+    <.form_separator />
+    <.field
+      field={@form[:relying_party_id]}
+      label={gettext("Relying Party ID")}
+      disabled={not @enabled}
+      required
+      required_asterix={false}
+      help_text={
+        gettext(
+          "The relying party ID is a unique identifier for your application. It is used to generate the passkey and must be the same across all devices."
+        )
+      }
+    />
+    <.form_separator />
+    <.form_header title="Advanced" />
+    <div class="pc-form-field-wrapper">
+      <.form_label>{gettext("Expected origins")}</.form_label>
+      <div class="flex flex-col gap-y-2">
+        <.inputs_for :let={expected_origin} field={@form[:expected_origins]}>
+          <input
+            type="hidden"
             name="security_key[expected_origins_sort][]"
-            value="new"
-            phx-click={JS.dispatch("change")}
-            disabled={not @enabled}
+            value={expected_origin.index}
           />
-        </div>
-        <input type="hidden" name="security_key[expected_origins_drop][]" />
+          <div class="flex items-center grow gap-2">
+            <.field
+              type="url"
+              label=""
+              field={expected_origin[:url]}
+              required
+              wrapper_class="!mb-0 w-full grow"
+              disabled={not @enabled}
+            />
+            <.icon_form_button
+              size="sm"
+              name="security_key[expected_origins_drop][]"
+              type="button"
+              icon="custom-trash"
+              title={gettext("Remove")}
+              value={expected_origin.index}
+              event={JS.dispatch("change")}
+              disabled={not @enabled}
+            />
+          </div>
+        </.inputs_for>
       </div>
+      <div class="flex mt-4">
+        <.button
+          size="xs"
+          type="button"
+          color="light"
+          icon="remix-add-circle-line"
+          label={gettext("Add origin")}
+          name="security_key[expected_origins_sort][]"
+          value="new"
+          phx-click={JS.dispatch("change")}
+          disabled={not @enabled}
+        />
+      </div>
+      <input type="hidden" name="security_key[expected_origins_drop][]" />
     </div>
   </.form>
 </div>
