@@ -5,7 +5,6 @@ defmodule Passwordless.Identity do
 
   use Passwordless.Schema
 
-  alias Database.ChangesetExt
   alias Passwordless.Actor
 
   @derive {Jason.Encoder,

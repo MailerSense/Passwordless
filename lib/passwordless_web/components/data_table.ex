@@ -7,7 +7,6 @@ defmodule PasswordlessWeb.Components.DataTable do
   use Gettext, backend: PasswordlessWeb.Gettext
 
   import PasswordlessWeb.Components.Badge
-  import PasswordlessWeb.Components.Button
   import PasswordlessWeb.Components.Field
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Pagination
