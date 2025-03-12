@@ -9,13 +9,7 @@
       phx-change="validate"
     >
       <.field field={@form[:system]} label={gettext("System")} required />
-      <.field
-        field={@form[:user_id]}
-        label={gettext("User ID")}
-        class="font-mono"
-        required
-        copyable={true}
-      />
+      <.field field={@form[:user_id]} label={gettext("User ID")} class="font-mono" required />
     </.form>
 
     <:actions>
