@@ -105,5 +105,13 @@
     <:col :let={action} label={gettext("When")} field={:inserted_at}>
       {Timex.from_now(action.inserted_at)}
     </:col>
+    <:col actions></:col>
+    <:actions :let={action}>
+      <.dropdown placement="left">
+        <:trigger_element>
+          <.icon name="remix-more-fill" class="w-5 h-5" />
+        </:trigger_element>
+      </.dropdown>
+    </:actions>
   </.stream_table>
 </.layout>
