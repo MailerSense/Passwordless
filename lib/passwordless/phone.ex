@@ -5,6 +5,8 @@ defmodule Passwordless.Phone do
 
   use Passwordless.Schema
 
+  import Ecto.Query
+
   alias Database.ChangesetExt
   alias Passwordless.Actor
 
@@ -119,12 +121,13 @@ defmodule Passwordless.Phone do
     |> unique_constraint([:actor_id, :primary], error_key: :primary)
     |> unique_constraint([:actor_id, :canonical], error_key: :canonical)
     |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo,
-      error_key: :primary,
-      prefix: Keyword.get(opts, :prefix)
+      prefix: Keyword.get(opts, :prefix),
+      query: from(p in __MODULE__, where: p.primary == true),
+      error_key: :primary
     )
     |> unsafe_validate_unique([:actor_id, :canonical], Passwordless.Repo,
-      error_key: :canonical,
-      prefix: Keyword.get(opts, :prefix)
+      prefix: Keyword.get(opts, :prefix),
+      error_key: :canonical
     )
     |> assoc_constraint(:actor)
   end

@@ -5,6 +5,8 @@ defmodule Passwordless.Email do
 
   use Passwordless.Schema
 
+  import Ecto.Query
+
   alias Database.ChangesetExt
   alias Passwordless.Actor
 
@@ -49,12 +51,13 @@ defmodule Passwordless.Email do
     |> unique_constraint([:actor_id, :primary], error_key: :primary)
     |> unique_constraint([:actor_id, :address], error_key: :address)
     |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo,
-      error_key: :primary,
-      prefix: Keyword.get(opts, :prefix)
+      query: from(e in __MODULE__, where: e.primary == true),
+      prefix: Keyword.get(opts, :prefix),
+      error_key: :primary
     )
     |> unsafe_validate_unique([:actor_id, :address], Passwordless.Repo,
-      error_key: :address,
-      prefix: Keyword.get(opts, :prefix)
+      prefix: Keyword.get(opts, :prefix),
+      error_key: :address
     )
     |> assoc_constraint(:actor)
   end

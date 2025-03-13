@@ -53,6 +53,16 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
             <.avatar />
           <% end %>
         </:trigger_element>
+
+        <.a to={~p"/app/profile"} link_type="live_patch" class="flex flex-col items-center p-2 gap-2">
+          <%= if user_impersonated?(@current_user) do %>
+            <.avatar icon="remix-alert-fill" color="danger" />
+          <% else %>
+            <.avatar />
+          <% end %>
+          {user_name(@current_user)}
+        </.a>
+
         <%= for child_item <- @user_menu_items do %>
           <.dropdown_menu_item
             to={child_item.path}

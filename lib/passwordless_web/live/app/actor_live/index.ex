@@ -25,7 +25,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
     {:noreply,
      socket
-     |> assign(actor: actor, title_func: &title_func/1)
+     |> assign(actor: actor)
      |> assign_filters(params)
      |> assign_actors(params)
      |> apply_action(socket.assigns.live_action, actor)}
