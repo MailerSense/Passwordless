@@ -154,7 +154,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
           <div class="flex items-center -mr-2 lg:hidden">
             <button
               type="button"
-              class="inline-flex items-center justify-center p-2 text-slate-400 rounded-md dark:text-slate-600 hover:text-slate-500 hover:bg-slate-100 dark:hover:text-slate-400 dark:hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+              class="inline-flex items-center justify-center p-2 text-slate-400 rounded-md dark:text-slate-500 hover:text-slate-500 hover:bg-slate-100 dark:hover:text-slate-400 dark:hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
               aria-controls="mobile-menu"
               @click="mobileMenuOpen = !mobileMenuOpen"
               x-bind:aria-expanded="mobileMenuOpen.toString()"
@@ -168,7 +168,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
                 x-bind:class="{ 'hidden': mobileMenuOpen, 'block': !(mobileMenuOpen) }"
                 x-cloak
               >
-                <.icon name="remix-arrow-down-s-line" class="w-6 h-6" />
+                <.icon name="remix-menu-line" class="w-6 h-6" />
               </div>
 
               <div
@@ -176,7 +176,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
                 x-bind:class="{ 'block': mobileMenuOpen, 'hidden': !(mobileMenuOpen) }"
                 x-cloak
               >
-                <.icon name="remix-arrow-down-s-line" class="w-6 h-6" />
+                <.icon name="remix-menu-line" class="w-6 h-6" />
               </div>
             </button>
           </div>
