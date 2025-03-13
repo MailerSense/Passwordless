@@ -790,7 +790,7 @@ defmodule PasswordlessWeb.Components.Form do
 
   def form_separator(assigns) do
     ~H"""
-    <hr class={["pc-form-separator", @class]} {@rest} />
+    <span class={["pc-form-separator", @class]} {@rest}></span>
     """
   end
 
