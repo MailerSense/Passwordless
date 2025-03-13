@@ -1042,7 +1042,7 @@ input[type="color" i]::-moz-color-swatch {
 /* Page header */
 
 .pc-page-header {
-  @apply my-12 flex justify-between items-center;
+  @apply my-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4;
 }
 
 .pc-page-header--text {
