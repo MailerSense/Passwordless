@@ -4,6 +4,7 @@ defmodule Database.QueryExt do
   """
   import Ecto.Query
 
+  alias Database.Tenant
   alias Passwordless.App
 
   @doc """
@@ -76,12 +77,13 @@ defmodule Database.QueryExt do
   @doc """
   Get the estimate count of rows in an Ecto schema
   """
-  def count_estimate(schema) do
+  def count_estimate(%App{} = app, schema) do
     result =
       Ecto.Adapters.SQL.query!(
         Passwordless.Repo,
         "SELECT reltuples AS estimate FROM pg_class WHERE relname = $1",
-        [schema.__schema__(:source)]
+        [schema.__schema__(:source)],
+        prefix: Tenant.to_prefix(app)
       )
 
     case result do

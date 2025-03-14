@@ -28,101 +28,112 @@
     </div>
   </.page_header>
 
-  <.stream_table id="actions" meta={@meta} items={@streams.actions} finished={@finished}>
-    <:header>
-      <.action_stat
-        legend={[
-          %{color: "bg-success-500", label: gettext("Allow")},
-          %{color: "bg-warning-500", label: gettext("Timeout")},
-          %{color: "bg-danger-500", label: gettext("Block")}
-        ]}
-        items={[
-          %{
-            name: "Sign in",
-            value: 21323,
-            progress: %{
-              max: 100,
-              items: [
-                %{value: 70, color: "success"},
-                %{value: 20, color: "warning"},
-                %{value: 10, color: "danger"}
-              ]
-            },
-            to: ~p"/app/reports"
+  <div class="flex flex-col gap-6">
+    <.action_stat
+      legend={[
+        %{color: "bg-success-500", label: gettext("Allow")},
+        %{color: "bg-warning-500", label: gettext("Timeout")},
+        %{color: "bg-danger-500", label: gettext("Block")}
+      ]}
+      items={[
+        %{
+          name: "Sign in",
+          value: 21323,
+          progress: %{
+            max: 100,
+            items: [
+              %{value: 70, color: "success"},
+              %{value: 20, color: "warning"},
+              %{value: 10, color: "danger"}
+            ]
           },
-          %{
-            name: "Withdrawal",
-            value: 21323,
-            progress: %{
-              max: 100,
-              items: [
-                %{value: 70, color: "success"},
-                %{value: 20, color: "warning"},
-                %{value: 10, color: "danger"}
-              ]
-            },
-            to: ~p"/app/reports"
+          to: ~p"/app/reports"
+        },
+        %{
+          name: "Withdrawal",
+          value: 21323,
+          progress: %{
+            max: 100,
+            items: [
+              %{value: 70, color: "success"},
+              %{value: 20, color: "warning"},
+              %{value: 10, color: "danger"}
+            ]
           },
-          %{
-            name: "Order placed",
-            value: 21323,
-            progress: %{
-              max: 100,
-              items: [
-                %{value: 70, color: "success"},
-                %{value: 20, color: "warning"},
-                %{value: 10, color: "danger"}
-              ]
-            },
-            to: ~p"/app/reports"
-          }
-        ]}
-      />
-    </:header>
-    <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-    <:col :let={action} label={gettext("User")} field={:user}>
-      <.a
-        to={~p"/app/users/#{action.actor}/edit"}
-        class="flex items-center gap-2 text-info-600 dark:text-info-300 hover:underline"
-        link_type="live_redirect"
-      >
-        {Actor.handle(action.actor)}
-        <.icon name="remix-external-link-line" class="w-4 h-4" />
-      </.a>
-    </:col>
-    <:col :let={action} label={gettext("Action")} field={:name}>
-      {Phoenix.Naming.humanize(Macro.underscore(action.name))}
-    </:col>
-    <:col :let={action} label={gettext("State")} field={:state}>
-      <% {badge_label, badge_color} = action_state_badge(action) %>
-      <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-    </:col>
-    <:col :let={action} label={gettext("Region")} field={:location}>
-      <div class="flex items-center gap-2">
-        <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
-      </div>
-    </:col>
-    <:col :let={action} label={gettext("Elapsed")} field={:location}>
-      <div class="flex items-center gap-2">
-        <.icon name="remix-timer-2-line" class="w-5 h-5" />
-        {Util.elapsed(action.inserted_at, action.updated_at)}
-      </div>
-    </:col>
-    <:col :let={action} label={gettext("When")} field={:inserted_at}>
-      {Timex.from_now(action.inserted_at)}
-    </:col>
-    <:col actions></:col>
-    <:actions :let={action}>
-      <.icon_button
-        to={~p"/app/home/#{action}/view"}
-        size="sm"
-        icon="custom-edit"
-        color="light"
-        title={gettext("Edit")}
-        link_type="live_patch"
-      />
-    </:actions>
-  </.stream_table>
+          to: ~p"/app/reports"
+        },
+        %{
+          name: "Order placed",
+          value: 21323,
+          progress: %{
+            max: 100,
+            items: [
+              %{value: 70, color: "success"},
+              %{value: 20, color: "warning"},
+              %{value: 10, color: "danger"}
+            ]
+          },
+          to: ~p"/app/reports"
+        }
+      ]}
+    />
+    <.stream_table
+      id="actions"
+      meta={@meta}
+      items={@streams.actions}
+      title={gettext("All actions")}
+      badge={
+        Passwordless.Locale.Number.to_string!(
+          Database.QueryExt.count_estimate(@current_app, Passwordless.Action)
+        )
+      }
+      finished={@finished}
+    >
+      <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+      <:col :let={action} label={gettext("User")} field={:user}>
+        <.a
+          to={~p"/app/users/#{action.actor}/edit"}
+          class="flex items-center gap-2 text-info-600 dark:text-info-300 hover:underline"
+          link_type="live_redirect"
+        >
+          {Actor.handle(action.actor)}
+          <.icon name="remix-external-link-line" class="w-4 h-4" />
+        </.a>
+      </:col>
+      <:col :let={action} label={gettext("Action")} field={:name}>
+        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+      </:col>
+      <:col :let={action} label={gettext("State")} field={:state}>
+        <% {badge_label, badge_color} = action_state_badge(action) %>
+        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+      </:col>
+      <:col :let={action} label={gettext("Region")} field={:location}>
+        <div class="flex items-center gap-2">
+          <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
+        </div>
+      </:col>
+      <:col :let={action} label={gettext("Elapsed")} field={:location}>
+        <div class="flex items-center gap-2">
+          <.icon name="remix-timer-2-line" class="w-5 h-5" />
+          {Util.elapsed(action.inserted_at, action.updated_at)}
+        </div>
+      </:col>
+      <:col :let={action} label={gettext("When")} field={:inserted_at}>
+        {Timex.from_now(action.inserted_at)}
+      </:col>
+      <:col actions></:col>
+      <:actions :let={action}>
+        <.icon_button
+          to={~p"/app/home/#{action}/view"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.stream_table>
+  </div>
 </.layout>
 
 <%= case @live_action do %>

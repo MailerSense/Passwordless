@@ -10,6 +10,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   import PasswordlessWeb.Components.Form
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Link
+  import PasswordlessWeb.Components.PageComponents
   import PasswordlessWeb.Components.Progress
 
   attr :badge, :string, required: true
@@ -143,7 +144,7 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   def action_stat(assigns) do
     ~H"""
-    <div
+    <.box
       class={[
         "flex flex-col divide-y divide-slate-200 dark:divide-slate-700",
         @class
@@ -196,7 +197,7 @@ defmodule PasswordlessWeb.DashboardComponents do
           {gettext("View statistics")}<.icon name="remix-arrow-right-line" class="w-4 h-4" />
         </.button>
       </div>
-    </div>
+    </.box>
     """
   end
 

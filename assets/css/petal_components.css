@@ -470,16 +470,16 @@
 /* Alerts - colors */
 
 .pc-alert--info {
-  @apply text-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-slate-100;
+  @apply text-slate-800 bg-slate-50 dark:bg-slate-950 dark:text-slate-100;
 }
 .pc-alert--success {
-  @apply text-success-800 bg-success-50 dark:bg-success-900 dark:text-success-100;
+  @apply text-success-800 bg-success-50 dark:bg-success-950 dark:text-success-100;
 }
 .pc-alert--warning {
-  @apply text-warning-800 bg-warning-50 dark:bg-warning-900 dark:text-warning-100;
+  @apply text-warning-800 bg-warning-50 dark:bg-warning-950 dark:text-warning-100;
 }
 .pc-alert--danger {
-  @apply text-danger-800 bg-danger-50 dark:bg-danger-900 dark:text-danger-100;
+  @apply text-danger-800 bg-danger-50 dark:bg-danger-950 dark:text-danger-100;
 }
 
 /* Alerts - with icon */
