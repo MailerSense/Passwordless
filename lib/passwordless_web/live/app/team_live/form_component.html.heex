@@ -1,6 +1,6 @@
 <div>
   <% origin = "right" %>
-  <.slide_over title={@title} origin={origin}>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
     <.form
       id="member-update-form"
       for={@form}
@@ -8,8 +8,8 @@
       phx-change="validate"
       phx-target={@myself}
     >
-      <.field field={@form[:name]} readonly />
-      <.field type="email" field={@form[:email]} readonly />
+      <.field field={@form[:name]} required readonly />
+      <.field type="email" field={@form[:email]} required readonly />
       <.badge_select
         field={@form[:role]}
         options={@roles}

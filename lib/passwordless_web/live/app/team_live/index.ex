@@ -191,7 +191,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   defp apply_action(socket, :edit, _params) do
     assign(socket,
       page_title: gettext("Edit teammate"),
-      page_subtitle: gettext("View member details and edit their role within your organization")
+      page_subtitle: gettext("View member details and edit their role within your organization.")
     )
   end
 
