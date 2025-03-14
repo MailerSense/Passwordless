@@ -307,6 +307,18 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create unique_index(:sms_methods, [:app_id])
 
+    create table(:whatsapp_methods, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :enabled, :boolean, null: false, default: true
+      add :expires, :integer, null: false, default: 5
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:whatsapp_methods, [:app_id])
+
     create table(:email_methods, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true

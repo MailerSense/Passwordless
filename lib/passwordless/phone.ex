@@ -39,6 +39,22 @@ defmodule Passwordless.Phone do
     soft_delete_timestamp()
   end
 
+  def format(%__MODULE__{canonical: canonical}) when is_binary(canonical) do
+    case ExPhoneNumber.parse(canonical, "") do
+      {:ok, number} -> ExPhoneNumber.format(number, :international)
+      _ -> canonical
+    end
+  end
+
+  def format(%__MODULE__{region: region, number: number}) when is_binary(region) and is_binary(number) do
+    with {:ok, phone_number} <- ExPhoneNumber.parse(number, region),
+         true <- ExPhoneNumber.is_possible_number?(phone_number) do
+      ExPhoneNumber.format(phone_number, :international)
+    else
+      _ -> nil
+    end
+  end
+
   @fields ~w(
     number
     region

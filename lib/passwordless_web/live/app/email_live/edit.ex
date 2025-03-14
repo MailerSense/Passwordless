@@ -38,10 +38,11 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
     module = Keyword.get(@components, socket.assigns.live_action, @default)
     delete? = Map.has_key?(params, "delete")
     variables? = Map.has_key?(params, "variables")
+    return_to = Map.get(params, "return_to")
 
     {:noreply,
      socket
-     |> assign(delete?: delete?, variables?: variables?, module: module)
+     |> assign(delete?: delete?, variables?: variables?, return_to: return_to, module: module)
      |> apply_action(socket.assigns.live_action, params)}
   end
 

@@ -18,7 +18,7 @@ defmodule Passwordless.Actor do
   alias Passwordless.RecoveryCodes
   alias Passwordless.TOTP
 
-  @states ~w(active locked stale)a
+  @states ~w(active locked)a
   @languages ~w(en de fr)a
 
   @derive {Jason.Encoder,
@@ -61,6 +61,9 @@ defmodule Passwordless.Actor do
     field :name, :string
     field :state, Ecto.Enum, values: @states, default: :active
     field :language, Ecto.Enum, values: Locale.language_codes(), default: :en
+    field :system_id, :string
+    field :properties, :map, default: %{}
+    field :properties_text, :string, virtual: true
 
     field :active, :boolean, default: true, virtual: true
 
@@ -90,12 +93,13 @@ defmodule Passwordless.Actor do
   def handle(%__MODULE__{name: name}) when is_binary(name), do: name
   def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
   def handle(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical), do: canonical
+  def handle(%__MODULE__{system_id: system_id}) when is_binary(system_id), do: system_id
   def handle(%__MODULE__{}), do: nil
 
   def email(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
   def email(%__MODULE__{}), do: nil
 
-  def phone(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical), do: canonical
+  def phone(%__MODULE__{phone: %Phone{} = phone}), do: Phone.format(phone)
   def phone(%__MODULE__{}), do: nil
 
   def phone_region(%__MODULE__{phone: %Phone{region: region}}) when is_binary(region), do: String.downcase(region)
@@ -104,8 +108,8 @@ defmodule Passwordless.Actor do
   @doc """
   Get none.
   """
-  def get_none(query \\ __MODULE__) do
-    from q in query, where: false
+  def get_none(query \\ __MODULE__, %App{} = app) do
+    from q in query, prefix: ^Database.Tenant.to_prefix(app), where: false
   end
 
   @doc """
@@ -124,6 +128,13 @@ defmodule Passwordless.Actor do
 
   def put_active(%__MODULE__{state: state} = actor) do
     %__MODULE__{actor | active: state == :active}
+  end
+
+  def put_text_properties(%__MODULE__{properties: properties} = actor) do
+    case Jason.encode(properties, pretty: true) do
+      {:ok, value} -> %__MODULE__{actor | properties_text: value}
+      _ -> actor
+    end
   end
 
   @doc """
@@ -162,22 +173,29 @@ defmodule Passwordless.Actor do
     name
     state
     language
+    system_id
+    properties
+    properties_text
     active
   )a
   @required_fields ~w(
     state
     language
+    properties
     active
   )a
 
   @doc """
   A create changeset.
   """
-  def create_changeset(%__MODULE__{} = contact, attrs \\ %{}) do
+  def create_changeset(%__MODULE__{} = contact, attrs \\ %{}, opts \\ []) do
     contact
     |> cast(attrs, @fields)
     |> validate_required(@required_fields ++ [:name])
     |> validate_name()
+    |> validate_system_id(opts)
+    |> validate_text_properties()
+    |> validate_properties()
     |> cast_assoc(:emails,
       sort_param: :email_sort,
       drop_param: :email_drop
@@ -192,12 +210,26 @@ defmodule Passwordless.Actor do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = contact, attrs \\ %{}) do
+  def changeset(%__MODULE__{} = contact, attrs \\ %{}, opts \\ []) do
     contact
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_name()
     |> validate_active()
+    |> validate_system_id(opts)
+    |> validate_text_properties()
+    |> validate_properties()
+  end
+
+  @doc """
+  A properties changeset.
+  """
+  def properties_changeset(%__MODULE__{} = contact, attrs \\ %{}, opts \\ []) do
+    contact
+    |> cast(attrs, [:properties_text])
+    |> validate_required([:properties_text])
+    |> validate_text_properties()
+    |> validate_properties()
   end
 
   @doc """
@@ -220,6 +252,8 @@ defmodule Passwordless.Actor do
       query,
       [actor: a, email: e, phone: p],
       ilike(a.name, ^value) or
+        ilike(a.system_id, ^value) or
+        ilike(fragment("?::text", a.properties), ^value) or
         ilike(e.email, ^value) or
         ilike(p.phone, ^value)
     )
@@ -238,6 +272,46 @@ defmodule Passwordless.Actor do
       {:active, {:ok, false}} -> put_change(changeset, :state, :locked)
       {:locked, {:ok, true}} -> put_change(changeset, :state, :active)
       _ -> changeset
+    end
+  end
+
+  defp validate_system_id(changeset, opts \\ []) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(:system_id)
+    |> validate_length(:system_id, max: 1024)
+    |> unique_constraint(:system_id)
+    |> unsafe_validate_unique(:system_id, Passwordless.Repo, prefix: Keyword.get(opts, :prefix))
+  end
+
+  defp validate_properties(changeset) do
+    changeset
+    |> update_change(:properties, fn
+      properties when is_map(properties) ->
+        (changeset.data.properties || %{})
+        |> Map.merge(properties)
+        |> Util.cast_property_map()
+
+      properties ->
+        properties
+    end)
+    |> ChangesetExt.validate_property_map(:properties)
+  end
+
+  defp validate_text_properties(changeset) do
+    case fetch_field(changeset, :properties_text) do
+      {_, value} when is_binary(value) ->
+        case Jason.decode(value) do
+          {:ok, properties} ->
+            changeset
+            |> put_change(:properties, properties)
+            |> put_change(:properties_text, Jason.encode!(properties, pretty: true))
+
+          _ ->
+            add_error(changeset, :properties_text, "is invalid JSON")
+        end
+
+      _ ->
+        changeset
     end
   end
 

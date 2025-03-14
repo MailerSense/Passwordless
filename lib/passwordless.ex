@@ -189,6 +189,7 @@ defmodule Passwordless do
       magic_link: Methods.MagicLink,
       email: Methods.Email,
       sms: Methods.SMS,
+      whatsapp: Methods.WhatsApp,
       authenticator: Methods.Authenticator,
       security_key: Methods.SecurityKey,
       passkey: Methods.Passkey,
@@ -215,6 +216,7 @@ defmodule Passwordless do
   crud(:magic_link, :magic_link, Passwordless.Methods.MagicLink)
   crud(:email, :email, Passwordless.Methods.Email)
   crud(:sms, :sms, Passwordless.Methods.SMS)
+  crud(:whatsapp, :whatsapp, Passwordless.Methods.WhatsApp)
   crud(:authenticator, :authenticator, Passwordless.Methods.Authenticator)
   crud(:security_key, :security_key, Passwordless.Methods.SecurityKey)
   crud(:passkey, :passkey, Passwordless.Methods.Passkey)
@@ -227,6 +229,7 @@ defmodule Passwordless do
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
     |> Repo.preload([:totps, :email, :emails, :phone, :phones, :identities, :recovery_codes])
     |> Actor.put_active()
+    |> Actor.put_text_properties()
   end
 
   def create_actor(%App{} = app, attrs \\ %{}) do
@@ -235,17 +238,25 @@ defmodule Passwordless do
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
-  def change_actor(%Actor{} = actor, attrs \\ %{}) do
+  def change_actor(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     if Ecto.get_meta(actor, :state) == :loaded do
-      Actor.changeset(actor, attrs)
+      Actor.changeset(actor, attrs, opts)
     else
-      Actor.create_changeset(actor, attrs)
+      Actor.create_changeset(actor, attrs, opts)
     end
   end
 
   def update_actor(%App{} = app, %Actor{} = actor, attrs) do
     actor
     |> Actor.changeset(attrs)
+    |> Repo.update(prefix: Tenant.to_prefix(app))
+  end
+
+  def update_actor_properties(%App{} = app, %Actor{} = actor, attrs) do
+    actor
+    |> Actor.properties_changeset(attrs)
     |> Repo.update(prefix: Tenant.to_prefix(app))
   end
 
@@ -384,6 +395,10 @@ defmodule Passwordless do
   end
 
   # Action
+
+  def get_action!(%App{} = app, id) do
+    Repo.get!(Action, id, prefix: Tenant.to_prefix(app))
+  end
 
   def create_action(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
     actor

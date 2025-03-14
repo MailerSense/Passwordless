@@ -57,11 +57,7 @@
           link_type="live_redirect"
         />
       </div>
-      <.button
-        icon="remix-save-line"
-        label={gettext("Save changes")}
-        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
-      />
+      <.button icon="remix-save-line" label={gettext("Save changes")} />
     </div>
   </.form>
 </.tabbed_settings_layout>

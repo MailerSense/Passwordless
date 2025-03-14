@@ -2,8 +2,19 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
+  alias Passwordless.Action
   alias Passwordless.Actor
   alias Passwordless.Locale
+  alias Passwordless.Phone
+  alias PasswordlessWeb.Components.DataTable
+
+  @data_table_opts [
+    for: Action,
+    default_order: %{
+      order_by: [:id],
+      order_directions: [:desc]
+    }
+  ]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -12,8 +23,9 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   @impl true
   def handle_params(%{"id" => id} = params, url, socket) do
+    app = socket.assigns.current_app
     actor = Passwordless.get_actor!(socket.assigns.current_app, id)
-    changeset = Passwordless.change_actor(actor)
+    changeset = Passwordless.change_actor(app, actor)
     languages = Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
 
     flag_mapping = fn
@@ -31,6 +43,8 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
       |> assign_phones(actor)
       |> assign_identities(actor)
       |> assign_totps(actor)
+      |> assign_filters(params)
+      |> assign_actions(params)
       |> apply_action(socket.assigns.live_action, actor)
 
     params
@@ -80,9 +94,12 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   @impl true
   def handle_event("validate", %{"actor" => actor_params}, socket) do
+    app = socket.assigns.current_app
+    actor = socket.assigns.actor
+
     changeset =
-      socket.assigns.actor
-      |> Passwordless.change_actor(actor_params)
+      app
+      |> Passwordless.change_actor(actor, actor_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign_form(socket, changeset)}
@@ -215,6 +232,16 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     )
   end
 
+  defp apply_action(socket, :edit_properties, _actor) do
+    assign(socket,
+      page_title: gettext("Edit properties"),
+      page_subtitle:
+        gettext(
+          "Edit the properties of this actor. Properties are key-value pairs that can be used to store additional information about the actor."
+        )
+    )
+  end
+
   defp assign_emails(socket, %Actor{} = actor) do
     assign(socket, emails: actor.emails)
   end
@@ -231,6 +258,28 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     assign(socket, totps: actor.totps)
   end
 
+  defp assign_filters(socket, params) do
+    assign(socket, filters: Map.take(params, ~w(page filters order_by order_directions)))
+  end
+
+  defp assign_actions(socket, params) when is_map(params) do
+    app = socket.assigns.current_app
+
+    query =
+      case socket.assigns[:actor] do
+        %Actor{} = actor ->
+          app
+          |> Action.get_by_actor(actor)
+          |> Action.preload_actor()
+
+        _ ->
+          Actor.get_none(app)
+      end
+
+    {actions, meta} = DataTable.search(query, params, @data_table_opts)
+    assign(socket, actions: actions, meta: meta)
+  end
+
   defp save_actor(socket, actor_params) do
     app = socket.assigns.current_app
     actor = socket.assigns.actor
@@ -238,8 +287,8 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     case Passwordless.update_actor(app, actor, actor_params) do
       {:ok, actor} ->
         changeset =
-          actor
-          |> Passwordless.change_actor()
+          app
+          |> Passwordless.change_actor(actor)
           |> Map.put(:action, :validate)
 
         {:noreply,

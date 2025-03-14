@@ -18,7 +18,7 @@
         link_type="live_patch"
       />
       <.button
-        to={~p"/app/methods/magic-link"}
+        to={~p"/app/methods/email"}
         size="md"
         color="primary"
         label={gettext("Authenticate")}
@@ -97,9 +97,15 @@
       <% {badge_label, badge_color} = action_state_badge(action) %>
       <.badge with_dot size="sm" label={badge_label} color={badge_color} />
     </:col>
-    <:col :let={action} label={gettext("Where")} field={:location}>
+    <:col :let={action} label={gettext("Region")} field={:location}>
       <div class="flex items-center gap-2">
         <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
+      </div>
+    </:col>
+    <:col :let={action} label={gettext("Elapsed")} field={:location}>
+      <div class="flex items-center gap-2">
+        <.icon name="remix-timer-2-line" class="w-5 h-5" />
+        {Util.elapsed(action.inserted_at, action.updated_at)}
       </div>
     </:col>
     <:col :let={action} label={gettext("When")} field={:inserted_at}>
@@ -107,11 +113,28 @@
     </:col>
     <:col actions></:col>
     <:actions :let={action}>
-      <.dropdown placement="left">
-        <:trigger_element>
-          <.icon name="remix-more-fill" class="w-5 h-5" />
-        </:trigger_element>
-      </.dropdown>
+      <.icon_button
+        to={~p"/app/home/#{action}/view"}
+        size="sm"
+        icon="custom-edit"
+        color="light"
+        title={gettext("Edit")}
+        link_type="live_patch"
+      />
     </:actions>
   </.stream_table>
 </.layout>
+
+<%= case @live_action do %>
+  <% :view -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      action={@action}
+      module={PasswordlessWeb.App.HomeLive.ViewComponent}
+      live_action={@live_action}
+      return_to={~p"/app/home"}
+    />
+  <% _ -> %>
+<% end %>

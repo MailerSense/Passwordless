@@ -11,7 +11,7 @@ defmodule Passwordless.Action do
   alias Passwordless.App
   alias Passwordless.Challenge
 
-  @outcomes ~w(allow timeout block challenge)a
+  @outcomes ~w(allow timeout block)a
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -40,8 +40,8 @@ defmodule Passwordless.Action do
   @doc """
   Get by actor.
   """
-  def get_by_actor(query \\ __MODULE__, %Actor{} = actor) do
-    from q in query, where: q.actor_id == ^actor.id
+  def get_by_actor(query \\ __MODULE__, %App{} = app, %Actor{} = actor) do
+    from q in query, prefix: ^Database.Tenant.to_prefix(app), where: q.actor_id == ^actor.id
   end
 
   @doc """

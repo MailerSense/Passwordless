@@ -33,7 +33,7 @@
     </.subpage_header>
 
     <.box padded class="mb-6">
-      <.field type="checkbox" field={@form[:active]} disabled={@user_state == :stale} />
+      <.field type="checkbox" field={@form[:active]} />
       <.p class="mb-6">
         <%= case @user_state do %>
           <% :active -> %>
@@ -43,8 +43,6 @@
             )}
           <% :locked -> %>
             {gettext("User is locked and cannot use any authentication methods.")}
-          <% :stale -> %>
-            {gettext("User is stale and will not be counted towards your monthly quota.")}
         <% end %>
       </.p>
       <.form_separator />
@@ -58,6 +56,23 @@
         required_asterix={false}
         disabled={not @user_active}
       />
+      <.field
+        icon="remix-id-card-line"
+        field={@form[:system_id]}
+        label={gettext("System ID")}
+        disabled={not @user_active}
+      />
+      <.json_block
+        label={gettext("Properties")}
+        code={@actor.properties}
+        disabled={not @user_active}
+      />
+      <.a
+        to={~p"/app/users/#{@actor}/edit/properties"}
+        class="pc-user-badge"
+        label={gettext("Edit properties")}
+        link_type="live_patch"
+      />
     </.box>
   </.form>
   <div class="flex flex-col gap-6">
@@ -70,10 +85,10 @@
           <.badge size="sm" label="Email OTP" color="pink" />
         </div>
       </:col>
-      <:col :let={email} field={:verified} body_class="text-center">
+      <:col :let={email} field={:verified}>
         <.check_mark checked={email.verified} />
       </:col>
-      <:col :let={email} field={:primary} body_class="text-center">
+      <:col :let={email} field={:primary}>
         <.check_mark checked={email.primary} />
       </:col>
       <:col actions></:col>
@@ -111,7 +126,9 @@
       <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
       <:col :let={phone} label={gettext("Phone")} body_class="w-full">
         <div class="flex items-center gap-2">
-          <.icon name={"flag-#{String.downcase(phone.region)}"} class="pc-flag-icon" /> {phone.canonical}
+          <.icon name={"flag-#{String.downcase(phone.region)}"} class="pc-flag-icon" /> {Phone.format(
+            phone
+          )}
         </div>
       </:col>
       <:col :let={email} field={:channels}>
@@ -120,10 +137,10 @@
           <.badge size="sm" label="Whatsapp" color="indigo" />
         </div>
       </:col>
-      <:col :let={phone} field={:verified} body_class="text-center">
+      <:col :let={phone} field={:verified}>
         <.check_mark checked={phone.verified} />
       </:col>
-      <:col :let={phone} field={:primary} body_class="text-center">
+      <:col :let={phone} field={:primary}>
         <.check_mark checked={phone.primary} />
       </:col>
       <:col actions></:col>
@@ -157,42 +174,57 @@
       </:header_actions>
     </.simple_table>
 
-    <.simple_table items={@identities} title={gettext("Identities")}>
-      <:if_empty>{gettext("No %{models} defined yet", models: gettext("identities"))}</:if_empty>
-      <:col :let={identity} field={:system}>
-        <.badge size="sm" label={identity.system} color={random_color(identity.system)} />
-      </:col>
-      <:col field={:user_id} body_class="w-full" />
-      <:col actions></:col>
-      <:actions :let={identity}>
-        <.icon_button
-          to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
-          size="sm"
-          icon="custom-trash"
-          color="light"
-          title={gettext("Remove")}
-          link_type="live_patch"
-        />
-        <.icon_button
-          to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
-          size="sm"
-          icon="custom-edit"
-          color="light"
-          title={gettext("Edit")}
-          link_type="live_patch"
-        />
-      </:actions>
-      <:header_actions>
-        <.button
-          size="xs"
-          link_type="live_patch"
-          to={~p"/app/users/#{@actor}/edit/identity/new"}
-          icon="remix-add-circle-line"
-          label={gettext("Add")}
-          color="light"
-        />
-      </:header_actions>
-    </.simple_table>
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <.simple_table items={[]} title={gettext("Passkeys")}>
+        <:if_empty>{gettext("No %{models} defined yet", models: gettext("passkeys"))}</:if_empty>
+        <:col field={:name} body_class="w-full" />
+        <:col actions></:col>
+        <:actions :let={identity}>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
+            size="sm"
+            icon="custom-trash"
+            color="light"
+            title={gettext("Remove")}
+            link_type="live_patch"
+          />
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+      </.simple_table>
+
+      <.simple_table items={[]} title={gettext("Security keys")}>
+        <:if_empty>
+          {gettext("No %{models} defined yet", models: gettext("security keys"))}
+        </:if_empty>
+        <:col field={:name} body_class="w-full" />
+        <:col actions></:col>
+        <:actions :let={identity}>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
+            size="sm"
+            icon="custom-trash"
+            color="light"
+            title={gettext("Remove")}
+            link_type="live_patch"
+          />
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+      </.simple_table>
+    </div>
 
     <.simple_table items={@totps} title={gettext("Authenticators (TOTPs)")}>
       <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
@@ -218,34 +250,41 @@
       </:actions>
     </.simple_table>
 
-    <.box :if={Util.present?(@actor.recovery_codes)}>
-      <.action_header
-        badge={Enum.count(@actor.recovery_codes.codes)}
-        title={gettext("Recovery codes")}
-      >
-        <div class="flex items-center gap-3">
-          <.button
-            to={~p"/app/recovery-codes/download/#{@actor}"}
-            size="xs"
-            icon="remix-download-line"
-            color="light"
-            label={gettext("Download")}
-            link_type="a"
-            download
-          />
-          <.button
-            size="xs"
-            icon="remix-refresh-line"
-            color="light"
-            label={gettext("Regenerate")}
-            link_type="live_patch"
-          />
+    <.data_table id="actions" meta={@meta} title={gettext("All actions")} items={@actions}>
+      <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+      <:col :let={action} label={gettext("Action")} field={:name}>
+        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+      </:col>
+      <:col :let={action} label={gettext("State")} field={:state}>
+        <% {badge_label, badge_color} = action_state_badge(action) %>
+        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+      </:col>
+      <:col :let={action} label={gettext("Region")} field={:location}>
+        <div class="flex items-center gap-2">
+          <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
         </div>
-      </.action_header>
-      <div class="p-6">
-        <.recovery_codes codes={@actor.recovery_codes.codes} />
-      </div>
-    </.box>
+      </:col>
+      <:col :let={action} label={gettext("Elapsed")} field={:location}>
+        <div class="flex items-center gap-2">
+          <.icon name="remix-timer-2-line" class="w-5 h-5" />
+          {Util.elapsed(action.inserted_at, action.updated_at)}
+        </div>
+      </:col>
+      <:col :let={action} label={gettext("When")} field={:inserted_at}>
+        {Timex.from_now(action.inserted_at)}
+      </:col>
+      <:col actions></:col>
+      <:actions :let={action}>
+        <.icon_button
+          to={~p"/app/home/#{action}/view"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.data_table>
   </div>
 </.layout>
 
@@ -310,30 +349,14 @@
       current_user={@current_user}
       return_to={~p"/app/users/#{@actor}/edit"}
     />
-  <% :new_identity -> %>
+  <% :edit_properties -> %>
     <.live_component
       id={@live_action}
       title={@page_title}
       subtitle={@page_subtitle}
-      identity={Ecto.build_assoc(@actor, :identities)}
       actor={@actor}
       app={@current_app}
-      module={PasswordlessWeb.App.ActorLive.IdentityComponent}
-      live_action={@live_action}
-      current_org={@current_org}
-      current_app={@current_app}
-      current_user={@current_user}
-      return_to={~p"/app/users/#{@actor}/edit"}
-    />
-  <% :edit_identity -> %>
-    <.live_component
-      id={@live_action}
-      title={@page_title}
-      subtitle={@page_subtitle}
-      identity={@identity}
-      actor={@actor}
-      app={@current_app}
-      module={PasswordlessWeb.App.ActorLive.IdentityComponent}
+      module={PasswordlessWeb.App.ActorLive.PropertiesComponent}
       live_action={@live_action}
       current_org={@current_org}
       current_app={@current_app}
@@ -406,7 +429,7 @@
         <.button
           icon="remix-delete-bin-line"
           size="md"
-          label={gettext("Yes, Delete \"%{phone}\"", phone: @phone.canonical)}
+          label={gettext("Yes, Delete \"%{phone}\"", phone: Phone.format(@phone))}
           color="danger"
           phx-click="delete_email"
         />

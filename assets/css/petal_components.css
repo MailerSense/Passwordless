@@ -694,13 +694,13 @@
 }
 .pc-select-input__flag {
   @apply w-5 h-[15px] absolute left-3 top-1/2 transform -translate-y-1/2;
-  @apply outline outline-1 outline-offset-[-1px] outline-black/10;
+  @apply outline outline-1 outline-offset-[-1px] outline-black/10 dark:outline-white/10;
 }
 .pc-select-input__icon {
   @apply w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2;
 }
 .pc-select-input {
-  @apply ps-10 block w-full px-3.5 py-2.5 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none;
+  @apply ps-10 block w-full px-3.5 py-2.5 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none disabled:opacity-100;
 }
 .pc-select {
   @apply block w-full py-2 pl-3 pr-10 text-base border-slate-300 rounded-md cursor-pointer focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed focus:outline-none sm:text-sm dark:disabled:bg-slate-700 dark:text-slate-300 dark:bg-slate-800;
@@ -1025,7 +1025,7 @@ input[type="color" i]::-moz-color-swatch {
 /* Flag icon */
 
 .pc-flag-icon {
-  @apply h-[15px] w-5 outline outline-1 outline-offset-[-1px] outline-black/10;
+  @apply h-[15px] w-5 outline outline-1 outline-offset-[-1px] outline-black/10 dark:outline-white/10;
 }
 
 /* Theme switcher */
@@ -1042,7 +1042,7 @@ input[type="color" i]::-moz-color-swatch {
 /* Page header */
 
 .pc-page-header {
-  @apply my-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4;
+  @apply my-12 flex justify-between items-center gap-4;
 }
 
 .pc-page-header--text {
@@ -1067,7 +1067,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply py-6 w-64 lg:w-72 flex flex-col select-none shrink-0 border-r border-slate-200 dark:border-slate-700;
 }
 .pc-sidebar__menu-item {
-  @apply flex items-center px-6 py-3 text-base font-medium tracking-tight gap-4 transition duration-200;
+  @apply flex items-center px-6 py-4 text-base font-medium tracking-tight gap-3 transition duration-200;
 }
 .pc-sidebar__menu-item--active {
   @apply bg-primary-50 text-primary-800 dark:bg-slate-700 dark:text-white dark:hover:text-white relative;
@@ -1586,7 +1586,7 @@ input[type="color" i]::-moz-color-swatch {
 .pc-stream-table__wrapper {
 }
 .pc-table__th {
-  @apply text-xs text-left font-semibold select-none bg-slate-50 dark:bg-slate-700/50;
+  @apply text-xs text-left font-medium select-none;
 }
 .pc-table__th--md {
   @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-3;
@@ -1608,7 +1608,7 @@ input[type="color" i]::-moz-color-swatch {
 }
 .pc-table__td {
   @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-4 text-sm font-normal text-slate-600 dark:text-slate-300 whitespace-nowrap;
-  @apply [&:not(:last-child)]:border-r border-slate-200 dark:border-slate-700;
+  /*  @apply [&:not(:last-child)]:border-r border-slate-200 dark:border-slate-700; */
 }
 .pc-table__td--only {
   @apply px-6 py-4 text-sm font-normal text-slate-600 dark:text-slate-300;
@@ -1620,7 +1620,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply hover:cursor-pointer;
 }
 .pc-table__tr-striped {
-  /*  @apply even:bg-white dark:even:bg-transparent odd:bg-slate-50 dark:odd:bg-slate-900/50; */
+  /* @apply even:bg-white dark:even:bg-transparent odd:bg-slate-50/50 dark:odd:bg-slate-900/50; */
   @apply hover:bg-slate-50 dark:hover:bg-slate-900/50;
 }
 .pc-table__thead-plain {

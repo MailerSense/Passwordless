@@ -3,11 +3,12 @@ defmodule PasswordlessWeb.App.ActorLive.FormComponent do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.Actor
+  alias Passwordless.App
   alias Passwordless.Locale
 
   @impl true
-  def update(%{actor: %Actor{} = actor} = assigns, socket) do
-    changeset = Passwordless.change_actor(actor)
+  def update(%{current_app: %App{} = app, actor: %Actor{} = actor} = assigns, socket) do
+    changeset = Passwordless.change_actor(app, actor)
     languages = Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
 
     flag_mapping = fn
@@ -26,9 +27,12 @@ defmodule PasswordlessWeb.App.ActorLive.FormComponent do
 
   @impl true
   def handle_event("validate", %{"actor" => actor_params}, socket) do
+    app = socket.assigns.current_app
+    actor = socket.assigns.actor
+
     changeset =
-      socket.assigns.actor
-      |> Passwordless.change_actor(actor_params)
+      app
+      |> Passwordless.change_actor(actor, actor_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign_form(socket, changeset)}

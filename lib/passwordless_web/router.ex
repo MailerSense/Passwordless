@@ -125,6 +125,7 @@ defmodule PasswordlessWeb.Router do
       ] do
       # Home
       live "/home", App.HomeLive.Index, :index
+      live "/home/:id/view", App.HomeLive.Index, :view
 
       # Users
       live "/users", App.ActorLive.Index, :index
@@ -141,12 +142,14 @@ defmodule PasswordlessWeb.Router do
       live "/users/:id/edit/identity/new", App.ActorLive.Edit, :new_identity
       live "/users/:id/edit/identity/:identity_id/edit", App.ActorLive.Edit, :edit_identity
       live "/users/:id/edit/identity/:identity_id/delete", App.ActorLive.Edit, :delete_identity
+      live "/users/:id/edit/properties", App.ActorLive.Edit, :edit_properties
       live "/users/:id/delete", App.ActorLive.Index, :delete
 
       # Methods
-      live "/methods/magic-link", App.MethodLive.Index, :magic_link
-      live "/methods/sms", App.MethodLive.Index, :sms
       live "/methods/email", App.MethodLive.Index, :email
+      live "/methods/sms", App.MethodLive.Index, :sms
+      live "/methods/whatsapp", App.MethodLive.Index, :whatsapp
+      live "/methods/magic-link", App.MethodLive.Index, :magic_link
       live "/methods/authenticator", App.MethodLive.Index, :authenticator
       live "/methods/security-key", App.MethodLive.Index, :security_key
       live "/methods/passkey", App.MethodLive.Index, :passkey

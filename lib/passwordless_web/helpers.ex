@@ -28,7 +28,6 @@ defmodule PasswordlessWeb.Helpers do
        case actor.state do
          :active -> "success"
          :locked -> "danger"
-         :stale -> "gray"
        end}
 
   def action_state_badge(nil), do: {nil, "gray"}
@@ -46,10 +45,10 @@ defmodule PasswordlessWeb.Helpers do
   def method_menu_items do
     [
       %{
-        name: :magic_link,
-        label: "Magic link",
-        icon: "remix-link",
-        path: ~p"/app/methods/magic-link",
+        name: :email,
+        label: "Email",
+        icon: "remix-mail-line",
+        path: ~p"/app/methods/email",
         link_type: "live_patch"
       },
       %{
@@ -60,10 +59,17 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
-        name: :email,
-        label: "Email",
-        icon: "remix-mail-line",
-        path: ~p"/app/methods/email",
+        name: :whatsapp,
+        label: "WhatsApp",
+        icon: "remix-whatsapp-line",
+        path: ~p"/app/methods/whatsapp",
+        link_type: "live_patch"
+      },
+      %{
+        name: :magic_link,
+        label: "Magic link",
+        icon: "remix-link",
+        path: ~p"/app/methods/magic-link",
         link_type: "live_patch"
       },
       %{
@@ -252,22 +258,10 @@ defmodule PasswordlessWeb.Helpers do
   def user_state(nil), do: nil
   def user_state(%User{} = user), do: user.state
 
-  def user_2fa_enabled(nil), do: false
-  def user_2fa_enabled(%User{} = user), do: Accounts.two_factor_auth_enabled?(user)
-
-  def user_2fa_badge(nil), do: {nil, "danger"}
-
-  def user_2fa_badge(%User{} = user),
-    do:
-      {if(Accounts.two_factor_auth_enabled?(user), do: gettext("2FA Enabled"), else: gettext("2FA Disabled")),
-       if(Accounts.two_factor_auth_enabled?(user), do: "success", else: "danger")}
-
-  def user_states, do: Enum.map(User.states(), &{String.capitalize(Atom.to_string(&1)), &1})
-
-  def user_org_name(%User{current_org: %Org{name: name}}) when is_binary(name), do: name
+  def user_org_name(%User{current_org: %Org{name: name}}) when is_binary(name), do: Util.truncate(name)
   def user_org_name(_), do: nil
 
-  def user_app_name(%User{current_app: %App{name: name}}) when is_binary(name), do: name
+  def user_app_name(%User{current_app: %App{name: name}}) when is_binary(name), do: Util.truncate(name)
   def user_app_name(_), do: nil
 
   def user_impersonated?(%User{current_impersonator: %User{}}), do: true
@@ -278,7 +272,7 @@ defmodule PasswordlessWeb.Helpers do
 
   def admin?(%User{}), do: false
 
-  def format_date_time(date, format \\ "%b %d %H:%M")
+  def format_date_time(date, format \\ "%d %B %Y, %H:%M")
   def format_date_time(nil, _format), do: ""
   def format_date_time(date, format), do: Timex.format!(date, format, :strftime)
 
@@ -322,9 +316,6 @@ defmodule PasswordlessWeb.Helpers do
   def actor_state_details(:active), do: {gettext("User is active and can authenticate freely"), "success"}
 
   def actor_state_details(:locked), do: {gettext("User is locked and cannot authenticate"), "danger"}
-
-  def actor_state_details(:stale),
-    do: {gettext("User is stale and will not be counted towards your monthly quota"), "gray"}
 
   @icon_mapping %{
     "create_auth_token" => "🔑",
@@ -393,13 +384,6 @@ defmodule PasswordlessWeb.Helpers do
     do: scopes |> Enum.sort() |> Enum.map_join(", ", &Atom.to_string/1) |> String.capitalize()
 
   def auth_token_scopes(_), do: "-"
-
-  def status_page_visibilities,
-    do: [
-      public: {gettext("Anyone with link can view"), "primary"},
-      private: {gettext("Password protected"), "purple"},
-      hidden: {gettext("Not accessible"), "danger"}
-    ]
 
   # Autofocuses the input
   # <input {alpine_autofocus()} />

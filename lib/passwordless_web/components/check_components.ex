@@ -146,7 +146,6 @@ defmodule PasswordlessWeb.DashboardComponents do
     <div
       class={[
         "flex flex-col divide-y divide-slate-200 dark:divide-slate-700",
-        "border-b border-slate-200 dark:border-slate-700",
         @class
       ]}
       {@rest}

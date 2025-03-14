@@ -182,7 +182,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Methods"),
-      path: ~p"/app/methods/magic-link",
+      path: ~p"/app/methods/email",
       icon: "remix-database-2-line",
       link_type: "live_patch"
     }
@@ -397,7 +397,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Domain"),
       path: ~p"/app/domain",
-      icon: "remix-earth-line",
+      icon: "remix-cloud-line",
       link_type: "live_patch"
     }
   end

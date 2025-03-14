@@ -27,9 +27,10 @@ defmodule Passwordless.App do
 
     has_one :domain, Domain
 
-    has_one :magic_link, Methods.MagicLink
     has_one :email, Methods.Email
     has_one :sms, Methods.SMS
+    has_one :whatsapp, Methods.WhatsApp
+    has_one :magic_link, Methods.MagicLink
     has_one :authenticator, Methods.Authenticator
     has_one :security_key, Methods.SecurityKey
     has_one :passkey, Methods.Passkey

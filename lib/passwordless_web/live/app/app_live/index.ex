@@ -4,6 +4,8 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   import PasswordlessWeb.SettingsLayoutComponent
 
+  alias Passwordless.Accounts.User
+
   @upload_provider Passwordless.FileUploads.Local
 
   @impl true
@@ -126,6 +128,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
           socket
           |> put_toast(:info, gettext("App settings have been saved."), title: gettext("Success"))
           |> assign(current_app: app)
+          |> assign(current_user: %User{socket.assigns.current_user | current_app: app})
           |> assign_form(Passwordless.change_app(app))
 
         {:noreply, socket}

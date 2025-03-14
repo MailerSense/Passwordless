@@ -294,7 +294,7 @@ defmodule PasswordlessWeb.CoreComponents do
   def code_block(assigns) do
     assigns =
       assigns
-      |> assign_new(:language_class, fn -> "language-#{@language}" end)
+      |> assign_new(:language_class, fn -> "language-#{assigns[:language]}" end)
       |> assign_new(:id, fn -> Util.id("code-block") end)
       |> update(:code, fn code ->
         Passwordless.Formatter.format!(code, assigns[:language])
@@ -310,8 +310,67 @@ defmodule PasswordlessWeb.CoreComponents do
       </div>
     <% else %>
       <pre id={@id} phx-hook="HighlightHook">
-      <code class={[@class, @language_class, "text-sm font-mono rounded-lg"]}>{@code}</code>
-    </pre>
+        <code class={[@class, @language_class, "text-sm font-mono rounded-lg"]}>{@code}</code>
+      </pre>
+    <% end %>
+    """
+  end
+
+  attr :id, :string
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
+  attr :label, :string, default: nil
+  attr :errors, :list, default: []
+  attr :name, :string
+  attr :rest, :global
+
+  def code_editor(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    assigns =
+      assigns
+      |> assign_new(:id, fn -> Util.id("code-editor") end)
+      |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
+      |> assign_new(:name, fn -> field.name end)
+      |> assign_new(:label, fn -> PhoenixHTMLHelpers.Form.humanize(field.field) end)
+
+    ~H"""
+    <.field_error :for={msg <- @errors}>{msg}</.field_error>
+    """
+  end
+
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :code, :any, required: true
+  attr :label, :string, default: nil
+  attr :disabled, :boolean, default: false
+  attr :rest, :global
+
+  def json_block(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:id, fn -> Util.id("json-block") end)
+      |> update(:code, fn code ->
+        Passwordless.Formatter.format!(code, :json)
+      end)
+
+    ~H"""
+    <%= if Util.present?(@label) do %>
+      <div class="pc-form-field-wrapper">
+        <.form_label>{@label}</.form_label>
+        <div class={[
+          @class,
+          "text-sm rounded-lg p-2 border border-slate-300 dark:border-slate-600 shadow-m2",
+          if(@disabled, do: "bg-slate-100 dark:bg-slate-700", else: "dark:bg-slate-900")
+        ]}>
+          <code id={@id} phx-hook="JSONHook" data-json={@code}></code>
+        </div>
+      </div>
+    <% else %>
+      <div class={[
+        @class,
+        "text-sm rounded-lg p-2 border border-slate-300 dark:border-slate-600 shadow-m2",
+        if(@disabled, do: "bg-slate-100 dark:bg-slate-800", else: "dark:bg-slate-900")
+      ]}>
+        <code id={@id} phx-hook="JSONHook" data-json={@code}></code>
+      </div>
     <% end %>
     """
   end

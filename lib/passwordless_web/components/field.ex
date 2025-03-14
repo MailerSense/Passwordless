@@ -24,7 +24,7 @@ defmodule PasswordlessWeb.Components.Field do
   attr :icon, :string, default: nil, doc: "the icon for text inputs"
 
   attr :icon_class, :string,
-    default: "pc-select-input__icon",
+    default: "pc-field-icon__icon",
     doc: "the icon class for select inputs"
 
   attr :icon_mapping, :any, default: nil, doc: "the icon mapping for select inputs"

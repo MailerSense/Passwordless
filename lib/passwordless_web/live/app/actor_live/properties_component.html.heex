@@ -1,0 +1,39 @@
+<div>
+  <% origin = "right" %>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+    <.form
+      id="properties-form"
+      for={@form}
+      phx-target={@myself}
+      phx-submit="save"
+      phx-change="validate"
+    >
+      <.field
+        type="textarea"
+        field={@form[:properties_text]}
+        label={gettext("Properties")}
+        required
+        class="font-mono"
+        rows="8"
+      />
+    </.form>
+
+    <:actions>
+      <.button
+        size="wide"
+        type="submit"
+        color="light-flat"
+        label={gettext("Close")}
+        phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+      />
+      <.button
+        id="properties-form-submit"
+        size="wide"
+        type="submit"
+        form="properties-form"
+        label={gettext("Save")}
+        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
+      />
+    </:actions>
+  </.slide_over>
+</div>

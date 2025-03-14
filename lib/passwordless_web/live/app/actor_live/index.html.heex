@@ -61,25 +61,22 @@
       </:col>
       <:col actions></:col>
       <:actions :let={actor}>
-        <.dropdown placement="left">
-          <:trigger_element>
-            <.icon name="remix-more-fill" class="w-5 h-5" />
-          </:trigger_element>
-          <.dropdown_menu_item link_type="live_redirect" to={~p"/app/users/#{actor}/edit"}>
-            <.icon name="remix-pencil-line" class="w-6 h-6 shrink-0" />
-            {gettext("Edit")}
-          </.dropdown_menu_item>
-          <.dropdown_menu_item
-            link_type="live_patch"
-            to={apply_filters(@filters, @meta, ~p"/app/users/#{actor}/delete")}
-          >
-            <.icon
-              name="remix-delete-bin-line"
-              class="w-6 h-6 shrink-0 text-danger-700 dark:text-danger-400"
-            />
-            <span class="text-danger-700 dark:text-danger-400">{gettext("Delete")}</span>
-          </.dropdown_menu_item>
-        </.dropdown>
+        <.icon_button
+          to={~p"/app/users/#{actor}/delete"}
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          link_type="live_patch"
+        />
+        <.icon_button
+          to={~p"/app/users/#{actor}/edit"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
       </:actions>
     </.data_table>
   </div>

@@ -22,8 +22,17 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
+    app = socket.assigns.current_app
+
+    action =
+      case Map.get(params, "id") do
+        id when is_binary(id) -> Passwordless.get_action!(app, id)
+        nil -> nil
+      end
+
     {:noreply,
      socket
+     |> assign(action: action)
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}
   end
@@ -86,6 +95,13 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     assign(socket,
       page_title: gettext("Home"),
       page_subtitle: gettext("Welcome to Passwordless")
+    )
+  end
+
+  defp apply_action(socket, :view) do
+    assign(socket,
+      page_title: gettext("View action"),
+      page_subtitle: gettext("Review the action details and the events that led to it")
     )
   end
 

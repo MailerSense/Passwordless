@@ -8,6 +8,7 @@ import ColorSchemeHook from "./color-scheme-hook";
 import EditorHook from "./editor-hook";
 import HighlightHook from "./highlight-hook";
 import HTMLPreviewHook from "./html-preview-hook";
+import JSONHook from "./json-hook";
 import ProgressInput from "./progress-input";
 import ResetColorSchemeHook from "./reset-color-scheme-hook";
 import TippyHook from "./tippy-hook";
@@ -24,5 +25,6 @@ export default {
   HTMLPreviewHook,
   HighlightHook,
   BackHook,
+  JSONHook,
   LiveToast: createLiveToastHook(),
 };

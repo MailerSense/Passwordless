@@ -5,6 +5,7 @@ defmodule PasswordlessWeb.App.MethodLive.Index do
   @methods [
     magic_link: PasswordlessWeb.App.MethodLive.MagicLink,
     sms: PasswordlessWeb.App.MethodLive.SMS,
+    whatsapp: PasswordlessWeb.App.MethodLive.Whatsapp,
     email: PasswordlessWeb.App.MethodLive.Email,
     authenticator: PasswordlessWeb.App.MethodLive.Authenticator,
     security_key: PasswordlessWeb.App.MethodLive.SecurityKey,

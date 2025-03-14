@@ -64,7 +64,7 @@
 
     <.simple_table items={@invitations} title={gettext("Invitations")} shadow_class="shadow-m2">
       <:if_empty>{gettext("No %{models} found", models: gettext("invitations"))}</:if_empty>
-      <:col field={:email} body_class="w-full" />
+      <:col field={:email} />
       <:col :let={invitation} field={:inserted_at} label="Sent">
         {format_date_time(invitation.inserted_at)}
       </:col>
