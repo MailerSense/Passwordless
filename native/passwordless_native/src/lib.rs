@@ -113,6 +113,7 @@ pub fn format_code(raw: String, language: Atom) -> String {
 }
 
 fn format_ts(file_name: &str, ext: &str, raw: String) -> String {
+    let original = raw.clone();
     let config = ConfigurationBuilder::new()
         .line_width(120)
         .prefer_hanging(true)
@@ -124,7 +125,7 @@ fn format_ts(file_name: &str, ext: &str, raw: String) -> String {
     format_typescript(Path::new(file_name), Some(ext), raw, &config)
         .ok()
         .flatten()
-        .unwrap_or_default() // If there's an error or None, return an empty string
+        .unwrap_or(original) // If there's an error or None, return an empty string
 }
 
 fn format_html(code: String) -> String {

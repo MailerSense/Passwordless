@@ -81,7 +81,7 @@
       id="actions"
       meta={@meta}
       items={@streams.actions}
-      title={gettext("All actions")}
+      title={gettext("Live actions")}
       badge={Passwordless.Locale.Number.to_string!(@count)}
       finished={@finished}
     >
@@ -99,7 +99,7 @@
       <:col :let={action} label={gettext("Action")} field={:name}>
         {Phoenix.Naming.humanize(Macro.underscore(action.name))}
       </:col>
-      <:col :let={action} label={gettext("Region")} field={:location}>
+      <:col :let={action} label={gettext("Location")} field={:location}>
         <div class="flex items-center gap-2">
           <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
         </div>
@@ -110,15 +110,23 @@
           {Util.elapsed(action.inserted_at, action.updated_at)}
         </div>
       </:col>
-      <:col :let={action} label={gettext("State")} field={:state}>
+      <:col :let={action} label={gettext("State")} field={:outcome} sortable>
         <% {badge_label, badge_color} = action_state_badge(action) %>
         <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
-      <:col :let={action} label={gettext("When")} field={:inserted_at}>
+      <:col :let={action} label={gettext("Time")} field={:inserted_at} sortable>
         {Timex.from_now(action.inserted_at)}
       </:col>
       <:col actions></:col>
       <:actions :let={action}>
+        <.icon_button
+          to={~p"/app/home/#{action}/delete"}
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          link_type="live_patch"
+        />
         <.icon_button
           to={~p"/app/home/#{action}/view"}
           size="sm"

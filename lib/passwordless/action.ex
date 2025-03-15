@@ -14,7 +14,7 @@ defmodule Passwordless.Action do
   @outcomes ~w(allow timeout block)a
   @derive {
     Flop.Schema,
-    filterable: [:id], sortable: [:id]
+    filterable: [:id], sortable: [:id, :outcome, :inserted_at]
   }
   schema "actions" do
     field :name, :string

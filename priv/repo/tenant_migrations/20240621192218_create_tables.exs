@@ -24,9 +24,11 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create index(:actors, [:state], where: "deleted_at is null")
     create unique_index(:actors, [:system_id], where: "deleted_at is null")
 
-    execute "create index actors_name_gin_trgm_idx on #{prefix()}.actors using gin (name gin_trgm_ops);"
+    execute "create index actors_name_gin_trgm_idx on #{prefix()}.actors using gin (name gin_trgm_ops) where deleted_at is null;"
 
-    execute "create index actors_properties_gin_trgm_idx on #{prefix()}.actors using gin ((properties::text) gin_trgm_ops);"
+    execute "create index actors_system_id_gin_trgm_idx on #{prefix()}.actors using gin (system_id gin_trgm_ops) where deleted_at is null;"
+
+    execute "create index actors_properties_gin_trgm_idx on #{prefix()}.actors using gin ((properties::text) gin_trgm_ops) where deleted_at is null;"
 
     ## Emails
 

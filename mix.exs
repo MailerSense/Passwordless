@@ -173,6 +173,7 @@ defmodule Passwordless.MixProject do
       {:stripity_stripe, "~> 3.1"},
 
       # AWS
+      {:aws, "~> 1.0"},
       {:ex_aws, "~> 2.5"},
       {:ex_aws_s3, "~> 2.5"},
       {:ex_aws_kms, "~> 2.4"},

@@ -66,8 +66,8 @@ defmodule PasswordlessWeb.Components.PageComponents do
       {@rest}
       class={[
         "pc-box",
-        @shadow_class,
         @class,
+        @shadow_class,
         if(@padded, do: "p-6", else: "")
       ]}
     >
@@ -116,39 +116,6 @@ defmodule PasswordlessWeb.Components.PageComponents do
     """
   end
 
-  @doc """
-  Provides a container with a sidebar on the left and main content on the right. Useful for things like user settings.
-
-  ---------------------------------
-  | Sidebar | Main                |
-  |         |                     |
-  |         |                     |
-  |         |                     |
-  ---------------------------------
-  """
-
-  attr :current_page, :atom
-
-  attr :menu_items, :list,
-    required: true,
-    doc: "list of maps with keys :name, :path, :label, :icon (atom)"
-
-  slot(:inner_block)
-
-  def sidebar_tabs_container(assigns) do
-    ~H"""
-    <.box class="flex flex-col border border-slate-200 divide-y divide-slate-200 dark:border-none dark:divide-slate-700 md:divide-y-0 md:divide-x md:flex-row">
-      <div class="flex-shrink-0 py-6 md:w-72">
-        <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
-      </div>
-
-      <div class="flex-grow px-4 py-6 sm:p-6 lg:pb-8">
-        {render_slot(@inner_block)}
-      </div>
-    </.box>
-    """
-  end
-
   attr :current, :atom
   attr :name, :string
   attr :path, :string
@@ -174,6 +141,8 @@ defmodule PasswordlessWeb.Components.PageComponents do
     </.a>
     """
   end
+
+  # Private
 
   defp menu_item_classes(true), do: "pc-sidebar__menu-item--active"
   defp menu_item_classes(false), do: "pc-sidebar__menu-item--inactive"

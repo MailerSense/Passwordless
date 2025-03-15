@@ -250,7 +250,7 @@
       </:actions>
     </.simple_table>
 
-    <.data_table id="actions" meta={@meta} title={gettext("All actions")} items={@actions}>
+    <.data_table id="actions" meta={@meta} title={gettext("User actions")} items={@actions}>
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
       <:col :let={action} label={gettext("Action")} field={:name}>
         {Phoenix.Naming.humanize(Macro.underscore(action.name))}

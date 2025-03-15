@@ -11,7 +11,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   @data_table_opts [
     for: Action,
     count: 0,
-    default_limit: 30,
+    default_limit: 25,
     default_order: %{
       order_by: [:id],
       order_directions: [:desc]
@@ -132,7 +132,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   end
 
   defp load_actions(query, %{cursor: cursor}) do
-    filters = %{"first" => 30, "after" => cursor}
+    filters = %{"first" => 25, "after" => cursor}
     {actions, meta} = DataTable.search(query, filters, @data_table_opts)
 
     cursor =

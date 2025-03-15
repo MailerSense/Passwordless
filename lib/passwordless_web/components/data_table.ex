@@ -203,6 +203,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
   attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
   attr :finished, :boolean, default: false
+  attr :base_url_params, :map, required: false
 
   slot :col, required: true do
     attr :label, :string
@@ -226,6 +227,16 @@ defmodule PasswordlessWeb.Components.DataTable do
   slot :if_empty, required: false
 
   def stream_table(assigns) do
+    filter_changeset = build_filter_changeset(assigns.col, assigns.meta.flop)
+    assigns = assign(assigns, filter_changeset: filter_changeset)
+
+    assigns =
+      assigns
+      |> assign(:filtered?, Enum.any?(assigns.meta.flop.filters, fn x -> x.value end))
+      |> assign(:col, Enum.reject(assigns.col, fn col -> col[:searchable] end))
+      |> assign_new(:filter_changeset, fn -> FilterSet.changeset(%FilterSet{}) end)
+      |> assign_new(:base_url_params, fn -> %{} end)
+
     ~H"""
     <div class={["pc-table__wrapper", "pc-stream-table__wrapper", @shadow_class, @class]}>
       <%= if Util.present?(@header) do %>
@@ -246,14 +257,26 @@ defmodule PasswordlessWeb.Components.DataTable do
                   class={"pc-table__th--#{@size}"}
                   column={col}
                   actions={@actions}
-                  base_url_params={nil}
+                  no_results?={@finished}
+                  base_url_params={@base_url_params}
                 />
               <% end %>
             <% end %>
           </.tr>
         </thead>
         <tbody id={@id} phx-update="stream" phx-viewport-bottom={!@finished && "load_more"}>
-          <.tr :for={{id, item} <- @items} id={id} class="pc-table__tr-striped">
+          <.tr
+            :for={{id, item} <- @items}
+            id={id}
+            class="pc-table__tr-striped"
+            phx-mounted={
+              Phoenix.LiveView.JS.transition(
+                {"transition ease-in-out duration-200", "opacity-0 translate-y-2",
+                 "opacity-100 translate-y-0"},
+                time: 200
+              )
+            }
+          >
             <.td
               :for={col <- @col}
               class={[

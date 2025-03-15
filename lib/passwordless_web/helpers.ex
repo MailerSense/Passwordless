@@ -16,10 +16,8 @@ defmodule PasswordlessWeb.Helpers do
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
 
-  def actor_name(nil), do: nil
   def actor_name(%Actor{} = actor), do: actor.name
-
-  def actor_state_badge(nil), do: {nil, "gray"}
+  def actor_name(_actor), do: nil
 
   def actor_state_badge(%Actor{} = actor),
     do:
@@ -28,8 +26,6 @@ defmodule PasswordlessWeb.Helpers do
          :active -> "success"
          :locked -> "danger"
        end}
-
-  def action_state_badge(nil), do: {nil, "gray"}
 
   def action_state_badge(%Action{} = action),
     do:
@@ -40,6 +36,8 @@ defmodule PasswordlessWeb.Helpers do
          :block -> "danger"
          _ -> "gray"
        end}
+
+  def action_state_badge(_actor), do: {nil, "gray"}
 
   def method_menu_items do
     [
@@ -279,12 +277,7 @@ defmodule PasswordlessWeb.Helpers do
   def format_date(nil, _format), do: ""
   def format_date(date, format), do: Timex.format!(date, format, :strftime)
 
-  def user_role(%Membership{role: role}) when is_atom(role), do: String.capitalize(Atom.to_string(role))
-
-  def user_role(%Membership{}), do: "-"
-
   def user_added(%Membership{inserted_at: %DateTime{} = inserted_at}), do: format_date_time(inserted_at)
-
   def user_added(%Membership{}), do: ""
 
   def is_admin?(%User{} = user), do: User.is_admin?(user)
@@ -311,10 +304,6 @@ defmodule PasswordlessWeb.Helpers do
     do: {translate_action(action), Enum.at(@common_colors, :erlang.phash2(action, length(@common_colors)))}
 
   def random_color(term), do: Enum.at(@common_colors, :erlang.phash2(term, length(@common_colors)))
-
-  def actor_state_details(:active), do: {gettext("User is active and can authenticate freely"), "success"}
-
-  def actor_state_details(:locked), do: {gettext("User is locked and cannot authenticate"), "danger"}
 
   @icon_mapping %{
     "create_auth_token" => "🔑",
@@ -413,23 +402,4 @@ defmodule PasswordlessWeb.Helpers do
   end
 
   def assign_page_description(socket, _description), do: socket
-
-  # Date
-
-  def current_month_menu_item do
-    date = DateTime.utc_now()
-    "#{date.year}:#{date.month}"
-  end
-
-  def last_months_menu(limit \\ 2) do
-    now = DateTime.utc_now()
-
-    for_result =
-      for i <- 0..limit do
-        date = Timex.shift(now, months: -i)
-        %{name: "#{date.year}:#{date.month}", label: Timex.format!(date, "%b %Y", :strftime)}
-      end
-
-    [%{name: "custom", label: "Custom"} | Enum.reverse(for_result)]
-  end
 end

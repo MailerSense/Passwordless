@@ -9,10 +9,18 @@ defmodule Passwordless.Native do
 
   alias Passwordless.MJML.RenderOptions
 
+  @doc """
+  Converts MJML to HTML.
+  """
   @spec mjml_to_html(binary(), RenderOptions.t()) :: {:ok, binary()} | {:error, any()}
   def mjml_to_html(_mjml, _render_options), do: :erlang.nif_error(:nif_not_loaded)
 
-  @spec format_code(binary(), :javascript | :typescript | :html) :: binary()
+  @type language :: :javascript | :typescript | :html
+
+  @doc """
+  Formats programming code.
+  """
+  @spec format_code(binary(), language()) :: binary()
   def format_code(_code, _language), do: :erlang.nif_error(:nif_not_loaded)
 
   @doc """
