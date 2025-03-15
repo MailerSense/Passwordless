@@ -13,7 +13,7 @@ class JSONHook extends Hook {
 
   private run(_lifecycleMethod: "mounted" | "updated", el: HTMLElement) {
     const json = this.el.dataset.json;
-    if (!json || json == null) {
+    if (!json || json === undefined) {
       throw new Error("No JSON");
     }
 

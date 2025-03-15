@@ -63,7 +63,7 @@ defmodule Passwordless.FileUploads.S3 do
 
   The configuration is a map which must contain the following keys:
 
-    * `:region` - The AWS region, such as "us-east-1"
+    * `:region` - The AWS region, such as "eu-west-1"
     * `:access_key_id` - The AWS access key id
     * `:secret_access_key` - The AWS secret access key
 
@@ -80,7 +80,7 @@ defmodule Passwordless.FileUploads.S3 do
   ## Examples
 
       config = %{
-        region: "us-east-1",
+        region: "eu-west-1",
         access_key_id: System.fetch_env!("AWS_ACCESS_KEY_ID"),
         secret_access_key: System.fetch_env!("AWS_SECRET_ACCESS_KEY")
       }

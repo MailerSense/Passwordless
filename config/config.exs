@@ -54,7 +54,7 @@ config :passwordless, PasswordlessWeb.Endpoint,
 
 # Configures AWS
 config :ex_aws,
-  region: "us-east-1",
+  region: "eu-west-1",
   http_client: Passwordless.ExAwsClient
 
 # Configures Oban
@@ -89,14 +89,13 @@ config :passwordless, :cache, adapter: Cache.InMemory
 # Configures the object storage
 config :passwordless, :storage, adapter: Storage.Local
 
+# Configures the secret manager
+config :passwordless, :secret_manager,
+  adapter: SecretManager.Local,
+  secret_name: "passwordless"
+
 # Configures the media uploader to local
 config :passwordless, :media_upload, adapter: Passwordless.Media.Upload.Local
-
-# Configures the media uploader to local
-config :passwordless, :audience_import, bucket: ""
-
-# Configures the thumbnail storage for templates
-config :passwordless, :template_thumbnail, bucket: ""
 
 config :passwordless, :media,
   buckets: [

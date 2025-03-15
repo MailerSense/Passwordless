@@ -54,7 +54,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   @impl true
   def handle_event("load_more", _params, socket) do
-    if socket.assigns.finished do
+    if socket.assigns[:finished] do
       {:noreply, socket}
     else
       query =

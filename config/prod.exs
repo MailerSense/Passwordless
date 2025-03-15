@@ -28,6 +28,11 @@ config :passwordless, :cache, adapter: Cache.Redis
 # Configures the object storage to AWS
 config :passwordless, :storage, adapter: Storage.Amazon
 
+# Configures the secret manager to AWS
+config :passwordless, :secret_manager,
+  adapter: SecretManager.Amazon,
+  secret_name: "full_secret_name"
+
 # Configures the media uploader to S3
 config :passwordless, :media_upload, adapter: Passwordless.Media.Upload.S3
 

@@ -121,7 +121,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           audience: sts.amazonaws.com
-          aws-region: us-east-1
+          aws-region: eu-west-1
           role-to-assume: ${{ secrets.AWS_DEPLOYER_ROLE }}
           role-duration-seconds: 14400 # 60 * 60 * 4
 
@@ -129,7 +129,7 @@ jobs:
         id: diff
         continue-on-error: true
         env:
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_DEFAULT_REGION: eu-west-1
         run: set -euo pipefail && pnpm --prefix cdk exec cdk diff 2>&1 2>&1 | tee output.log
 
       - name: Output diff results

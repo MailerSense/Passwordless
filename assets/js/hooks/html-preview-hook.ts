@@ -13,8 +13,13 @@ class HTMLPreviewHook extends Hook {
     const content = el.innerText;
     if (!content) return;
 
+    const iframeSource = el.dataset.iframe;
+    if (!iframeSource || iframeSource === undefined) {
+      throw new Error("No iframe source");
+    }
+
     const iframe: HTMLIFrameElement | null = document.getElementById(
-      el.dataset.iframe,
+      iframeSource,
     ) as HTMLIFrameElement;
     if (!iframe || !iframe.contentWindow) return;
 

@@ -94,6 +94,7 @@ defmodule Passwordless.Actor do
   def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
   def handle(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical), do: canonical
   def handle(%__MODULE__{system_id: system_id}) when is_binary(system_id), do: system_id
+  def handle(%__MODULE__{id: id}) when is_binary(id), do: id
   def handle(%__MODULE__{}), do: nil
 
   def email(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address

@@ -81,11 +81,14 @@
       id="actions"
       meta={@meta}
       items={@streams.actions}
-      title={gettext("User actions")}
-      badge={Passwordless.Locale.Number.to_string!(@count)}
+      title={gettext("Recent actions")}
       finished={@finished}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+      <:col :let={action} label={gettext("Result")} field={:outcome}>
+        <% {badge_label, badge_color} = action_state_badge(action) %>
+        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+      </:col>
       <:col :let={action} label={gettext("User")} field={:user}>
         <.a
           to={~p"/app/users/#{action.actor}/edit"}
@@ -110,23 +113,12 @@
           {Util.elapsed(action.inserted_at, action.updated_at)}
         </div>
       </:col>
-      <:col :let={action} label={gettext("State")} field={:outcome} sortable>
-        <% {badge_label, badge_color} = action_state_badge(action) %>
-        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-      </:col>
+
       <:col :let={action} label={gettext("Time")} field={:inserted_at} sortable>
         {Timex.from_now(action.inserted_at)}
       </:col>
       <:col actions></:col>
       <:actions :let={action}>
-        <.icon_button
-          to={~p"/app/home/#{action}/delete"}
-          size="sm"
-          icon="custom-trash"
-          color="light"
-          title={gettext("Remove")}
-          link_type="live_patch"
-        />
         <.icon_button
           to={~p"/app/home/#{action}/view"}
           size="sm"
