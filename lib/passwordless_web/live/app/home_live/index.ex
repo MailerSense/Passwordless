@@ -4,7 +4,9 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   alias Passwordless.Action
   alias Passwordless.Actor
+  alias Passwordless.App
   alias PasswordlessWeb.Components.DataTable
+  alias PasswordlessWeb.Endpoint
 
   @data_table_opts [
     for: Action,
@@ -31,9 +33,11 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
         nil -> nil
       end
 
+    if connected?(socket), do: Endpoint.subscribe(Action.topic_for(app))
+
     {:noreply,
      socket
-     |> assign(action: action)
+     |> assign(action: action, count: estimate_count(app))
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}
   end
@@ -73,20 +77,20 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   end
 
   @impl true
-  def handle_async(:load_actions, {:ok, %{actions: actions, meta: meta, cursor: cursor}}, socket) do
-    socket = assign(socket, meta: meta, cursor: cursor, finished: Enum.empty?(actions))
-    socket = stream(socket, :actions, actions)
-
-    {:noreply, socket}
-  end
-
-  @impl true
   def handle_info(%{event: _event, payload: %Action{} = action}, socket) do
-    {:noreply, stream_insert(socket, :actions, action, at: 0)}
+    {:noreply, socket |> stream_insert(:actions, action, at: 0) |> update(:count, &(&1 + 1))}
   end
 
   @impl true
   def handle_info(_params, socket) do
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_async(:load_actions, {:ok, %{actions: actions, meta: meta, cursor: cursor}}, socket) do
+    socket = assign(socket, meta: meta, cursor: cursor, finished: Enum.empty?(actions))
+    socket = stream(socket, :actions, actions)
+
     {:noreply, socket}
   end
 
@@ -138,5 +142,9 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
       end
 
     %{actions: actions, meta: meta, cursor: cursor}
+  end
+
+  defp estimate_count(%App{} = app) do
+    Database.QueryExt.count_estimate(app, Action)
   end
 end

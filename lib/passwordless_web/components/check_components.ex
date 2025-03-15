@@ -159,7 +159,6 @@ defmodule PasswordlessWeb.DashboardComponents do
           class={[
             "flex flex-col gap-4 p-6",
             "transition duration-150 ease-in-out",
-            "first:rounded-ss-lg last:rounded-se-lg",
             "hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-700"
           ]}
         >

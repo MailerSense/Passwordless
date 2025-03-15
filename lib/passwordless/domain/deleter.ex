@@ -3,7 +3,7 @@ defmodule Passwordless.Identity.Deleter do
   Periodically deletes email identities that have not passed AWS SES verification.
   """
 
-  use Oban.Pro.Worker, queue: :identity_ops, max_attempts: 5, tags: ["email", "identities", "deleter"]
+  use Oban.Pro.Worker, queue: :domain_opts, max_attempts: 5, tags: ["email", "domains", "deleter"]
 
   alias Passwordless.App
   alias Passwordless.Domain
@@ -29,13 +29,13 @@ defmodule Passwordless.Identity.Deleter do
         Logger.warning("Soft deleting domain #{domain.name}")
         Repo.soft_delete(domain, prefix: Database.Tenant.to_prefix(app))
 
-        # with %AWS.Client{} = client <- Cloud.get_client(),
-        #      {:ok, %{}, _} <- AWS.SESv2.delete_email_identity(client, domain.name, %{}) do
-        #   Logger.info("Deleted domain #{domain.name} from SES")
-        # else
-        #   {:error, error} ->
-        #     Logger.error("Failed to delete domain #{domain.name} from SES: #{inspect(error)}")
-        # end
+        case AWS.SESv2.delete_email_identity(AWS.Session.get_client!(), domain.name, %{}) do
+          {:ok, %{}, _} ->
+            Logger.info("Deleted domain #{domain.name} from SES")
+
+          {:error, error} ->
+            Logger.error("Failed to delete domain #{domain.name} from SES: #{inspect(error)}")
+        end
 
         :ok
 

@@ -6,7 +6,6 @@ defmodule Passwordless.Organizations.OrgSeeder do
   alias Database.Tenant
   alias Passwordless.Accounts.User
   alias Passwordless.Action
-  alias Passwordless.Actor
   alias Passwordless.Organizations
 
   require Logger

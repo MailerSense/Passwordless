@@ -228,6 +228,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :kind, :string, null: false
       add :name, :citext, null: false
       add :value, :string, null: false
+      add :priority, :integer, null: false, default: 0
       add :verified, :boolean, null: false, default: false
 
       add :domain_id, references(:domains, type: :uuid, on_delete: :delete_all), null: false

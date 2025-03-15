@@ -42,8 +42,19 @@ defmodule Passwordless.Domain do
 
   def kinds, do: @kinds
   def states, do: @states
-
   def email_suffix(%__MODULE__{name: name}), do: "@#{name}"
+
+  @doc """
+  Map the AWS domain verification states to our internal reprentation.
+  """
+  def aws_verification_states,
+    do: %{
+      "Pending" => :aws_pending,
+      "Success" => :aws_success,
+      "Failed" => :aws_failed,
+      "TemporaryFailure" => :aws_temporary_failure,
+      "NotStarted" => :aws_not_started
+    }
 
   @doc """
   Map the AWS domain state states to our internal reprentation.
@@ -71,6 +82,10 @@ defmodule Passwordless.Domain do
 
   def get_by_state(query \\ __MODULE__, state) do
     from q in query, where: q.state == ^state
+  end
+
+  def get_not_verified(query \\ __MODULE__) do
+    from q in query, where: not q.verified
   end
 
   @fields ~w(

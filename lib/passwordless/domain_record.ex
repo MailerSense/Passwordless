@@ -18,6 +18,7 @@ defmodule Passwordless.DomainRecord do
     field :kind, Ecto.Enum, values: ~w(txt cname)a
     field :name, :string
     field :value, :string
+    field :priority, :integer, default: 0
     field :verified, :boolean, default: false
 
     belongs_to :domain, Domain, type: :binary_id
@@ -30,6 +31,7 @@ defmodule Passwordless.DomainRecord do
     name
     value
     verified
+    priority
     domain_id
   )a
   @required_fields @fields

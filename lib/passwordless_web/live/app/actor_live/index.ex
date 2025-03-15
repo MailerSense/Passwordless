@@ -63,10 +63,20 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   @impl true
   def handle_event("update_filters", %{"filters" => filter_params}, socket) do
-    {:noreply,
-     push_patch(socket,
-       to: ~p"/app/users?#{DataTable.build_filter_params(socket.assigns.meta, filter_params)}"
-     )}
+    filtered? =
+      case Flop.validate(filter_params) do
+        {:ok, %Flop{} = flop} -> Enum.any?(flop.filters, fn x -> x.value end)
+        _ -> false
+      end
+
+    to =
+      if filtered? do
+        ~p"/app/users?#{DataTable.build_filter_params(socket.assigns.meta, filter_params)}"
+      else
+        ~p"/app/users"
+      end
+
+    {:noreply, push_patch(socket, to: to)}
   end
 
   @impl true

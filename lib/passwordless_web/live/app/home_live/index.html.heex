@@ -82,11 +82,7 @@
       meta={@meta}
       items={@streams.actions}
       title={gettext("All actions")}
-      badge={
-        Passwordless.Locale.Number.to_string!(
-          Database.QueryExt.count_estimate(@current_app, Passwordless.Action)
-        )
-      }
+      badge={Passwordless.Locale.Number.to_string!(@count)}
       finished={@finished}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
@@ -103,10 +99,6 @@
       <:col :let={action} label={gettext("Action")} field={:name}>
         {Phoenix.Naming.humanize(Macro.underscore(action.name))}
       </:col>
-      <:col :let={action} label={gettext("State")} field={:state}>
-        <% {badge_label, badge_color} = action_state_badge(action) %>
-        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-      </:col>
       <:col :let={action} label={gettext("Region")} field={:location}>
         <div class="flex items-center gap-2">
           <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
@@ -117,6 +109,10 @@
           <.icon name="remix-timer-2-line" class="w-5 h-5" />
           {Util.elapsed(action.inserted_at, action.updated_at)}
         </div>
+      </:col>
+      <:col :let={action} label={gettext("State")} field={:state}>
+        <% {badge_label, badge_color} = action_state_badge(action) %>
+        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
       <:col :let={action} label={gettext("When")} field={:inserted_at}>
         {Timex.from_now(action.inserted_at)}

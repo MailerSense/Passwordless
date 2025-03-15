@@ -233,9 +233,11 @@ defmodule Passwordless do
   end
 
   def create_actor(%App{} = app, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     %Actor{}
-    |> Actor.changeset(attrs)
-    |> Repo.insert(prefix: Tenant.to_prefix(app))
+    |> Actor.changeset(attrs, opts)
+    |> Repo.insert(opts)
   end
 
   def change_actor(%App{} = app, %Actor{} = actor, attrs \\ %{}) do

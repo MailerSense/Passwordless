@@ -5,7 +5,6 @@ defmodule PasswordlessWeb.Helpers do
   use PasswordlessWeb, :verified_routes
   use Gettext, backend: PasswordlessWeb.Gettext
 
-  alias Passwordless.Accounts
   alias Passwordless.Accounts.User
   alias Passwordless.Action
   alias Passwordless.Activity.Log

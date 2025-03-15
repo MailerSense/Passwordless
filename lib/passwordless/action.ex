@@ -30,6 +30,8 @@ defmodule Passwordless.Action do
 
   def outcomes, do: @outcomes
 
+  def topic_for(%App{} = app), do: "actions:#{app.id}"
+
   @doc """
   Get by app.
   """
