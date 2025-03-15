@@ -153,7 +153,7 @@ defmodule PasswordlessWeb.DashboardComponents do
     >
       <div class={[
         "grid grid-cols-1",
-        "sm:grid-cols-#{Enum.count(@items)}",
+        "sm:grid-cols-3",
         "divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-slate-700"
       ]}>
         <.a

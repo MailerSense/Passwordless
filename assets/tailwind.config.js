@@ -77,6 +77,7 @@ const murder = {
 
 module.exports = {
   safelist: [
+    { pattern: /^grid-cols-.+/ },
     { pattern: /^flag-.+/ },
     { pattern: /^bg-streetlight-\d+/ },
     { pattern: /^from-streetlight-\d+/ },
