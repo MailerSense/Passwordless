@@ -453,7 +453,7 @@ defmodule PasswordlessWeb.Components.DataTable do
     ~H"""
     <div class={[
       "flex items-center justify-between gap-3",
-      "py-6"
+      "mb-6"
     ]}>
       <.inputs_for :let={f2} field={@form[:filters]}>
         <%= if Phoenix.HTML.Form.input_value(f2, :field) == @switch_field do %>
