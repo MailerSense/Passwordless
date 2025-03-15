@@ -87,7 +87,7 @@ defmodule Database.QueryExt do
       )
 
     case result do
-      %Postgrex.Result{columns: ["estimate"], rows: [[estimate]]} ->
+      %Postgrex.Result{columns: ["estimate"], rows: [[estimate]]} when is_number(estimate) ->
         trunc(estimate)
 
       _ ->
@@ -383,7 +383,7 @@ defmodule Database.QueryExt do
   @doc """
   Returns `true` if the schema is not flagged to skip auto-filtering
   """
-  @spec auto_include_deleted_at_clause?(Ecto.Queriable.t()) :: boolean()
+  @spec auto_include_deleted_at_clause?(Ecto.Queryable.t()) :: boolean()
   def auto_include_deleted_at_clause?(query) do
     schema_module = get_schema_module(query)
 

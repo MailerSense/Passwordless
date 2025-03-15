@@ -196,7 +196,6 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
       add :state, :string, null: false
-      add :details, :string
       add :ip_address, :string
       add :country, :string
       add :city, :string

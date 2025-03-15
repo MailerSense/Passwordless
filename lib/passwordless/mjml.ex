@@ -1,12 +1,12 @@
 defmodule Passwordless.MJML do
   @moduledoc false
 
-  def format(mjml) do
+  def convert(mjml) do
     Passwordless.Native.mjml_to_html(mjml, %Passwordless.MJML.RenderOptions{})
   end
 
-  def format!(mjml) do
-    {:ok, html} = format(mjml)
+  def convert!(mjml) do
+    {:ok, html} = convert(mjml)
     html
   end
 end

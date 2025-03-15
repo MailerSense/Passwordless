@@ -78,7 +78,10 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   @impl true
   def handle_info(%{event: _event, payload: %Action{} = action}, socket) do
-    {:noreply, socket |> stream_insert(:actions, action, at: 0) |> update(:count, &(&1 + 1))}
+    socket = if(has_filters?(socket), do: socket, else: stream_insert(socket, :actions, action, at: 0))
+    socket = update(socket, :count, &(&1 + 1))
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -91,6 +94,11 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     socket = assign(socket, meta: meta, cursor: cursor, finished: Enum.empty?(actions))
     socket = stream(socket, :actions, actions)
 
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_async(_event, _reply, socket) do
     {:noreply, socket}
   end
 
@@ -146,5 +154,12 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   defp estimate_count(%App{} = app) do
     Database.QueryExt.count_estimate(app, Action)
+  end
+
+  defp has_filters?(socket) do
+    case socket.assigns[:filters] do
+      filters when is_map(filters) and map_size(filters) > 0 -> true
+      _ -> false
+    end
   end
 end

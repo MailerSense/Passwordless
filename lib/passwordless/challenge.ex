@@ -28,7 +28,7 @@ defmodule Passwordless.Challenge do
     field :context, Ecto.Enum, values: Keyword.keys(@contexts)
     field :expires_at, :utc_datetime_usec
     field :attempts, :integer, default: 0
-    field :token, :binary
+    field :token, :binary, redact: true
 
     belongs_to :app, App, type: :binary_id
     belongs_to :actor, Actor, type: :binary_id
