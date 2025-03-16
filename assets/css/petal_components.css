@@ -1067,7 +1067,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply py-6 w-64 lg:w-72 flex flex-col select-none shrink-0 border-r border-slate-200 dark:border-slate-700;
 }
 .pc-sidebar__menu-item {
-  @apply flex items-center px-6 py-3 text-base font-medium tracking-tight gap-3 transition duration-200;
+  @apply flex items-center px-6 py-4 text-base font-medium tracking-tight gap-3 transition duration-200;
 }
 .pc-sidebar__menu-item--active {
   @apply bg-primary-50 text-primary-800 dark:bg-slate-700 dark:text-white dark:hover:text-white relative;

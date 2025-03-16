@@ -116,14 +116,6 @@
       <:col actions></:col>
       <:actions :let={action}>
         <.icon_button
-          to={~p"/app/users/#{action}/delete"}
-          size="sm"
-          icon="custom-trash"
-          color="light"
-          title={gettext("Remove")}
-          link_type="live_patch"
-        />
-        <.icon_button
           to={~p"/app/home/#{action}/view"}
           size="sm"
           icon="custom-edit"
