@@ -36,7 +36,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
     {:ok, app} =
       Passwordless.create_app(org, %{
         "name" => "Demo App",
-        "website" => "https://passwordless.tools",
+        "website" => "https://google.com",
         "display_name" => "Demo App"
       })
 
@@ -88,7 +88,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
         Passwordless.create_actor(app, %{
           name: Faker.Person.name(),
           state: Util.pick(active: 80, locked: 20),
-          system_id: UUIDv7.autogenerate(),
+          user_id: UUIDv7.autogenerate(),
           properties: %{
             "email" => email,
             "phone" => phone

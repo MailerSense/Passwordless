@@ -1,5 +1,5 @@
 <.layout current_user={@current_user} current_page={:home} current_section={:app}>
-  <.page_header title={gettext("Hello 👋")}>
+  <.page_header title={gettext("Home")}>
     <div class="flex flex-wrap gap-3">
       <.button
         to={~p"/app/embed/api-usage"}
@@ -107,18 +107,22 @@
           <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
         </div>
       </:col>
-      <:col :let={action} label={gettext("Elapsed")} field={:location}>
+      <:col :let={action} label={gettext("Time")} field={:inserted_at}>
         <div class="flex items-center gap-2">
           <.icon name="remix-timer-2-line" class="w-5 h-5" />
-          {Util.elapsed(action.inserted_at, action.updated_at)}
+          {Timex.from_now(action.inserted_at)}
         </div>
-      </:col>
-
-      <:col :let={action} label={gettext("Time")} field={:inserted_at} sortable>
-        {Timex.from_now(action.inserted_at)}
       </:col>
       <:col actions></:col>
       <:actions :let={action}>
+        <.icon_button
+          to={~p"/app/users/#{action}/delete"}
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          link_type="live_patch"
+        />
         <.icon_button
           to={~p"/app/home/#{action}/view"}
           size="sm"

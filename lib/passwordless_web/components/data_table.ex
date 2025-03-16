@@ -141,7 +141,7 @@ defmodule PasswordlessWeb.Components.DataTable do
             </thead>
             <tbody>
               <%= if @items == [] do %>
-                <.tr>
+                <.tr class="pc-table__tr-striped">
                   <td class="pc-table__td--only" colspan={length(@col)}>
                     {if Util.present?(@if_empty), do: render_slot(@if_empty), else: "No results"}
                   </td>
@@ -295,7 +295,7 @@ defmodule PasswordlessWeb.Components.DataTable do
               <% end %>
             </.td>
           </.tr>
-          <.tr class="only:block hidden">
+          <.tr class="pc-table__tr-striped only:block hidden">
             <td class="pc-table__td--only" colspan={length(@col)}>
               {if Util.present?(@if_empty), do: render_slot(@if_empty), else: "No results"}
             </td>
@@ -362,7 +362,7 @@ defmodule PasswordlessWeb.Components.DataTable do
         </thead>
         <tbody>
           <%= if @items == [] do %>
-            <.tr>
+            <.tr class="pc-table__tr-striped">
               <td class="pc-table__td--only" colspan={length(@col)}>
                 {if Util.present?(@if_empty), do: render_slot(@if_empty), else: "No results"}
               </td>

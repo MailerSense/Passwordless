@@ -26,7 +26,7 @@ defmodule Passwordless.SecretVault do
     :ets.new(@table, [
       :set,
       :named_table,
-      :public,
+      :protected,
       read_concurrency: true,
       write_concurrency: false
     ])
