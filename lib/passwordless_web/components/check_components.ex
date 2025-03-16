@@ -144,9 +144,10 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   def action_stat(assigns) do
     ~H"""
-    <.box
+    <div
       class={[
         "flex flex-col divide-y divide-slate-200 dark:divide-slate-700",
+        "border-b border-slate-200 dark:border-slate-700",
         @class
       ]}
       {@rest}
@@ -156,14 +157,10 @@ defmodule PasswordlessWeb.DashboardComponents do
         "sm:grid-cols-3",
         "divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-slate-700"
       ]}>
-        <.a
+        <div
           :for={item <- @items}
-          to={item.to}
-          link_type="live_redirect"
           class={[
-            "flex flex-col gap-4 p-6",
-            "transition duration-150 ease-in-out",
-            "hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-700"
+            "flex flex-col gap-4 p-6"
           ]}
         >
           <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
@@ -178,7 +175,7 @@ defmodule PasswordlessWeb.DashboardComponents do
             <% %{max: max, value: value, color: color} -> %>
               <.progress max={max} class="flex-grow" value={value} color={color} />
           <% end %>
-        </.a>
+        </div>
       </div>
       <div class="flex justify-between items-center">
         <div class="flex p-6 gap-6 items-center flex-wrap">
@@ -200,7 +197,7 @@ defmodule PasswordlessWeb.DashboardComponents do
           {gettext("View statistics")}<.icon name="remix-arrow-right-line" class="w-4 h-4" />
         </.button>
       </div>
-    </.box>
+    </div>
     """
   end
 

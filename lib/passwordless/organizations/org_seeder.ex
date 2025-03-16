@@ -119,11 +119,18 @@ defmodule Passwordless.Organizations.OrgSeeder do
       {:ok, _recovery_codes} = Passwordless.create_actor_recovery_codes(app, actor)
 
       for _ <- 1..1 do
-        {:ok, _action} =
+        {:ok, action} =
           Passwordless.create_action(app, actor, %{
             name: Enum.random(~w(signIn withdraw placeOrder)),
-            method: Enum.random(Passwordless.methods()),
-            outcome: Enum.random(Action.outcomes())
+            method: Enum.random(Action.methods()),
+            state: Enum.random(Action.states())
+          })
+
+        {:ok, _event} =
+          Passwordless.create_event(app, action, %{
+            ip_address: Faker.Internet.ip_v4_address(),
+            country: Faker.Address.country_code(),
+            city: Faker.Address.city()
           })
       end
     end

@@ -20,6 +20,7 @@ defmodule Passwordless do
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateVersion
+  alias Passwordless.Event
   alias Passwordless.Identity
   alias Passwordless.Methods
   alias Passwordless.Organizations.Org
@@ -51,10 +52,6 @@ defmodule Passwordless do
   def config(key, default \\ nil) when is_atom(key) do
     Application.get_env(:passwordless, key, default)
   end
-
-  ## Methods
-
-  def methods, do: ~w(magic_link email_otp sms_otp push security_key passkey)a
 
   ## Apps
 
@@ -406,6 +403,15 @@ defmodule Passwordless do
     actor
     |> Ecto.build_assoc(:actions)
     |> Action.changeset(attrs)
+    |> Repo.insert(prefix: Tenant.to_prefix(app))
+  end
+
+  # Event
+
+  def create_event(%App{} = app, %Action{} = action, attrs \\ %{}) do
+    action
+    |> Ecto.build_assoc(:events)
+    |> Event.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 

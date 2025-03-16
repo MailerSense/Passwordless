@@ -29,8 +29,8 @@ defmodule PasswordlessWeb.Helpers do
 
   def action_state_badge(%Action{} = action),
     do:
-      {Phoenix.Naming.humanize(action.outcome),
-       case action.outcome do
+      {Phoenix.Naming.humanize(action.state),
+       case action.state do
          :allow -> "success"
          :timeout -> "warning"
          :block -> "danger"
@@ -98,6 +98,12 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       }
     ]
+  end
+
+  def method_details(%Action{method: method}) do
+    method_menu_items()
+    |> Enum.find(&(&1[:name] == method))
+    |> Map.take([:label, :icon])
   end
 
   def actor_menu_items(%Actor{} = actor) do
@@ -269,7 +275,7 @@ defmodule PasswordlessWeb.Helpers do
 
   def admin?(%User{}), do: false
 
-  def format_date_time(date, format \\ "%d %B %Y, %H:%M")
+  def format_date_time(date, format \\ "%d %b %Y, %H:%M")
   def format_date_time(nil, _format), do: ""
   def format_date_time(date, format), do: Timex.format!(date, format, :strftime)
 

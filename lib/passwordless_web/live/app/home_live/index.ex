@@ -57,10 +57,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     if socket.assigns[:finished] do
       {:noreply, socket}
     else
-      query =
-        socket.assigns.current_app
-        |> Action.get_by_app()
-        |> Action.preload_actor()
+      query = actor_query(socket.assigns.current_app)
 
       assigns = Map.take(socket.assigns, ~w(cursor)a)
 
@@ -119,10 +116,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   end
 
   defp assign_actions(socket, params) do
-    query =
-      socket.assigns.current_app
-      |> Action.get_by_app()
-      |> Action.preload_actor()
+    query = actor_query(socket.assigns.current_app)
 
     params = Map.take(params, ~w(filters order_by order_directions))
 
@@ -161,5 +155,12 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
       filters when is_map(filters) and map_size(filters) > 0 -> true
       _ -> false
     end
+  end
+
+  defp actor_query(%App{} = app) do
+    app
+    |> Action.get_by_app()
+    |> Action.get_by_states([:allow, :timeout, :block])
+    |> Action.preload_actor()
   end
 end

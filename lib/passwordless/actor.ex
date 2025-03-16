@@ -10,7 +10,6 @@ defmodule Passwordless.Actor do
   alias Database.ChangesetExt
   alias Passwordless.Action
   alias Passwordless.App
-  alias Passwordless.Challenge
   alias Passwordless.Email
   alias Passwordless.Identity
   alias Passwordless.Locale
@@ -77,7 +76,6 @@ defmodule Passwordless.Actor do
     has_many :phones, Phone
     has_many :actions, Action
     has_many :identities, Identity
-    has_many :challenges, Challenge
 
     timestamps()
     soft_delete_timestamp()

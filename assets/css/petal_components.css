@@ -1354,10 +1354,10 @@ input[type="color" i]::-moz-color-swatch {
   @apply bg-slate-100 dark:bg-slate-700/50;
 }
 .pc-progress__inner--primary {
-  @apply bg-slate-900 dark:bg-primary-300 rounded-full;
+  @apply bg-primary-500 dark:bg-primary-400 rounded-full;
 }
 .pc-progress__inner--primary-dark {
-  @apply bg-primary-300 rounded-full;
+  @apply bg-primary-400 rounded-full;
 }
 .pc-progress__inner--info {
   @apply bg-info-500;
@@ -1607,8 +1607,8 @@ input[type="color" i]::-moz-color-swatch {
   @apply hover:bg-slate-50 dark:hover:bg-slate-800;
 }
 .pc-table__td {
-  @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-4 text-sm font-normal text-slate-600 dark:text-slate-300 whitespace-nowrap;
-  /*   @apply [&:not(:last-child)]:border-r border-slate-200 dark:border-slate-700; */
+  @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-3 text-sm font-normal text-slate-600 dark:text-slate-300 whitespace-nowrap;
+  @apply [&:not(:last-child)]:border-r border-slate-200 dark:border-slate-700;
 }
 .pc-table__td--only {
   @apply px-6 py-4 text-sm font-normal text-slate-600 dark:text-slate-300;
@@ -1627,7 +1627,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300;
 }
 .pc-table__thead-striped {
-  @apply text-slate-600 dark:text-slate-300;
+  @apply text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/30;
 }
 .pc-table__pagination {
   @apply px-6 py-4 border-t border-slate-200 dark:border-slate-700;

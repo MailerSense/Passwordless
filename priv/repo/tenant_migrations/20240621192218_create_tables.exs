@@ -156,8 +156,12 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create table(:actions, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
-      add :method, :string, null: false
-      add :outcome, :string, null: false
+      add :state, :string, null: false
+      add :token, :binary
+      add :method, :string
+      add :attempts, :integer, null: false, default: 0
+      add :expires_at, :utc_datetime_usec
+      add :completed_at, :utc_datetime_usec
 
       add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
 
@@ -165,50 +169,22 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create index(:actions, [:actor_id])
-    create index(:actions, [:outcome])
-
-    ## Challenge
-
-    create table(:challenges, primary_key: false) do
-      add :id, :uuid, primary_key: true
-      add :state, :string, null: false
-      add :method, :string, null: false
-      add :context, :string, null: false
-      add :expires_at, :utc_datetime_usec, null: false
-      add :attempts, :integer, null: false, default: 0
-      add :token, :binary, null: false
-
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
-      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
-
-      timestamps()
-      soft_delete_column()
-    end
-
-    create index(:challenges, [:actor_id], where: "deleted_at is null")
-    create unique_index(:challenges, [:token], where: "deleted_at is null")
-    create unique_index(:challenges, [:actor_id, :token], where: "deleted_at is null")
-    create unique_index(:challenges, [:actor_id, :action_id], where: "deleted_at is null")
+    create index(:actions, [:state])
 
     ## Events
 
     create table(:events, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :name, :string, null: false
-      add :state, :string, null: false
+      add :kind, :string, null: false
       add :ip_address, :string
       add :country, :string
       add :city, :string
 
-      add :actor_id, references(:actors, type: :uuid, on_delete: :nilify_all)
-      add :action_id, references(:actions, type: :uuid, on_delete: :nilify_all)
-      add :challenge_id, references(:challenges, type: :uuid, on_delete: :nilify_all)
+      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps(updated_at: false)
     end
 
-    create index(:events, [:actor_id])
     create index(:events, [:action_id])
-    create index(:events, [:challenge_id])
   end
 end

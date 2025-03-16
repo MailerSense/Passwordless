@@ -33,7 +33,7 @@
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
       <:col field={:search} searchable filterable={[:==]} />
-      <:col :let={actor} field={:name}>
+      <:col :let={actor} field={:name} sortable>
         <.a
           to={~p"/app/users/#{actor}/edit"}
           class="flex items-center gap-2 text-info-600 dark:text-info-300 hover:underline"
@@ -56,8 +56,8 @@
         <% {badge_label, badge_color} = actor_state_badge(actor) %>
         <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
-      <:col :let={actor} label={gettext("Joined")} field={:inserted_at} sortable>
-        {format_date_time(actor.inserted_at)}
+      <:col :let={actor} label={gettext("Added")} field={:inserted_at} sortable>
+        {format_date(actor.inserted_at)}
       </:col>
       <:col actions></:col>
       <:actions :let={actor}>
