@@ -97,12 +97,12 @@ defmodule Passwordless.DomainRecord do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
     |> ChangesetExt.ensure_lowercase(:name)
-    |> validate_length(:name, min: 1, max: 160)
+    |> validate_length(:name, min: 1, max: 255)
   end
 
   defp validate_value(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:value)
-    |> validate_length(:value, min: 1, max: 160)
+    |> validate_length(:value, min: 1, max: 255)
   end
 end

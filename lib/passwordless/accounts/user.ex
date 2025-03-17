@@ -278,7 +278,7 @@ defmodule Passwordless.Accounts.User do
   defp validate_name(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 128)
+    |> validate_length(:name, min: 1, max: 255)
   end
 
   defp validate_state(changeset) do

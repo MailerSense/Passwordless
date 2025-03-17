@@ -6,6 +6,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   alias Passwordless.Actor
   alias Passwordless.Locale
   alias Passwordless.Phone
+  alias Passwordless.Repo
   alias PasswordlessWeb.Components.DataTable
 
   @data_table_opts [
@@ -24,7 +25,12 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   @impl true
   def handle_params(%{"id" => id} = params, url, socket) do
     app = socket.assigns.current_app
-    actor = Passwordless.get_actor!(socket.assigns.current_app, id)
+
+    actor =
+      app
+      |> Passwordless.get_actor!(id)
+      |> Repo.preload([:totps, :email, :emails, :phone, :phones, :recovery_codes])
+
     changeset = Passwordless.change_actor(app, actor)
     languages = Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
 
@@ -41,7 +47,6 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
       |> assign_form(changeset)
       |> assign_emails(actor)
       |> assign_phones(actor)
-      |> assign_identities(actor)
       |> assign_totps(actor)
       |> assign_filters(params)
       |> assign_actions(params)
@@ -69,16 +74,6 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
     params
     |> Map.drop(["phone_id"])
-    |> handle_params(url, socket)
-  end
-
-  @impl true
-  def handle_params(%{"identity_id" => identity_id} = params, url, socket) do
-    identity = Passwordless.get_identity!(socket.assigns.current_app, socket.assigns.actor, identity_id)
-    socket = assign(socket, identity: identity)
-
-    params
-    |> Map.drop(["identity_id"])
     |> handle_params(url, socket)
   end
 
@@ -205,33 +200,6 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     )
   end
 
-  defp apply_action(socket, :new_identity, _actor) do
-    assign(socket,
-      page_title: gettext("Add identity"),
-      page_subtitle:
-        gettext(
-          "Users can have multiple identities, like your own application, social providers or similar. They can be useful to link users."
-        )
-    )
-  end
-
-  defp apply_action(socket, :edit_identity, _actor) do
-    assign(socket,
-      page_title: gettext("Edit identity"),
-      page_subtitle:
-        gettext(
-          "Users can have multiple identities, like your own application, social providers or similar. They can be useful to link users."
-        )
-    )
-  end
-
-  defp apply_action(socket, :delete_identity, _actor) do
-    assign(socket,
-      page_title: gettext("Are you sure?"),
-      page_subtitle: gettext("Are you sure you want to delete this identity? This action cannot be undone.")
-    )
-  end
-
   defp apply_action(socket, :edit_properties, _actor) do
     assign(socket,
       page_title: gettext("Edit properties"),
@@ -248,10 +216,6 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   defp assign_phones(socket, %Actor{} = actor) do
     assign(socket, phones: actor.phones)
-  end
-
-  defp assign_identities(socket, %Actor{} = actor) do
-    assign(socket, identities: actor.identities)
   end
 
   defp assign_totps(socket, %Actor{} = actor) do

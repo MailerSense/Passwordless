@@ -435,29 +435,5 @@
         />
       </div>
     </.modal>
-  <% :delete_identity -> %>
-    <.modal
-      max_width="lg"
-      title={@page_title}
-      subtitle={@page_subtitle}
-      variant="delete"
-      hide_close_button
-    >
-      <div class="flex justify-end gap-3">
-        <.button
-          size="md"
-          label="Cancel"
-          color="light-flat"
-          phx-click={JS.exec("data-cancel", to: "#modal")}
-        />
-        <.button
-          icon="remix-delete-bin-line"
-          size="md"
-          label={gettext("Yes, Delete \"%{identity}\"", identity: @identity.user_id)}
-          color="danger"
-          phx-click="delete_email"
-        />
-      </div>
-    </.modal>
   <% _ -> %>
 <% end %>

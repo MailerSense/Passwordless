@@ -80,6 +80,11 @@
       />
     </:header>
     <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+
+    <:col :let={action} label={gettext("Action")} field={:name}>
+      {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+    </:col>
+
     <:col :let={action} label={gettext("User")} field={:user}>
       <.a
         to={~p"/app/users/#{action.actor}/edit"}
@@ -91,8 +96,9 @@
       </.a>
     </:col>
 
-    <:col :let={action} label={gettext("Action")} field={:name}>
-      {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+    <:col :let={action} field={:state}>
+      <% {badge_label, badge_color} = action_state_badge(action) %>
+      <.badge with_dot size="sm" label={badge_label} color={badge_color} />
     </:col>
 
     <:col :let={action} label={gettext("Method")} field={:method}>
@@ -101,19 +107,6 @@
         <.icon name={icon} class="w-4 h-4" />
         {label}
       </div>
-    </:col>
-
-    <:col :let={action} label={gettext("Location")} field={:location}>
-      <% event = Action.first_event(action) %>
-      <div class="flex items-center gap-2">
-        <.icon name={"flag-#{String.downcase(event.country)}"} class="pc-flag-icon" />
-        {event.city}
-      </div>
-    </:col>
-
-    <:col :let={action} field={:state}>
-      <% {badge_label, badge_color} = action_state_badge(action) %>
-      <.badge with_dot size="sm" label={badge_label} color={badge_color} />
     </:col>
 
     <:col :let={action} label={gettext("Time")} field={:inserted_at}>

@@ -11,7 +11,6 @@ defmodule Passwordless.Actor do
   alias Passwordless.Action
   alias Passwordless.App
   alias Passwordless.Email
-  alias Passwordless.Identity
   alias Passwordless.Locale
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
@@ -28,8 +27,7 @@ defmodule Passwordless.Actor do
              :language,
              :totps,
              :emails,
-             :phones,
-             :identities
+             :phones
            ]}
   @derive {
     Flop.Schema,
@@ -75,7 +73,6 @@ defmodule Passwordless.Actor do
     has_many :emails, Email
     has_many :phones, Phone
     has_many :actions, Action
-    has_many :identities, Identity
 
     timestamps()
     soft_delete_timestamp()

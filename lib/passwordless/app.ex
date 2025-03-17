@@ -80,7 +80,7 @@ defmodule Passwordless.App do
   defp validate_string(changeset, field) do
     changeset
     |> ChangesetExt.ensure_trimmed(field)
-    |> validate_length(field, min: 1, max: 128)
+    |> validate_length(field, min: 1, max: 255)
   end
 
   defp validate_website(changeset) do

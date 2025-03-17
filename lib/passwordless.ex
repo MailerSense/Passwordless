@@ -21,7 +21,6 @@ defmodule Passwordless do
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateVersion
   alias Passwordless.Event
-  alias Passwordless.Identity
   alias Passwordless.Methods
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
@@ -224,7 +223,7 @@ defmodule Passwordless do
   def get_actor!(%App{} = app, id) when is_binary(id) do
     Actor
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
-    |> Repo.preload([:totps, :email, :emails, :phone, :phones, :identities, :recovery_codes])
+    |> Repo.preload([:email, :phone])
     |> Actor.put_active()
     |> Actor.put_text_properties()
   end
@@ -356,26 +355,6 @@ defmodule Passwordless do
     actor
     |> Ecto.assoc(:phones)
     |> Repo.all(prefix: Tenant.to_prefix(app))
-  end
-
-  def add_identity(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
-    opts = [prefix: Tenant.to_prefix(app)]
-
-    actor
-    |> Ecto.build_assoc(:identities)
-    |> Identity.changeset(attrs, opts)
-    |> Repo.insert(opts)
-  end
-
-  def get_identity!(%App{} = app, %Actor{} = actor, id) do
-    actor
-    |> Ecto.assoc(:identities)
-    |> Repo.get!(id, prefix: Tenant.to_prefix(app))
-  end
-
-  def change_actor_identity(%App{} = app, %Identity{} = identity, attrs \\ %{}) do
-    opts = [prefix: Tenant.to_prefix(app)]
-    Identity.changeset(identity, attrs, opts)
   end
 
   def get_actor_recovery_codes!(%App{} = app, %Actor{} = actor) do

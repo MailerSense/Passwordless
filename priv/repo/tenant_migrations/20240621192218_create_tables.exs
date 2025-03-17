@@ -11,7 +11,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create table(:actors, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :name, :string
+      add :name, :text
       add :state, :string, null: false
       add :user_id, :text
       add :language, :string, null: false
@@ -72,24 +72,6 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create unique_index(:phones, [:actor_id, :canonical], where: "deleted_at is null")
 
     execute "create index phones_canonical_gin_trgm_idx on #{prefix()}.phones using gin (canonical gin_trgm_ops);"
-
-    ## Identities
-
-    create table(:identities, primary_key: false) do
-      add :id, :uuid, primary_key: true
-      add :system, :string, null: false
-      add :user_id, :string, null: false
-
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
-
-      timestamps()
-      soft_delete_column()
-    end
-
-    create index(:identities, [:actor_id], where: "deleted_at is null")
-    create unique_index(:identities, [:actor_id, :system, :user_id], where: "deleted_at is null")
-
-    execute "create index identities_user_id_gin_trgm_idx on #{prefix()}.identities using gin (user_id gin_trgm_ops);"
 
     ## TOTPS
 
@@ -176,6 +158,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create table(:events, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :kind, :string, null: false
+      add :user_agent, :string
       add :ip_address, :string
       add :country, :string
       add :city, :string

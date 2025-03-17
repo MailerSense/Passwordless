@@ -5,9 +5,10 @@ defmodule PasswordlessWeb.RecoveryCodeController do
   alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.RecoveryCodes
+  alias Passwordless.Repo
 
   def download(conn, %{"actor_id" => actor_id}, %User{current_app: %App{} = app}) do
-    actor = Passwordless.get_actor!(app, actor_id)
+    actor = app |> Passwordless.get_actor!(actor_id) |> Repo.preload(:recovery_codes)
 
     case actor do
       %Actor{recovery_codes: %RecoveryCodes{codes: [_ | _] = codes}} ->

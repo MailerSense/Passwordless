@@ -110,12 +110,6 @@ defmodule Passwordless.Organizations.OrgSeeder do
           verified: true
         })
 
-      {:ok, _identity} =
-        Passwordless.add_identity(app, actor, %{
-          system: "internal",
-          user_id: UUIDv7.autogenerate()
-        })
-
       {:ok, _recovery_codes} = Passwordless.create_actor_recovery_codes(app, actor)
 
       for _ <- 1..1 do
@@ -128,6 +122,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
         {:ok, _event} =
           Passwordless.create_event(app, action, %{
+            user_agent: Faker.Internet.UserAgent.desktop_user_agent(),
             ip_address: Faker.Internet.ip_v4_address(),
             country: Faker.Address.country_code(),
             city: Faker.Address.city()
