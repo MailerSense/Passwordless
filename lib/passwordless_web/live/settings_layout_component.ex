@@ -22,25 +22,6 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
 
     ~H"""
     <.layout current_user={@current_user} current_page={:settings} current_section={:app}>
-      <.page_header title={gettext("Settings")}>
-        <.dropdown
-          size="lg"
-          label={PasswordlessWeb.Helpers.user_org_name(@current_user)}
-          label_icon="remix-building-line"
-        >
-          <.dropdown_menu_item link_type="live_redirect" to={~p"/app/organization/new"}>
-            <.icon name="remix-add-line" class="w-5 h-5" />
-            {gettext("New organization")}
-          </.dropdown_menu_item>
-          <.form :for={org <- @org_menu_items} for={nil} action={~p"/app/org/switch"} method="post">
-            <.input type="hidden" name="org_id" value={org.id} />
-            <button class="pc-dropdown__menu-item">
-              <.icon name="remix-building-line" class="w-5 h-5" />
-              <span class="line-clamp-1">{org.name}</span>
-            </button>
-          </.form>
-        </.dropdown>
-      </.page_header>
       <.tabbed_layout current_page={@current_page} menu_items={@menu_items} inner_class={@inner_class}>
         {render_slot(@inner_block)}
       </.tabbed_layout>

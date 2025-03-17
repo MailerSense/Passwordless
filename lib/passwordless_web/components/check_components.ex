@@ -144,10 +144,9 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   def action_stat(assigns) do
     ~H"""
-    <div
+    <.box
       class={[
         "flex flex-col divide-y divide-slate-200 dark:divide-slate-700",
-        "border-b border-slate-200 dark:border-slate-700",
         @class
       ]}
       {@rest}
@@ -167,7 +166,7 @@ defmodule PasswordlessWeb.DashboardComponents do
             {item.name}
           </badge>
           <h2 class="text-slate-900 dark:text-white text-2xl font-bold">
-            {Passwordless.Locale.Number.to_string!(item.value)}
+            {Passwordless.Locale.Number.to_string!(item.value)} {ngettext("time", "times", item.value)}
           </h2>
           <%= case item.progress do %>
             <% %{max: max, items: items} when is_list(items) -> %>
@@ -197,7 +196,7 @@ defmodule PasswordlessWeb.DashboardComponents do
           {gettext("View statistics")}<.icon name="remix-arrow-right-line" class="w-4 h-4" />
         </.button>
       </div>
-    </div>
+    </.box>
     """
   end
 

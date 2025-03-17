@@ -9,7 +9,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   @data_table_opts [
     for: Actor,
     default_order: %{
-      order_by: [:id],
+      order_by: [:inserted_at],
       order_directions: [:desc]
     }
   ]

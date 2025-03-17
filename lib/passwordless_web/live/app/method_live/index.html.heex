@@ -1,5 +1,4 @@
 <.layout current_user={@current_user} current_page={:methods} current_section={:app}>
-  <.page_header title={@page_title} />
   <.tabbed_layout current_page={@live_action} menu_items={method_menu_items()}>
     <.live_component id={@live_action} app={@current_app} module={@module} />
   </.tabbed_layout>

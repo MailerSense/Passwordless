@@ -16,7 +16,7 @@ defmodule PasswordlessWeb.Menus do
   def public_mobile_menu_items(_), do: []
 
   def main_menu_items(:app, %User{} = current_user),
-    do: build_menu([:home, :users, :methods, :embed, :settings], current_user)
+    do: build_menu([:home, :users, :reports, :methods, :embed, :settings], current_user)
 
   def main_menu_items(:knowledge, %User{} = current_user), do: build_menu([:blog, :guides, :docs], current_user)
 
@@ -163,7 +163,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Users"),
       path: ~p"/app/users",
-      icon: "remix-robot-3-line",
+      icon: "remix-user-line",
       link_type: "live_patch"
     }
   end
@@ -173,7 +173,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Home"),
       path: ~p"/app/home",
-      icon: "remix-ruler-line",
+      icon: "remix-home-line",
       link_type: "live_patch"
     }
   end
@@ -183,7 +183,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Methods"),
       path: ~p"/app/methods/email",
-      icon: "remix-database-2-line",
+      icon: "remix-shield-user-line",
       link_type: "live_patch"
     }
   end
@@ -193,7 +193,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Reports"),
       path: ~p"/app/reports",
-      icon: "remix-database-2-line",
+      icon: "remix-pie-chart-line",
       link_type: "live_patch"
     }
   end
@@ -417,7 +417,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Embed & API"),
       path: ~p"/app/embed/secrets",
-      icon: "remix-plug-line",
+      icon: "remix-terminal-line",
       link_type: "live_patch"
     }
   end

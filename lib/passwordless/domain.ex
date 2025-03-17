@@ -107,9 +107,9 @@ defmodule Passwordless.Domain do
     |> validate_name()
     |> validate_state()
     |> unique_constraint(:name)
-    |> unsafe_validate_unique(:name, Passwordless.Repo)
-    |> unique_constraint(:app_id)
-    |> unsafe_validate_unique(:app_id, Passwordless.Repo)
+    |> unsafe_validate_unique(:name, Passwordless.Repo,
+      query: from(d in __MODULE__, where: d.verified and is_nil(d.deleted_at))
+    )
     |> assoc_constraint(:app)
   end
 

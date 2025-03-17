@@ -8,13 +8,13 @@ defmodule Passwordless.Event do
   alias Database.ChangesetExt
   alias Passwordless.Action
 
-  @kinds ~w(initiated)a
+  @kinds ~w(created verified failed exhausted timed_out)a
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
   schema "events" do
-    field :kind, Ecto.Enum, values: @kinds, default: :initiated
+    field :kind, Ecto.Enum, values: @kinds, default: :created
     field :user_agent, :string
     field :ip_address, :string
     field :country, :string
@@ -46,7 +46,7 @@ defmodule Passwordless.Event do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_ip_address()
-    |> validate_string(:user_agent)
+    |> validate_user_agent()
     |> validate_string(:country)
     |> validate_string(:city)
     |> assoc_constraint(:action)
@@ -71,6 +71,12 @@ defmodule Passwordless.Event do
   end
 
   defp validate_ip_address(changeset), do: changeset
+
+  defp validate_user_agent(changeset) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(:user_agent)
+    |> validate_length(:user_agent, min: 1, max: 1024)
+  end
 
   defp is_public_ip({_, _, _, _} = ip_address) do
     case ip_address do

@@ -486,4 +486,34 @@ defmodule Passwordless do
       |> where(kind: ^kind)
     )
   end
+
+  def get_top_actions(%App{} = app) do
+    Repo.all(
+      from(a in Action,
+        prefix: ^Tenant.to_prefix(app),
+        where: a.state in [:allow, :timeout, :block],
+        group_by: a.name,
+        select: %{
+          action: a.name,
+          total: count(a.id),
+          states: %{
+            allow: a.id |> count() |> filter(a.state == :allow),
+            timeout: a.id |> count() |> filter(a.state == :timeout),
+            block: a.id |> count() |> filter(a.state == :block)
+          }
+        },
+        having: count(a.id) > 0,
+        order_by: [desc: count(a.id)],
+        limit: 3
+      )
+    )
+  end
+
+  def get_top_actions_cached(%App{} = app) do
+    Cache.with(
+      "top_actions_#{app.id}",
+      fn -> get_top_actions(app) end,
+      ttl: :timer.hours(1)
+    )
+  end
 end

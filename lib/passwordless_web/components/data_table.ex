@@ -199,6 +199,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :items, :any, required: true
   attr :title, :string, default: nil
   attr :badge, :string, default: nil
+  attr :head, :boolean, default: true
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
   attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
   attr :finished, :boolean, default: false
@@ -223,6 +224,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   slot :header
   slot :actions, required: false
+  slot :header_actions, required: false
   slot :if_empty, required: false
 
   def stream_table(assigns) do
@@ -241,9 +243,9 @@ defmodule PasswordlessWeb.Components.DataTable do
       <%= if Util.present?(@header) do %>
         {render_slot(@header)}
       <% end %>
-      <.table_header :if={@title} badge={@badge} title={@title} />
+      <.table_header :if={@title} badge={@badge} title={@title} actions={@header_actions} />
       <.table>
-        <thead class="pc-table__thead-striped">
+        <thead :if={@head} class="pc-table__thead-striped">
           <.tr>
             <%= for col <- @col do %>
               <%= if col[:actions] && @actions do %>
@@ -427,8 +429,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
     ~H"""
     <div class={[
-      "px-6 py-5 flex items-center justify-between gap-4",
-      "border-b border-slate-200 dark:border-slate-700"
+      "px-6 py-5 flex items-center justify-between gap-4"
     ]}>
       <div class="flex items-center gap-2">
         <h3 class="text-lg font-medium text-slate-900 dark:text-white">
@@ -453,6 +454,8 @@ defmodule PasswordlessWeb.Components.DataTable do
     ~H"""
     <div class={[
       "flex items-center justify-between gap-3",
+      "border-b border-slate-200 dark:border-slate-700",
+      "bg-slate-50 dark:bg-slate-700/30",
       "p-6"
     ]}>
       <.inputs_for :let={f2} field={@form[:filters]}>

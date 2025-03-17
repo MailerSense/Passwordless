@@ -271,7 +271,7 @@ defmodule Passwordless.Actor do
     end
   end
 
-  defp validate_user_id(changeset, opts \\ []) do
+  defp validate_user_id(changeset, opts) do
     changeset
     |> ChangesetExt.ensure_trimmed(:user_id)
     |> validate_length(:user_id, max: 1024)

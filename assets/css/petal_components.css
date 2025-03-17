@@ -1042,7 +1042,7 @@ input[type="color" i]::-moz-color-swatch {
 /* Page header */
 
 .pc-page-header {
-  @apply my-12 flex justify-between items-center gap-4;
+  @apply my-12 mx-6 flex justify-between items-center gap-4;
 }
 
 .pc-page-header--text {
@@ -1058,7 +1058,7 @@ input[type="color" i]::-moz-color-swatch {
 /* Box */
 
 .pc-box {
-  @apply bg-white dark:bg-slate-700/30 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden;
+  @apply bg-white dark:bg-slate-700/30 rounded-lg overflow-hidden;
 }
 
 /* Menu */
@@ -1067,7 +1067,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply py-6 w-64 lg:w-72 flex flex-col select-none shrink-0 border-r border-slate-200 dark:border-slate-700;
 }
 .pc-sidebar__menu-item {
-  @apply flex items-center px-6 py-4 text-base font-medium tracking-tight gap-3 transition duration-200;
+  @apply flex items-center px-6 py-3 text-base font-medium tracking-tight gap-3 transition duration-200;
 }
 .pc-sidebar__menu-item--active {
   @apply bg-primary-50 text-primary-800 dark:bg-slate-700 dark:text-white dark:hover:text-white relative;
@@ -1575,7 +1575,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply min-w-full table-auto;
 }
 .pc-table__wrapper {
-  @apply rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-700/30;
+  @apply rounded-lg bg-white dark:bg-slate-700/30;
 }
 .pc-data-table {
   @apply overflow-x-auto;
@@ -1627,7 +1627,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300;
 }
 .pc-table__thead-striped {
-  @apply text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/30;
+  @apply text-slate-600 dark:text-slate-300;
 }
 .pc-table__pagination {
   @apply px-6 py-4 border-t border-slate-200 dark:border-slate-700;

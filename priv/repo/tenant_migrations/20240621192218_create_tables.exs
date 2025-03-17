@@ -158,7 +158,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create table(:events, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :kind, :string, null: false
-      add :user_agent, :string
+      add :user_agent, :text
       add :ip_address, :string
       add :country, :string
       add :city, :string

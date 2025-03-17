@@ -8,8 +8,11 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
   use PasswordlessWeb, :verified_routes
   use Gettext, backend: PasswordlessWeb.Gettext
 
+  import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.SidebarMenu
+  import PasswordlessWeb.Components.SidebarSectionMenu
   import PasswordlessWeb.Components.ThemeSwitch
+  import PasswordlessWeb.Components.UsageBox
   import PasswordlessWeb.Components.UserTopbarMenu
 
   attr :collapsible, :boolean,
@@ -63,12 +66,12 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
     doc: "The path to the home page. When a user clicks the logo, they will be taken to this path."
 
   attr :sidebar_lg_width_class, :string,
-    default: "w-64",
+    default: "w-72",
     doc: "The width of the sidebar. Must have the lg: prefix."
 
-  attr :sidebar_bg_class, :string, default: "bg-slate-100 dark:bg-slate-700/30"
+  attr :sidebar_bg_class, :string, default: "bg-slate-900"
   attr :sidebar_border_class, :string, default: "border-slate-200 dark:border-slate-700"
-  attr :header_bg_class, :string, default: "bg-white dark:bg-slate-900"
+  attr :header_bg_class, :string, default: "bg-white dark:bg-slate-800"
   attr :header_border_class, :string, default: "border-slate-200 dark:border-slate-700"
 
   slot :inner_block, required: true, doc: "The main content of the page."
@@ -82,19 +85,49 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
   def sidebar_layout(assigns) do
     ~H"""
     <div
-      class="flex h-screen overflow-hidden bg-white dark:bg-slate-800"
+      class="flex h-screen overflow-hidden"
       x-data={"{sidebarOpen: $persist(true), isCollapsible: #{@collapsible}, #{x_persist_collapsed(assigns)}}"}
     >
+      <div class="relative px-3 py-[100px] bg-slate-900 border-r border-slate-700 flex flex-col justify-between">
+        <.sidebar_section_menu menu_items={@section_menu_items} current_section={@current_section} />
+
+        <div class="flex flex-col gap-2 items-center justify-center">
+          <span
+            id="collapse-icon"
+            class="group transition duration-200 cursor-pointer"
+            phx-hook="TippyHook"
+            data-tippy-content={gettext("Toggle Sidebar")}
+            data-tippy-placement="right"
+            @click.stop="sidebarOpen = !sidebarOpen"
+            aria-label={gettext("Collapse Sidebar")}
+            aria-controls="sidebar"
+            x-bind:aria-expanded="sidebarOpen"
+          >
+            <.icon
+              name="custom-board-document"
+              class="w-10 h-10 text-white/60 group-hover:bg-primary-300 transition duration-200"
+              x-bind:class="
+                {
+                  'bg-primary-300': !sidebarOpen
+                }
+              "
+            />
+          </span>
+        </div>
+      </div>
+
       <div class={["relative z-40"]} x-show="sidebarOpen">
         <aside
           id="sidebar"
           role="navigation"
           class={[
-            "z-40 flex flex-col flex-shrink-0 h-screen overflow-y-auto no-scrollbar",
+            "z-40 flex flex-col flex-shrink-0 h-screen border-r overflow-y-auto no-scrollbar",
+            @sidebar_bg_class,
+            @sidebar_border_class,
             @sidebar_lg_width_class
           ]}
         >
-          <div class="flex items-center justify-between px-8 py-6 border-b border-slate-200 dark:border-slate-700 h-[88px]">
+          <div class="flex items-center justify-between px-8 py-6 border-b border-slate-700 h-[88px]">
             <.link navigate={@home_path}>
               {render_slot(@logo)}
             </.link>
@@ -110,16 +143,13 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
           </div>
 
           <div class="flex flex-col gap-6 mt-auto p-3">
+            <.usage_box plan={gettext("Free")} />
             <.wide_theme_switch />
           </div>
         </aside>
       </div>
 
-      <div class={[
-        "bg-white dark:bg-slate-900",
-        "flex flex-col flex-1 overflow-y-auto no-scrollbar",
-        "border-l border-slate-200 dark:border-slate-700"
-      ]}>
+      <div class="flex flex-col flex-1 overflow-y-auto no-scrollbar">
         <header class={[
           "z-30 border-b border-slate-200 dark:border-slate-700",
           @header_bg_class,
@@ -135,12 +165,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
               links={[
                 %{
                   to: ~p"/",
-                  label: "Home page"
-                },
-                %{
-                  to: ~p"/app/blog",
-                  label: "Blog",
-                  link_type: "live_redirect"
+                  label: "Support"
                 },
                 %{
                   to: ~p"/app/docs",

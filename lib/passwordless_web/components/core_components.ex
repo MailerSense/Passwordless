@@ -21,14 +21,14 @@ defmodule PasswordlessWeb.CoreComponents do
 
   def tabbed_layout(assigns) do
     ~H"""
-    <.box class={["flex", @class]}>
+    <div class={["bg-white dark:bg-transparent h-full flex", @class]}>
       <nav class="pc-sidebar__nav">
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </nav>
       <div class={["flex-grow", @inner_class]}>
         {render_slot(@inner_block)}
       </div>
-    </.box>
+    </div>
     """
   end
 
@@ -133,6 +133,7 @@ defmodule PasswordlessWeb.CoreComponents do
   attr :app_menu_items, :list
   attr :user_menu_items, :list
   attr :main_menu_items, :list
+  attr :section_menu_items, :list
   attr :home_path, :string
 
   slot :inner_block
@@ -146,6 +147,7 @@ defmodule PasswordlessWeb.CoreComponents do
         main_menu_items(assigns[:current_section], assigns[:current_user])
       end)
       |> assign_new(:app_menu_items, fn -> app_menu_items(assigns[:current_user]) end)
+      |> assign_new(:section_menu_items, fn -> section_menu_items(assigns[:current_user]) end)
 
     assigns =
       update(assigns, :current_page, fn
@@ -154,20 +156,22 @@ defmodule PasswordlessWeb.CoreComponents do
       end)
 
     ~H"""
-    <.stacked_layout
+    <.sidebar_layout
       home_path={@home_path}
       current_user={@current_user}
       current_page={@current_page}
+      current_section={@current_section}
       app_menu_items={@app_menu_items}
       user_menu_items={@user_menu_items}
       main_menu_items={@main_menu_items}
+      section_menu_items={@section_menu_items}
     >
       <:logo>
-        <.logo class="h-6" />
+        <.logo variant="light" class="h-6" />
       </:logo>
 
       {render_slot(@inner_block)}
-    </.stacked_layout>
+    </.sidebar_layout>
     """
   end
 

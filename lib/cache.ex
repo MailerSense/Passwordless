@@ -39,6 +39,18 @@ defmodule Cache do
   defdelegate pop(key), to: @adapter
   defdelegate exists?(key), to: @adapter
 
+  def with(key, producer, opts) do
+    case Cache.get(key) do
+      nil ->
+        value = producer.()
+        Cache.put(key, value, opts)
+        value
+
+      value ->
+        value
+    end
+  end
+
   # Private
 
   defp redis_config(redis) do

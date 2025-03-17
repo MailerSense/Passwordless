@@ -232,13 +232,11 @@ defmodule PasswordlessWeb.Components.SidebarMenu do
       "flex items-center text-base font-medium leading-normal px-4 py-3 transition duration-150 rounded-xl group select-none"
 
   # Active state
-  defp menu_item_classes(page, page),
-    do: "#{menu_item_base()} text-slate-900 dark:text-white bg-white dark:bg-slate-700 shadow-0"
+  defp menu_item_classes(page, page), do: "#{menu_item_base()}  text-white bg-slate-800"
 
   # Inactive state
   defp menu_item_classes(_current_page, _link_page),
-    do:
-      "#{menu_item_base()} text-slate-600 dark:text-slate-400 hover:text-slate-900 hover:bg-white dark:hover:bg-slate-700 dark:hover:text-white hover:shadow-0"
+    do: "#{menu_item_base()} text-slate-400 hover:bg-slate-800 hover:text-white"
 
   defp find_item(name, menu_items) when is_list(menu_items) do
     Enum.find(menu_items, fn menu_item ->

@@ -35,9 +35,31 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
     if connected?(socket), do: Endpoint.subscribe(Action.topic_for(app))
 
+    top_actions =
+      app
+      |> Passwordless.get_top_actions_cached()
+      |> Enum.map(fn %{
+                       total: total,
+                       states: %{timeout: timeout, block: block, allow: allow},
+                       action: action
+                     } ->
+        %{
+          name: Phoenix.Naming.humanize(Macro.underscore(action)),
+          value: total,
+          progress: %{
+            max: total,
+            items: [
+              %{value: allow, color: "success"},
+              %{value: timeout, color: "warning"},
+              %{value: block, color: "danger"}
+            ]
+          }
+        }
+      end)
+
     {:noreply,
      socket
-     |> assign(action: action, count: estimate_count(app))
+     |> assign(top_actions: top_actions, action: action, count: estimate_count(app))
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}
   end

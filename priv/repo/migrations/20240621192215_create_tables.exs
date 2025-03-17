@@ -220,7 +220,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create unique_index(:domains, [:app_id], where: "deleted_at is null")
+    create index(:domains, [:app_id], where: "deleted_at is null")
     create unique_index(:domains, [:name], where: "verified AND deleted_at is null")
 
     create table(:domain_records, primary_key: false) do
