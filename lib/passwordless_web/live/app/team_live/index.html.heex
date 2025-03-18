@@ -2,12 +2,7 @@
   <:action></:action>
 
   <div class="flex flex-col gap-6">
-    <.data_table
-      meta={@meta}
-      items={@memberships}
-      title={gettext("Team")}
-      shadow_class="shadow-m2"
-    >
+    <.data_table meta={@meta} items={@memberships} title={gettext("Team")}>
       <:if_empty>{gettext("No %{models} found", models: gettext("members"))}</:if_empty>
       <:col :let={membership} field={:name}>
         {user_name(membership.user)}
@@ -62,7 +57,7 @@
       </:header_actions>
     </.data_table>
 
-    <.simple_table items={@invitations} title={gettext("Invitations")} shadow_class="shadow-m2">
+    <.simple_table items={@invitations} title={gettext("Invitations")}>
       <:if_empty>{gettext("No %{models} found", models: gettext("invitations"))}</:if_empty>
       <:col field={:email} />
       <:col :let={invitation} field={:inserted_at} label="Sent">

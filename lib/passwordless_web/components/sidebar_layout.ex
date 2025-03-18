@@ -65,15 +65,6 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
     default: "/",
     doc: "The path to the home page. When a user clicks the logo, they will be taken to this path."
 
-  attr :sidebar_lg_width_class, :string,
-    default: "w-72",
-    doc: "The width of the sidebar. Must have the lg: prefix."
-
-  attr :sidebar_bg_class, :string, default: "bg-slate-900"
-  attr :sidebar_border_class, :string, default: "border-slate-200 dark:border-slate-700"
-  attr :header_bg_class, :string, default: "bg-white dark:bg-slate-800"
-  attr :header_border_class, :string, default: "border-slate-200 dark:border-slate-700"
-
   slot :inner_block, required: true, doc: "The main content of the page."
 
   slot :logo,
@@ -85,7 +76,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
   def sidebar_layout(assigns) do
     ~H"""
     <div
-      class="flex h-screen overflow-hidden"
+      class="flex h-screen bg-white dark:bg-slate-900"
       x-data={"{sidebarOpen: $persist(true), isCollapsible: #{@collapsible}, #{x_persist_collapsed(assigns)}}"}
     >
       <div class="relative px-3 py-[100px] bg-slate-900 border-r border-slate-700 flex flex-col justify-between">
@@ -116,17 +107,8 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
         </div>
       </div>
 
-      <div class={["relative z-40"]} x-show="sidebarOpen">
-        <aside
-          id="sidebar"
-          role="navigation"
-          class={[
-            "z-40 flex flex-col flex-shrink-0 h-screen border-r overflow-y-auto no-scrollbar",
-            @sidebar_bg_class,
-            @sidebar_border_class,
-            @sidebar_lg_width_class
-          ]}
-        >
+      <div class="relative z-40" x-show="sidebarOpen">
+        <aside id="sidebar" role="navigation" class="pc-sidebar__aside">
           <div class="flex items-center justify-between px-8 py-6 border-b border-slate-700 h-[88px]">
             <.link navigate={@home_path}>
               {render_slot(@logo)}
@@ -149,38 +131,32 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
         </aside>
       </div>
 
-      <div class="flex flex-col flex-1 overflow-y-auto no-scrollbar">
-        <header class={[
-          "z-30 border-b border-slate-200 dark:border-slate-700",
-          @header_bg_class,
-          @header_border_class
-        ]}>
-          <div class="flex items-center justify-between h-[88px] -mb-px">
-            <div :if={Util.present?(@dropdown)} class="px-6 xl:px-8 hidden md:flex">
-              {render_slot(@dropdown)}
-            </div>
-
-            <.topbar_links
-              class="items-center justify-end flex-1 gap-4 px-8 hidden xl:flex"
-              links={[
-                %{
-                  to: ~p"/",
-                  label: "Support"
-                },
-                %{
-                  to: ~p"/app/docs",
-                  label: "Docs",
-                  link_type: "live_redirect"
-                }
-              ]}
-            />
-
-            <.user_topbar_menu
-              class="flex items-center gap-3 h-full ml-auto border-l border-slate-200 dark:border-slate-700"
-              current_user={@current_user}
-              user_menu_items={@user_menu_items}
-            />
+      <div class="flex flex-col grow overflow-y-auto no-scrollbar">
+        <header class="pc-sidebar__header">
+          <div :if={Util.present?(@dropdown)} class="px-6 xl:px-8 hidden md:flex">
+            {render_slot(@dropdown)}
           </div>
+
+          <.topbar_links
+            class="items-center justify-end flex-1 gap-4 px-8 hidden xl:flex"
+            links={[
+              %{
+                to: ~p"/",
+                label: "Support"
+              },
+              %{
+                to: ~p"/app/docs",
+                label: "Docs",
+                link_type: "live_redirect"
+              }
+            ]}
+          />
+
+          <.user_topbar_menu
+            class="flex items-center gap-3 h-full ml-auto border-l border-slate-200 dark:border-slate-700"
+            current_user={@current_user}
+            user_menu_items={@user_menu_items}
+          />
         </header>
 
         {render_slot(@inner_block)}

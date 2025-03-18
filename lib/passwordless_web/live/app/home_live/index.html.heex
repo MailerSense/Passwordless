@@ -1,27 +1,26 @@
 <.layout current_user={@current_user} current_page={:home} current_section={:app}>
-  <.page_header title={gettext("Home")}>
-    <div class="flex flex-wrap gap-3">
-      <.button
-        to={~p"/app/embed/api-usage"}
-        size="md"
-        color="light"
-        label={gettext("Build and Embed")}
-        icon="remix-hammer-line"
-        link_type="live_patch"
-      />
-
-      <.button
-        to={~p"/app/methods/email"}
-        size="md"
-        color="primary"
-        label={gettext("Authenticate")}
-        icon="remix-shield-user-line"
-        link_type="live_patch"
-      />
-    </div>
-  </.page_header>
-
   <div class="flex flex-col gap-6">
+    <div>
+      <.form_header title="Status" />
+      <.alert with_icon color="success" class="mb-6">
+        {gettext("%{app} is active and healthy", app: @current_app.name)}
+      </.alert>
+      <p class="text-slate-500 dark:text-slate-400 mb-6">
+        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal.
+      </p>
+      <.a
+        to={~p"/app/embed/api-usage"}
+        label={gettext("Integrate your app")}
+        styled
+        link_type="live_redirect"
+      />
+      <.form_separator />
+      <.form_header title="Top actions" />
+      <p class="text-slate-500 dark:text-slate-400">
+        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
+      </p>
+    </div>
+
     <.action_stat
       legend={[
         %{color: "bg-success-500", label: gettext("Allow")},
@@ -31,14 +30,18 @@
       items={@top_actions}
     />
 
-    <.stream_table
-      id="actions"
-      meta={@meta}
-      title={gettext("User actions")}
-      items={@streams.actions}
-      finished={@finished}
-    >
+    <div>
+      <.form_separator />
+      <.form_header title="User actions" />
+      <p class="text-slate-500 dark:text-slate-400">
+        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
+      </p>
+    </div>
+
+    <.stream_table id="actions" meta={@meta} items={@streams.actions} finished={@finished}>
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+
+      <:header></:header>
 
       <:col :let={action} label={gettext("Action")} field={:name}>
         {Phoenix.Naming.humanize(Macro.underscore(action.name))}
@@ -47,12 +50,10 @@
       <:col :let={action} label={gettext("User")} field={:user}>
         <.a
           to={~p"/app/users/#{action.actor}/edit"}
-          class="flex items-center gap-2 text-info-600 dark:text-info-300 hover:underline"
+          label={Actor.handle(action.actor)}
+          styled
           link_type="live_redirect"
-        >
-          {Actor.handle(action.actor)}
-          <.icon name="remix-external-link-line" class="w-4 h-4" />
-        </.a>
+        />
       </:col>
 
       <:col :let={action} field={:state}>
@@ -83,6 +84,17 @@
           link_type="live_patch"
         />
       </:actions>
+
+      <:header_actions>
+        <.button
+          to={~p"/app/users"}
+          size="xs"
+          color="primary"
+          label={gettext("Manage users")}
+          icon="remix-add-circle-line"
+          link_type="live_patch"
+        />
+      </:header_actions>
     </.stream_table>
   </div>
 </.layout>

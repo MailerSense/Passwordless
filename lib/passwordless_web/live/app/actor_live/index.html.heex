@@ -1,30 +1,16 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
-  <.page_header title={gettext("Users")}>
-    <div class="flex gap-3">
-      <.button
-        to={apply_filters(@filters, @meta, ~p"/app/users/import")}
-        size="md"
-        color="light"
-        label={gettext("Import")}
-        icon="remix-download-line"
-        link_type="live_patch"
-      />
-      <.button
-        to={apply_filters(@filters, @meta, ~p"/app/users/new")}
-        size="md"
-        color="primary"
-        label={gettext("Create")}
-        icon="remix-add-circle-line"
-        link_type="live_patch"
-      />
-    </div>
-  </.page_header>
-
   <div class="flex flex-col gap-6">
+    <div>
+      <.form_header title="Users" />
+      <p class="text-slate-500 dark:text-slate-400">
+        Every time your users use Passwordless authentication to perform an action, their details are stored here. You can view, edit, and delete users as needed.
+      </p>
+    </div>
+
     <.data_table
       meta={@meta}
       items={@actors}
-      title={gettext("All users")}
+      title={gettext("All users", app: @current_app.name)}
       switch_items={
         [
           %{name: :all, label: gettext("All"), clear: true}
@@ -36,12 +22,10 @@
       <:col :let={actor} field={:name} sortable>
         <.a
           to={~p"/app/users/#{actor}/edit"}
-          class="flex items-center gap-2 text-info-600 dark:text-info-300 hover:underline"
+          label={Actor.handle(actor)}
+          styled
           link_type="live_redirect"
-        >
-          {Actor.handle(actor)}
-          <.icon name="remix-external-link-line" class="w-4 h-4" />
-        </.a>
+        />
       </:col>
       <:col :let={actor} field={:email} sortable>
         {Actor.email(actor)}
@@ -78,6 +62,26 @@
           link_type="live_patch"
         />
       </:actions>
+      <:header_actions>
+        <div class="flex gap-3">
+          <.button
+            to={apply_filters(@filters, @meta, ~p"/app/users/import")}
+            size="xs"
+            color="light"
+            label={gettext("Import")}
+            icon="remix-download-line"
+            link_type="live_patch"
+          />
+          <.button
+            to={apply_filters(@filters, @meta, ~p"/app/users/new")}
+            size="xs"
+            color="primary"
+            label={gettext("Create")}
+            icon="remix-add-circle-line"
+            link_type="live_patch"
+          />
+        </div>
+      </:header_actions>
     </.data_table>
   </div>
 </.layout>

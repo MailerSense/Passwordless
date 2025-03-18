@@ -21,11 +21,11 @@ defmodule PasswordlessWeb.CoreComponents do
 
   def tabbed_layout(assigns) do
     ~H"""
-    <div class={["bg-white dark:bg-transparent h-full flex", @class]}>
+    <div class={["flex h-screen overflow-y-hidden bg-white dark:bg-transparent", @class]}>
       <nav class="pc-sidebar__nav">
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </nav>
-      <div class={["flex-grow", @inner_class]}>
+      <div class={["flex-grow overflow-y-auto", @inner_class]}>
         {render_slot(@inner_block)}
       </div>
     </div>
@@ -135,6 +135,7 @@ defmodule PasswordlessWeb.CoreComponents do
   attr :main_menu_items, :list
   attr :section_menu_items, :list
   attr :home_path, :string
+  attr :padded, :boolean, default: true
 
   slot :inner_block
 
@@ -170,7 +171,9 @@ defmodule PasswordlessWeb.CoreComponents do
         <.logo variant="light" class="h-6" />
       </:logo>
 
-      {render_slot(@inner_block)}
+      <.div_wrapper class="p-6" wrap={@padded}>
+        {render_slot(@inner_block)}
+      </.div_wrapper>
     </.sidebar_layout>
     """
   end
@@ -441,6 +444,22 @@ defmodule PasswordlessWeb.CoreComponents do
   end
 
   # Private
+
+  attr :wrap, :boolean, default: false
+  attr :class, :any, default: nil
+  slot :inner_block, required: true
+
+  defp div_wrapper(assigns) do
+    ~H"""
+    <%= if @wrap do %>
+      <div class={@class}>
+        {render_slot(@inner_block)}
+      </div>
+    <% else %>
+      {render_slot(@inner_block)}
+    <% end %>
+    """
+  end
 
   defp map_active_path_to_menu_item(menu_items, current_path) do
     menu_items

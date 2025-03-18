@@ -16,7 +16,7 @@ defmodule PasswordlessWeb.Menus do
   def public_mobile_menu_items(_), do: []
 
   def main_menu_items(:app, %User{} = current_user),
-    do: build_menu([:home, :users, :reports, :methods, :embed, :settings], current_user)
+    do: build_menu([:home, :users, :methods, :embed, :settings], current_user)
 
   def main_menu_items(:knowledge, %User{} = current_user), do: build_menu([:blog, :guides, :docs], current_user)
 
@@ -417,7 +417,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Embed & API"),
       path: ~p"/app/embed/secrets",
-      icon: "remix-terminal-line",
+      icon: "remix-terminal-box-line",
       link_type: "live_patch"
     }
   end

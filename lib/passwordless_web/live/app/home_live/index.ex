@@ -27,6 +27,8 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   def handle_params(params, _url, socket) do
     app = socket.assigns.current_app
 
+    changeset = Passwordless.change_app(app)
+
     action =
       case Map.get(params, "id") do
         id when is_binary(id) -> Passwordless.get_action!(app, id)
@@ -61,6 +63,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
      socket
      |> assign(top_actions: top_actions, action: action, count: estimate_count(app))
      |> assign_actions(params)
+     |> assign_form(changeset)
      |> apply_action(socket.assigns.live_action)}
   end
 
@@ -184,5 +187,9 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     |> Action.get_by_app()
     |> Action.get_by_states([:allow, :timeout, :block])
     |> Action.preload_actor()
+  end
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    assign(socket, form: to_form(changeset))
   end
 end

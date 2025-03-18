@@ -18,9 +18,6 @@ defmodule PasswordlessWeb.Components.PageComponents do
   def page_header(assigns) do
     ~H"""
     <div class={["pc-page-header", @class]}>
-      <h1 class="pc-page-header--text">
-        {@title}
-      </h1>
       <%= if @inner_block do %>
         {render_slot(@inner_block)}
       <% end %>
@@ -56,7 +53,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
   @doc "Gives you a white background with shadow."
   attr :class, :any, default: nil
   attr :padded, :boolean, default: false
-  attr :shadow_class, :string, default: "shadow-1"
+  attr :shadow_class, :string, default: "shadow-m2"
   attr :rest, :global
   slot :inner_block
 
@@ -132,7 +129,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
       link_type="live_redirect"
       class={[
         "group",
-        "pc-sidebar__menu-item",
+        "pc-sidebar__menu-item group",
         menu_item_classes(@is_active?)
       ]}
     >

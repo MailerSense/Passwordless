@@ -1,35 +1,42 @@
 <.layout current_user={@current_user} current_page={:methods} current_section={:app}>
-  <.page_header title={@template.name}>
-    <div class="flex gap-3">
-      <.button
-        size="md"
-        type="button"
-        color="light"
-        label={gettext("Cancel")}
-        to={@return_to || ~p"/app/methods/email"}
-        link_type="live_patch"
-      />
-      <.button
-        to={~p"/app/emails/#{@template}/#{@language}/#{@live_action}?delete=true"}
-        type="button"
-        label={gettext("Reset")}
-        icon="remix-delete-bin-line"
-        color="danger"
-        variant="outline"
-        link_type="live_patch"
-      />
-      <.button
-        size="md"
-        type="submit"
-        form="edit-template-version"
-        icon="remix-save-line"
-        label={gettext("Save")}
-        disabled={not @version_form.source.valid? or Enum.empty?(@version_form.source.changes)}
-      />
-    </div>
-  </.page_header>
+  <.form
+    id="edit-email-template-form"
+    for={@template_form}
+    phx-change="validate"
+    phx-submit="save"
+  >
+    <.subpage_header field={@template_form[:name]}>
+      <div class="flex gap-3">
+        <.button
+          size="md"
+          type="button"
+          color="light"
+          label={gettext("Cancel")}
+          to={@return_to || ~p"/app/methods/email"}
+          link_type="live_patch"
+        />
+        <.button
+          to={~p"/app/emails/#{@template}/#{@language}/#{@live_action}?delete=true"}
+          type="button"
+          label={gettext("Reset")}
+          icon="remix-delete-bin-line"
+          color="danger"
+          variant="outline"
+          link_type="live_patch"
+        />
+        <.button
+          size="md"
+          type="submit"
+          form="edit-template-version"
+          icon="remix-save-line"
+          label={gettext("Save")}
+          disabled={not @version_form.source.valid? or Enum.empty?(@version_form.source.changes)}
+        />
+      </div>
+    </.subpage_header>
+  </.form>
 
-  <.box class="flex flex-col lg:flex-row divide-x divide-slate-200 dark:divide-slate-700">
+  <.box class="flex flex-col lg:flex-row divide-x divide-slate-200 dark:divide-slate-700 bg-white">
     <div class={[
       "grow lg:flex-none",
       "transition-all duration-150 ease-linear",

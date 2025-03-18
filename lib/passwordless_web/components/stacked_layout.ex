@@ -68,7 +68,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
           <div
             class={[
               "lg:hidden absolute w-screen top-[65px] left-0",
-              "bg-white dark:bg-slate-800 shadow-lg z-10"
+              "bg-slate-100 dark:bg-slate-800 shadow-lg z-10"
             ]}
             @click.away="mobileMenuOpen = false"
             x-cloak

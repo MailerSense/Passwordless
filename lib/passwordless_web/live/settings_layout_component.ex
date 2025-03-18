@@ -21,7 +21,12 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
       |> assign_new(:org_menu_items, fn -> PasswordlessWeb.Helpers.org_menu_items(assigns[:current_user]) end)
 
     ~H"""
-    <.layout current_user={@current_user} current_page={:settings} current_section={:app}>
+    <.layout
+      current_user={@current_user}
+      current_page={:settings}
+      current_section={:app}
+      padded={false}
+    >
       <.tabbed_layout current_page={@current_page} menu_items={@menu_items} inner_class={@inner_class}>
         {render_slot(@inner_block)}
       </.tabbed_layout>

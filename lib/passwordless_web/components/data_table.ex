@@ -24,7 +24,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :any, default: "shadow-1", doc: "CSS class to add to the table"
+  attr :shadow_class, :any, default: "shadow-m2", doc: "CSS class to add to the table"
   attr :wrapper_class, :any, default: "pc-table__wrapper pc-data-table__wrapper", doc: "CSS class to add to the table"
   attr :base_url_params, :map, required: false
 
@@ -100,20 +100,24 @@ defmodule PasswordlessWeb.Components.DataTable do
       phx-submit="update_filters"
       {form_assigns(@form_target)}
     >
+      <.table_search_bar
+        :if={@search_field || @switch_field}
+        meta={@meta}
+        form={filter_form}
+        switch_field={@switch_field}
+        search_field={@search_field}
+        switch_items={@switch_items}
+      />
+
       <div class={[@wrapper_class, @shadow_class, @class]}>
-        <.table_search_bar
-          :if={@search_field || @switch_field}
-          meta={@meta}
-          form={filter_form}
-          switch_field={@switch_field}
-          search_field={@search_field}
-          switch_items={@switch_items}
-        />
         <.table_header
           :if={Util.present?(@title) or Util.present?(@title_func)}
           meta={@meta}
           title={@title}
           title_func={@title_func}
+          meta={@meta}
+          form={filter_form}
+          search_field={@search_field}
           actions={@header_actions}
         />
         <div class="pc-data-table">
@@ -201,7 +205,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :badge, :string, default: nil
   attr :head, :boolean, default: true
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-m2", doc: "CSS class to add to the table"
   attr :finished, :boolean, default: false
   attr :base_url_params, :map, required: false
 
@@ -312,7 +316,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :items, :any, required: true
   attr :title, :string, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-m2", doc: "CSS class to add to the table"
 
   slot :col, required: true do
     attr :label, :string
@@ -403,6 +407,9 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
 
+  attr :form, :map, default: nil
+  attr :search_field, :atom, default: nil
+
   slot :actions, required: false
 
   defp table_header(assigns) do
@@ -454,9 +461,7 @@ defmodule PasswordlessWeb.Components.DataTable do
     ~H"""
     <div class={[
       "flex items-center justify-between gap-3",
-      "border-b border-slate-200 dark:border-slate-700",
-      "bg-slate-50 dark:bg-slate-700/30",
-      "p-6"
+      "pb-6"
     ]}>
       <.inputs_for :let={f2} field={@form[:filters]}>
         <%= if Phoenix.HTML.Form.input_value(f2, :field) == @switch_field do %>

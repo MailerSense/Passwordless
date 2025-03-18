@@ -32,7 +32,7 @@ defmodule PasswordlessWeb.DashboardComponents do
         title={"#{@badge}: #{@content}"}
         {@rest}
         class={[
-          "hover:shadow-2 active:shadow-3 transition-all duration-150 ease-in-out",
+          "shadow-1 hover:shadow-2 active:shadow-3 transition-all duration-150 ease-in-out",
           "border border-slate-200 dark:border-slate-700"
         ]}
       >
@@ -52,7 +52,7 @@ defmodule PasswordlessWeb.DashboardComponents do
     <% else %>
       <section
         class={[
-          "p-6 rounded-lg flex flex-col gap-4",
+          "shadow-1 p-6 rounded-lg flex flex-col gap-4",
           "border border-slate-200 dark:border-slate-700",
           "bg-white dark:bg-slate-700/30",
           @class
@@ -146,15 +146,16 @@ defmodule PasswordlessWeb.DashboardComponents do
     ~H"""
     <.box
       class={[
-        "flex flex-col divide-y divide-slate-200 dark:divide-slate-700",
+        "flex flex-col",
+        "divide-y",
         @class
       ]}
       {@rest}
     >
       <div class={[
         "grid grid-cols-1",
-        "sm:grid-cols-3",
-        "divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-slate-700"
+        "lg:grid-cols-3",
+        "divide-x"
       ]}>
         <div
           :for={item <- @items}
@@ -176,25 +177,12 @@ defmodule PasswordlessWeb.DashboardComponents do
           <% end %>
         </div>
       </div>
-      <div class="flex justify-between items-center">
-        <div class="flex p-6 gap-6 items-center flex-wrap">
-          <div :for={item <- @legend} class="flex gap-2 items-center">
-            <span class={["w-4 h-2 rounded-full", item.color]}></span>
-            <p class="text-slate-600 dark:text-slate-300 text-xs font-semibold">{item.label}</p>
-          </div>
-        </div>
 
-        <.button
-          size="xs"
-          title={gettext("View statistics")}
-          color="light"
-          class="mr-6"
-          with_icon
-          to={~p"/app/reports"}
-          link_type="live_redirect"
-        >
-          {gettext("View statistics")}<.icon name="remix-arrow-right-line" class="w-4 h-4" />
-        </.button>
+      <div class="flex p-6 gap-6 items-center flex-wrap">
+        <div :for={item <- @legend} class="flex gap-2 items-center">
+          <span class={["w-4 h-2 rounded-full", item.color]}></span>
+          <p class="text-slate-600 dark:text-slate-300 text-xs font-semibold">{item.label}</p>
+        </div>
       </div>
     </.box>
     """
@@ -409,8 +397,7 @@ defmodule PasswordlessWeb.DashboardComponents do
     ~H"""
     <div
       class={[
-        "px-6 py-5 flex items-center justify-between gap-4",
-        "border-b border-slate-200 dark:border-slate-700"
+        "px-6 py-5 flex items-center justify-between gap-4"
       ]}
       {@rest}
     >

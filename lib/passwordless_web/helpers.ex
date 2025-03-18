@@ -128,7 +128,7 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :secrets,
         label: "App secrets",
-        icon: "remix-instance-line",
+        icon: "remix-spy-line",
         path: ~p"/app/embed/secrets",
         link_type: "live_patch"
       },
