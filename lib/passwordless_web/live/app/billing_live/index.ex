@@ -3,8 +3,6 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
   use PasswordlessWeb, :live_view
   use Gettext, backend: PasswordlessWeb.Gettext
 
-  import PasswordlessWeb.SettingsLayoutComponent
-
   alias Passwordless.Activity.Log
   alias Passwordless.Billing
   alias Passwordless.Organizations.Org
@@ -30,6 +28,7 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
      socket
      |> assign_logs(params)
      |> assign_config()
+     |> assign_stats()
      |> apply_action(socket.assigns.live_action)}
   end
 
@@ -138,5 +137,13 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
       _ ->
         socket
     end
+  end
+
+  defp assign_stats(socket) do
+    users = Passwordless.get_app_user_count_cached(socket.assigns.current_app)
+    mau = Passwordless.get_app_mau_count_cached(socket.assigns.current_app, Date.utc_today())
+    apps = socket.assigns.current_org |> Passwordless.Organizations.list_apps() |> Enum.map(& &1.name)
+
+    assign(socket, apps: apps, user_count: users, mau_count: mau)
   end
 end

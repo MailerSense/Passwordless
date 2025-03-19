@@ -25,6 +25,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
       current_user={@current_user}
       current_page={:settings}
       current_section={:app}
+      current_subpage={@current_page}
       padded={false}
     >
       <.tabbed_layout current_page={@current_page} menu_items={@menu_items} inner_class={@inner_class}>
@@ -37,7 +38,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
   # Private
 
   defp menu_items(%User{current_membership: %Membership{}} = user) do
-    org_routes = [:app, :team, :billing, :domain, :organization]
+    org_routes = [:app, :team, :domain, :organization]
 
     user_routes = [
       :edit_profile,

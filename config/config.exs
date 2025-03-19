@@ -77,6 +77,12 @@ config :passwordless, Oban,
     {Oban.Pro.Plugins.DynamicCron, crontab: []}
   ]
 
+config :money,
+  default_currency: :USD,
+  symbol: true,
+  symbol_on_right: false,
+  symbol_space: false
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

@@ -1,16 +1,18 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
   <div class="flex flex-col gap-6">
-    <div>
-      <.form_header title="Users" />
-      <p class="text-slate-500 dark:text-slate-400">
-        Every time your users use Passwordless authentication to perform an action, their details are stored here. You can view, edit, and delete users as needed.
-      </p>
-    </div>
-
+    <.alert with_icon color="info">
+      {gettext(
+        "%{app} currently has %{users} users, of which %{mau} are MAU as of %{date}.",
+        app: @current_app.name,
+        users: Util.number!(@user_count),
+        mau: Util.number!(@mau_count),
+        date: format_date(Date.utc_today())
+      )}
+    </.alert>
     <.data_table
       meta={@meta}
       items={@actors}
-      title={gettext("All users", app: @current_app.name)}
+      title={gettext("All users")}
       switch_items={
         [
           %{name: :all, label: gettext("All"), clear: true}

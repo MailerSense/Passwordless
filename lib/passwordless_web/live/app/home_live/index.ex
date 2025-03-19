@@ -27,8 +27,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   def handle_params(params, _url, socket) do
     app = socket.assigns.current_app
 
-    changeset = Passwordless.change_app(app)
-
     action =
       case Map.get(params, "id") do
         id when is_binary(id) -> Passwordless.get_action!(app, id)
@@ -46,14 +44,15 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
                        action: action
                      } ->
         %{
+          key: action,
           name: Phoenix.Naming.humanize(Macro.underscore(action)),
           value: total,
           progress: %{
             max: total,
             items: [
-              %{value: allow, color: "success"},
-              %{value: timeout, color: "warning"},
-              %{value: block, color: "danger"}
+              %{key: :allow, value: allow, color: "success"},
+              %{key: :timeout, value: timeout, color: "warning"},
+              %{key: :block, value: block, color: "danger"}
             ]
           }
         }
@@ -63,7 +62,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
      socket
      |> assign(top_actions: top_actions, action: action, count: estimate_count(app))
      |> assign_actions(params)
-     |> assign_form(changeset)
      |> apply_action(socket.assigns.live_action)}
   end
 
@@ -101,7 +99,11 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   @impl true
   def handle_info(%{event: _event, payload: %Action{} = action}, socket) do
     socket = if(has_filters?(socket), do: socket, else: stream_insert(socket, :actions, action, at: 0))
-    socket = update(socket, :count, &(&1 + 1))
+
+    socket =
+      socket
+      |> update(:count, &(&1 + 1))
+      |> update_top_actions(action)
 
     {:noreply, socket}
   end
@@ -189,7 +191,27 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     |> Action.preload_actor()
   end
 
-  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    assign(socket, form: to_form(changeset))
+  defp update_top_actions(socket, %Action{name: action_name, state: state} = action) do
+    update(socket, :top_actions, fn top_actions ->
+      Enum.map(top_actions, fn
+        %{key: ^action_name, items: items, value: value} = top_action ->
+          items =
+            Enum.map(
+              items,
+              fn
+                %{key: ^state, value: value} ->
+                  %{key: state, value: value + 1}
+
+                item ->
+                  item
+              end
+            )
+
+          %{top_action | value: value + 1, items: items}
+
+        top_action ->
+          top_action
+      end)
+    end)
   end
 end

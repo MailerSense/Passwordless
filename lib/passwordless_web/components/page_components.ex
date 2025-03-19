@@ -53,7 +53,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
   @doc "Gives you a white background with shadow."
   attr :class, :any, default: nil
   attr :padded, :boolean, default: false
-  attr :shadow_class, :string, default: "shadow-m2"
+  attr :shadow_class, :string, default: "shadow-1"
   attr :rest, :global
   slot :inner_block
 

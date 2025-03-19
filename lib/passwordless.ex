@@ -516,4 +516,54 @@ defmodule Passwordless do
       ttl: :timer.hours(1)
     )
   end
+
+  def get_app_user_count(%App{} = app) do
+    Repo.aggregate(
+      from(a in Actor,
+        prefix: ^Tenant.to_prefix(app),
+        select: count(a.id)
+      ),
+      :count,
+      :id
+    )
+  end
+
+  def get_app_user_count_cached(%App{} = app) do
+    Cache.with(
+      "app_user_count_#{app.id}",
+      fn -> get_app_user_count(app) end,
+      ttl: :timer.hours(1)
+    )
+  end
+
+  def get_app_mau_count(%App{} = app, %Date{year: year, month: month}) do
+    Repo.aggregate(
+      from(a in Actor,
+        as: :actor,
+        prefix: ^Tenant.to_prefix(app),
+        select: count(a.id),
+        where:
+          exists(
+            from(
+              c in Action,
+              prefix: ^Tenant.to_prefix(app),
+              where:
+                c.actor_id == parent_as(:actor).id and
+                  fragment("date_part('year', ?)", c.inserted_at) == ^year and
+                  fragment("date_part('month', ?)", c.inserted_at) == ^month
+            )
+          )
+      ),
+      :count,
+      :id
+    )
+  end
+
+  def get_app_mau_count_cached(%App{} = app, date) do
+    Cache.with(
+      "app_mau_count_#{app.id}_#{date.year}_#{date.month}",
+      fn -> get_app_mau_count(app, date) end,
+      ttl: :timer.hours(1)
+    )
+  end
 end

@@ -1,44 +1,51 @@
 <.layout current_user={@current_user} current_page={:home} current_section={:app}>
   <div class="flex flex-col gap-6">
-    <div>
-      <.form_header title="Status" />
-      <.alert with_icon color="success" class="mb-6">
-        {gettext("%{app} is active and healthy", app: @current_app.name)}
-      </.alert>
-      <p class="text-slate-500 dark:text-slate-400 mb-6">
-        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal.
-      </p>
+    <.alert with_icon color="success">
+      {gettext("%{app} is active and healthy.", app: @current_app.name)}
+    </.alert>
+    <.box padded class="flex flex-col gap-6">
+      <.form_header title="Top actions" no_margin />
+      <.p>
+        Passwordless allows your users to securely perform any kind of action. Here are the top actions taken by users in the month {format_month_range(
+          Date.utc_today()
+        )}.
+      </.p>
       <.a
-        to={~p"/app/embed/api-usage"}
-        label={gettext("Integrate your app")}
+        to={~p"/app/reports"}
+        label={gettext("Get detailed report")}
         styled
         link_type="live_redirect"
       />
-      <.form_separator />
-      <.form_header title="Top actions" />
-      <p class="text-slate-500 dark:text-slate-400">
-        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
-      </p>
-    </div>
-
-    <.action_stat
-      legend={[
-        %{color: "bg-success-500", label: gettext("Allow")},
-        %{color: "bg-warning-500", label: gettext("Timeout")},
-        %{color: "bg-danger-500", label: gettext("Block")}
-      ]}
-      items={@top_actions}
-    />
-
-    <div>
-      <.form_separator />
-      <.form_header title="User actions" />
-      <p class="text-slate-500 dark:text-slate-400">
-        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
-      </p>
-    </div>
-
-    <.stream_table id="actions" meta={@meta} items={@streams.actions} finished={@finished}>
+      <.form_separator no_margin />
+      <.action_stat
+        legend={[
+          %{color: "bg-success-500", label: gettext("Allow")},
+          %{color: "bg-warning-500", label: gettext("Timeout")},
+          %{color: "bg-danger-500", label: gettext("Block")}
+        ]}
+        items={@top_actions}
+      />
+    </.box>
+    <.box padded class="flex flex-col gap-6">
+      <.form_header title="User actions" no_margin />
+      <.p>
+        Table below shows a real-time list of all actions taken by users of {@current_app.name}.
+      </.p>
+      <.a
+        to={~p"/app/embed/api-usage"}
+        label={gettext("Embed Passwordless")}
+        styled
+        link_type="live_redirect"
+      />
+    </.box>
+    <.stream_table
+      id="actions"
+      meta={@meta}
+      title={gettext("All actions")}
+      badge={@count}
+      items={@streams.actions}
+      finished={@finished}
+    >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
 
       <:header></:header>
@@ -87,13 +94,16 @@
 
       <:header_actions>
         <.button
-          to={~p"/app/users"}
           size="xs"
-          color="primary"
-          label={gettext("Manage users")}
-          icon="remix-add-circle-line"
           link_type="live_patch"
-        />
+          to={~p"/app/users"}
+          label={gettext("Manage users")}
+          with_icon
+          color="light"
+        >
+          {gettext("Manage users")}
+          <.icon name="remix-arrow-right-line" class="w-4 h-4" />
+        </.button>
       </:header_actions>
     </.stream_table>
   </div>

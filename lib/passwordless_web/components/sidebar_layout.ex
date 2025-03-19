@@ -125,15 +125,15 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
           </div>
 
           <div class="flex flex-col gap-6 mt-auto p-3">
-            <.usage_box plan={gettext("Free")} />
+            <.usage_box plan={gettext("Pro")} usage={1240} usage_max={2000} />
             <.wide_theme_switch />
           </div>
         </aside>
       </div>
 
-      <div class="flex flex-col grow overflow-y-auto no-scrollbar">
+      <div class="flex flex-col grow overflow-y-auto no-scrollbar bg-slate-100 dark:bg-slate-900">
         <header class="pc-sidebar__header">
-          <div :if={Util.present?(@dropdown)} class="px-6 xl:px-8 hidden md:flex">
+          <div :if={Util.present?(@dropdown)} class="px-6 hidden md:flex">
             {render_slot(@dropdown)}
           </div>
 
@@ -142,10 +142,14 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
             links={[
               %{
                 to: ~p"/",
+                label: "Home Page"
+              },
+              %{
+                to: ~p"/app/support",
                 label: "Support"
               },
               %{
-                to: ~p"/app/docs",
+                to: ~p"/app/embed/secrets",
                 label: "Docs",
                 link_type: "live_redirect"
               }
@@ -153,7 +157,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
           />
 
           <.user_topbar_menu
-            class="flex items-center gap-3 h-full ml-auto border-l border-slate-200 dark:border-slate-700"
+            class="flex items-center gap-3 h-full ml-auto border-l border-gray-200 dark:border-gray-700"
             current_user={@current_user}
             user_menu_items={@user_menu_items}
           />

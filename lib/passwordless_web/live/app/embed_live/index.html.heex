@@ -1,5 +1,42 @@
-<.layout current_user={@current_user} current_page={:embed} current_section={:app} padded={false}>
-  <.tabbed_layout current_page={@live_action} menu_items={embed_menu_items()}>
-    <.live_component id={@live_action} app={@current_app} module={@module} />
-  </.tabbed_layout>
+<.layout current_user={@current_user} current_page={:embed} current_section={:app}>
+  <div class="flex flex-col gap-6">
+    <.box padded class="flex flex-col gap-6">
+      <.form_header title={@page_title} no_margin />
+      <.p>
+        Use the App ID to embed the login & authentication guards in your frontend. Never publish the App Secret, use it only when calling the API from your backend. If your secret is compromised, you can
+        <.a class="text-info-600 dark:text-info-300 hover:underline">regenerate</.a>
+        it at any time.
+      </.p>
+      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 ">
+        <.field
+          name="test"
+          value={@current_app.id}
+          label="App ID"
+          readonly
+          copyable={true}
+          class="font-mono"
+          wrapper_class="!mb-0"
+        />
+        <.field
+          name="test2"
+          value="lololololo"
+          label="App Secret"
+          type="password"
+          readonly
+          viewable={true}
+          class="font-mono"
+          wrapper_class="!mb-0"
+        />
+      </div>
+    </.box>
+
+    <.box padded class="flex flex-col gap-6">
+      <.form_header title="Instructions" no_margin />
+      <.p>
+        Use the App ID to embed the login & authentication guards in your frontend. Never publish the App Secret, use it only when calling the API from your backend. If your secret is compromised, you can
+        <.a class="text-info-600 dark:text-info-300 hover:underline">regenerate</.a>
+        it at any time.
+      </.p>
+    </.box>
+  </div>
 </.layout>

@@ -20,24 +20,20 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   end
 
   @impl true
-  def handle_params(%{"id" => id} = params, _url, socket) do
-    actor = Passwordless.get_actor!(socket.assigns.current_app, id)
+  def handle_params(params, _url, socket) do
+    actor =
+      case Map.get(params, "id") do
+        id when is_binary(id) -> Passwordless.get_actor!(socket.assigns.current_app, id)
+        _ -> nil
+      end
 
     {:noreply,
      socket
      |> assign(actor: actor)
      |> assign_filters(params)
      |> assign_actors(params)
+     |> assign_stats()
      |> apply_action(socket.assigns.live_action, actor)}
-  end
-
-  @impl true
-  def handle_params(params, _url, socket) do
-    {:noreply,
-     socket
-     |> assign_filters(params)
-     |> assign_actors(params)
-     |> apply_action(socket.assigns.live_action, nil)}
   end
 
   @impl true
@@ -174,5 +170,12 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
     {actors, meta} = DataTable.search(query, params, @data_table_opts)
     assign(socket, actors: actors, meta: meta)
+  end
+
+  defp assign_stats(socket) do
+    users = Passwordless.get_app_user_count_cached(socket.assigns.current_app)
+    mau = Passwordless.get_app_mau_count_cached(socket.assigns.current_app, Date.utc_today())
+
+    assign(socket, user_count: users, mau_count: mau)
   end
 end

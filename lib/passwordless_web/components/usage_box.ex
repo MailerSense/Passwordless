@@ -14,13 +14,17 @@ defmodule PasswordlessWeb.Components.UsageBox do
 
   def usage_box(assigns) do
     ~H"""
-    <div class="relative p-3 rounded-xl border border-slate-700 flex-col gap-3 flex overflow-hidden">
+    <.a
+      to={~p"/app/billing"}
+      link_type="live_redirect"
+      class="relative p-3 rounded-xl border border-slate-700 flex-col gap-3 flex overflow-hidden"
+    >
       <div class="absolute w-60 h-60 bg-primary-700/20 rounded-full blur-[50px] -top-36 -left-1/2">
       </div>
       <div class="absolute w-[180px] h-[180px] bg-primary-700/20 rounded-full blur-[100px] left-1/2 top-24">
       </div>
-      <div class="text-slate-500 text-xs font-semibold uppercase hidden 2xl:block">
-        {gettext("usage")}
+      <div class="text-slate-500 text-xs font-semibold uppercase">
+        {gettext("Plan")}
       </div>
       <div class="items-center gap-1 inline-flex">
         <div class="text-white text-sm font-medium leading-tight">{gettext("Passwordless")}</div>
@@ -37,14 +41,10 @@ defmodule PasswordlessWeb.Components.UsageBox do
           / {Passwordless.Locale.Number.to_string!(@usage_max)} {gettext("contacts")}
         </span>
       </div>
-      <.a
-        to={~p"/app/settings/org/billing"}
-        link_type="live_redirect"
-        class="text-slate-400 text-xs font-medium underline"
-      >
+      <span class="text-slate-400 text-xs font-medium underline">
         {gettext("Upgrade account")}
-      </.a>
-    </div>
+      </span>
+    </.a>
     """
   end
 end

@@ -8,9 +8,7 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
   import PasswordlessWeb.Components.Avatar
   import PasswordlessWeb.Components.Dropdown
   import PasswordlessWeb.Components.Icon
-  import PasswordlessWeb.Components.Input
   import PasswordlessWeb.Components.Link
-  import PasswordlessWeb.Components.ThemeSwitch
   import PasswordlessWeb.Helpers
 
   attr :class, :any, default: "", doc: "CSS class"
@@ -28,62 +26,63 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
 
   def user_topbar_menu(assigns) do
     ~H"""
-    <div {@rest} class={["flex items-center gap-3", @class]}>
-      <.theme_switch />
-
-      <.dropdown label={PasswordlessWeb.Helpers.user_app_name(@current_user)} variant="outline">
-        <.dropdown_menu_item link_type="live_redirect" to={~p"/app/apps/new"}>
-          <.icon name="remix-add-line" class="w-5 h-5" />
-          {gettext("Create app")}
-        </.dropdown_menu_item>
-        <.form :for={app <- @app_menu_items} for={nil} action={~p"/app/apps/switch"} method="post">
-          <.input type="hidden" name="app_id" value={app.id} />
-          <button class="pc-dropdown__menu-item">
-            <.icon name="remix-instance-line" class="w-5 h-5" />
-            <span class="line-clamp-1">{app.name}</span>
-          </button>
-        </.form>
-      </.dropdown>
-
-      <.dropdown placement="left">
+    <div
+      {@rest}
+      class={[
+        "flex items-center gap-3 h-full ml-auto border-l border-gray-200 dark:border-gray-700",
+        @class
+      ]}
+    >
+      <.dropdown placement="center">
         <:trigger_element>
-          <%= if user_impersonated?(@current_user) do %>
-            <.avatar icon="remix-alert-fill" color="danger" />
-          <% else %>
-            <.avatar />
-          <% end %>
+          <div class="p-6 items-center gap-6 2xl:gap-16 inline-flex h-full">
+            <div class="rounded-lg items-center gap-3 flex">
+              <%= if user_impersonated?(@current_user) do %>
+                <.avatar icon="remix-alert-fill" size="lg" color="danger" />
+              <% else %>
+                <.avatar name={user_name(@current_user)} size="lg" color="black" />
+              <% end %>
+
+              <div class="flex-col justify-start items-start inline-flex gap-1">
+                <div class="text-gray-900 dark:text-white text-base font-semibold leading-normal">
+                  {user_name(@current_user)}
+                </div>
+                <div class="text-gray-500 dark:text-gray-400 text-xs font-normal">
+                  {user_email(@current_user)}
+                </div>
+                <%= if user_impersonated?(@current_user) do %>
+                  <span class="text-danger-500 dark:text-danger-400 text-xs font-bold">
+                    {gettext("Impersonated by %{name}",
+                      name: user_impersonator_name(@current_user)
+                    )}
+                  </span>
+                <% end %>
+              </div>
+            </div>
+            <.icon name="remix-arrow-down-s-line" class="w-6 h-6" />
+          </div>
         </:trigger_element>
-
-        <.a to={~p"/app/profile"} link_type="live_patch" class="flex flex-col items-center p-2 gap-2">
-          <%= if user_impersonated?(@current_user) do %>
-            <.avatar icon="remix-alert-fill" color="danger" />
-          <% else %>
-            <.avatar />
-          <% end %>
-          {user_name(@current_user)}
-        </.a>
-
         <%= for child_item <- @user_menu_items do %>
-          <.dropdown_menu_item
-            to={child_item.path}
-            label={child_item.label}
-            method={if child_item[:method], do: child_item[:method], else: nil}
-            link_type={child_item[:link_type] || "a"}
-          >
-            <.icon
-              :if={child_item[:icon]}
-              name={child_item[:icon]}
-              class={[
-                "w-5 h-5",
-                if(child_item[:color] == :red, do: "text-danger-700 dark:text-danger-400")
-              ]}
-            />
-            <span class={[
-              if(child_item[:color] == :red, do: "text-danger-700 dark:text-danger-400")
-            ]}>
-              {child_item.label}
-            </span>
-          </.dropdown_menu_item>
+          <%= case child_item do %>
+            <% %{separator: true} -> %>
+              <.dropdown_separator />
+            <% _ -> %>
+              <.dropdown_menu_item
+                to={child_item.path}
+                label={child_item.label}
+                method={if child_item[:method], do: child_item[:method], else: nil}
+                link_type={child_item[:link_type] || "a"}
+              >
+                <.icon
+                  :if={child_item[:icon]}
+                  name={child_item[:icon]}
+                  class={["w-5 h-5", if(child_item[:color] == :red, do: "text-red-500")]}
+                />
+                <span class={[if(child_item[:color] == :red, do: "text-red-500")]}>
+                  {child_item.label}
+                </span>
+              </.dropdown_menu_item>
+          <% end %>
         <% end %>
       </.dropdown>
     </div>

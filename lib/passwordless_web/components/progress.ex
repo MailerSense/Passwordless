@@ -17,17 +17,29 @@ defmodule PasswordlessWeb.Components.Progress do
 
   def progress(assigns) do
     ~H"""
-    <div class={if @label, do: "flex gap-3 items-center"}>
+    <%= if @label do %>
+      <div class="flex gap-2 items-center">
+        <div
+          {@rest}
+          class={["pc-progress--#{@size}", "pc-progress", "pc-progress--#{@color}", @class]}
+        >
+          <span
+            class={["pc-progress__inner--#{@color}", "pc-progress__inner"]}
+            style={"width: #{Float.round(@value/@max*100, 2)}%"}
+          />
+        </div>
+        <span :if={@label} class="pc-progress__label">
+          {trunc(Float.round(@value / @max * 100, 0))}%
+        </span>
+      </div>
+    <% else %>
       <div {@rest} class={["pc-progress--#{@size}", "pc-progress", "pc-progress--#{@color}", @class]}>
         <span
           class={["pc-progress__inner--#{@color}", "pc-progress__inner"]}
           style={"width: #{Float.round(@value/@max*100, 2)}%"}
         />
       </div>
-      <span :if={@label} class="pc-progress__label">
-        {trunc(Float.round(@value / @max * 100, 0))}%
-      </span>
-    </div>
+    <% end %>
     """
   end
 

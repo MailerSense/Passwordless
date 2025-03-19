@@ -16,7 +16,7 @@ defmodule PasswordlessWeb.Menus do
   def public_mobile_menu_items(_), do: []
 
   def main_menu_items(:app, %User{} = current_user),
-    do: build_menu([:home, :users, :methods, :embed, :settings], current_user)
+    do: build_menu([:home, :users, :reports, :embed, :methods, :settings, :billing], current_user)
 
   def main_menu_items(:knowledge, %User{} = current_user), do: build_menu([:blog, :guides, :docs], current_user)
 
@@ -181,7 +181,7 @@ defmodule PasswordlessWeb.Menus do
   def get_link(:methods = name, _user) do
     %{
       name: name,
-      label: gettext("Methods"),
+      label: gettext("Authenticators"),
       path: ~p"/app/methods/email",
       icon: "remix-shield-user-line",
       link_type: "live_patch"

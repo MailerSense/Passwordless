@@ -283,6 +283,28 @@ defmodule PasswordlessWeb.Helpers do
   def format_date(nil, _format), do: ""
   def format_date(date, format), do: Timex.format!(date, format, :strftime)
 
+  def format_month_range(%Date{} = month) do
+    start_date = Timex.beginning_of_month(month)
+    end_date = Timex.end_of_month(month)
+
+    "#{format_date(start_date, "%-d")} - #{format_date(end_date, "%-d %B %Y")}"
+  end
+
+  def current_month?(%Date{} = month) do
+    span_start = Timex.beginning_of_month(month)
+    span_end = Timex.end_of_month(month)
+
+    interval =
+      Timex.Interval.new(
+        from: span_start,
+        until: span_end,
+        left_open: false,
+        right_open: false
+      )
+
+    Timex.today() in interval
+  end
+
   def user_added(%Membership{inserted_at: %DateTime{} = inserted_at}), do: format_date_time(inserted_at)
   def user_added(%Membership{}), do: ""
 

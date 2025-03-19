@@ -24,7 +24,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :any, default: "shadow-m2", doc: "CSS class to add to the table"
+  attr :shadow_class, :any, default: "shadow-1", doc: "CSS class to add to the table"
   attr :wrapper_class, :any, default: "pc-table__wrapper pc-data-table__wrapper", doc: "CSS class to add to the table"
   attr :base_url_params, :map, required: false
 
@@ -100,16 +100,16 @@ defmodule PasswordlessWeb.Components.DataTable do
       phx-submit="update_filters"
       {form_assigns(@form_target)}
     >
-      <.table_search_bar
-        :if={@search_field || @switch_field}
-        meta={@meta}
-        form={filter_form}
-        switch_field={@switch_field}
-        search_field={@search_field}
-        switch_items={@switch_items}
-      />
-
       <div class={[@wrapper_class, @shadow_class, @class]}>
+        <.table_search_bar
+          :if={@search_field || @switch_field}
+          meta={@meta}
+          form={filter_form}
+          switch_field={@switch_field}
+          search_field={@search_field}
+          switch_items={@switch_items}
+        />
+
         <.table_header
           :if={Util.present?(@title) or Util.present?(@title_func)}
           meta={@meta}
@@ -205,7 +205,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :badge, :string, default: nil
   attr :head, :boolean, default: true
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-m2", doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
   attr :finished, :boolean, default: false
   attr :base_url_params, :map, required: false
 
@@ -314,9 +314,10 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :id, :string
   attr :size, :string, default: "md", values: ["sm", "md", "lg"], doc: "table sizes"
   attr :items, :any, required: true
+  attr :count, :integer, default: nil
   attr :title, :string, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-m2", doc: "CSS class to add to the table"
+  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
 
   slot :col, required: true do
     attr :label, :string
@@ -344,7 +345,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
     ~H"""
     <div class={["pc-table__wrapper", "pc-data-table__wrapper", @shadow_class, @class]}>
-      <.table_header :if={@title} title={@title} count={Enum.count(@items)} actions={@header_actions} />
+      <.table_header :if={@title} title={@title} count={@count} actions={@header_actions} />
       <.table class="pc-data-table">
         <thead class="pc-table__thead-striped">
           <.tr>
@@ -436,10 +437,10 @@ defmodule PasswordlessWeb.Components.DataTable do
 
     ~H"""
     <div class={[
-      "px-6 py-5 flex items-center justify-between gap-4"
+      "px-6 py-6 flex items-center justify-between gap-4"
     ]}>
       <div class="flex items-center gap-2">
-        <h3 class="text-lg font-medium text-slate-900 dark:text-white">
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">
           {@title}
         </h3>
         <.badge :if={Util.present?(@badge)} size="sm" color="primary" label={@badge} />
@@ -461,7 +462,8 @@ defmodule PasswordlessWeb.Components.DataTable do
     ~H"""
     <div class={[
       "flex items-center justify-between gap-3",
-      "pb-6"
+      "border-b border-slate-200 dark:border-slate-700",
+      "p-6"
     ]}>
       <.inputs_for :let={f2} field={@form[:filters]}>
         <%= if Phoenix.HTML.Form.input_value(f2, :field) == @switch_field do %>

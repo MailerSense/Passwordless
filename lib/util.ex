@@ -12,6 +12,12 @@ defmodule Util do
     Jason.encode!(obj, pretty: true)
   end
 
+  def number!(value) when is_number(value) do
+    Passwordless.Locale.Number.to_string!(value)
+  end
+
+  def number!(value), do: value
+
   @doc """
   Generate a truncated JSON string from a map or other object.
   """

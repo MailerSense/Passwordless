@@ -6,11 +6,9 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   import PasswordlessWeb.Components.Avatar
   import PasswordlessWeb.Components.Badge
-  import PasswordlessWeb.Components.Button
   import PasswordlessWeb.Components.Form
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Link
-  import PasswordlessWeb.Components.PageComponents
   import PasswordlessWeb.Components.Progress
 
   attr :badge, :string, required: true
@@ -144,30 +142,28 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   def action_stat(assigns) do
     ~H"""
-    <.box
-      class={[
-        "flex flex-col",
-        "divide-y",
-        @class
-      ]}
-      {@rest}
-    >
+    <div class={["flex flex-col gap-6", @class]} {@rest}>
       <div class={[
         "grid grid-cols-1",
-        "lg:grid-cols-3",
-        "divide-x"
+        "lg:grid-cols-3 pb-3",
+        "gap-12 lg:gap-0 lg:divide-x divide-slate-200 dark:divide-slate-700"
       ]}>
         <div
           :for={item <- @items}
           class={[
-            "flex flex-col gap-4 p-6"
+            "flex flex-col gap-4 lg:px-6",
+            "lg:first:pl-0 lg:last:pr-0"
           ]}
         >
           <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
             {item.name}
           </badge>
           <h2 class="text-slate-900 dark:text-white text-2xl font-bold">
-            {Passwordless.Locale.Number.to_string!(item.value)} {ngettext("time", "times", item.value)}
+            {Passwordless.Locale.Number.to_string!(item.value)} {ngettext(
+              "attempt",
+              "attempts",
+              item.value
+            )}
           </h2>
           <%= case item.progress do %>
             <% %{max: max, items: items} when is_list(items) -> %>
@@ -178,13 +174,13 @@ defmodule PasswordlessWeb.DashboardComponents do
         </div>
       </div>
 
-      <div class="flex p-6 gap-6 items-center flex-wrap">
+      <div class="flex gap-6 items-center flex-wrap">
         <div :for={item <- @legend} class="flex gap-2 items-center">
           <span class={["w-4 h-2 rounded-full", item.color]}></span>
           <p class="text-slate-600 dark:text-slate-300 text-xs font-semibold">{item.label}</p>
         </div>
       </div>
-    </.box>
+    </div>
     """
   end
 

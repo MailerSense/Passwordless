@@ -32,149 +32,151 @@
       </div>
     </.subpage_header>
 
-    <.box padded class="mb-6">
-      <.field type="checkbox" field={@form[:active]} />
-      <.p class="mb-6">
-        <%= case @user_state do %>
-          <% :active -> %>
-            {gettext(
-              "User is active and can use all authentication methods enabled for %{app}.",
-              app: @current_app.name
-            )}
-          <% :locked -> %>
-            {gettext("User is locked and cannot use any authentication methods.")}
-        <% end %>
+    <div class="flex flex-col gap-6">
+      <.box padded>
+        <.field type="checkbox" field={@form[:active]} />
+        <.p>
+          {case @user_state do
+            :active ->
+              gettext(
+                "User is active and can use all authentication methods enabled for %{app}.",
+                app: @current_app.name
+              )
+
+            :locked ->
+              gettext("User is locked and cannot use any authentication methods.")
+          end}
+        </.p>
+        <.form_separator />
+        <.field field={@form[:user_id]} label={gettext("User ID")} disabled={not @user_active} />
+        <.field
+          field={@form[:language]}
+          type="select"
+          options={@languages}
+          icon_class="pc-select-input__flag"
+          icon_mapping={@flag_mapping}
+          required
+          required_asterix={false}
+          disabled={not @user_active}
+        />
+        <.json_block
+          label={gettext("Properties")}
+          code={@actor.properties}
+          disabled={not @user_active}
+        />
+        <.a
+          to={~p"/app/users/#{@actor}/edit/properties"}
+          label={gettext("Edit properties")}
+          styled
+          link_type="live_patch"
+        />
+      </.box>
+      <.form_separator no_margin />
+      <.form_header title={gettext("Credentials")} no_margin />
+      <.p class="text-slate-600 dark:text-slate-300">
+        Email and phone numbers are used to send notifications and authenticate users. You can add multiple emails and phone numbers to a user account.
       </.p>
-      <.form_separator />
-      <.field
-        field={@form[:language]}
-        type="select"
-        options={@languages}
-        icon_class="pc-select-input__flag"
-        icon_mapping={@flag_mapping}
-        required
-        required_asterix={false}
-        disabled={not @user_active}
-      />
-      <.field
-        icon="remix-id-card-line"
-        field={@form[:user_id]}
-        label={gettext("User ID")}
-        disabled={not @user_active}
-      />
-      <.json_block
-        label={gettext("Properties")}
-        code={@actor.properties}
-        disabled={not @user_active}
-      />
-      <.a
-        to={~p"/app/users/#{@actor}/edit/properties"}
-        class="pc-user-badge"
-        label={gettext("Edit properties")}
-        link_type="live_patch"
-      />
-    </.box>
-  </.form>
-  <div class="flex flex-col gap-6">
-    <.simple_table items={@emails} title={gettext("Emails")}>
-      <:if_empty>{gettext("No %{models} defined yet", models: gettext("emails"))}</:if_empty>
-      <:col field={:address} label={gettext("Email")} body_class="w-full" />
-      <:col :let={email} field={:authenticators}>
-        <div class="flex items-center gap-2">
-          <.badge size="sm" label="Magic link" color="cyan" />
-          <.badge size="sm" label="Email OTP" color="pink" />
-        </div>
-      </:col>
-      <:col :let={email} field={:verified}>
-        <.check_mark checked={email.verified} />
-      </:col>
-      <:col :let={email} field={:primary}>
-        <.check_mark checked={email.primary} />
-      </:col>
-      <:col actions></:col>
-      <:actions :let={email}>
-        <.icon_button
-          to={~p"/app/users/#{@actor}/edit/email/#{email}/delete"}
-          size="sm"
-          icon="custom-trash"
-          color="light"
-          title={gettext("Remove")}
-          link_type="live_patch"
-        />
-        <.icon_button
-          to={~p"/app/users/#{@actor}/edit/email/#{email}/edit"}
-          size="sm"
-          icon="custom-edit"
-          color="light"
-          title={gettext("Edit")}
-          link_type="live_patch"
-        />
-      </:actions>
-      <:header_actions>
-        <.button
-          size="xs"
-          link_type="live_patch"
-          to={~p"/app/users/#{@actor}/edit/email/new"}
-          icon="remix-add-circle-line"
-          label={gettext("Add")}
-          color="light"
-        />
-      </:header_actions>
-    </.simple_table>
-
-    <.simple_table items={@phones} title={gettext("Phones")}>
-      <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
-      <:col :let={phone} label={gettext("Phone")} body_class="w-full">
-        <div class="flex items-center gap-2">
-          <.icon name={"flag-#{String.downcase(phone.region)}"} class="pc-flag-icon" /> {Phone.format(
-            phone
-          )}
-        </div>
-      </:col>
-      <:col :let={email} field={:channels}>
-        <div class="flex items-center gap-2">
-          <.badge size="sm" label="SMS" color="purple" />
-          <.badge size="sm" label="Whatsapp" color="indigo" />
-        </div>
-      </:col>
-      <:col :let={phone} field={:verified}>
-        <.check_mark checked={phone.verified} />
-      </:col>
-      <:col :let={phone} field={:primary}>
-        <.check_mark checked={phone.primary} />
-      </:col>
-      <:col actions></:col>
-      <:actions :let={phone}>
-        <.icon_button
-          to={~p"/app/users/#{@actor}/edit/phone/#{phone}/delete"}
-          size="sm"
-          icon="custom-trash"
-          color="light"
-          title={gettext("Remove")}
-          link_type="live_patch"
-        />
-        <.icon_button
-          to={~p"/app/users/#{@actor}/edit/phone/#{phone}/edit"}
-          size="sm"
-          icon="custom-edit"
-          color="light"
-          title={gettext("Edit")}
-          link_type="live_patch"
-        />
-      </:actions>
-      <:header_actions>
-        <.button
-          size="xs"
-          link_type="live_patch"
-          to={~p"/app/users/#{@actor}/edit/phone/new"}
-          icon="remix-add-circle-line"
-          label={gettext("Add")}
-          color="light"
-        />
-      </:header_actions>
-    </.simple_table>
-
-    <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <.simple_table items={@emails} title={gettext("Emails")}>
+        <:if_empty>{gettext("No %{models} defined yet", models: gettext("emails"))}</:if_empty>
+        <:col field={:address} label={gettext("Email")} body_class="w-full" />
+        <:col :let={email} field={:authenticators}>
+          <div class="flex items-center gap-2">
+            <.badge size="sm" label="Magic link" color="cyan" />
+            <.badge size="sm" label="Email OTP" color="pink" />
+          </div>
+        </:col>
+        <:col :let={email} field={:verified}>
+          <.check_mark checked={email.verified} />
+        </:col>
+        <:col :let={email} field={:primary}>
+          <.check_mark checked={email.primary} />
+        </:col>
+        <:col actions></:col>
+        <:actions :let={email}>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/email/#{email}/delete"}
+            size="sm"
+            icon="custom-trash"
+            color="light"
+            title={gettext("Remove")}
+            link_type="live_patch"
+          />
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/email/#{email}/edit"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+        <:header_actions>
+          <.button
+            size="xs"
+            link_type="live_patch"
+            to={~p"/app/users/#{@actor}/edit/email/new"}
+            icon="remix-add-circle-line"
+            label={gettext("Add")}
+            color="light"
+          />
+        </:header_actions>
+      </.simple_table>
+      <.simple_table items={@phones} title={gettext("Phones")}>
+        <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
+        <:col :let={phone} label={gettext("Phone")} body_class="w-full">
+          <div class="flex items-center gap-2">
+            <.icon name={"flag-#{String.downcase(phone.region)}"} class="pc-flag-icon" /> {Phone.format(
+              phone
+            )}
+          </div>
+        </:col>
+        <:col :let={email} field={:channels}>
+          <div class="flex items-center gap-2">
+            <.badge size="sm" label="SMS" color="purple" />
+            <.badge size="sm" label="Whatsapp" color="indigo" />
+          </div>
+        </:col>
+        <:col :let={phone} field={:verified}>
+          <.check_mark checked={phone.verified} />
+        </:col>
+        <:col :let={phone} field={:primary}>
+          <.check_mark checked={phone.primary} />
+        </:col>
+        <:col actions></:col>
+        <:actions :let={phone}>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/phone/#{phone}/delete"}
+            size="sm"
+            icon="custom-trash"
+            color="light"
+            title={gettext("Remove")}
+            link_type="live_patch"
+          />
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/phone/#{phone}/edit"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+        <:header_actions>
+          <.button
+            size="xs"
+            link_type="live_patch"
+            to={~p"/app/users/#{@actor}/edit/phone/new"}
+            icon="remix-add-circle-line"
+            label={gettext("Add")}
+            color="light"
+          />
+        </:header_actions>
+      </.simple_table>
+      <.form_separator no_margin />
+      <.form_header title={gettext("Security devices")} no_margin />
+      <.p class="text-slate-600 dark:text-slate-300">
+        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
+      </.p>
       <.simple_table items={[]} title={gettext("Passkeys")}>
         <:if_empty>{gettext("No %{models} defined yet", models: gettext("passkeys"))}</:if_empty>
         <:col field={:name} body_class="w-full" />
@@ -198,7 +200,6 @@
           />
         </:actions>
       </.simple_table>
-
       <.simple_table items={[]} title={gettext("Security keys")}>
         <:if_empty>
           {gettext("No %{models} defined yet", models: gettext("security keys"))}
@@ -224,68 +225,71 @@
           />
         </:actions>
       </.simple_table>
+      <.simple_table items={@totps} title={gettext("Authenticators (TOTPs)")}>
+        <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
+        <:col field={:name} body_class="w-full" />
+        <:col actions></:col>
+        <:actions :let={identity}>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
+            size="sm"
+            icon="custom-trash"
+            color="light"
+            title={gettext("Remove")}
+            link_type="live_patch"
+          />
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+      </.simple_table>
+      <.form_separator no_margin />
+      <.form_header title={gettext("User history")} no_margin />
+      <.p class="text-slate-600 dark:text-slate-300">
+        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
+      </.p>
+      <.data_table id="actions" meta={@meta} title={gettext("User actions")} items={@actions}>
+        <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+        <:col :let={action} label={gettext("Action")} field={:name}>
+          {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+        </:col>
+        <:col :let={action} label={gettext("Region")} field={:location}>
+          <div class="flex items-center gap-2">
+            <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
+          </div>
+        </:col>
+        <:col :let={action} label={gettext("Elapsed")} field={:location}>
+          <div class="flex items-center gap-2">
+            <.icon name="remix-timer-2-line" class="w-5 h-5" />
+            {Util.elapsed(action.inserted_at, action.updated_at)}
+          </div>
+        </:col>
+        <:col :let={action} label={gettext("State")} field={:state}>
+          <% {badge_label, badge_color} = action_state_badge(action) %>
+          <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+        </:col>
+        <:col :let={action} label={gettext("When")} field={:inserted_at}>
+          {Timex.from_now(action.inserted_at)}
+        </:col>
+        <:col actions></:col>
+        <:actions :let={action}>
+          <.icon_button
+            to={~p"/app/home/#{action}/view"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+      </.data_table>
     </div>
-
-    <.simple_table items={@totps} title={gettext("Authenticators (TOTPs)")}>
-      <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
-      <:col field={:name} body_class="w-full" />
-      <:col actions></:col>
-      <:actions :let={identity}>
-        <.icon_button
-          to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
-          size="sm"
-          icon="custom-trash"
-          color="light"
-          title={gettext("Remove")}
-          link_type="live_patch"
-        />
-        <.icon_button
-          to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
-          size="sm"
-          icon="custom-edit"
-          color="light"
-          title={gettext("Edit")}
-          link_type="live_patch"
-        />
-      </:actions>
-    </.simple_table>
-
-    <.data_table id="actions" meta={@meta} title={gettext("User actions")} items={@actions}>
-      <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-      <:col :let={action} label={gettext("Action")} field={:name}>
-        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
-      </:col>
-      <:col :let={action} label={gettext("Region")} field={:location}>
-        <div class="flex items-center gap-2">
-          <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
-        </div>
-      </:col>
-      <:col :let={action} label={gettext("Elapsed")} field={:location}>
-        <div class="flex items-center gap-2">
-          <.icon name="remix-timer-2-line" class="w-5 h-5" />
-          {Util.elapsed(action.inserted_at, action.updated_at)}
-        </div>
-      </:col>
-      <:col :let={action} label={gettext("State")} field={:state}>
-        <% {badge_label, badge_color} = action_state_badge(action) %>
-        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-      </:col>
-      <:col :let={action} label={gettext("When")} field={:inserted_at}>
-        {Timex.from_now(action.inserted_at)}
-      </:col>
-      <:col actions></:col>
-      <:actions :let={action}>
-        <.icon_button
-          to={~p"/app/home/#{action}/view"}
-          size="sm"
-          icon="custom-edit"
-          color="light"
-          title={gettext("Edit")}
-          link_type="live_patch"
-        />
-      </:actions>
-    </.data_table>
-  </div>
+  </.form>
 </.layout>
 
 <%= case @live_action do %>
