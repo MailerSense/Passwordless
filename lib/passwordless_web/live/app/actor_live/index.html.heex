@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-6">
     <.alert with_icon color="info">
       {gettext(
-        "%{app} currently has %{users} users, of which %{mau} are MAU as of %{date}.",
+        "%{app} has %{users} users, of which %{mau} are MAU as of %{date}.",
         app: @current_app.name,
         users: Util.number!(@user_count),
         mau: Util.number!(@mau_count),

@@ -275,11 +275,11 @@ defmodule PasswordlessWeb.Helpers do
 
   def admin?(%User{}), do: false
 
-  def format_date_time(date, format \\ "%d %b %Y, %H:%M")
+  def format_date_time(date, format \\ "%d %B %Y, %H:%M")
   def format_date_time(nil, _format), do: ""
   def format_date_time(date, format), do: Timex.format!(date, format, :strftime)
 
-  def format_date(date, format \\ "%-d %b %Y")
+  def format_date(date, format \\ "%-d %B %Y")
   def format_date(nil, _format), do: ""
   def format_date(date, format), do: Timex.format!(date, format, :strftime)
 
