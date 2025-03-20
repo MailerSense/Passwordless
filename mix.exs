@@ -104,9 +104,9 @@ defmodule Passwordless.MixProject do
        github: "tailwindlabs/heroicons", tag: "v2.1.5", sparse: "optimized", app: false, compile: false, depth: 1},
 
       # Observability
-      {:sentry, "~> 10.6"},
-      {:backpex, "~> 0.10.0"},
-      {:ecto_psql_extras, "~> 0.8.2"},
+      {:sentry, "~> 10.8"},
+      {:backpex, "~> 0.11.0"},
+      {:ecto_psql_extras, "~> 0.8.7"},
 
       # Media
       {:image, "~> 0.47.0"},

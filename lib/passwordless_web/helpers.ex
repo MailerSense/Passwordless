@@ -123,39 +123,6 @@ defmodule PasswordlessWeb.Helpers do
     ]
   end
 
-  def embed_menu_items do
-    [
-      %{
-        name: :secrets,
-        label: "App secrets",
-        icon: "remix-spy-line",
-        path: ~p"/app/embed/secrets",
-        link_type: "live_patch"
-      },
-      %{
-        name: :api_usage,
-        label: "API usage",
-        icon: "remix-terminal-box-line",
-        path: ~p"/app/embed/api-usage",
-        link_type: "live_patch"
-      },
-      %{
-        name: :login_page,
-        label: "Login page",
-        icon: "remix-window-line",
-        path: ~p"/app/embed/login-page",
-        link_type: "live_patch"
-      },
-      %{
-        name: :auth_guard,
-        label: "Auth guard",
-        icon: "remix-shield-user-line",
-        path: ~p"/app/embed/auth-guard",
-        link_type: "live_patch"
-      }
-    ]
-  end
-
   def email_menu_items(%EmailTemplate{} = email_template, language \\ :en) do
     [
       %{

@@ -79,7 +79,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
       class="flex h-screen bg-white dark:bg-slate-900"
       x-data={"{sidebarOpen: $persist(true), isCollapsible: #{@collapsible}, #{x_persist_collapsed(assigns)}}"}
     >
-      <div class="relative px-3 py-[100px] bg-slate-900 border-r border-slate-700 flex flex-col justify-between">
+      <div class="pc-sidebar__container">
         <.sidebar_section_menu menu_items={@section_menu_items} current_section={@current_section} />
 
         <div class="flex flex-col gap-2 items-center justify-center">
@@ -96,10 +96,10 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
           >
             <.icon
               name="custom-board-document"
-              class="w-10 h-10 text-white/60 group-hover:bg-primary-300 transition duration-200"
+              class="w-10 h-10 text-white/60 group-hover:bg-primary-500 transition duration-200"
               x-bind:class="
                 {
-                  'bg-primary-300': !sidebarOpen
+                  'bg-primary-500': !sidebarOpen
                 }
               "
             />
@@ -107,54 +107,49 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
         </div>
       </div>
 
-      <div class="relative z-40" x-show="sidebarOpen">
-        <aside id="sidebar" role="navigation" class="pc-sidebar__aside">
-          <div class="flex items-center justify-between px-8 py-6 border-b border-slate-700 h-[88px]">
-            <.link navigate={@home_path}>
-              {render_slot(@logo)}
-            </.link>
-          </div>
+      <aside id="sidebar" role="navigation" class="pc-sidebar__aside" x-show="sidebarOpen">
+        <div class="flex items-center justify-between px-8 py-6 border-b border-slate-700 h-[88px]">
+          <.link navigate={@home_path}>
+            {render_slot(@logo)}
+          </.link>
+        </div>
 
-          <div class="p-3 pt-6">
-            <.sidebar_menu
-              :if={@main_menu_items != []}
-              menu_items={@main_menu_items}
-              current_page={@current_page}
-              title={@sidebar_title}
-            />
-          </div>
+        <div class="p-3 pt-6">
+          <.sidebar_menu
+            :if={@main_menu_items != []}
+            menu_items={@main_menu_items}
+            current_page={@current_page}
+            title={@sidebar_title}
+          />
+        </div>
 
-          <div class="flex flex-col gap-6 mt-auto p-3">
-            <.usage_box plan={gettext("Pro")} usage={1240} usage_max={2000} />
-            <.wide_theme_switch />
-          </div>
-        </aside>
-      </div>
+        <div class="flex flex-col gap-6 mt-auto p-3">
+          <.usage_box plan={gettext("Pro")} usage={1240} usage_max={2000} />
+          <.wide_theme_switch />
+        </div>
+      </aside>
 
-      <div class="flex flex-col grow overflow-y-auto no-scrollbar bg-slate-100 dark:bg-slate-900">
+      <div class="pc-sidebar__header-container">
         <header class="pc-sidebar__header">
           <div :if={Util.present?(@dropdown)} class="px-6 hidden md:flex">
             {render_slot(@dropdown)}
           </div>
 
-          <.topbar_links
-            class="items-center justify-end flex-1 gap-4 px-8 hidden xl:flex"
-            links={[
-              %{
-                to: ~p"/",
-                label: "Home Page"
-              },
-              %{
-                to: ~p"/app/support",
-                label: "Support"
-              },
-              %{
-                to: ~p"/app/embed/secrets",
-                label: "Docs",
-                link_type: "live_redirect"
-              }
-            ]}
-          />
+          <.topbar_links links={[
+            %{
+              to: ~p"/",
+              label: "Home Page"
+            },
+            %{
+              to: ~p"/app/support",
+              label: "Support"
+            },
+            %{
+              to: ~p"/app/embed",
+              label: "Docs",
+              link_type: "live_redirect"
+            }
+          ]} />
 
           <.user_topbar_menu
             class="flex items-center gap-3 h-full ml-auto border-l border-gray-200 dark:border-gray-700"

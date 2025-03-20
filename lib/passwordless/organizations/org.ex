@@ -14,6 +14,7 @@ defmodule Passwordless.Organizations.Org do
   alias Passwordless.Organizations.Membership
 
   @tags ~w(admin)a
+  @states ~w(active)a
 
   @derive {
     Flop.Schema,
@@ -22,6 +23,7 @@ defmodule Passwordless.Organizations.Org do
   schema "orgs" do
     field :name, :string
     field :email, :string
+    field :state, Ecto.Enum, values: @states, default: :active
     field :tags, {:array, Ecto.Enum}, values: @tags, default: []
 
     field :full_name, :string, virtual: true
@@ -47,6 +49,7 @@ defmodule Passwordless.Organizations.Org do
   @fields ~w(
     name
     email
+    state
     tags
   )a
   @required_fields @fields

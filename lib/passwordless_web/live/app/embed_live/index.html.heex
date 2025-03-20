@@ -1,13 +1,11 @@
 <.layout current_user={@current_user} current_page={:embed} current_section={:app}>
   <div class="flex flex-col gap-6">
-    <.box padded class="flex flex-col gap-6">
-      <.form_header title={@page_title} no_margin />
+    <.box card>
+      <.form_header title={gettext("API keys")} no_margin />
       <.p>
-        Use the App ID to embed the login & authentication guards in your frontend. Never publish the App Secret, use it only when calling the API from your backend. If your secret is compromised, you can
-        <.a class="text-info-600 dark:text-info-300 hover:underline">regenerate</.a>
-        it at any time.
+        Embed Passwordless in your frontend and use the API to manage users and actions.
       </.p>
-      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 ">
+      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2">
         <.field
           name="test"
           value={@current_app.id}
@@ -28,15 +26,51 @@
           wrapper_class="!mb-0"
         />
       </div>
+      <.a
+        label={gettext("How do I connect my app?")}
+        to={~p"/app/embed"}
+        styled
+        link_type="live_redirect"
+      />
     </.box>
-
-    <.box padded class="flex flex-col gap-6">
-      <.form_header title="Instructions" no_margin />
+    <.form_separator no_margin />
+    <.box card>
+      <.form_header title={gettext("Send an OTP code")} no_margin />
       <.p>
-        Use the App ID to embed the login & authentication guards in your frontend. Never publish the App Secret, use it only when calling the API from your backend. If your secret is compromised, you can
-        <.a class="text-info-600 dark:text-info-300 hover:underline">regenerate</.a>
-        it at any time.
+        Deliver a one-time password to your users' email or phone number. Use the OTP code to authenticate the user's action.
       </.p>
+      <div class="flex items-center gap-6">
+        <.a
+          label={gettext("Setup Email OTP")}
+          to={~p"/app/methods/email"}
+          styled
+          link_type="live_redirect"
+        />
+        <.a
+          label={gettext("Setup SMS OTP")}
+          to={~p"/app/methods/sms"}
+          styled
+          link_type="live_redirect"
+        />
+        <.a
+          label={gettext("Setup WhatsApp OTP")}
+          to={~p"/app/methods/whatsapp"}
+          styled
+          link_type="live_redirect"
+        />
+      </div>
+    </.box>
+    <.box card>
+      <.form_header title={gettext("Send a magic link")} no_margin />
+      <.p>
+        Deliver a magic link to your users' email. The link will sign them in without a password.
+      </.p>
+      <.a
+        label={gettext("Setup magic link")}
+        to={~p"/app/methods/magic-link"}
+        styled
+        link_type="live_redirect"
+      />
     </.box>
   </div>
 </.layout>

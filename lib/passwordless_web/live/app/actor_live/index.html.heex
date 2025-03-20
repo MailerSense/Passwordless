@@ -1,91 +1,80 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
-  <div class="flex flex-col gap-6">
-    <.alert with_icon color="info">
-      {gettext(
-        "%{app} has %{users} users, of which %{mau} are MAU as of %{date}.",
-        app: @current_app.name,
-        users: Util.number!(@user_count),
-        mau: Util.number!(@mau_count),
-        date: format_date(Date.utc_today())
-      )}
-    </.alert>
-    <.data_table
-      meta={@meta}
-      items={@actors}
-      title={gettext("All users")}
-      switch_items={
-        [
-          %{name: :all, label: gettext("All"), clear: true}
-        ] ++ Enum.map(Actor.states(), &%{name: &1, label: Phoenix.Naming.humanize(&1)})
-      }
-    >
-      <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
-      <:col field={:search} searchable filterable={[:==]} />
-      <:col :let={actor} field={:name} sortable>
-        <.a
-          to={~p"/app/users/#{actor}/edit"}
-          label={Actor.handle(actor)}
-          styled
-          link_type="live_redirect"
-        />
-      </:col>
-      <:col :let={actor} field={:email} sortable>
-        {Actor.email(actor)}
-      </:col>
-      <:col :let={actor} field={:phone} sortable>
-        <% phone = Actor.phone(actor) %>
-        <div :if={Util.present?(phone)} class="flex items-center gap-2">
-          <.icon name={"flag-#{Actor.phone_region(actor)}"} class="pc-flag-icon" /> {phone}
-        </div>
-      </:col>
-      <:col :let={actor} field={:state} sortable switchable filterable={[:==]}>
-        <% {badge_label, badge_color} = actor_state_badge(actor) %>
-        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-      </:col>
-      <:col :let={actor} label={gettext("Added")} field={:inserted_at} sortable>
-        {format_date(actor.inserted_at)}
-      </:col>
-      <:col actions></:col>
-      <:actions :let={actor}>
-        <.icon_button
-          to={~p"/app/users/#{actor}/delete"}
-          size="sm"
-          icon="custom-trash"
+  <.data_table
+    meta={@meta}
+    items={@actors}
+    title={gettext("All users")}
+    switch_items={
+      [
+        %{name: :all, label: gettext("All"), clear: true}
+      ] ++ Enum.map(Actor.states(), &%{name: &1, label: Phoenix.Naming.humanize(&1)})
+    }
+  >
+    <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
+    <:col field={:search} searchable filterable={[:==]} />
+    <:col :let={actor} field={:name} sortable>
+      <.a
+        to={~p"/app/users/#{actor}/edit"}
+        label={Actor.handle(actor)}
+        styled
+        link_type="live_redirect"
+      />
+    </:col>
+    <:col :let={actor} field={:email} sortable>
+      {Actor.email(actor)}
+    </:col>
+    <:col :let={actor} field={:phone} sortable>
+      <% phone = Actor.phone(actor) %>
+      <div :if={Util.present?(phone)} class="flex items-center gap-2">
+        <.icon name={"flag-#{Actor.phone_region(actor)}"} class="pc-flag-icon" /> {phone}
+      </div>
+    </:col>
+    <:col :let={actor} field={:state} sortable switchable filterable={[:==]}>
+      <% {badge_label, badge_color} = actor_state_badge(actor) %>
+      <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+    </:col>
+    <:col :let={actor} label={gettext("Added")} field={:inserted_at} sortable>
+      {format_date(actor.inserted_at)}
+    </:col>
+    <:col actions></:col>
+    <:actions :let={actor}>
+      <.icon_button
+        to={~p"/app/users/#{actor}/delete"}
+        size="sm"
+        icon="custom-trash"
+        color="light"
+        title={gettext("Remove")}
+        link_type="live_patch"
+      />
+      <.icon_button
+        to={~p"/app/users/#{actor}/edit"}
+        size="sm"
+        icon="custom-edit"
+        color="light"
+        title={gettext("Edit")}
+        link_type="live_patch"
+      />
+    </:actions>
+    <:header_actions>
+      <div class="flex gap-3">
+        <.button
+          to={apply_filters(@filters, @meta, ~p"/app/users/import")}
+          size="xs"
           color="light"
-          title={gettext("Remove")}
+          label={gettext("Import")}
+          icon="remix-download-line"
           link_type="live_patch"
         />
-        <.icon_button
-          to={~p"/app/users/#{actor}/edit"}
-          size="sm"
-          icon="custom-edit"
-          color="light"
-          title={gettext("Edit")}
+        <.button
+          to={apply_filters(@filters, @meta, ~p"/app/users/new")}
+          size="xs"
+          color="primary"
+          label={gettext("Create")}
+          icon="remix-add-circle-line"
           link_type="live_patch"
         />
-      </:actions>
-      <:header_actions>
-        <div class="flex gap-3">
-          <.button
-            to={apply_filters(@filters, @meta, ~p"/app/users/import")}
-            size="xs"
-            color="light"
-            label={gettext("Import")}
-            icon="remix-download-line"
-            link_type="live_patch"
-          />
-          <.button
-            to={apply_filters(@filters, @meta, ~p"/app/users/new")}
-            size="xs"
-            color="primary"
-            label={gettext("Create")}
-            icon="remix-add-circle-line"
-            link_type="live_patch"
-          />
-        </div>
-      </:header_actions>
-    </.data_table>
-  </div>
+      </div>
+    </:header_actions>
+  </.data_table>
 </.layout>
 
 <%= case @live_action do %>

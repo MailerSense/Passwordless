@@ -5,7 +5,12 @@
     connected={assigns[:socket] != nil}
     toasts_sync={assigns[:toasts_sync]}
   />
-  <.layout current_user={@current_user} current_page={@current_url} current_section={:admin}>
+  <.layout
+    current_user={@current_user}
+    current_page={@current_url}
+    current_section={:admin}
+    padded={false}
+  >
     <div class="px-6 xl:px-8 py-6">
       {@inner_content}
     </div>

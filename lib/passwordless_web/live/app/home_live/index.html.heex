@@ -1,21 +1,13 @@
 <.layout current_user={@current_user} current_page={:home} current_section={:app}>
   <div class="flex flex-col gap-6">
-    <.alert with_icon color="success">
-      {gettext("%{app} is healthy.", app: @current_app.name)}
-    </.alert>
-    <.box padded class="flex flex-col gap-6">
-      <.form_header title="Top actions" no_margin />
+    <.box card>
+      <.form_header title={gettext("Top actions")} no_margin />
       <.p>
-        Passwordless allows your users to securely perform any kind of action. Here are the top actions taken by users in the month {format_month_range(
-          Date.utc_today()
-        )}.
+        {gettext(
+          "Passwordless allows your users to securely perform any kind of action. Here are the top actions from %{period}.",
+          period: format_month_range(Date.utc_today())
+        )}
       </.p>
-      <.a
-        to={~p"/app/reports"}
-        label={gettext("Get detailed report")}
-        styled
-        link_type="live_redirect"
-      />
       <.form_separator no_margin />
       <.action_stat
         legend={[
@@ -26,29 +18,46 @@
         items={@top_actions}
       />
     </.box>
-    <.box padded class="flex flex-col gap-6">
-      <.form_header title="User actions" no_margin />
+
+    <.box card>
+      <.form_header title={gettext("API keys")} no_margin />
       <.p>
-        Table below shows a real-time list of all actions taken by users of {@current_app.name}.
+        {gettext(
+          "Embed Passwordless in your frontend and use the API to manage users and actions."
+        )}
       </.p>
-      <.a
-        to={~p"/app/embed/api-usage"}
-        label={gettext("Embed Passwordless")}
-        styled
-        link_type="live_redirect"
-      />
+      <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2">
+        <.field
+          name="test"
+          value={@current_app.id}
+          label="App ID"
+          readonly
+          copyable={true}
+          class="font-mono"
+          wrapper_class="!mb-0"
+        />
+        <.field
+          name="test2"
+          value="lololololo"
+          label="App Secret"
+          type="password"
+          readonly
+          viewable={true}
+          class="font-mono"
+          wrapper_class="!mb-0"
+        />
+      </div>
+      <.a label={gettext("Setup your app")} to={~p"/app/embed"} styled link_type="live_redirect" />
     </.box>
+
     <.stream_table
       id="actions"
       meta={@meta}
-      title={gettext("All actions")}
-      badge={@count}
+      title={gettext("Recent actions")}
       items={@streams.actions}
       finished={@finished}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-
-      <:header></:header>
 
       <:col :let={action} label={gettext("Action")} field={:name}>
         {Phoenix.Naming.humanize(Macro.underscore(action.name))}
@@ -91,20 +100,6 @@
           link_type="live_patch"
         />
       </:actions>
-
-      <:header_actions>
-        <.button
-          size="xs"
-          link_type="live_patch"
-          to={~p"/app/users"}
-          label={gettext("Manage users")}
-          with_icon
-          color="light"
-        >
-          {gettext("Manage users")}
-          <.icon name="remix-arrow-right-line" class="w-4 h-4" />
-        </.button>
-      </:header_actions>
     </.stream_table>
   </div>
 </.layout>

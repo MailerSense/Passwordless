@@ -16,7 +16,7 @@ defmodule PasswordlessWeb.Admin.OrgLive do
     fluid?: true
 
   import Database.QueryExt, only: [array_length: 1]
-  import PasswordlessWeb.Components.PageComponents, only: [page_header: 1]
+  import Ecto.Query
 
   alias PasswordlessWeb.Admin.Filters.SoftDelete, as: SoftDeleteFilter
   alias PasswordlessWeb.Admin.ItemActions.SoftDelete, as: SoftDeleteAction
@@ -166,46 +166,5 @@ defmodule PasswordlessWeb.Admin.OrgLive do
       soft_delete: %{module: SoftDeleteAction},
       soft_recover: %{module: SoftRecoverAction}
     )
-  end
-
-  @impl Backpex.LiveResource
-  def render_resource_slot(assigns, :index, :page_title) do
-    ~H"""
-    <.page_header title={@plural_name} />
-    """
-  end
-
-  @impl Backpex.LiveResource
-  def render_resource_slot(assigns, :show, :page_title) do
-    ~H"""
-    <.page_header title={@singular_name}>
-      <.link
-        :if={Backpex.LiveResource.can?(assigns, :edit, @item, @live_resource)}
-        class="tooltip hover:z-30"
-        data-tip={Backpex.translate("Edit")}
-        aria-label={Backpex.translate("Edit")}
-        patch={Router.get_path(@socket, @live_resource, @params, :edit, @item)}
-      >
-        <Backpex.HTML.CoreComponents.icon
-          name="hero-pencil-square"
-          class="h-6 w-6 cursor-pointer transition duration-75 hover:scale-110 hover:text-primary"
-        />
-      </.link>
-    </.page_header>
-    """
-  end
-
-  @impl Backpex.LiveResource
-  def render_resource_slot(assigns, :edit, :page_title) do
-    ~H"""
-    <.page_header title={Backpex.translate({"Edit %{resource}", %{resource: @singular_name}})} />
-    """
-  end
-
-  @impl Backpex.LiveResource
-  def render_resource_slot(assigns, :new, :page_title) do
-    ~H"""
-    <.page_header title={@create_button_label} />
-    """
   end
 end

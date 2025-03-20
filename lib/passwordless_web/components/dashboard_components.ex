@@ -145,7 +145,7 @@ defmodule PasswordlessWeb.DashboardComponents do
     <div class={["flex flex-col gap-6", @class]} {@rest}>
       <div class={[
         "grid grid-cols-1",
-        "lg:grid-cols-3 pb-3",
+        "lg:grid-cols-3",
         "gap-12 lg:gap-0 lg:divide-x divide-slate-200 dark:divide-slate-700"
       ]}>
         <div
@@ -160,8 +160,8 @@ defmodule PasswordlessWeb.DashboardComponents do
           </badge>
           <h2 class="text-slate-900 dark:text-white text-2xl font-bold">
             {Passwordless.Locale.Number.to_string!(item.value)} {ngettext(
-              "attempt",
-              "attempts",
+              "time",
+              "times",
               item.value
             )}
           </h2>

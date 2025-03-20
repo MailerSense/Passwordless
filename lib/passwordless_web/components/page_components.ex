@@ -18,6 +18,9 @@ defmodule PasswordlessWeb.Components.PageComponents do
   def page_header(assigns) do
     ~H"""
     <div class={["pc-page-header", @class]}>
+      <h1 class="pc-page-header--text">
+        {@title}
+      </h1>
       <%= if @inner_block do %>
         {render_slot(@inner_block)}
       <% end %>
@@ -52,8 +55,8 @@ defmodule PasswordlessWeb.Components.PageComponents do
 
   @doc "Gives you a white background with shadow."
   attr :class, :any, default: nil
+  attr :card, :boolean, default: false
   attr :padded, :boolean, default: false
-  attr :shadow_class, :string, default: "shadow-1"
   attr :rest, :global
   slot :inner_block
 
@@ -61,12 +64,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
     ~H"""
     <section
       {@rest}
-      class={[
-        "pc-box",
-        @class,
-        @shadow_class,
-        if(@padded, do: "p-6", else: "")
-      ]}
+      class={["pc-box", @class, if(@card, do: "pc-box__card"), if(@padded, do: "pc-box__padded")]}
     >
       {render_slot(@inner_block)}
     </section>
@@ -133,7 +131,11 @@ defmodule PasswordlessWeb.Components.PageComponents do
         menu_item_classes(@is_active?)
       ]}
     >
-      <.icon name={@icon} class={["w-6 h-6", menu_item_icon_classes(@is_active?)]} />
+      <.icon
+        :if={Util.present?(@icon)}
+        name={@icon}
+        class={["w-6 h-6", menu_item_icon_classes(@is_active?)]}
+      />
       {@label}
     </.a>
     """

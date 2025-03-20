@@ -71,6 +71,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
       add :email, :citext, null: false
+      add :state, :string, null: false
       add :tags, {:array, :string}, null: false, default: []
 
       timestamps()
@@ -192,6 +193,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
       add :logo, :string
+      add :state, :string, null: false
       add :website, :string, null: false
       add :display_name, :string, null: false
       add :primary_button_color, :string, null: false

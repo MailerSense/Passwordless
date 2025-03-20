@@ -13,6 +13,8 @@ defmodule Passwordless.App do
   alias Passwordless.Methods
   alias Passwordless.Organizations.Org
 
+  @states ~w(active)a
+
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -20,6 +22,7 @@ defmodule Passwordless.App do
   schema "apps" do
     field :name, :string
     field :logo, :string
+    field :state, Ecto.Enum, values: @states, default: :active
     field :website, :string
     field :display_name, :string
     field :primary_button_color, :string, default: "#1570EF"
@@ -54,6 +57,7 @@ defmodule Passwordless.App do
   @fields ~w(
     name
     logo
+    state
     website
     display_name
     primary_button_color

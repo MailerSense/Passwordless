@@ -95,7 +95,7 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
 
   def topbar_links(assigns) do
     ~H"""
-    <div {@rest} class={["h-[18px] justify-start items-center inline-flex", @class]}>
+    <div {@rest} class={["pc-sidebar__header-links", @class]}>
       <.a
         :for={l <- @links}
         to={l.to}

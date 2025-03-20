@@ -12,6 +12,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   import PasswordlessWeb.Components.Pagination
   import PasswordlessWeb.Components.Table
   import PasswordlessWeb.Components.Tabs
+  import PasswordlessWeb.Components.Typography
 
   alias PasswordlessWeb.Components.DataTable.Cell
   alias PasswordlessWeb.Components.DataTable.Filter
@@ -24,7 +25,6 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :any, default: "shadow-1", doc: "CSS class to add to the table"
   attr :wrapper_class, :any, default: "pc-table__wrapper pc-data-table__wrapper", doc: "CSS class to add to the table"
   attr :base_url_params, :map, required: false
 
@@ -100,7 +100,7 @@ defmodule PasswordlessWeb.Components.DataTable do
       phx-submit="update_filters"
       {form_assigns(@form_target)}
     >
-      <div class={[@wrapper_class, @shadow_class, @class]}>
+      <section class={[@wrapper_class, @class]}>
         <.table_search_bar
           :if={@search_field || @switch_field}
           meta={@meta}
@@ -109,7 +109,6 @@ defmodule PasswordlessWeb.Components.DataTable do
           search_field={@search_field}
           switch_items={@switch_items}
         />
-
         <.table_header
           :if={Util.present?(@title) or Util.present?(@title_func)}
           meta={@meta}
@@ -188,7 +187,7 @@ defmodule PasswordlessWeb.Components.DataTable do
             />
           </div>
         <% end %>
-      </div>
+      </section>
     </.form>
     """
   end
@@ -202,10 +201,10 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :meta, Flop.Meta, required: true
   attr :items, :any, required: true
   attr :title, :string, default: nil
+  attr :subtitle, :string, default: nil
   attr :badge, :string, default: nil
   attr :head, :boolean, default: true
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
   attr :finished, :boolean, default: false
   attr :base_url_params, :map, required: false
 
@@ -226,7 +225,6 @@ defmodule PasswordlessWeb.Components.DataTable do
     attr :align_right, :boolean, doc: "Aligns the column to the right"
   end
 
-  slot :header
   slot :actions, required: false
   slot :header_actions, required: false
   slot :if_empty, required: false
@@ -243,11 +241,14 @@ defmodule PasswordlessWeb.Components.DataTable do
       |> assign_new(:base_url_params, fn -> %{} end)
 
     ~H"""
-    <div class={["pc-table__wrapper", "pc-stream-table__wrapper", @shadow_class, @class]}>
-      <%= if Util.present?(@header) do %>
-        {render_slot(@header)}
-      <% end %>
-      <.table_header :if={@title} badge={@badge} title={@title} actions={@header_actions} />
+    <section class={["pc-table__wrapper", "pc-stream-table__wrapper", @class]}>
+      <.table_header
+        :if={@title}
+        badge={@badge}
+        title={@title}
+        subtitle={@subtitle}
+        actions={@header_actions}
+      />
       <.table>
         <thead :if={@head} class="pc-table__thead-striped">
           <.tr>
@@ -307,7 +308,7 @@ defmodule PasswordlessWeb.Components.DataTable do
           </.tr>
         </tbody>
       </.table>
-    </div>
+    </section>
     """
   end
 
@@ -317,7 +318,6 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :count, :integer, default: nil
   attr :title, :string, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :shadow_class, :string, default: "shadow-1", doc: "CSS class to add to the table"
 
   slot :col, required: true do
     attr :label, :string
@@ -344,7 +344,7 @@ defmodule PasswordlessWeb.Components.DataTable do
     assigns = assign_new(assigns, :id, fn -> Util.id("simple-table") end)
 
     ~H"""
-    <div class={["pc-table__wrapper", "pc-data-table__wrapper", @shadow_class, @class]}>
+    <section class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
       <.table_header :if={@title} title={@title} count={@count} actions={@header_actions} />
       <.table class="pc-data-table">
         <thead class="pc-table__thead-striped">
@@ -396,7 +396,7 @@ defmodule PasswordlessWeb.Components.DataTable do
           </.tr>
         </tbody>
       </.table>
-    </div>
+    </section>
     """
   end
 
@@ -406,7 +406,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :badge, :string, default: nil
   attr :count, :integer, default: nil
   attr :title, :string, default: nil
-  attr :title_func, {:fun, 1}, default: nil
+  attr :subtitle, :string, default: nil
 
   attr :form, :map, default: nil
   attr :search_field, :atom, default: nil
@@ -414,12 +414,6 @@ defmodule PasswordlessWeb.Components.DataTable do
   slot :actions, required: false
 
   defp table_header(assigns) do
-    assigns =
-      case assigns[:title_func] do
-        fun when is_function(fun, 1) -> assign(assigns, :title, fun.(assigns[:meta]))
-        nil -> assigns
-      end
-
     assigns =
       cond do
         Util.present?(assigns[:badge]) ->
@@ -436,18 +430,23 @@ defmodule PasswordlessWeb.Components.DataTable do
       end
 
     ~H"""
-    <div class={[
+    <header class={[
       "px-6 py-6 flex items-center justify-between gap-4"
     ]}>
-      <div class="flex items-center gap-2">
-        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">
-          {@title}
-        </h3>
-        <.badge :if={Util.present?(@badge)} size="sm" color="primary" label={@badge} />
-      </div>
+      <.div_wrapper class="flex flex-col gap-6" wrap={Util.present?(@subtitle)}>
+        <.div_wrapper class="flex items-center gap-2" wrap={Util.present?(@badge)}>
+          <h3 class="text-lg font-semibold text-slate-900 dark:text-white">
+            {@title}
+          </h3>
+          <.badge :if={Util.present?(@badge)} size="sm" color="primary" label={@badge} />
+        </.div_wrapper>
+        <.p :if={Util.present?(@subtitle)}>
+          {@subtitle}
+        </.p>
+      </.div_wrapper>
 
       {render_slot(@actions)}
-    </div>
+    </header>
     """
   end
 
@@ -628,4 +627,20 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   defp form_assigns(nil), do: %{}
   defp form_assigns(target), do: %{"phx-target": target}
+
+  attr :wrap, :boolean, default: false
+  attr :class, :any, default: nil
+  slot :inner_block, required: true
+
+  defp div_wrapper(assigns) do
+    ~H"""
+    <%= if @wrap do %>
+      <div class={@class}>
+        {render_slot(@inner_block)}
+      </div>
+    <% else %>
+      {render_slot(@inner_block)}
+    <% end %>
+    """
+  end
 end

@@ -13,6 +13,7 @@ defmodule Passwordless.Action do
 
   @states ~w(allow timeout block challenge_required)a
   @methods ~w(email sms whatsapp magic_link authenticator security_key passkey recovery_codes)a
+
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id, :state, :inserted_at]

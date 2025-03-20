@@ -15,10 +15,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
   slot :inner_block
 
   def tabbed_settings_layout(assigns) do
-    assigns =
-      assigns
-      |> assign_new(:menu_items, fn -> menu_items(assigns[:current_user]) end)
-      |> assign_new(:org_menu_items, fn -> PasswordlessWeb.Helpers.org_menu_items(assigns[:current_user]) end)
+    assigns = assign_new(assigns, :menu_items, fn -> menu_items(assigns[:current_user]) end)
 
     ~H"""
     <.layout
@@ -38,7 +35,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
   # Private
 
   defp menu_items(%User{current_membership: %Membership{}} = user) do
-    org_routes = [:app, :team, :domain, :organization]
+    org_routes = [:app_settings, :team, :domain, :organization]
 
     user_routes = [
       :edit_profile,

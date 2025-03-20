@@ -52,17 +52,17 @@ defmodule PasswordlessWeb.Components.SidebarSectionMenu do
   defp menu_item_base, do: "p-2 transition duration-200 rounded-xl"
 
   # Active state
-  defp menu_item_classes(page, page), do: "#{menu_item_base()} text-primary-300 bg-background-950"
+  defp menu_item_classes(page, page), do: "#{menu_item_base()} text-primary-500 bg-primary-500/20"
 
   # Inactive state
   defp menu_item_classes(_current_page, _link_page),
-    do: "#{menu_item_base()} text-white/60 hover:bg-background-800 hover:text-primary-500"
+    do: "#{menu_item_base()} text-slate-400 hover:bg-slate-800 hover:text-primary-500"
 
   defp menu_icon_base, do: "w-8 h-8"
 
   # Active state
-  defp menu_icon_classes(page, page), do: "#{menu_icon_base()} text-primary-300"
+  defp menu_icon_classes(page, page), do: "#{menu_icon_base()} text-primary-500"
 
   # Inactive state
-  defp menu_icon_classes(_current_page, _link_page), do: "#{menu_icon_base()} text-white/60"
+  defp menu_icon_classes(_current_page, _link_page), do: "#{menu_icon_base()} text-slate-400 "
 end

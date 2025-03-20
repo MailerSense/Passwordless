@@ -31,6 +31,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
       |> Passwordless.get_actor!(id)
       |> Repo.preload([:totps, :email, :emails, :phone, :phones, :recovery_codes])
 
+    states = Enum.map(Actor.states(), fn state -> {Phoenix.Naming.humanize(state), state} end)
     changeset = Passwordless.change_actor(app, actor)
     languages = Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
 
@@ -43,7 +44,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
     socket =
       socket
-      |> assign(actor: actor, languages: languages, flag_mapping: flag_mapping)
+      |> assign(actor: actor, states: states, languages: languages, flag_mapping: flag_mapping, property_editor: false)
       |> assign_form(changeset)
       |> assign_emails(actor)
       |> assign_phones(actor)
@@ -80,6 +81,11 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   @impl true
   def handle_params(_params, _url, socket) do
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("toggle_property_editor", _params, socket) do
+    {:noreply, update(socket, :property_editor, &Kernel.not/1)}
   end
 
   @impl true
@@ -144,7 +150,8 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     |> assign(form: to_form(changeset))
     |> assign(user_name: Ecto.Changeset.get_field(changeset, :name))
     |> assign(user_state: Ecto.Changeset.get_field(changeset, :state))
-    |> assign(user_active: Ecto.Changeset.get_field(changeset, :active))
+    |> assign(user_active: Ecto.Changeset.get_field(changeset, :state) == :active)
+    |> assign(user_properties: Ecto.Changeset.get_field(changeset, :properties))
   end
 
   defp apply_action(socket, :edit, %Actor{} = actor) do

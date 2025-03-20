@@ -34,20 +34,7 @@
 
     <div class="flex flex-col gap-6">
       <.box padded>
-        <.field type="checkbox" field={@form[:active]} />
-        <.p>
-          {case @user_state do
-            :active ->
-              gettext(
-                "User is active and can use all authentication methods enabled for %{app}.",
-                app: @current_app.name
-              )
-
-            :locked ->
-              gettext("User is locked and cannot use any authentication methods.")
-          end}
-        </.p>
-        <.form_separator />
+        <.field type="radio-group" label="" field={@form[:state]} options={@states} />
         <.field field={@form[:user_id]} label={gettext("User ID")} disabled={not @user_active} />
         <.field
           field={@form[:language]}
@@ -59,24 +46,43 @@
           required_asterix={false}
           disabled={not @user_active}
         />
-        <.json_block
-          label={gettext("Properties")}
-          code={@actor.properties}
-          disabled={not @user_active}
-        />
-        <.a
-          to={~p"/app/users/#{@actor}/edit/properties"}
-          label={gettext("Edit properties")}
-          styled
-          link_type="live_patch"
-        />
+        <%= if @property_editor do %>
+          <.field
+            type="textarea"
+            field={@form[:properties_text]}
+            label={gettext("Properties")}
+            disabled={not @user_active}
+            class="font-mono"
+            rows="6"
+          />
+          <.a
+            label={gettext("Stop editing")}
+            styled
+            link_type="a"
+            phx-click="toggle_property_editor"
+            disabled={not @form.source.valid?}
+          />
+        <% else %>
+          <.json_block
+            label={gettext("Properties")}
+            code={@user_properties}
+            disabled={not @user_active}
+          />
+          <.a
+            label={gettext("Edit properties")}
+            styled
+            link_type="a"
+            phx-click="toggle_property_editor"
+            disabled={not @user_active}
+          />
+        <% end %>
       </.box>
       <.form_separator no_margin />
       <.form_header title={gettext("Credentials")} no_margin />
       <.p class="text-slate-600 dark:text-slate-300">
         Email and phone numbers are used to send notifications and authenticate users. You can add multiple emails and phone numbers to a user account.
       </.p>
-      <.simple_table items={@emails} title={gettext("Emails")}>
+      <.simple_table items={@emails} count={Enum.count(@emails)} title={gettext("Emails")}>
         <:if_empty>{gettext("No %{models} defined yet", models: gettext("emails"))}</:if_empty>
         <:col field={:address} label={gettext("Email")} body_class="w-full" />
         <:col :let={email} field={:authenticators}>
@@ -121,7 +127,7 @@
           />
         </:header_actions>
       </.simple_table>
-      <.simple_table items={@phones} title={gettext("Phones")}>
+      <.simple_table items={@phones} count={Enum.count(@phones)} title={gettext("Phones")}>
         <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
         <:col :let={phone} label={gettext("Phone")} body_class="w-full">
           <div class="flex items-center gap-2">
@@ -177,7 +183,7 @@
       <.p class="text-slate-600 dark:text-slate-300">
         Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
       </.p>
-      <.simple_table items={[]} title={gettext("Passkeys")}>
+      <.simple_table items={[]} count={Enum.count([])} title={gettext("Passkeys")}>
         <:if_empty>{gettext("No %{models} defined yet", models: gettext("passkeys"))}</:if_empty>
         <:col field={:name} body_class="w-full" />
         <:col actions></:col>
@@ -200,7 +206,7 @@
           />
         </:actions>
       </.simple_table>
-      <.simple_table items={[]} title={gettext("Security keys")}>
+      <.simple_table items={[]} count={Enum.count([])} title={gettext("Security keys")}>
         <:if_empty>
           {gettext("No %{models} defined yet", models: gettext("security keys"))}
         </:if_empty>
@@ -225,7 +231,11 @@
           />
         </:actions>
       </.simple_table>
-      <.simple_table items={@totps} title={gettext("Authenticators (TOTPs)")}>
+      <.simple_table
+        items={@totps}
+        count={Enum.count([])}
+        title={gettext("Authenticators (TOTPs)")}
+      >
         <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
         <:col field={:name} body_class="w-full" />
         <:col actions></:col>
@@ -253,7 +263,7 @@
       <.p class="text-slate-600 dark:text-slate-300">
         Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
       </.p>
-      <.data_table id="actions" meta={@meta} title={gettext("User actions")} items={@actions}>
+      <.data_table id="actions" meta={@meta} title={gettext("Previous actions")} items={@actions}>
         <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
         <:col :let={action} label={gettext("Action")} field={:name}>
           {Phoenix.Naming.humanize(Macro.underscore(action.name))}

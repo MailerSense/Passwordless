@@ -24,7 +24,7 @@ defmodule PasswordlessWeb.Components.Link do
 
     ~H"""
     <button
-      class={[link_class(@styled), @class]}
+      class={[link_class(@styled, @disabled), @class]}
       disabled={@disabled}
       title={@label || @title}
       aria-label={@label || @title}
@@ -46,7 +46,7 @@ defmodule PasswordlessWeb.Components.Link do
     ~H"""
     <.link
       href={@to}
-      class={[link_class(@styled), @class]}
+      class={[link_class(@styled, @disabled), @class]}
       title={@label || @title}
       aria-label={@label || @title}
       aria-disabled={@disabled}
@@ -62,7 +62,7 @@ defmodule PasswordlessWeb.Components.Link do
     ~H"""
     <.link
       patch={@to}
-      class={[link_class(@styled), @class]}
+      class={[link_class(@styled, @disabled), @class]}
       title={@label || @title}
       aria-label={@label || @title}
       aria-disabled={@disabled}
@@ -78,7 +78,7 @@ defmodule PasswordlessWeb.Components.Link do
     ~H"""
     <.link
       navigate={@to}
-      class={[link_class(@styled), @class]}
+      class={[link_class(@styled, @disabled), @class]}
       title={@label || @title}
       aria-label={@label || @title}
       aria-disabled={@disabled}
@@ -93,7 +93,7 @@ defmodule PasswordlessWeb.Components.Link do
   def a(%{link_type: "button"} = assigns) do
     ~H"""
     <button
-      class={[link_class(@styled), @class]}
+      class={[link_class(@styled, @disabled), @class]}
       disabled={@disabled}
       title={@label || @title}
       aria-label={@label || @title}
@@ -108,6 +108,7 @@ defmodule PasswordlessWeb.Components.Link do
 
   # Private
 
-  defp link_class(true), do: "pc-link--styled"
-  defp link_class(false), do: ""
+  defp link_class(true, true), do: "pc-link--styled__disabled"
+  defp link_class(true, false), do: "pc-link--styled"
+  defp link_class(_, _), do: nil
 end

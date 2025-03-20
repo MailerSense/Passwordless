@@ -10,6 +10,11 @@
     >
       <.field field={@form[:name]} autocomplete="name" required />
       <.field
+        field={@form[:user_id]}
+        label={gettext("User ID")}
+        help_text={gettext("Unique external ID you can assign to each user")}
+      />
+      <.field
         field={@form[:language]}
         type="select"
         options={@languages}
@@ -17,7 +22,6 @@
         icon_mapping={@flag_mapping}
         required
       />
-      <.field icon="remix-id-card-line" field={@form[:user_id]} label={gettext("User ID")} />
     </.form>
 
     <:actions>

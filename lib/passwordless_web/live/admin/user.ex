@@ -12,10 +12,9 @@ defmodule PasswordlessWeb.Admin.UserLive do
       name: Passwordless.PubSub,
       topic: "users",
       event_prefix: "user_"
-    ],
-    fluid?: true
+    ]
 
-  import PasswordlessWeb.Components.PageComponents, only: [page_header: 1]
+  import Ecto.Query
 
   alias Passwordless.Accounts.User
   alias Passwordless.Security.Guard
@@ -148,35 +147,28 @@ defmodule PasswordlessWeb.Admin.UserLive do
       total: %{
         module: Backpex.Metrics.Value,
         label: "Total users",
-        class: "w-full lg:w-1/5",
+        class: "w-full lg:w-1/4",
         select: dynamic([u], count(u.id)),
         format: &Integer.to_string/1
       },
       active: %{
         module: Backpex.Metrics.Value,
         label: "Active users",
-        class: "w-full lg:w-1/5",
+        class: "w-full lg:w-1/4",
         select: dynamic([u], u.id |> count() |> filter(u.state == :active)),
-        format: &Integer.to_string/1
-      },
-      inactive: %{
-        module: Backpex.Metrics.Value,
-        label: "Inactive users",
-        class: "w-full lg:w-1/5",
-        select: dynamic([u], u.id |> count() |> filter(u.state == :inactive)),
         format: &Integer.to_string/1
       },
       locked: %{
         module: Backpex.Metrics.Value,
         label: "Locked users",
-        class: "w-full lg:w-1/5",
+        class: "w-full lg:w-1/4",
         select: dynamic([u], u.id |> count() |> filter(u.state == :locked)),
         format: &Integer.to_string/1
       },
       deleted: %{
         module: Backpex.Metrics.Value,
         label: "Deleted users",
-        class: "w-full lg:w-1/5",
+        class: "w-full lg:w-1/4",
         select: dynamic([u], u.id |> count() |> filter(not is_nil(u.deleted_at))),
         format: &Integer.to_string/1
       }
@@ -195,46 +187,5 @@ defmodule PasswordlessWeb.Admin.UserLive do
       soft_recover: %{module: SoftRecoverAction},
       impersonate_user: %{module: ImpersonateUser}
     )
-  end
-
-  @impl Backpex.LiveResource
-  def render_resource_slot(assigns, :index, :page_title) do
-    ~H"""
-    <.page_header title={@plural_name} />
-    """
-  end
-
-  @impl Backpex.LiveResource
-  def render_resource_slot(assigns, :show, :page_title) do
-    ~H"""
-    <.page_header title={@singular_name}>
-      <.link
-        :if={Backpex.LiveResource.can?(assigns, :edit, @item, @live_resource)}
-        class="tooltip hover:z-30"
-        data-tip={Backpex.translate("Edit")}
-        aria-label={Backpex.translate("Edit")}
-        patch={Router.get_path(@socket, @live_resource, @params, :edit, @item)}
-      >
-        <Backpex.HTML.CoreComponents.icon
-          name="hero-pencil-square"
-          class="h-6 w-6 cursor-pointer transition duration-75 hover:scale-110 hover:text-primary"
-        />
-      </.link>
-    </.page_header>
-    """
-  end
-
-  @impl Backpex.LiveResource
-  def render_resource_slot(assigns, :edit, :page_title) do
-    ~H"""
-    <.page_header title={Backpex.translate({"Edit %{resource}", %{resource: @singular_name}})} />
-    """
-  end
-
-  @impl Backpex.LiveResource
-  def render_resource_slot(assigns, :new, :page_title) do
-    ~H"""
-    <.page_header title={@create_button_label} />
-    """
   end
 end

@@ -6,8 +6,10 @@ defmodule PasswordlessWeb.Components.SlideOver do
   alias PasswordlessWeb.Components.Typography
   alias Phoenix.LiveView.JS
 
+  @default_origin "right"
+
   attr(:origin, :string,
-    default: "right",
+    default: @default_origin,
     values: ["left", "right", "top", "bottom"],
     doc: "slideover point of origin"
   )
@@ -131,7 +133,7 @@ defmodule PasswordlessWeb.Components.SlideOver do
   # def handle_event("close_slide_over", _, socket) do
   #   {:noreply, push_patch(socket, to: Routes.moderate_users_path(socket, :index))}
   # end
-  def hide_slide_over(origin, close_slide_over_target \\ nil) do
+  def hide_slide_over(origin \\ @default_origin, close_slide_over_target \\ nil) do
     {end_class, start_class} = get_transition_classes(origin)
 
     js =

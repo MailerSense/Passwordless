@@ -1,22 +1,31 @@
 <.layout current_user={@current_user} current_page={:billing} current_section={:app}>
   <div class="flex flex-col gap-6">
-    <.box class="flex flex-col gap-6" padded>
+    <.box card>
       <.form_header title={gettext("Passwordless Pro")} no_margin />
       <.p>
         {gettext(
-          "You have %{mau} Monthly Active Users (MAU) out of %{max_mau} for the month of %{month}. This quota is shared across all apps in your organization. Your MAU quota will reset on %{reset_date}. Table below shows precise usage and estimated charges for your organization.",
+          "You have %{mau} Monthly Active Users (MAU) out of %{max_mau}. This quota is shared across all apps in %{org}. Table below shows precise usage of services and estimated charges for your organization. Have any questions? Reach out to our support.",
           mau: Util.number!(@mau_count),
           max_mau: Util.number!(15_000),
+          org: @current_org.name,
           month: format_date(Date.utc_today()),
           reset_date: format_date(Date.utc_today())
         )}
       </.p>
-      <.a
-        to={~p"/app/reports"}
-        label={gettext("Manage my plan")}
-        styled
-        link_type="live_redirect"
-      />
+      <div class="flex items-center gap-3">
+        <.a
+          to={~p"/app/reports"}
+          label={gettext("Manage my plan")}
+          styled
+          link_type="live_redirect"
+        />
+        <.a
+          to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
+          label={gettext("Contact support")}
+          styled
+          link_type="a"
+        />
+      </div>
     </.box>
     <.simple_table
       items={[
@@ -39,10 +48,10 @@
           estimated_charge: Money.new(1000)
         }
       ]}
-      title={gettext("Billable items")}
+      title={gettext("Billing items")}
     >
       <:if_empty>
-        {gettext("No %{models} found", models: gettext("billable items"))}
+        {gettext("No %{models} found", models: gettext("billing items"))}
       </:if_empty>
       <:col :let={item} field={:app}>
         {Util.truncate(item.app)}

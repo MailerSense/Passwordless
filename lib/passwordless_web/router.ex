@@ -139,7 +139,6 @@ defmodule PasswordlessWeb.Router do
       live "/users/:id/edit/phone/new", App.ActorLive.Edit, :new_phone
       live "/users/:id/edit/phone/:phone_id/edit", App.ActorLive.Edit, :edit_phone
       live "/users/:id/edit/phone/:phone_id/delete", App.ActorLive.Edit, :delete_phone
-      live "/users/:id/edit/properties", App.ActorLive.Edit, :edit_properties
       live "/users/:id/delete", App.ActorLive.Index, :delete
 
       # Methods
@@ -160,10 +159,7 @@ defmodule PasswordlessWeb.Router do
       live "/reports", App.ReportLive.Index, :index
 
       # Embed & API
-      live "/embed/secrets", App.EmbedLive.Index, :secrets
-      live "/embed/api-usage", App.EmbedLive.Index, :api_usage
-      live "/embed/login-page", App.EmbedLive.Index, :login_page
-      live "/embed/auth-guard", App.EmbedLive.Index, :auth_guard
+      live "/embed", App.EmbedLive.Index, :index
 
       # Team
       live "/team", App.TeamLive.Index, :index
@@ -207,9 +203,7 @@ defmodule PasswordlessWeb.Router do
       live "/apps/new", App.AppLive.Index, :new
 
       # Knowledge
-      live "/blog", Knowledge.BlogLive, :index
-      live "/docs", Knowledge.DocLive, :index
-      live "/guides", Knowledge.GuideLive, :index
+      live "/use-cases", Knowledge.UseCaseLive, :index
     end
   end
 
