@@ -10,6 +10,7 @@ defmodule Passwordless.Event do
   alias Passwordless.EmailMessage
 
   @kinds ~w(created verified failed exhausted timed_out)a
+
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
