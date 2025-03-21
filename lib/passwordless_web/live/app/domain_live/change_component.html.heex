@@ -1,17 +1,15 @@
 <div>
   <% origin = "right" %>
   <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
-    <div class="flex flex-col gap-6">
-      <.form
-        id="change-domain-form"
-        for={@form}
-        phx-submit="save"
-        phx-change="validate"
-        phx-target={@myself}
-      >
-        <.field field={@form[:domain]} label={gettext("New domain")} required />
-      </.form>
-    </div>
+    <.form
+      id="change-domain-form"
+      for={@form}
+      phx-submit="save"
+      phx-change="validate"
+      phx-target={@myself}
+    >
+      <.field field={@form[:domain]} required phx-debounce="blur" />
+    </.form>
 
     <:actions>
       <.button

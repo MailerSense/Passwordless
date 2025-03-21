@@ -15,9 +15,10 @@ defmodule Passwordless.DomainRecord do
     filterable: [:id], sortable: [:id, :name, :kind, :value, :verified]
   }
   schema "domain_records" do
-    field :kind, Ecto.Enum, values: ~w(txt cname)a
+    field :kind, Ecto.Enum, values: ~w(mx txt cname)a
     field :name, :string
     field :value, :string
+    field :priority, :integer, default: 0
     field :verified, :boolean, default: false
 
     belongs_to :domain, Domain, type: :binary_id
@@ -30,6 +31,7 @@ defmodule Passwordless.DomainRecord do
     name
     value
     verified
+    priority
     domain_id
   )a
   @required_fields @fields
@@ -69,8 +71,9 @@ defmodule Passwordless.DomainRecord do
     records
     |> Enum.group_by(& &1.kind)
     |> Enum.sort_by(fn
-      {:txt, _v} -> 1
-      {:cname, _v} -> 2
+      {:mx, _v} -> 1
+      {:txt, _v} -> 2
+      {:cname, _v} -> 3
     end)
     |> Enum.map(&elem(&1, 1))
     |> Enum.flat_map(&Enum.sort_by(&1, fn r -> r.id end))
@@ -86,6 +89,7 @@ defmodule Passwordless.DomainRecord do
     |> validate_name()
     |> validate_value()
     |> unique_constraint([:domain_id, :kind, :name, :value])
+    |> unsafe_validate_unique([:domain_id, :kind, :name, :value], Passwordless.Repo)
     |> assoc_constraint(:domain)
   end
 
@@ -95,12 +99,12 @@ defmodule Passwordless.DomainRecord do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
     |> ChangesetExt.ensure_lowercase(:name)
-    |> validate_length(:name, min: 1, max: 160)
+    |> validate_length(:name, min: 1, max: 255)
   end
 
   defp validate_value(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:value)
-    |> validate_length(:value, min: 1, max: 160)
+    |> validate_length(:value, min: 1, max: 255)
   end
 end

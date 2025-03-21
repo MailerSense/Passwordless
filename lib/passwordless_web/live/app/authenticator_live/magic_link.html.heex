@@ -1,0 +1,115 @@
+<div>
+  <.form
+    id="edit-magic-link-form"
+    for={@form}
+    phx-target={@myself}
+    phx-submit="save"
+    phx-change="validate"
+    class="p-6"
+  >
+    <.field type="checkbox" field={@form[:enabled]} />
+    <.p class="mb-6">
+      Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in. The link is valid for a limited time and can only be used once.
+    </.p>
+    <.form_separator />
+
+    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+      <.field
+        field={@form[:sender_name]}
+        label={gettext("Sender")}
+        disabled={not @enabled}
+        required
+        required_asterix={false}
+        wrapper_class="!mb-0"
+      />
+      <.field
+        field={@form[:sender]}
+        label={gettext("Email")}
+        suffix={Passwordless.Domain.email_suffix(@domain)}
+        disabled={not @enabled}
+        required
+        required_asterix={false}
+        wrapper_class="!mb-0"
+      />
+    </div>
+    <.email_preview
+      to={
+        ~p"/app/emails/#{@email_template}/en/edit?return_to=#{~p"/app/authenticators/magic-link"}"
+      }
+      name={gettext("Edit email template")}
+      preview={@email_version.html_body}
+      link_type="live_redirect"
+    />
+    <.a
+      to={
+        ~p"/app/emails/#{@email_template}/en/edit?return_to=#{~p"/app/authenticators/magic-link"}"
+      }
+      label={gettext("Edit email template")}
+      styled
+      link_type="live_redirect"
+    />
+    <.form_separator />
+    <.form_header title="Advanced" />
+    <.field
+      type="checkbox"
+      field={@form[:email_tracking]}
+      help_text={
+        gettext(
+          "Track users who successfully received your email and opened it in their email clients."
+        )
+      }
+      disabled={not @enabled}
+    />
+    <.field
+      type="checkbox"
+      field={@form[:fingerprint_device]}
+      help_text={
+        gettext(
+          "This cookie will then be sent automatically by the browser when the user clicks on the magic link, and we can verify the link was opened in the same browser it was requested."
+        )
+      }
+      disabled={not @enabled}
+    />
+    <.field
+      field={@form[:expires]}
+      type="number"
+      label={gettext("Link expires")}
+      prefix={gettext("After")}
+      suffix={gettext("minutes")}
+      disabled={not @enabled}
+      required
+      required_asterix={false}
+    />
+    <.form_separator />
+    <.form_header title="API - Send magic link" />
+    <.code_block
+      class="mb-6"
+      language={:typescript}
+      code={
+        ~s"""
+        import hljs from "highlight.js/lib/core";
+        import { Hook, makeHook } from "phoenix_typed_hook";
+
+        class HighlightHook extends Hook {
+          public mounted() {
+            this.run("mounted", this.el);
+          }
+
+          public updated() {
+            this.run("updated", this.el);
+          }
+
+          private run(_lifecycleMethod: "mounted" | "updated", el: HTMLElement) {
+            hljs.highlightElement(el.querySelector("code")!);
+          }
+        }
+
+        export default makeHook(HighlightHook);
+        """
+      }
+    />
+    <.p class="mb-6">
+      To send a magic link challenge to your users, you can use the following API endpoint.
+    </.p>
+  </.form>
+</div>

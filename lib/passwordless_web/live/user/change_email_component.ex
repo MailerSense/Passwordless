@@ -42,7 +42,9 @@ defmodule PasswordlessWeb.User.ChangeEmailComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, gettext("A link to confirm your e-mail change has been sent to the new address."))
+         |> put_toast(:info, gettext("A link to confirm your e-mail change has been sent to the new address."),
+           title: gettext("Success")
+         )
          |> push_patch(to: socket.assigns.return_to)}
 
       {:error, changeset} ->

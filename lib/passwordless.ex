@@ -7,18 +7,37 @@ defmodule Passwordless do
   if it comes from the database, an external API or others.
   """
 
+  import Ecto.Query
   import Util.Crud
 
+  alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.Actor
   alias Passwordless.App
+  alias Passwordless.Authenticators
+  alias Passwordless.AuthToken
   alias Passwordless.Domain
   alias Passwordless.DomainRecord
   alias Passwordless.Email
-  alias Passwordless.Methods
+  alias Passwordless.EmailTemplate
+  alias Passwordless.EmailTemplates
+  alias Passwordless.EmailTemplateVersion
+  alias Passwordless.Event
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
+  alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
+
+  @authenticators [
+    magic_link: Authenticators.MagicLink,
+    email: Authenticators.Email,
+    sms: Authenticators.SMS,
+    whatsapp: Authenticators.WhatsApp,
+    totp: Authenticators.TOTP,
+    security_key: Authenticators.SecurityKey,
+    passkey: Authenticators.Passkey,
+    recovery_codes: Authenticators.RecoveryCodes
+  ]
 
   @doc """
   Looks up `Application` config or raises if keyspace is not configured.
@@ -45,10 +64,6 @@ defmodule Passwordless do
     Application.get_env(:passwordless, key, default)
   end
 
-  ## Methods
-
-  def methods, do: ~w(magic_link email_otp sms_otp push security_key passkey)a
-
   ## Apps
 
   def get_app(%Org{} = org, id) when is_binary(id) do
@@ -73,17 +88,18 @@ defmodule Passwordless do
   def create_full_app(%Org{} = org, attrs \\ %{}) do
     Repo.transact(fn ->
       with {:ok, app} <- create_app(org, attrs),
-           {:ok, _methods} <-
-             create_methods(app, %{
+           {:ok, _authenticators} <-
+             create_authenticators(app, %{
                magic_link: %{
-                 sender: "notifications",
-                 sender_name: app.name
+                 sender: "verify",
+                 sender_name: app.name,
+                 redirect_urls: [%{url: app.website}]
                },
                email: %{
-                 sender: "notifications",
+                 sender: "verify",
                  sender_name: app.name
                },
-               authenticator: %{
+               totp: %{
                  issuer_name: app.name
                },
                security_key: %{
@@ -115,6 +131,42 @@ defmodule Passwordless do
 
   def delete_app(%App{} = app) do
     Repo.soft_delete(app)
+  end
+
+  ## API Keys
+
+  def get_auth_token!(%App{} = app, id) when is_binary(id) do
+    app
+    |> AuthToken.get_by_app()
+    |> Repo.get!(id)
+  end
+
+  def create_auth_token(%App{} = app, attrs \\ %{}) do
+    {signed_key, changeset} = AuthToken.new(app, attrs)
+
+    with {:ok, auth_token} <- Repo.insert(changeset) do
+      {:ok, auth_token, signed_key}
+    end
+  end
+
+  def change_auth_token(%AuthToken{} = auth_token, attrs \\ %{}) do
+    if Ecto.get_meta(auth_token, :state) == :loaded do
+      AuthToken.changeset(auth_token, attrs)
+    else
+      AuthToken.create_changeset(auth_token, attrs)
+    end
+  end
+
+  def update_auth_token(%AuthToken{} = auth_token, attrs \\ %{}) do
+    auth_token
+    |> AuthToken.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def revoke_auth_token(%AuthToken{} = auth_token) do
+    auth_token
+    |> AuthToken.changeset(%{state: :revoked})
+    |> Repo.update()
   end
 
   # Domains
@@ -174,21 +226,12 @@ defmodule Passwordless do
     end)
   end
 
-  # Methods
+  # Authenticators
 
-  def create_methods(%App{} = app, defaults \\ %{}) do
-    methods = [
-      magic_link: Methods.MagicLink,
-      email: Methods.Email,
-      sms: Methods.SMS,
-      authenticator: Methods.Authenticator,
-      security_key: Methods.SecurityKey,
-      passkey: Methods.Passkey
-    ]
-
+  def create_authenticators(%App{} = app, defaults \\ %{}) do
     Repo.transact(fn ->
-      methods =
-        methods
+      authenticators =
+        @authenticators
         |> Enum.reject(fn {key, _mod} ->
           Repo.exists?(Ecto.assoc(app, key))
         end)
@@ -199,89 +242,379 @@ defmodule Passwordless do
           |> Repo.insert!()
         end)
 
-      {:ok, methods}
+      {:ok, authenticators}
     end)
   end
 
-  crud(:magic_link, :magic_link, Passwordless.Methods.MagicLink)
-  crud(:email, :email, Passwordless.Methods.Email)
-  crud(:sms, :sms, Passwordless.Methods.SMS)
-  crud(:authenticator, :authenticator, Passwordless.Methods.Authenticator)
-  crud(:security_key, :security_key, Passwordless.Methods.SecurityKey)
-  crud(:passkey, :passkey, Passwordless.Methods.Passkey)
+  crud(:magic_link, :magic_link, Passwordless.Authenticators.MagicLink)
+  crud(:email, :email, Passwordless.Authenticators.Email)
+  crud(:sms, :sms, Passwordless.Authenticators.SMS)
+  crud(:whatsapp, :whatsapp, Passwordless.Authenticators.WhatsApp)
+  crud(:totp, :totp, Passwordless.Authenticators.TOTP)
+  crud(:security_key, :security_key, Passwordless.Authenticators.SecurityKey)
+  crud(:passkey, :passkey, Passwordless.Authenticators.Passkey)
+  crud(:recovery_codes, :recovery_codes, Passwordless.Authenticators.RecoveryCodes)
+
+  def list_authenticators(%App{} = app) do
+    @authenticators
+    |> Enum.map(fn {key, _mod} -> {key, Repo.one(Ecto.assoc(app, key))} end)
+    |> Enum.reject(fn {_, mod} -> is_nil(mod) end)
+    |> Enum.map(fn {key, authenticator} ->
+      params =
+        PasswordlessWeb.Helpers.authenticator_menu_items()
+        |> Enum.find(&(&1[:name] == key))
+        |> Map.take([:label, :icon, :path])
+
+      Map.merge(%{id: key, enabled: authenticator.enabled}, params)
+    end)
+  end
 
   # Actor
 
   def get_actor!(%App{} = app, id) when is_binary(id) do
-    app
-    |> Ecto.assoc(:actors)
-    |> Repo.get!(id)
+    Actor
+    |> Repo.get!(id, prefix: Tenant.to_prefix(app))
+    |> Repo.preload([:email, :phone])
+    |> Actor.put_active()
+    |> Actor.put_text_properties()
   end
 
   def create_actor(%App{} = app, attrs \\ %{}) do
-    app
-    |> Ecto.build_assoc(:actors)
-    |> Actor.changeset(attrs)
-    |> Repo.insert()
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    %Actor{}
+    |> Actor.changeset(attrs, opts)
+    |> Repo.insert(opts)
   end
 
-  def change_actor(%Actor{} = actor, attrs \\ %{}) do
+  def change_actor(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     if Ecto.get_meta(actor, :state) == :loaded do
-      Actor.changeset(actor, attrs)
+      Actor.changeset(actor, attrs, opts)
     else
-      Actor.create_changeset(actor, attrs)
+      Actor.create_changeset(actor, attrs, opts)
     end
   end
 
-  def update_actor(%Actor{} = actor, attrs) do
+  def update_actor(%App{} = app, %Actor{} = actor, attrs) do
     actor
     |> Actor.changeset(attrs)
-    |> Repo.update()
+    |> Repo.update(prefix: Tenant.to_prefix(app))
   end
 
-  def delete_actor(%Actor{} = actor) do
-    Repo.soft_delete(actor)
+  def update_actor_properties(%App{} = app, %Actor{} = actor, attrs) do
+    actor
+    |> Actor.properties_changeset(attrs)
+    |> Repo.update(prefix: Tenant.to_prefix(app))
   end
 
-  def add_email(%Actor{} = actor, attrs \\ %{}) do
+  def delete_actor(%App{} = app, %Actor{} = actor) do
+    Repo.soft_delete(actor, prefix: Tenant.to_prefix(app))
+  end
+
+  def add_email(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     actor
     |> Ecto.build_assoc(:emails)
-    |> Email.changeset(Map.put(attrs, :app_id, actor.app_id))
-    |> Repo.insert()
+    |> Email.changeset(attrs, opts)
+    |> Repo.insert(opts)
   end
 
-  def add_regional_phone(%Actor{} = actor, attrs \\ %{}) do
+  def add_regional_phone(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     actor
     |> Ecto.build_assoc(:phones)
-    |> Phone.regional_changeset(Map.put(attrs, :app_id, actor.app_id))
-    |> Repo.insert()
+    |> Phone.regional_changeset(attrs, opts)
+    |> Repo.insert(opts)
   end
 
-  def add_canonical_phone(%Actor{} = actor, attrs \\ %{}) do
+  def add_canonical_phone(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     actor
     |> Ecto.build_assoc(:phones)
-    |> Phone.canonical_changeset(Map.put(attrs, :app_id, actor.app_id))
-    |> Repo.insert()
+    |> Phone.canonical_changeset(attrs, opts)
+    |> Repo.insert(opts)
   end
 
-  def list_emails(%Actor{} = actor) do
+  def get_email!(%App{} = app, %Actor{} = actor, id) do
     actor
     |> Ecto.assoc(:emails)
-    |> Repo.all()
+    |> Repo.get!(id, prefix: Tenant.to_prefix(app))
+    |> Email.put_virtuals()
   end
 
-  def list_phones(%Actor{} = actor) do
+  def change_actor_email(%App{} = app, %Email{} = email, attrs \\ %{}) do
+    Email.changeset(email, attrs, prefix: Tenant.to_prefix(app))
+  end
+
+  def create_actor_email(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    actor
+    |> Ecto.build_assoc(:emails)
+    |> Email.changeset(attrs, opts)
+    |> Repo.insert(opts)
+  end
+
+  def update_actor_email(%App{} = app, %Email{} = email, attrs) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    email
+    |> Email.changeset(attrs, opts)
+    |> Repo.update(opts)
+  end
+
+  def list_emails(%App{} = app, %Actor{} = actor) do
+    actor
+    |> Ecto.assoc(:emails)
+    |> Repo.all(prefix: Tenant.to_prefix(app))
+  end
+
+  def get_phone!(%App{} = app, %Actor{} = actor, id) do
     actor
     |> Ecto.assoc(:phones)
-    |> Repo.all()
+    |> Repo.get!(id, prefix: Tenant.to_prefix(app))
+    |> Phone.put_virtuals()
+  end
+
+  def change_actor_phone(%App{} = app, %Phone{} = phone, attrs \\ %{}) do
+    Phone.canonical_changeset(phone, attrs, prefix: Tenant.to_prefix(app))
+  end
+
+  def create_actor_phone(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    actor
+    |> Ecto.build_assoc(:phones)
+    |> Phone.canonical_changeset(attrs, opts)
+    |> Repo.insert(opts)
+  end
+
+  def update_actor_phone(%App{} = app, %Phone{} = phone, attrs) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    phone
+    |> Phone.canonical_changeset(attrs, opts)
+    |> Repo.update(opts)
+  end
+
+  def list_phones(%App{} = app, %Actor{} = actor) do
+    actor
+    |> Ecto.assoc(:phones)
+    |> Repo.all(prefix: Tenant.to_prefix(app))
+  end
+
+  def get_actor_recovery_codes!(%App{} = app, %Actor{} = actor) do
+    actor
+    |> Ecto.assoc(:recovery_codes)
+    |> Repo.one!(prefix: Tenant.to_prefix(app))
+  end
+
+  def create_actor_recovery_codes(%App{} = app, %Actor{} = actor) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    actor
+    |> Ecto.build_assoc(:recovery_codes)
+    |> RecoveryCodes.changeset(opts)
+    |> Repo.insert(opts)
   end
 
   # Action
 
-  def create_action(%Actor{} = actor, attrs \\ %{}) do
+  def get_action!(%App{} = app, id) do
+    Repo.get!(Action, id, prefix: Tenant.to_prefix(app))
+  end
+
+  def create_action(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
     actor
     |> Ecto.build_assoc(:actions)
-    |> Action.changeset(Map.put(attrs, :app_id, actor.app_id))
+    |> Action.changeset(attrs)
+    |> Repo.insert(prefix: Tenant.to_prefix(app))
+  end
+
+  # Event
+
+  def create_event(%App{} = app, %Action{} = action, attrs \\ %{}) do
+    action
+    |> Ecto.build_assoc(:events)
+    |> Event.changeset(attrs)
+    |> Repo.insert(prefix: Tenant.to_prefix(app))
+  end
+
+  # Email templates
+
+  def seed_email_template(%App{} = app, preset, language) do
+    Repo.transact(fn ->
+      settings = EmailTemplates.get_seed(app, preset, language)
+      version_settings = Map.merge(%{language: language}, settings)
+
+      with {:ok, template} <- create_email_template(app, Map.take(settings, [:name])),
+           {:ok, version} <- create_email_template_version(template, version_settings),
+           do: {:ok, %EmailTemplate{template | versions: [version]}}
+    end)
+  end
+
+  def get_email_template_version(%EmailTemplate{} = email_template, language) do
+    email_template
+    |> Ecto.assoc(:versions)
+    |> where(language: ^language)
+    |> Repo.one()
+  end
+
+  def get_email_template!(%App{} = app, id) do
+    app
+    |> Ecto.assoc(:email_templates)
+    |> Repo.get!(id)
+  end
+
+  def get_or_create_email_template_version(%App{} = app, %EmailTemplate{} = email_template, language) do
+    case get_email_template_version(email_template, language) do
+      %EmailTemplateVersion{} = version ->
+        version
+
+      nil ->
+        preset = :magic_link_sign_in
+        settings = EmailTemplates.get_seed(app, preset, language)
+        attrs = Map.merge(%{language: language}, settings)
+
+        email_template
+        |> Ecto.build_assoc(:versions)
+        |> EmailTemplateVersion.changeset(attrs)
+        |> Repo.insert!()
+    end
+  end
+
+  def create_email_template_version(%EmailTemplate{} = email_template, attrs \\ %{}) do
+    email_template
+    |> Ecto.build_assoc(:versions)
+    |> EmailTemplateVersion.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def change_email_template_version(%EmailTemplateVersion{} = version, attrs \\ %{}) do
+    if Ecto.get_meta(version, :state) == :loaded do
+      EmailTemplateVersion.changeset(version, attrs)
+    else
+      EmailTemplateVersion.changeset(version, attrs)
+    end
+  end
+
+  def update_email_template_version(%EmailTemplateVersion{} = version, attrs \\ %{}) do
+    version
+    |> EmailTemplateVersion.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def create_email_template(%App{} = app, attrs \\ %{}) do
+    app
+    |> Ecto.build_assoc(:email_templates)
+    |> EmailTemplate.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def change_email_template(%EmailTemplate{} = email_template, attrs \\ %{}) do
+    if Ecto.get_meta(email_template, :state) == :loaded do
+      EmailTemplate.changeset(email_template, attrs)
+    else
+      EmailTemplate.changeset(email_template, attrs)
+    end
+  end
+
+  def update_email_template(%EmailTemplate{} = email_template, attrs \\ %{}) do
+    email_template
+    |> EmailTemplate.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def email_template_exists?(%App{} = app, kind) do
+    Repo.exists?(
+      app
+      |> Ecto.build_assoc(:email_templates)
+      |> where(kind: ^kind)
+    )
+  end
+
+  def get_top_actions(%App{} = app) do
+    Repo.all(
+      from(a in Action,
+        prefix: ^Tenant.to_prefix(app),
+        where: a.state in [:allow, :timeout, :block],
+        group_by: a.name,
+        select: %{
+          action: a.name,
+          total: count(a.id),
+          states: %{
+            allow: a.id |> count() |> filter(a.state == :allow),
+            timeout: a.id |> count() |> filter(a.state == :timeout),
+            block: a.id |> count() |> filter(a.state == :block)
+          }
+        },
+        having: count(a.id) > 0,
+        order_by: [desc: count(a.id)],
+        limit: 3
+      )
+    )
+  end
+
+  def get_top_actions_cached(%App{} = app) do
+    Cache.with(
+      "top_actions_#{app.id}",
+      fn -> get_top_actions(app) end,
+      ttl: :timer.hours(1)
+    )
+  end
+
+  def get_app_user_count(%App{} = app) do
+    Repo.aggregate(
+      from(a in Actor,
+        prefix: ^Tenant.to_prefix(app),
+        select: count(a.id)
+      ),
+      :count,
+      :id
+    )
+  end
+
+  def get_app_user_count_cached(%App{} = app) do
+    Cache.with(
+      "app_user_count_#{app.id}",
+      fn -> get_app_user_count(app) end,
+      ttl: :timer.hours(1)
+    )
+  end
+
+  def get_app_mau_count(%App{} = app, %Date{year: year, month: month}) do
+    Repo.aggregate(
+      from(a in Actor,
+        as: :actor,
+        prefix: ^Tenant.to_prefix(app),
+        select: count(a.id),
+        where:
+          exists(
+            from(
+              c in Action,
+              prefix: ^Tenant.to_prefix(app),
+              where:
+                c.actor_id == parent_as(:actor).id and
+                  fragment("date_part('year', ?)", c.inserted_at) == ^year and
+                  fragment("date_part('month', ?)", c.inserted_at) == ^month
+            )
+          )
+      ),
+      :count,
+      :id
+    )
+  end
+
+  def get_app_mau_count_cached(%App{} = app, date) do
+    Cache.with(
+      "app_mau_count_#{app.id}_#{date.year}_#{date.month}",
+      fn -> get_app_mau_count(app, date) end,
+      ttl: :timer.hours(1)
+    )
   end
 end

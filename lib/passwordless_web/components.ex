@@ -2,7 +2,6 @@ defmodule PasswordlessWeb.Components do
   @moduledoc false
   defmacro __using__(_) do
     quote do
-      import PasswordlessWeb.CheckComponents
       import PasswordlessWeb.Components.Accordion
       import PasswordlessWeb.Components.Alert
       import PasswordlessWeb.Components.AuthLayout
@@ -39,6 +38,7 @@ defmodule PasswordlessWeb.Components do
       import PasswordlessWeb.Components.ThemeSwitch
       import PasswordlessWeb.Components.Typography
       import PasswordlessWeb.Components.UserTopbarMenu
+      import PasswordlessWeb.DashboardComponents
       import PasswordlessWeb.FileUploadComponents
       import PasswordlessWeb.LandingPageComponents
       import PasswordlessWeb.PricingPageComponents

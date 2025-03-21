@@ -3,6 +3,7 @@ defmodule PasswordlessWeb.Admin.ItemActions.ImpersonateUser do
 
   use BackpexWeb, :item_action
   use PasswordlessWeb, :verified_routes
+  use Gettext, backend: PasswordlessWeb.Gettext
 
   alias Passwordless.Accounts.User
 
@@ -17,13 +18,13 @@ defmodule PasswordlessWeb.Admin.ItemActions.ImpersonateUser do
   end
 
   @impl Backpex.ItemAction
-  def label(_assigns, _item), do: "Impersonate"
+  def label(_assigns, _item), do: gettext("Impersonate")
 
   @impl Backpex.ItemAction
-  def confirm_label(_assigns), do: "Impersonate"
+  def confirm_label(_assigns), do: gettext("Impersonate")
 
   @impl Backpex.ItemAction
-  def cancel_label(_assigns), do: "Cancel"
+  def cancel_label(_assigns), do: gettext("Cancel")
 
   @impl Backpex.ItemAction
   def handle(socket, items, _data) do
@@ -36,6 +37,6 @@ defmodule PasswordlessWeb.Admin.ItemActions.ImpersonateUser do
           socket
       end
 
-    {:noreply, socket}
+    {:ok, socket}
   end
 end

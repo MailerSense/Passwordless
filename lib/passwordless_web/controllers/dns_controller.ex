@@ -23,7 +23,7 @@ defmodule PasswordlessWeb.DNSController do
       |> IO.iodata_to_binary()
 
     send_download(conn, {:binary, data},
-      filename: "Records for #{domain.name}.csv",
+      filename: "DNS records - #{domain.name}.csv",
       content_type: "text/csv"
     )
   end

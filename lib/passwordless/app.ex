@@ -8,12 +8,13 @@ defmodule Passwordless.App do
   import Ecto.Query
 
   alias Database.ChangesetExt
-  alias Passwordless.Actor
+  alias Passwordless.Authenticators
+  alias Passwordless.AuthToken
   alias Passwordless.Domain
-  alias Passwordless.Email
-  alias Passwordless.Methods
+  alias Passwordless.EmailTemplate
   alias Passwordless.Organizations.Org
-  alias Passwordless.Phone
+
+  @states ~w(active)a
 
   @derive {
     Flop.Schema,
@@ -21,26 +22,26 @@ defmodule Passwordless.App do
   }
   schema "apps" do
     field :name, :string
+    field :logo, :string
+    field :state, Ecto.Enum, values: @states, default: :active
     field :website, :string
     field :display_name, :string
     field :primary_button_color, :string, default: "#1570EF"
     field :secondary_button_color, :string, default: "#FFFFFF"
 
-    # Domain
     has_one :domain, Domain
+    has_one :auth_token, AuthToken
 
-    # Methods
-    has_one :magic_link, Methods.MagicLink
-    has_one :email, Methods.Email
-    has_one :sms, Methods.SMS
-    has_one :authenticator, Methods.Authenticator
-    has_one :security_key, Methods.SecurityKey
-    has_one :passkey, Methods.Passkey
+    has_one :email, Authenticators.Email
+    has_one :sms, Authenticators.SMS
+    has_one :whatsapp, Authenticators.WhatsApp
+    has_one :magic_link, Authenticators.MagicLink
+    has_one :totp, Authenticators.TOTP
+    has_one :security_key, Authenticators.SecurityKey
+    has_one :passkey, Authenticators.Passkey
+    has_one :recovery_codes, Authenticators.RecoveryCodes
 
-    # Entities
-    has_many :actors, Actor
-    has_many :emails, Email
-    has_many :phones, Phone
+    has_many :email_templates, EmailTemplate
 
     belongs_to :org, Org, type: :binary_id
 
@@ -57,13 +58,15 @@ defmodule Passwordless.App do
 
   @fields ~w(
     name
+    logo
+    state
     website
     display_name
     primary_button_color
     secondary_button_color
     org_id
   )a
-  @required_fields @fields
+  @required_fields @fields -- [:logo]
 
   @doc """
   A changeset to update an existing organization.
@@ -72,29 +75,21 @@ defmodule Passwordless.App do
     org
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> validate_name()
+    |> validate_string(:name)
+    |> validate_string(:display_name)
     |> validate_website()
-    |> validate_display_name()
     |> assoc_constraint(:org)
   end
 
   # Private
 
-  defp validate_name(changeset) do
+  defp validate_string(changeset, field) do
     changeset
-    |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 128)
+    |> ChangesetExt.ensure_trimmed(field)
+    |> validate_length(field, min: 1, max: 255)
   end
 
   defp validate_website(changeset) do
-    changeset
-    |> ChangesetExt.ensure_trimmed(:website)
-    |> validate_length(:name, min: 1, max: 1024)
-  end
-
-  defp validate_display_name(changeset) do
-    changeset
-    |> ChangesetExt.ensure_trimmed(:display_name)
-    |> validate_length(:display_name, min: 1, max: 128)
+    ChangesetExt.validate_url(changeset, :website)
   end
 end

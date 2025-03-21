@@ -9,33 +9,16 @@ defmodule PasswordlessWeb.Menus do
   alias Passwordless.Organizations.Org
 
   # Public menu (marketing related pages)
-  def public_menu_items,
-    do: [
-      %{label: gettext("Product"), path: ~p"/product"},
-      %{path: "/", label: gettext("Developers"), menu_items: []},
-      %{label: gettext("Pricing"), path: ~p"/pricing"}
-    ]
+  def public_menu_items, do: []
 
-  def public_mobile_menu_items(%User{}),
-    do: [
-      %{label: gettext("Product"), path: ~p"/product"},
-      %{label: gettext("Pricing"), path: ~p"/pricing"},
-      %{label: gettext("Open App"), path: ~p"/app/home"},
-      %{label: gettext("Contact"), path: ~p"/contact"}
-    ]
+  def public_mobile_menu_items(%User{}), do: []
 
-  def public_mobile_menu_items(_),
-    do: [
-      %{label: gettext("Product"), path: ~p"/product"},
-      %{label: gettext("Pricing"), path: ~p"/pricing"},
-      %{label: gettext("Sign In"), path: ~p"/auth/sign-in"},
-      %{label: gettext("Contact"), path: ~p"/contact"}
-    ]
+  def public_mobile_menu_items(_), do: []
 
   def main_menu_items(:app, %User{} = current_user),
-    do: build_menu([:home, :users, :methods, :embed, :settings], current_user)
+    do: build_menu([:home, :users, :reports, :embed, :authenticators, :settings, :billing], current_user)
 
-  def main_menu_items(:knowledge, %User{} = current_user), do: build_menu([:blog, :guides, :docs], current_user)
+  def main_menu_items(:knowledge, %User{} = current_user), do: build_menu([:use_cases], current_user)
 
   def main_menu_items(:admin, %User{} = current_user),
     do:
@@ -59,7 +42,7 @@ defmodule PasswordlessWeb.Menus do
   def main_menu_items(_section, _user), do: []
 
   def user_menu_items(%User{current_org: %Org{}} = current_user),
-    do: build_menu([:app, :team, :billing, :sign_out], current_user)
+    do: build_menu([:app_settings, :team, :billing, :sign_out], current_user)
 
   def user_menu_items(_user), do: []
 
@@ -117,7 +100,7 @@ defmodule PasswordlessWeb.Menus do
     if user.current_impersonator do
       %{
         name: name,
-        label: gettext("Exit Impersonation"),
+        label: gettext("Exit impersonation"),
         path: ~p"/admin/impersonate",
         icon: "remix-close-large-fill",
         method: :delete,
@@ -126,7 +109,7 @@ defmodule PasswordlessWeb.Menus do
     else
       %{
         name: name,
-        label: gettext("Sign Out"),
+        label: gettext("Sign out"),
         path: ~p"/auth/sign-out",
         icon: "remix-logout-box-line",
         method: :delete,
@@ -180,7 +163,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Users"),
       path: ~p"/app/users",
-      icon: "remix-robot-3-line",
+      icon: "remix-user-line",
       link_type: "live_patch"
     }
   end
@@ -190,17 +173,17 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Home"),
       path: ~p"/app/home",
-      icon: "remix-ruler-line",
+      icon: "remix-home-line",
       link_type: "live_patch"
     }
   end
 
-  def get_link(:methods = name, _user) do
+  def get_link(:authenticators = name, _user) do
     %{
       name: name,
-      label: gettext("Methods"),
-      path: ~p"/app/methods/magic-link",
-      icon: "remix-database-2-line",
+      label: gettext("Authenticators"),
+      path: ~p"/app/authenticators/email",
+      icon: "remix-shield-user-line",
       link_type: "live_patch"
     }
   end
@@ -210,7 +193,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Reports"),
       path: ~p"/app/reports",
-      icon: "remix-database-2-line",
+      icon: "remix-pie-chart-line",
       link_type: "live_patch"
     }
   end
@@ -221,7 +204,7 @@ defmodule PasswordlessWeb.Menus do
       label: gettext("Settings"),
       path: ~p"/app/app",
       icon: "remix-settings-2-line",
-      link_type: "live_redirect"
+      link_type: "live_patch"
     }
   end
 
@@ -229,7 +212,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Knowledge Base"),
-      path: ~p"/app/docs",
+      path: ~p"/app/use-cases",
       icon: "custom-knowledge"
     }
   end
@@ -239,7 +222,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Admin"),
       path: ~p"/admin/users",
-      icon: "custom-integration"
+      icon: "custom-dashboard"
     }
   end
 
@@ -248,7 +231,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Dev"),
       path: ~p"/dev/emails",
-      icon: "custom-more-dots"
+      icon: "custom-check-fancy"
     }
   end
 
@@ -342,30 +325,12 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
-  def get_link(:blog = name, _user) do
+  def get_link(:use_cases = name, _user) do
     %{
       name: name,
-      label: gettext("Blog"),
-      path: ~p"/app/blog",
-      icon: "remix-news-line"
-    }
-  end
-
-  def get_link(:docs = name, _user) do
-    %{
-      name: name,
-      label: gettext("Documentation"),
-      path: ~p"/app/docs",
-      icon: "remix-book-open-line"
-    }
-  end
-
-  def get_link(:guides = name, _user) do
-    %{
-      name: name,
-      label: gettext("Guides"),
-      path: ~p"/app/guides",
-      icon: "remix-graduation-cap-line",
+      label: gettext("Use cases"),
+      path: ~p"/app/use-cases",
+      icon: "remix-briefcase-line",
       link_type: "live_patch"
     }
   end
@@ -374,12 +339,22 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Knowledge Base"),
-      path: ~p"/app/docs",
+      path: ~p"/app/use-cases",
       icon: "custom-knowledge"
     }
   end
 
   def get_link(:app = name, _user) do
+    %{
+      name: name,
+      label: gettext("App"),
+      path: ~p"/app/home",
+      icon: "custom-email",
+      link_type: "live_patch"
+    }
+  end
+
+  def get_link(:app_settings = name, _user) do
     %{
       name: name,
       label: gettext("App"),
@@ -414,7 +389,7 @@ defmodule PasswordlessWeb.Menus do
       name: name,
       label: gettext("Domain"),
       path: ~p"/app/domain",
-      icon: "remix-global-line",
+      icon: "remix-cloud-line",
       link_type: "live_patch"
     }
   end
@@ -433,8 +408,8 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Embed & API"),
-      path: ~p"/app/embed/secrets",
-      icon: "remix-plug-line",
+      path: ~p"/app/embed/install",
+      icon: "remix-terminal-box-line",
       link_type: "live_patch"
     }
   end

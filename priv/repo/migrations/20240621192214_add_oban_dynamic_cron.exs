@@ -1,5 +1,7 @@
 defmodule Passwordless.Repo.Migrations.AddObanDynamicCron do
   use Ecto.Migration
 
-  defdelegate change, to: Oban.Pro.Migrations.DynamicCron
+  def change do
+    Oban.Pro.Migrations.DynamicCron.change(prefix: "oban")
+  end
 end

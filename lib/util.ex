@@ -12,6 +12,12 @@ defmodule Util do
     Jason.encode!(obj, pretty: true)
   end
 
+  def number!(value) when is_number(value) do
+    Passwordless.Locale.Number.to_string!(value)
+  end
+
+  def number!(value), do: value
+
   @doc """
   Generate a truncated JSON string from a map or other object.
   """
@@ -42,6 +48,30 @@ defmodule Util do
       end
 
     a == b
+  end
+
+  def id(prefix \\ "el"), do: "#{prefix}-#{:rand.uniform(10_000_000) + 1}"
+
+  def pick(choices) when is_list(choices) do
+    total = Enum.reduce(choices, 0, fn {_k, v}, acc -> acc + v end)
+    target = :rand.uniform(total)
+
+    Enum.reduce_while(choices, 0, fn {key, weight}, acc ->
+      new_acc = acc + weight
+
+      if target <= new_acc do
+        {:halt, key}
+      else
+        {:cont, new_acc}
+      end
+    end)
+  end
+
+  def elapsed(a, b) do
+    a
+    |> Timex.diff(b, :seconds)
+    |> Timex.Duration.from_seconds()
+    |> Timex.Format.Duration.Formatters.Humanized.format()
   end
 
   @doc """
@@ -152,7 +182,7 @@ defmodule Util do
       iex> Util.truncate("This is a very long string", 15)
       "This is a ve..."
   """
-  def truncate(text, count \\ 10) do
+  def truncate(text, count \\ 24) do
     Util.StringExt.truncate(text, length: count)
   end
 

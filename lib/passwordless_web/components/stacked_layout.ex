@@ -43,7 +43,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
     default: "/",
     doc: "The path to the home page. When a user clicks the logo, they will be taken to this path."
 
-  attr :header_bg_class, :string, default: "bg-white/70 dark:bg-slate-900/70 backdrop-blur-md shadow-m2"
+  attr :header_bg_class, :string, default: "bg-white dark:bg-slate-900"
 
   attr :header_border_class, :string, default: "border-b border-slate-200 dark:border-slate-700"
 
@@ -54,7 +54,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
 
   def stacked_layout(assigns) do
     ~H"""
-    <div class="h-screen overflow-y-auto bg-slate-50 dark:bg-slate-900">
+    <div class="relative h-screen overflow-y-auto bg-slate-100 dark:bg-slate-900">
       <header
         class={[
           @header_bg_class,
@@ -68,7 +68,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
           <div
             class={[
               "lg:hidden absolute w-screen top-[65px] left-0",
-              "bg-white dark:bg-slate-800 shadow-lg z-10"
+              "bg-slate-100 dark:bg-slate-800 shadow-lg z-10"
             ]}
             @click.away="mobileMenuOpen = false"
             x-cloak
@@ -154,7 +154,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
           <div class="flex items-center -mr-2 lg:hidden">
             <button
               type="button"
-              class="inline-flex items-center justify-center p-2 text-slate-400 rounded-md dark:text-slate-600 hover:text-slate-500 hover:bg-slate-100 dark:hover:text-slate-400 dark:hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+              class="inline-flex items-center justify-center p-2 text-slate-400 rounded-md dark:text-slate-500 hover:text-slate-500 hover:bg-slate-100 dark:hover:text-slate-400 dark:hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
               aria-controls="mobile-menu"
               @click="mobileMenuOpen = !mobileMenuOpen"
               x-bind:aria-expanded="mobileMenuOpen.toString()"
@@ -168,7 +168,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
                 x-bind:class="{ 'hidden': mobileMenuOpen, 'block': !(mobileMenuOpen) }"
                 x-cloak
               >
-                <.icon name="remix-arrow-down-s-line" class="w-6 h-6" />
+                <.icon name="remix-menu-line" class="w-6 h-6" />
               </div>
 
               <div
@@ -176,7 +176,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
                 x-bind:class="{ 'block': mobileMenuOpen, 'hidden': !(mobileMenuOpen) }"
                 x-cloak
               >
-                <.icon name="remix-arrow-down-s-line" class="w-6 h-6" />
+                <.icon name="remix-menu-line" class="w-6 h-6" />
               </div>
             </button>
           </div>
@@ -244,7 +244,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
   defp dropdown_item_class(false), do: ""
 
   defp main_menu_item_base_class,
-    do: "inline-flex items-center px-1 text-sm font-medium leading-5 transition duration-150 ease-in-out top-menu-item"
+    do: "inline-flex items-center px-1 text-sm font-medium transition duration-150 ease-in-out top-menu-item"
 
   defp main_menu_item_class(true), do: ["active text-slate-900 dark:text-slate-100", main_menu_item_base_class()]
 

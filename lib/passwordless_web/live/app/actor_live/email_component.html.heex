@@ -1,0 +1,57 @@
+<div>
+  <% origin = "right" %>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+    <.form
+      id="manage-email-form"
+      for={@form}
+      phx-target={@myself}
+      phx-submit="save"
+      phx-change="validate"
+    >
+      <.field field={@form[:address]} label={gettext("Email")} autocomplete="email" required />
+      <.field
+        type="checkbox"
+        field={@form[:primary]}
+        help_text={
+          gettext("User can have one primary email used for contact and authentication purposes.")
+        }
+      />
+      <.field
+        type="checkbox"
+        field={@form[:verified]}
+        help_text={
+          gettext(
+            "Email can be verified by initial authentication challenge (magic link, OTP) or explicit admin action."
+          )
+        }
+      />
+      <.field
+        type="checkbox"
+        field={@form[:opted_out]}
+        help_text={gettext("User has opted out of receiving emails from the system.")}
+      />
+    </.form>
+
+    <:actions>
+      <.button
+        size="wide"
+        type="submit"
+        color="light-flat"
+        label={gettext("Cancel")}
+        phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+      />
+      <.button
+        id="manage-email-form-submit"
+        size="wide"
+        type="submit"
+        form="manage-email-form"
+        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
+        label={
+          if @live_action == :new_email,
+            do: gettext("Create"),
+            else: gettext("Save")
+        }
+      />
+    </:actions>
+  </.slide_over>
+</div>

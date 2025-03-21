@@ -1,9 +1,9 @@
 <main>
   <LiveToast.toast_group
     flash={@flash}
-    corner={:top_right}
+    corner={:bottom_right}
     connected={assigns[:socket] != nil}
-    toast_class_fn={&PasswordlessWeb.Toast.toast_class_fn/1}
+    toasts_sync={assigns[:toasts_sync]}
   />
   {@inner_content}
 </main>

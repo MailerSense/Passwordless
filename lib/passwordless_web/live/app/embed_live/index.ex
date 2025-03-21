@@ -2,10 +2,11 @@ defmodule PasswordlessWeb.App.EmbedLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
-  @methods [
-    secrets: PasswordlessWeb.App.EmbedLive.Secrets,
-    login_page: PasswordlessWeb.App.EmbedLive.Secrets,
-    auth_guard: PasswordlessWeb.App.EmbedLive.Secrets
+  @tabs [
+    install: PasswordlessWeb.App.EmbedLive.API,
+    api: PasswordlessWeb.App.EmbedLive.API,
+    login: PasswordlessWeb.App.EmbedLive.API,
+    guard: PasswordlessWeb.App.EmbedLive.API
   ]
 
   @impl true
@@ -18,7 +19,7 @@ defmodule PasswordlessWeb.App.EmbedLive.Index do
     {:noreply,
      socket
      |> apply_action(socket.assigns.live_action)
-     |> assign(module: Keyword.fetch!(@methods, socket.assigns.live_action))}
+     |> assign(module: Keyword.fetch!(@tabs, socket.assigns.live_action))}
   end
 
   @impl true

@@ -80,7 +80,7 @@ defmodule Passwordless.Activity.Log do
     # Org
     belongs_to :org, Passwordless.Organizations.Org, type: :binary_id
     belongs_to :user, Passwordless.Accounts.User, type: :binary_id
-    belongs_to :auth_token, Passwordless.Organizations.AuthToken, type: :binary_id
+    belongs_to :auth_token, Passwordless.AuthToken, type: :binary_id
     belongs_to :target_user, Passwordless.Accounts.User, type: :binary_id
 
     # App

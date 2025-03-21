@@ -5,7 +5,7 @@ defmodule Passwordless.Organizations do
 
   alias Database.QueryExt
   alias Passwordless.Accounts.User
-  alias Passwordless.Organizations.AuthToken
+  alias Passwordless.AuthToken
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
@@ -247,42 +247,6 @@ defmodule Passwordless.Organizations do
   def reject_invitation!(%User{} = user, id) when is_binary(id) do
     invitation = get_invitation_by_user!(user, id)
     Repo.delete!(invitation)
-  end
-
-  ## API Keys
-
-  def get_auth_token!(%Org{} = org, id) when is_binary(id) do
-    org
-    |> AuthToken.get_by_org()
-    |> Repo.get!(id)
-  end
-
-  def create_auth_token(%Org{} = org, attrs \\ %{}) do
-    {signed_key, changeset} = AuthToken.new(org, attrs)
-
-    with {:ok, auth_token} <- Repo.insert(changeset) do
-      {:ok, auth_token, signed_key}
-    end
-  end
-
-  def change_auth_token(%AuthToken{} = auth_token, attrs \\ %{}) do
-    if Ecto.get_meta(auth_token, :state) == :loaded do
-      AuthToken.changeset(auth_token, attrs)
-    else
-      AuthToken.create_changeset(auth_token, attrs)
-    end
-  end
-
-  def update_auth_token(%AuthToken{} = auth_token, attrs \\ %{}) do
-    auth_token
-    |> AuthToken.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def revoke_auth_token(%AuthToken{} = auth_token) do
-    auth_token
-    |> AuthToken.changeset(%{state: :revoked})
-    |> Repo.update()
   end
 
   ## Apps

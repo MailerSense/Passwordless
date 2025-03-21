@@ -9,59 +9,88 @@ defmodule Passwordless.Action do
 
   alias Passwordless.Actor
   alias Passwordless.App
-  alias Passwordless.Challenge
+  alias Passwordless.Event
 
-  @outcomes ~w(allow timeout block challenge)a
+  @states ~w(allow timeout block challenge_required)a
+  @authenticators ~w(email sms whatsapp magic_link totp security_key passkey recovery_codes)a
+
   @derive {
     Flop.Schema,
-    filterable: [:id], sortable: [:id]
+    filterable: [:id], sortable: [:id, :state, :inserted_at]
   }
   schema "actions" do
     field :name, :string
-    field :method, Ecto.Enum, values: Passwordless.methods()
-    field :outcome, Ecto.Enum, values: @outcomes
+    field :state, Ecto.Enum, values: @states, default: :challenge_required
+    field :token, :binary, redact: true
+    field :authenticator, Ecto.Enum, values: @authenticators
+    field :attempts, :integer, default: 0
+    field :expires_at, :utc_datetime_usec
+    field :completed_at, :utc_datetime_usec
 
-    has_one :challenge, Challenge
+    has_many :events, Event
 
-    belongs_to :app, App, type: :binary_id
     belongs_to :actor, Actor, type: :binary_id
 
     timestamps()
   end
 
-  def outcomes, do: @outcomes
+  def states, do: @states
+  def authenticators, do: @authenticators
+
+  def topic_for(%App{} = app), do: "actions:#{app.id}"
+
+  def first_event(%__MODULE__{events: [_ | _] = events}) do
+    events
+    |> Enum.sort_by(& &1.inserted_at, :asc)
+    |> Enum.find(fn %Event{city: city, country: country} ->
+      is_binary(city) and is_binary(country)
+    end)
+  end
 
   @doc """
   Get by app.
   """
   def get_by_app(query \\ __MODULE__, %App{} = app) do
-    from q in query,
-      left_join: a in assoc(q, :actor),
-      where: q.app_id == ^app.id and is_nil(a.deleted_at)
+    from q in query, prefix: ^Database.Tenant.to_prefix(app)
   end
 
   @doc """
   Get by actor.
   """
-  def get_by_actor(query \\ __MODULE__, %Actor{} = actor) do
-    from q in query, where: q.actor_id == ^actor.id
+  def get_by_actor(query \\ __MODULE__, %App{} = app, %Actor{} = actor) do
+    from q in query, prefix: ^Database.Tenant.to_prefix(app), where: q.actor_id == ^actor.id
+  end
+
+  @doc """
+  Get by states.
+  """
+  def get_by_states(query \\ __MODULE__, states) do
+    from q in query, where: q.state in ^states
   end
 
   @doc """
   Preload associations.
   """
   def preload_actor(query \\ __MODULE__) do
-    from q in query, preload: [actor: [:email, :phone]]
+    from q in query, preload: [:events, actor: [:email, :phone]]
   end
 
   @fields ~w(
     name
-    method
-    outcome
-    app_id
+    state
+    token
+    authenticator
+    attempts
+    expires_at
+    completed_at
     actor_id
   )a
-  @required_fields @fields
+  @required_fields ~w(
+    name
+    state
+    attempts
+    actor_id
+  )a
 
   @doc """
   A changeset.
@@ -70,7 +99,6 @@ defmodule Passwordless.Action do
     action
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> assoc_constraint(:app)
     |> assoc_constraint(:actor)
   end
 end

@@ -9,7 +9,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   @data_table_opts [
     for: Actor,
     default_order: %{
-      order_by: [:id],
+      order_by: [:inserted_at],
       order_directions: [:desc]
     }
   ]
@@ -20,25 +20,20 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   end
 
   @impl true
-  def handle_params(%{"id" => id} = params, _url, socket) do
-    actor = Passwordless.get_actor!(socket.assigns.current_app, id)
-
-    {:noreply,
-     socket
-     |> assign(actor: actor, title_func: &title_func/1)
-     |> assign_filters(params)
-     |> assign_actors(params)
-     |> apply_action(socket.assigns.live_action, actor)}
-  end
-
-  @impl true
   def handle_params(params, _url, socket) do
+    actor =
+      case Map.get(params, "id") do
+        id when is_binary(id) -> Passwordless.get_actor!(socket.assigns.current_app, id)
+        _ -> nil
+      end
+
     {:noreply,
      socket
-     |> assign(title_func: &title_func/1)
+     |> assign(actor: actor)
      |> assign_filters(params)
      |> assign_actors(params)
-     |> apply_action(socket.assigns.live_action, nil)}
+     |> assign_stats()
+     |> apply_action(socket.assigns.live_action, actor)}
   end
 
   @impl true
@@ -64,27 +59,38 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   @impl true
   def handle_event("update_filters", %{"filters" => filter_params}, socket) do
-    {:noreply,
-     push_patch(socket,
-       to: ~p"/app/users?#{DataTable.build_filter_params(socket.assigns.meta, filter_params)}"
-     )}
+    filtered? =
+      case Flop.validate(filter_params) do
+        {:ok, %Flop{} = flop} -> Enum.any?(flop.filters, fn x -> x.value end)
+        _ -> false
+      end
+
+    to =
+      if filtered? do
+        ~p"/app/users?#{DataTable.build_filter_params(socket.assigns.meta, filter_params)}"
+      else
+        ~p"/app/users"
+      end
+
+    {:noreply, push_patch(socket, to: to)}
   end
 
   @impl true
   def handle_event("delete_actor", %{"id" => id}, socket) do
-    actor = Passwordless.get_actor!(socket.assigns.current_app, id)
+    app = socket.assigns.current_app
+    actor = Passwordless.get_actor!(app, id)
 
-    case Passwordless.delete_actor(actor) do
+    case Passwordless.delete_actor(app, actor) do
       {:ok, _actor} ->
         {:noreply,
          socket
          |> put_flash(:info, gettext("User deleted successfully."))
-         |> push_navigate(to: ~p"/app/users")}
+         |> push_patch(to: ~p"/app/users")}
 
       {:error, _} ->
         {:noreply,
          socket
-         |> LiveToast.put_toast(:error, gettext("Failed to delete user!"))
+         |> put_toast(:error, gettext("Failed to delete user!"), title: gettext("Error"))
          |> push_patch(to: ~p"/app/users")}
     end
   end
@@ -106,7 +112,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   defp apply_action(socket, :new, _) do
     assign(socket,
       page_title: gettext("Create user"),
-      page_subtitle: gettext("Import a user manually. You can also import users from a CSV file.")
+      page_subtitle: gettext("Import a user manually. You can also import users in batch from a CSV file.")
     )
   end
 
@@ -150,33 +156,22 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   end
 
   defp assign_actors(socket, params) when is_map(params) do
-    query =
-      case socket.assigns[:current_app] do
-        %App{} = app ->
-          app
-          |> Actor.get_by_app()
-          |> Actor.join_details()
-          |> Actor.preload_details()
+    app = socket.assigns.current_app
 
-        _ ->
-          Actor.get_none()
-      end
+    query =
+      app
+      |> Actor.get_by_app()
+      |> Actor.join_details(prefix: Database.Tenant.to_prefix(app))
+      |> Actor.preload_details()
 
     {actors, meta} = DataTable.search(query, params, @data_table_opts)
     assign(socket, actors: actors, meta: meta)
   end
 
-  defp title_func(%Flop.Meta{flop: %Flop{filters: [_ | _] = filters}}) do
-    Enum.find_value(
-      filters,
-      gettext("All users"),
-      fn
-        %Flop.Filter{field: :state, value: nil} -> gettext("All users")
-        %Flop.Filter{field: :state, value: value} -> gettext("%{state} users", state: Phoenix.Naming.humanize(value))
-        _ -> nil
-      end
-    )
-  end
+  defp assign_stats(socket) do
+    users = Passwordless.get_app_user_count_cached(socket.assigns.current_app)
+    mau = Passwordless.get_app_mau_count_cached(socket.assigns.current_app, Date.utc_today())
 
-  defp title_func(_), do: gettext("All users")
+    assign(socket, user_count: users, mau_count: mau)
+  end
 end

@@ -8,8 +8,11 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
   use PasswordlessWeb, :verified_routes
   use Gettext, backend: PasswordlessWeb.Gettext
 
+  import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.SidebarMenu
+  import PasswordlessWeb.Components.SidebarSectionMenu
   import PasswordlessWeb.Components.ThemeSwitch
+  import PasswordlessWeb.Components.UsageBox
   import PasswordlessWeb.Components.UserTopbarMenu
 
   attr :collapsible, :boolean,
@@ -62,15 +65,6 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
     default: "/",
     doc: "The path to the home page. When a user clicks the logo, they will be taken to this path."
 
-  attr :sidebar_lg_width_class, :string,
-    default: "w-64",
-    doc: "The width of the sidebar. Must have the lg: prefix."
-
-  attr :sidebar_bg_class, :string, default: "bg-slate-100 dark:bg-slate-700/30"
-  attr :sidebar_border_class, :string, default: "border-slate-200 dark:border-slate-700"
-  attr :header_bg_class, :string, default: "bg-white dark:bg-slate-900"
-  attr :header_border_class, :string, default: "border-slate-200 dark:border-slate-700"
-
   slot :inner_block, required: true, doc: "The main content of the page."
 
   slot :logo,
@@ -82,80 +76,86 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
   def sidebar_layout(assigns) do
     ~H"""
     <div
-      class="flex h-screen overflow-hidden bg-white dark:bg-slate-800"
+      class="flex h-screen bg-white dark:bg-slate-900"
       x-data={"{sidebarOpen: $persist(true), isCollapsible: #{@collapsible}, #{x_persist_collapsed(assigns)}}"}
     >
-      <div class={["relative z-40"]} x-show="sidebarOpen">
-        <aside
-          id="sidebar"
-          role="navigation"
-          class={[
-            "z-40 flex flex-col flex-shrink-0 h-screen overflow-y-auto no-scrollbar",
-            @sidebar_lg_width_class
-          ]}
-        >
-          <div class="flex items-center justify-between px-8 py-6 border-b border-slate-200 dark:border-slate-700 h-[88px]">
-            <.link navigate={@home_path}>
-              {render_slot(@logo)}
-            </.link>
-          </div>
+      <div class="pc-sidebar__container">
+        <.sidebar_section_menu menu_items={@section_menu_items} current_section={@current_section} />
 
-          <div class="p-3 pt-6">
-            <.sidebar_menu
-              :if={@main_menu_items != []}
-              menu_items={@main_menu_items}
-              current_page={@current_page}
-              title={@sidebar_title}
+        <div class="flex flex-col gap-2 items-center justify-center">
+          <span
+            id="collapse-icon"
+            class="group transition duration-200 cursor-pointer"
+            phx-hook="TippyHook"
+            data-tippy-content={gettext("Toggle Sidebar")}
+            data-tippy-placement="right"
+            @click.stop="sidebarOpen = !sidebarOpen"
+            aria-label={gettext("Collapse Sidebar")}
+            aria-controls="sidebar"
+            x-bind:aria-expanded="sidebarOpen"
+          >
+            <.icon
+              name="custom-board-document"
+              class="w-10 h-10 text-white/60 group-hover:bg-primary-500 transition duration-200"
+              x-bind:class="
+                {
+                  'bg-primary-500': !sidebarOpen
+                }
+              "
             />
-          </div>
-
-          <div class="flex flex-col gap-6 mt-auto p-3">
-            <.wide_theme_switch />
-          </div>
-        </aside>
+          </span>
+        </div>
       </div>
 
-      <div class={[
-        "bg-white dark:bg-slate-900",
-        "flex flex-col flex-1 overflow-y-auto no-scrollbar",
-        "border-l border-slate-200 dark:border-slate-700"
-      ]}>
-        <header class={[
-          "z-30 border-b border-slate-200 dark:border-slate-700",
-          @header_bg_class,
-          @header_border_class
-        ]}>
-          <div class="flex items-center justify-between h-[88px] -mb-px">
-            <div :if={Util.present?(@dropdown)} class="px-6 xl:px-8 hidden md:flex">
-              {render_slot(@dropdown)}
-            </div>
+      <aside id="sidebar" role="navigation" class="pc-sidebar__aside" x-show="sidebarOpen">
+        <div class="flex items-center justify-between px-8 py-6 border-b border-slate-700 h-[88px]">
+          <.link navigate={@home_path}>
+            {render_slot(@logo)}
+          </.link>
+        </div>
 
-            <.topbar_links
-              class="items-center justify-end flex-1 gap-4 px-8 hidden xl:flex"
-              links={[
-                %{
-                  to: ~p"/",
-                  label: "Home page"
-                },
-                %{
-                  to: ~p"/app/blog",
-                  label: "Blog",
-                  link_type: "live_redirect"
-                },
-                %{
-                  to: ~p"/app/docs",
-                  label: "Docs",
-                  link_type: "live_redirect"
-                }
-              ]}
-            />
+        <div class="p-3 pt-6">
+          <.sidebar_menu
+            :if={@main_menu_items != []}
+            menu_items={@main_menu_items}
+            current_page={@current_page}
+            title={@sidebar_title}
+          />
+        </div>
 
-            <.user_topbar_menu
-              class="flex items-center gap-3 h-full ml-auto border-l border-slate-200 dark:border-slate-700"
-              current_user={@current_user}
-              user_menu_items={@user_menu_items}
-            />
+        <div class="flex flex-col gap-6 mt-auto p-3">
+          <.usage_box plan={gettext("Pro")} usage={1240} usage_max={2000} />
+          <.wide_theme_switch />
+        </div>
+      </aside>
+
+      <div class="pc-sidebar__header-container">
+        <header class="pc-sidebar__header">
+          <div :if={Util.present?(@dropdown)} class="px-6 hidden md:flex">
+            {render_slot(@dropdown)}
           </div>
+
+          <.topbar_links links={[
+            %{
+              to: ~p"/",
+              label: "Home Page"
+            },
+            %{
+              to: ~p"/app/support",
+              label: "Support"
+            },
+            %{
+              to: ~p"/app/embed/install",
+              label: "Docs",
+              link_type: "live_redirect"
+            }
+          ]} />
+
+          <.user_topbar_menu
+            class="flex items-center gap-3 h-full ml-auto border-l border-gray-200 dark:border-gray-700"
+            current_user={@current_user}
+            user_menu_items={@user_menu_items}
+          />
         </header>
 
         {render_slot(@inner_block)}

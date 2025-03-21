@@ -15,6 +15,7 @@ defmodule PasswordlessWeb.Admin.TOTPLive do
     ],
     fluid?: true
 
+  import Ecto.Query
   import PasswordlessWeb.Components.PageComponents, only: [page_header: 1]
 
   @impl Backpex.LiveResource

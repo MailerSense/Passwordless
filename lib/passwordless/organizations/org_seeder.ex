@@ -3,9 +3,9 @@ defmodule Passwordless.Organizations.OrgSeeder do
   Generates dummy orgs for the development environment.
   """
 
+  alias Database.Tenant
   alias Passwordless.Accounts.User
   alias Passwordless.Action
-  alias Passwordless.Actor
   alias Passwordless.Organizations
 
   require Logger
@@ -36,29 +36,41 @@ defmodule Passwordless.Organizations.OrgSeeder do
     {:ok, app} =
       Passwordless.create_app(org, %{
         "name" => "Demo App",
-        "website" => "https://passwordless.tools",
+        "website" => "https://google.com",
         "display_name" => "Demo App"
       })
 
+    {:ok, auth_token, _signed_api_key} =
+      Passwordless.create_auth_token(app, %{"name" => "App Secret", "scopes" => [:sync]})
+
+    Logger.warning("----------- AUTH TOKEN ------------")
+    Logger.warning(auth_token)
+
     {:ok, domain} =
       Passwordless.create_domain(app, %{
-        name: "auth.passwordless.tools",
+        name: "auth.passwordlesstools.com",
         kind: :sub_domain
       })
 
-    {:ok, methods} =
-      Passwordless.create_methods(app, %{
+    {:ok, magic_link_template} = Passwordless.seed_email_template(app, :magic_link_sign_in, :en)
+    {:ok, email_otp_template} = Passwordless.seed_email_template(app, :email_otp_sign_in, :en)
+
+    {:ok, _authenticators} =
+      Passwordless.create_authenticators(app, %{
         magic_link: %{
-          sender: "notifications",
+          sender: "verify",
           sender_name: app.name,
-          domain_id: domain.id
+          domain_id: domain.id,
+          email_template_id: magic_link_template.id,
+          redirect_urls: [%{url: app.website}]
         },
         email: %{
-          sender: "notifications",
+          sender: "verify",
           sender_name: app.name,
-          domain_id: domain.id
+          domain_id: domain.id,
+          email_template_id: email_otp_template.id
         },
-        authenticator: %{
+        totp: %{
           issuer_name: app.name
         },
         security_key: %{
@@ -75,34 +87,51 @@ defmodule Passwordless.Organizations.OrgSeeder do
       {:ok, _} = Passwordless.create_domain_record(domain, r)
     end
 
+    {:ok, _tenant} = Tenant.create(app)
+
     for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1_000) do
       {:ok, actor} =
         Passwordless.create_actor(app, %{
           name: Faker.Person.name(),
-          state: Enum.random(Actor.states())
+          state: Util.pick(active: 80, locked: 20),
+          user_id: UUIDv7.autogenerate(),
+          properties: %{
+            "email" => email,
+            "phone" => phone
+          }
         })
 
       {:ok, _email} =
-        Passwordless.add_email(actor, %{
+        Passwordless.add_email(app, actor, %{
           address: email,
           primary: true,
           verified: true
         })
 
       {:ok, _phone} =
-        Passwordless.add_regional_phone(actor, %{
+        Passwordless.add_regional_phone(app, actor, %{
           region: "US",
           number: phone,
           primary: true,
           verified: true
         })
 
-      for _ <- 1..1 do
-        {:ok, _action} =
-          Passwordless.create_action(actor, %{
+      {:ok, _recovery_codes} = Passwordless.create_actor_recovery_codes(app, actor)
+
+      for _ <- 1..10 do
+        {:ok, action} =
+          Passwordless.create_action(app, actor, %{
             name: Enum.random(~w(signIn withdraw placeOrder)),
-            method: Enum.random(Passwordless.methods()),
-            outcome: Enum.random(Action.outcomes())
+            authenticator: Enum.random(Action.authenticators()),
+            state: Enum.random(Action.states())
+          })
+
+        {:ok, _event} =
+          Passwordless.create_event(app, action, %{
+            user_agent: Faker.Internet.UserAgent.desktop_user_agent(),
+            ip_address: Faker.Internet.ip_v4_address(),
+            country: Faker.Address.country_code(),
+            city: Faker.Address.city()
           })
       end
     end

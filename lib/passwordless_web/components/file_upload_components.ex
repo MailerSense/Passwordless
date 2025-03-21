@@ -57,7 +57,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
     <div class={["mb-6", @class]} phx-drop-target={@upload.ref}>
       <.field_label for={@upload.ref}>{@label}</.field_label>
 
-      <div class="flex flex-col gap-5 md:items-center md:flex-row">
+      <div class="flex flex-col gap-4 md:items-center md:flex-row">
         <div class="flex items-center gap-3">
           <div :if={@current_image_src} class="relative shrink-0">
             <img class={@current_image_class} src={@current_image_src} />

@@ -3,6 +3,8 @@ defmodule Passwordless.Domain do
 
   use Passwordless.Schema
 
+  import Ecto.Query
+
   alias Database.ChangesetExt
   alias Passwordless.DomainRecord
 
@@ -18,7 +20,6 @@ defmodule Passwordless.Domain do
     all_records_verified
     some_records_missing
   )a
-
   @states @aws_states ++ @dns_states
 
   @derive {
@@ -41,8 +42,19 @@ defmodule Passwordless.Domain do
 
   def kinds, do: @kinds
   def states, do: @states
-
   def email_suffix(%__MODULE__{name: name}), do: "@#{name}"
+
+  @doc """
+  Map the AWS domain verification states to our internal reprentation.
+  """
+  def aws_verification_states,
+    do: %{
+      "Pending" => :aws_pending,
+      "Success" => :aws_success,
+      "Failed" => :aws_failed,
+      "TemporaryFailure" => :aws_temporary_failure,
+      "NotStarted" => :aws_not_started
+    }
 
   @doc """
   Map the AWS domain state states to our internal reprentation.
@@ -68,6 +80,14 @@ defmodule Passwordless.Domain do
   def verified_by_aws?(%__MODULE__{state: :aws_success}), do: true
   def verified_by_aws?(%__MODULE__{}), do: false
 
+  def get_by_state(query \\ __MODULE__, state) do
+    from q in query, where: q.state == ^state
+  end
+
+  def get_not_verified(query \\ __MODULE__) do
+    from q in query, where: not q.verified
+  end
+
   @fields ~w(
     name
     kind
@@ -87,9 +107,9 @@ defmodule Passwordless.Domain do
     |> validate_name()
     |> validate_state()
     |> unique_constraint(:name)
-    |> unsafe_validate_unique(:name, Passwordless.Repo)
-    |> unique_constraint(:app_id)
-    |> unsafe_validate_unique(:app_id, Passwordless.Repo)
+    |> unsafe_validate_unique(:name, Passwordless.Repo,
+      query: from(d in __MODULE__, where: d.verified and is_nil(d.deleted_at))
+    )
     |> assoc_constraint(:app)
   end
 

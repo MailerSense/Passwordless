@@ -8,18 +8,21 @@ defmodule Passwordless.TOTP do
   alias Passwordless.Actor
 
   schema "totps" do
-    field :secret, :binary
+    field :name, :string
+    field :secret, :binary, redact: true
     field :code, :string, virtual: true
-
-    embeds_many :backup_codes, BackupCode, on_replace: :delete do
-      field :code, :string
-      field :used_at, :utc_datetime_usec
-    end
 
     belongs_to :actor, Actor, type: :binary_id
 
     timestamps()
   end
+
+  @fields ~w(
+    name
+    secret
+    actor_id
+  )a
+  @required_fields @fields
 
   @doc """
   A user second factor changeset.
@@ -27,10 +30,10 @@ defmodule Passwordless.TOTP do
   def changeset(%__MODULE__{} = totp, params \\ %{}) do
     changeset =
       totp
-      |> cast(params, [:secret, :code, :user_id])
-      |> validate_required([:code, :secret])
+      |> cast(params, @fields)
+      |> validate_required(@required_fields)
       |> validate_format(:code, ~r/^\d{6}$/, message: "should be a 6 digit number")
-      |> assoc_constraint(:user)
+      |> assoc_constraint(:actor)
 
     validate_change(changeset, :code, fn :code, code ->
       with {_, secret} when is_binary(secret) <- fetch_field(changeset, :secret),
@@ -51,58 +54,4 @@ defmodule Passwordless.TOTP do
     do: NimbleTOTP.valid?(secret, code)
 
   def valid_totp?(%__MODULE__{}, _code), do: false
-
-  @doc """
-  Validates the TOTP backup code and updates the used_at field if the code is valid.
-  """
-  def validate_backup_code(%__MODULE__{} = totp, code) when is_binary(code) do
-    totp.backup_codes
-    |> Enum.map_reduce(false, fn %__MODULE__.BackupCode{} = backup, valid? ->
-      if Plug.Crypto.secure_compare(backup.code, code) and is_nil(backup.used_at) do
-        {change(backup, %{used_at: DateTime.utc_now()}), true}
-      else
-        {backup, valid?}
-      end
-    end)
-    |> case do
-      {backup_codes, true} ->
-        totp
-        |> change()
-        |> put_embed(:backup_codes, backup_codes)
-
-      {_, false} ->
-        nil
-    end
-  end
-
-  def validate_backup_codes(%__MODULE__{}, _code), do: nil
-
-  def regenerate_backup_codes(changeset) do
-    put_embed(changeset, :backup_codes, generate_backup_codes())
-  end
-
-  def ensure_backup_codes(changeset) do
-    case get_field(changeset, :backup_codes) do
-      [] -> regenerate_backup_codes(changeset)
-      _ -> changeset
-    end
-  end
-
-  # Private
-
-  defp generate_backup_codes do
-    for letter <- Enum.take_random(?A..?Z, 10) do
-      suffix =
-        5
-        |> :crypto.strong_rand_bytes()
-        |> Base.encode32()
-        |> binary_part(0, 7)
-
-      # The first digit is always a letter so we can distinguish
-      # in the UI between 6 digit TOTP codes and backup ones.
-      # We also replace the letter O by X to avoid confusion with zero.
-      code = String.replace(<<letter, suffix::binary>>, "O", "X")
-      %__MODULE__.BackupCode{code: code}
-    end
-  end
 end

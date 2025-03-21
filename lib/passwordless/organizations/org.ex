@@ -9,19 +9,20 @@ defmodule Passwordless.Organizations.Org do
   alias Passwordless.Accounts.User
   alias Passwordless.Activity.Log
   alias Passwordless.App
-  alias Passwordless.Organizations.AuthToken
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
 
   @tags ~w(admin)a
+  @states ~w(active)a
 
   @derive {
     Flop.Schema,
-    filterable: [], sortable: [:id]
+    filterable: [:id], sortable: [:id]
   }
   schema "orgs" do
     field :name, :string
     field :email, :string
+    field :state, Ecto.Enum, values: @states, default: :active
     field :tags, {:array, Ecto.Enum}, values: @tags, default: []
 
     field :full_name, :string, virtual: true
@@ -30,7 +31,6 @@ defmodule Passwordless.Organizations.Org do
 
     has_many :apps, App
     has_many :logs, Log
-    has_many :auth_tokens, AuthToken
     has_many :memberships, Membership
     has_many :invitations, Invitation
 
@@ -47,6 +47,7 @@ defmodule Passwordless.Organizations.Org do
   @fields ~w(
     name
     email
+    state
     tags
   )a
   @required_fields @fields
@@ -68,7 +69,7 @@ defmodule Passwordless.Organizations.Org do
   defp validate_name(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 128)
+    |> validate_length(:name, min: 1, max: 255)
   end
 
   defp validate_email(changeset) do

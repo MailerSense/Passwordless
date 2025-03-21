@@ -1,51 +1,393 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
-  <div class="py-12">
-    <.form id="edit-actor-form" for={@form} phx-change="validate" phx-submit="save">
-      <div class="mb-12 flex justify-between items-center h-12">
-        <div class="relative">
-          <.field type="editor" field={@form[:name]} />
-          <div class="pc-editor-field-icon">
-            <.icon name="remix-pencil-line" class="pc-editor-field-icon__icon" />
-          </div>
-        </div>
-        <div class="flex gap-3">
-          <.button
-            to={~p"/app/users"}
-            size="md"
-            type="button"
-            color="light"
-            label={gettext("Cancel")}
-            link_type="live_redirect"
+  <.form id="edit-actor-form" for={@form} phx-change="validate" phx-submit="save">
+    <.subpage_header field={@form[:name]}>
+      <div class="flex gap-3">
+        <.button
+          to={~p"/app/users"}
+          size="md"
+          type="button"
+          color="light"
+          label={gettext("Cancel")}
+          link_type="live_redirect"
+        />
+        <.button
+          to={~p"/app/users/#{@actor}/edit/delete"}
+          size="md"
+          type="button"
+          label={gettext("Delete")}
+          icon="remix-delete-bin-line"
+          color="danger"
+          variant="outline"
+          link_type="live_patch"
+        />
+        <.button
+          size="md"
+          type="submit"
+          form="edit-actor-form"
+          color="primary"
+          label={gettext("Save")}
+          icon="remix-save-line"
+          disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
+        />
+      </div>
+    </.subpage_header>
+
+    <div class="flex flex-col gap-6">
+      <.box padded>
+        <.field type="radio-group" field={@form[:state]} options={@states} />
+        <.field field={@form[:user_id]} label={gettext("User ID")} disabled={not @user_active} />
+        <.field
+          field={@form[:language]}
+          type="select"
+          options={@languages}
+          icon_class="pc-select-input__flag"
+          icon_mapping={@flag_mapping}
+          required
+          required_asterix={false}
+          disabled={not @user_active}
+        />
+        <%= if @property_editor do %>
+          <.field
+            type="textarea"
+            field={@form[:properties_text]}
+            label={gettext("Properties")}
+            disabled={not @user_active}
+            class="font-mono"
+            rows="6"
           />
-          <.button
-            to={~p"/app/users/#{@actor}/edit/delete"}
-            size="md"
-            type="button"
-            label={gettext("Delete")}
-            icon="remix-delete-bin-line"
-            color="danger"
-            variant="outline"
+          <.a
+            label={gettext("Stop editing")}
+            styled
+            link_type="a"
+            phx-click="toggle_property_editor"
+            disabled={not @form.source.valid?}
+          />
+        <% else %>
+          <.json_block
+            label={gettext("Properties")}
+            code={@user_properties}
+            disabled={not @user_active}
+          />
+          <.a
+            label={gettext("Edit properties")}
+            styled
+            link_type="a"
+            phx-click="toggle_property_editor"
+            disabled={not @user_active}
+          />
+        <% end %>
+      </.box>
+      <.form_separator no_margin />
+      <.form_header title={gettext("Credentials")} no_margin />
+      <.p class="text-slate-600 dark:text-slate-300">
+        Email and phone numbers are used to send notifications and authenticate users. You can add multiple emails and phone numbers to a user account.
+      </.p>
+      <.simple_table items={@emails} count={Enum.count(@emails)} title={gettext("Emails")}>
+        <:if_empty>{gettext("No %{models} defined yet", models: gettext("emails"))}</:if_empty>
+        <:col field={:address} label={gettext("Email")} body_class="w-full" />
+        <:col :let={email} field={:authenticators}>
+          <div class="flex items-center gap-2">
+            <.badge size="sm" label="Magic link" color="cyan" />
+            <.badge size="sm" label="Email OTP" color="pink" />
+          </div>
+        </:col>
+        <:col :let={email} field={:verified}>
+          <.check_mark checked={email.verified} />
+        </:col>
+        <:col :let={email} field={:primary}>
+          <.check_mark checked={email.primary} />
+        </:col>
+        <:col :let={email} field={:opted_out}>
+          <.check_mark checked={email.opted_out} />
+        </:col>
+        <:col actions></:col>
+        <:actions :let={email}>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/email/#{email}/delete"}
+            size="sm"
+            icon="custom-trash"
+            color="light"
+            title={gettext("Remove")}
             link_type="live_patch"
           />
-        </div>
-      </div>
-
-      <.tab_menu
-        class="mb-8"
-        menu_items={actor_menu_items(@actor)}
-        current_tab={:details}
-        variant="buttons"
-      />
-      <div class="flex flex-col gap-4">
-        <.box padded>
-          <.form_header title="Authenticators" />
-        </.box>
-      </div>
-    </.form>
-  </div>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/email/#{email}/edit"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+        <:header_actions>
+          <.button
+            size="xs"
+            link_type="live_patch"
+            to={~p"/app/users/#{@actor}/edit/email/new"}
+            icon="remix-add-circle-line"
+            label={gettext("Add")}
+            color="light"
+          />
+        </:header_actions>
+      </.simple_table>
+      <.simple_table items={@phones} count={Enum.count(@phones)} title={gettext("Phones")}>
+        <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
+        <:col :let={phone} label={gettext("Phone")} body_class="w-full">
+          <div class="flex items-center gap-2">
+            <.icon name={"flag-#{String.downcase(phone.region)}"} class="pc-flag-icon" /> {Phone.format(
+              phone
+            )}
+          </div>
+        </:col>
+        <:col :let={phone} field={:channels}>
+          <div class="flex items-center gap-2">
+            <.badge
+              :for={channel <- phone.channels}
+              size="sm"
+              label={translate_channel(channel)}
+              color={random_color(channel)}
+            />
+          </div>
+        </:col>
+        <:col :let={phone} field={:verified}>
+          <.check_mark checked={phone.verified} />
+        </:col>
+        <:col :let={phone} field={:primary}>
+          <.check_mark checked={phone.primary} />
+        </:col>
+        <:col :let={phone} field={:opted_out}>
+          <.check_mark checked={phone.opted_out} />
+        </:col>
+        <:col actions></:col>
+        <:actions :let={phone}>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/phone/#{phone}/delete"}
+            size="sm"
+            icon="custom-trash"
+            color="light"
+            title={gettext("Remove")}
+            link_type="live_patch"
+          />
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/phone/#{phone}/edit"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+        <:header_actions>
+          <.button
+            size="xs"
+            link_type="live_patch"
+            to={~p"/app/users/#{@actor}/edit/phone/new"}
+            icon="remix-add-circle-line"
+            label={gettext("Add")}
+            color="light"
+          />
+        </:header_actions>
+      </.simple_table>
+      <.form_separator no_margin />
+      <.form_header title={gettext("Security devices")} no_margin />
+      <.p class="text-slate-600 dark:text-slate-300">
+        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
+      </.p>
+      <.simple_table items={[]} count={Enum.count([])} title={gettext("Passkeys")}>
+        <:if_empty>{gettext("No %{models} defined yet", models: gettext("passkeys"))}</:if_empty>
+        <:col field={:name} body_class="w-full" />
+        <:col actions></:col>
+        <:actions :let={identity}>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
+            size="sm"
+            icon="custom-trash"
+            color="light"
+            title={gettext("Remove")}
+            link_type="live_patch"
+          />
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+      </.simple_table>
+      <.simple_table items={[]} count={Enum.count([])} title={gettext("Security keys")}>
+        <:if_empty>
+          {gettext("No %{models} defined yet", models: gettext("security keys"))}
+        </:if_empty>
+        <:col field={:name} body_class="w-full" />
+        <:col actions></:col>
+        <:actions :let={identity}>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
+            size="sm"
+            icon="custom-trash"
+            color="light"
+            title={gettext("Remove")}
+            link_type="live_patch"
+          />
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+      </.simple_table>
+      <.form_separator no_margin />
+      <.form_header title={gettext("Mobile applications")} no_margin />
+      <.p class="text-slate-600 dark:text-slate-300">
+        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
+      </.p>
+      <.simple_table items={@totps} count={Enum.count([])} title={gettext("Time-based OTPs")}>
+        <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
+        <:col field={:name} body_class="w-full" />
+        <:col actions></:col>
+        <:actions :let={identity}>
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
+            size="sm"
+            icon="custom-trash"
+            color="light"
+            title={gettext("Remove")}
+            link_type="live_patch"
+          />
+          <.icon_button
+            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+      </.simple_table>
+      <.form_separator no_margin />
+      <.form_header title={gettext("User history")} no_margin />
+      <.p class="text-slate-600 dark:text-slate-300">
+        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
+      </.p>
+      <.data_table id="actions" meta={@meta} title={gettext("Previous actions")} items={@actions}>
+        <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+        <:col :let={action} label={gettext("Action")} field={:name}>
+          {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+        </:col>
+        <:col :let={action} label={gettext("Region")} field={:location}>
+          <div class="flex items-center gap-2">
+            <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
+          </div>
+        </:col>
+        <:col :let={action} label={gettext("Elapsed")} field={:location}>
+          <div class="flex items-center gap-2">
+            <.icon name="remix-timer-2-line" class="w-5 h-5" />
+            {Util.elapsed(action.inserted_at, action.updated_at)}
+          </div>
+        </:col>
+        <:col :let={action} label={gettext("State")} field={:state}>
+          <% {badge_label, badge_color} = action_state_badge(action) %>
+          <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+        </:col>
+        <:col :let={action} label={gettext("When")} field={:inserted_at}>
+          {Timex.from_now(action.inserted_at)}
+        </:col>
+        <:col actions></:col>
+        <:actions :let={action}>
+          <.icon_button
+            to={~p"/app/home/#{action}/view"}
+            size="sm"
+            icon="custom-edit"
+            color="light"
+            title={gettext("Edit")}
+            link_type="live_patch"
+          />
+        </:actions>
+      </.data_table>
+    </div>
+  </.form>
 </.layout>
 
 <%= case @live_action do %>
+  <% :new_email -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      email={Ecto.build_assoc(@actor, :emails)}
+      actor={@actor}
+      app={@current_app}
+      module={PasswordlessWeb.App.ActorLive.EmailComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_app={@current_app}
+      current_user={@current_user}
+      return_to={~p"/app/users/#{@actor}/edit"}
+    />
+  <% :edit_email -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      email={@email}
+      actor={@actor}
+      app={@current_app}
+      module={PasswordlessWeb.App.ActorLive.EmailComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_app={@current_app}
+      current_user={@current_user}
+      return_to={~p"/app/users/#{@actor}/edit"}
+    />
+  <% :new_phone -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      phone={Ecto.build_assoc(@actor, :phones)}
+      actor={@actor}
+      app={@current_app}
+      module={PasswordlessWeb.App.ActorLive.PhoneComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_app={@current_app}
+      current_user={@current_user}
+      return_to={~p"/app/users/#{@actor}/edit"}
+    />
+  <% :edit_phone -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      phone={@phone}
+      actor={@actor}
+      app={@current_app}
+      module={PasswordlessWeb.App.ActorLive.PhoneComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_app={@current_app}
+      current_user={@current_user}
+      return_to={~p"/app/users/#{@actor}/edit"}
+    />
+  <% :edit_properties -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      actor={@actor}
+      app={@current_app}
+      module={PasswordlessWeb.App.ActorLive.PropertiesComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_app={@current_app}
+      current_user={@current_user}
+      return_to={~p"/app/users/#{@actor}/edit"}
+    />
   <% :delete -> %>
     <.modal
       max_width="lg"
@@ -67,6 +409,54 @@
           label={gettext("Yes, Delete \"%{actor}\"", actor: @actor.name)}
           color="danger"
           phx-click="delete_actor"
+        />
+      </div>
+    </.modal>
+  <% :delete_email -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light-flat"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Delete \"%{email}\"", email: @email.address)}
+          color="danger"
+          phx-click="delete_email"
+        />
+      </div>
+    </.modal>
+  <% :delete_phone-> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light-flat"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Delete \"%{phone}\"", phone: Phone.format(@phone))}
+          color="danger"
+          phx-click="delete_email"
         />
       </div>
     </.modal>

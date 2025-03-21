@@ -26,6 +26,7 @@ defmodule PasswordlessWeb.Components.Badge do
     ]
   )
 
+  attr(:variant, :string, default: "rounded", values: ["rounded", "rectangle"])
   attr(:with_dot, :boolean, default: false, doc: "adds some dot base classes")
   attr(:with_icon, :boolean, default: false, doc: "adds some icon base classes")
   attr(:class, :string, default: "", doc: "CSS class for parent div")
@@ -39,6 +40,7 @@ defmodule PasswordlessWeb.Components.Badge do
       {@rest}
       class={[
         "pc-badge",
+        "pc-badge--#{@variant}",
         "pc-badge--#{@color}",
         "pc-badge--#{@size}",
         @with_dot && "pc-badge--with-dot",

@@ -18,13 +18,37 @@
       </.form>
     </.dropdown>
   </:action>
-  <.live_component
-    id={:edit}
-    org={@current_org}
-    action={:edit}
-    module={PasswordlessWeb.Org.FormComponent}
-    current_user={@current_user}
-  />
+  <.form id="edit-org-form" for={@form} phx-submit="save" phx-change="validate">
+    <.field
+      field={@form[:name]}
+      placeholder={gettext("e.g. YourOrg")}
+      autocomplete="organization"
+      required
+      required_asterix={false}
+    />
+    <.field
+      type="email"
+      field={@form[:email]}
+      placeholder={gettext("e.g. you@org.com")}
+      autocomplete="email"
+      required
+      required_asterix={false}
+    />
+
+    <div class="flex items-center justify-between">
+      <.a
+        to={~p"/app/organization/new"}
+        label={gettext("Create new organization")}
+        class="text-sm underline text-slate-600 dark:text-slate-300"
+        link_type="live_redirect"
+      />
+      <.button
+        icon="remix-save-line"
+        label={gettext("Save changes")}
+        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
+      />
+    </div>
+  </.form>
 </.tabbed_settings_layout>
 
 <%= case @live_action do %>

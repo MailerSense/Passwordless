@@ -4,6 +4,9 @@ defmodule PasswordlessWeb.Org.EditLive do
 
   import PasswordlessWeb.SettingsLayoutComponent
 
+  alias Passwordless.Accounts.User
+  alias Passwordless.Activity
+  alias Passwordless.Organizations
   alias Passwordless.Organizations.Org
 
   @impl true
@@ -13,11 +16,13 @@ defmodule PasswordlessWeb.Org.EditLive do
 
   @impl true
   def handle_params(_params, _url, socket) do
+    current_org = socket.assigns.current_org
     current_user = socket.assigns.current_user
+    changeset = Organizations.change_org(current_org)
 
     {:noreply,
      socket
-     |> assign_new(:org_menu_items, fn -> PasswordlessWeb.Helpers.org_menu_items(current_user) end)
+     |> assign_form(changeset)
      |> apply_action(socket.assigns.live_action)}
   end
 
@@ -32,12 +37,38 @@ defmodule PasswordlessWeb.Org.EditLive do
   end
 
   @impl true
-  def handle_event(_event, _params, socket) do
-    {:noreply, socket}
+  def handle_event("validate", %{"org" => org_params}, socket) do
+    changeset =
+      socket.assigns.current_org
+      |> Organizations.change_org(org_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign_form(socket, changeset)}
   end
 
   @impl true
-  def handle_params(_params, _url, socket) do
+  def handle_event("save", %{"org" => org_params}, socket) do
+    case Organizations.update_org(socket.assigns.current_org, org_params) do
+      {:ok, org} ->
+        Activity.log_async(:org, :"org.update_profile", %{user: socket.assigns.current_user, org: org})
+
+        current_user = assign_current_org(socket.assigns.current_user, org)
+
+        socket =
+          socket
+          |> put_toast(:info, gettext("Organization settings has been saved."), title: gettext("Success"))
+          |> assign(current_org: org, current_user: current_user)
+          |> assign_form(Organizations.change_org(org))
+
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
+  end
+
+  @impl true
+  def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
 
@@ -58,4 +89,14 @@ defmodule PasswordlessWeb.Org.EditLive do
         )
     )
   end
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    assign(socket, form: to_form(changeset))
+  end
+
+  defp assign_current_org(%User{current_org: %Org{id: id}} = user, %Org{id: id} = updated_org) do
+    %User{user | current_org: updated_org}
+  end
+
+  defp assign_current_org(user, _org), do: user
 end

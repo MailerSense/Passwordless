@@ -50,7 +50,7 @@ defmodule PasswordlessWeb.Components.Dropdown do
   """
   def dropdown(assigns) do
     assigns =
-      assign_new(assigns, :options_container_id, fn -> "dropdown_#{:rand.uniform(10_000_000) + 1}" end)
+      assign_new(assigns, :options_container_id, fn -> Util.id("dropdown") end)
 
     ~H"""
     <div
@@ -93,9 +93,9 @@ defmodule PasswordlessWeb.Components.Dropdown do
         aria-labelledby="options-menu"
         {js_attributes("options_container", @js_lib, @options_container_id)}
       >
-        <div role="none">
+        <nav role="none">
           {render_slot(@inner_block)}
-        </div>
+        </nav>
       </div>
     </div>
     """

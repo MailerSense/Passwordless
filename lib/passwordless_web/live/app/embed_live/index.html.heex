@@ -1,5 +1,4 @@
-<.layout current_user={@current_user} current_page={:embed} current_section={:app}>
-  <.page_header title={@page_title} />
+<.layout current_user={@current_user} current_page={:embed} current_section={:app} padded={false}>
   <.tabbed_layout current_page={@live_action} menu_items={embed_menu_items()}>
     <.live_component id={@live_action} app={@current_app} module={@module} />
   </.tabbed_layout>

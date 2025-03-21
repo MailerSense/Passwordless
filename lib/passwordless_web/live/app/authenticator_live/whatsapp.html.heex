@@ -1,0 +1,75 @@
+<div>
+  <.form
+    id="edit-whatsapp-form"
+    for={@form}
+    phx-target={@myself}
+    phx-submit="save"
+    phx-change="validate"
+    class="p-6"
+  >
+    <.field type="checkbox" field={@form[:enabled]} />
+    <.p class="mb-6">
+      WhatsApp OTP is a method that sends a one-time password to the user's phone number via WhatsApp. The user can then use this password to sign in. The password is valid for a limited time and can only be used once.
+    </.p>
+    <.form_separator />
+    <.field
+      field={@form[:language]}
+      type="select"
+      options={@languages}
+      icon_class="pc-select-input__flag"
+      icon_mapping={@flag_mapping}
+      disabled={not @enabled}
+      required
+      required_asterix={false}
+    />
+    <.sms_preview preview={@preview} />
+    <.a
+      to={~p"/app/authenticators/whatsapp?whatsapp_learn=true"}
+      label={gettext("Learn about WhatsApp OTP")}
+      styled
+      link_type="live_redirect"
+    />
+    <.form_separator />
+    <.form_header title="Advanced" />
+    <.field
+      field={@form[:expires]}
+      type="number"
+      prefix={gettext("After")}
+      suffix={gettext("minutes")}
+      disabled={not @enabled}
+      required
+      required_asterix={false}
+    />
+    <.form_separator />
+    <.form_header title="API - Send whatsapp OTP" />
+    <.code_block
+      class="mb-6"
+      language={:typescript}
+      code={
+        ~s"""
+        import hljs from "highlight.js/lib/core";
+        import { Hook, makeHook } from "phoenix_typed_hook";
+
+        class HighlightHook extends Hook {
+          public mounted() {
+            this.run("mounted", this.el);
+          }
+
+          public updated() {
+            this.run("updated", this.el);
+          }
+
+          private run(_lifecycleMethod: "mounted" | "updated", el: HTMLElement) {
+            hljs.highlightElement(el.querySelector("code")!);
+          }
+        }
+
+        export default makeHook(HighlightHook);
+        """
+      }
+    />
+    <.p class="mb-6">
+      {gettext("Use the following API endpoint to send whatsapp OTPs:")}
+    </.p>
+  </.form>
+</div>

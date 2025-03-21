@@ -4,6 +4,10 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   import PasswordlessWeb.SettingsLayoutComponent
 
+  alias Passwordless.Accounts.User
+
+  @upload_provider Passwordless.FileUploads.Local
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}
@@ -16,10 +20,10 @@ defmodule PasswordlessWeb.App.AppLive.Index do
      |> assign(uploaded_files: [])
      |> apply_action(socket.assigns.live_action, params)
      |> assign_form(Passwordless.change_app(socket.assigns.current_app))
-     |> allow_upload(:avatar,
+     |> allow_upload(:logo,
        # SETUP_TODO: Uncomment the line below if using an external provider (Cloudinary or S3)
        # external: &@upload_provider.presign_upload/2,
-       accept: ~w(.jpg .jpeg .png .gif .svg .webp),
+       accept: ~w(.jpg .jpeg .png .svg .webp),
        max_entries: 1,
        max_file_size: 5_242_880 * 2
      )}
@@ -37,7 +41,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
       {:error, _} ->
         {:noreply,
          socket
-         |> LiveToast.put_toast(:error, gettext("Failed to delete app!"))
+         |> put_toast(:error, gettext("Failed to delete app!"), title: gettext("Error"))
          |> push_patch(to: ~p"/app/app")}
     end
   end
@@ -64,19 +68,13 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   @impl true
   def handle_event("save", %{"app" => app_params}, socket) do
-    case Passwordless.update_app(socket.assigns.current_app, app_params) do
-      {:ok, app} ->
-        socket =
-          socket
-          |> LiveToast.put_toast(:info, gettext("App updated."))
-          |> assign(app: app)
-          |> assign_form(Passwordless.change_app(app))
+    app_params = maybe_add_logo(app_params, socket)
+    save_app(socket, app_params)
+  end
 
-        {:noreply, socket}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
-    end
+  @impl true
+  def handle_event("clear_logo", _params, socket) do
+    save_app(socket, %{logo: nil})
   end
 
   @impl true
@@ -111,5 +109,32 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     assign(socket, form: to_form(changeset))
+  end
+
+  defp maybe_add_logo(user_params, socket) do
+    uploaded_files = @upload_provider.consume_uploaded_entries(socket, :logo)
+
+    if length(uploaded_files) > 0 do
+      Map.put(user_params, "logo", hd(uploaded_files))
+    else
+      user_params
+    end
+  end
+
+  defp save_app(socket, app_params) do
+    case Passwordless.update_app(socket.assigns.current_app, app_params) do
+      {:ok, app} ->
+        socket =
+          socket
+          |> put_toast(:info, gettext("App settings have been saved."), title: gettext("Success"))
+          |> assign(current_app: app)
+          |> assign(current_user: %User{socket.assigns.current_user | current_app: app})
+          |> assign_form(Passwordless.change_app(app))
+
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
   end
 end

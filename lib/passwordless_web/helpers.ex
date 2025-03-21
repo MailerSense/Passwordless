@@ -5,84 +5,138 @@ defmodule PasswordlessWeb.Helpers do
   use PasswordlessWeb, :verified_routes
   use Gettext, backend: PasswordlessWeb.Gettext
 
-  alias Passwordless.Accounts
   alias Passwordless.Accounts.User
   alias Passwordless.Action
   alias Passwordless.Activity.Log
   alias Passwordless.Actor
   alias Passwordless.App
+  alias Passwordless.AuthToken
+  alias Passwordless.EmailTemplate
   alias Passwordless.Organizations
-  alias Passwordless.Organizations.AuthToken
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
 
-  def actor_state_badge(nil), do: {nil, "gray"}
+  def actor_name(%Actor{} = actor), do: actor.name
+  def actor_name(_actor), do: nil
 
   def actor_state_badge(%Actor{} = actor),
     do:
       {Phoenix.Naming.humanize(actor.state),
        case actor.state do
          :active -> "success"
-         :stale -> "gray"
+         :locked -> "danger"
        end}
-
-  def action_state_badge(nil), do: {nil, "gray"}
 
   def action_state_badge(%Action{} = action),
     do:
-      {Phoenix.Naming.humanize(action.outcome),
-       case action.outcome do
+      {Phoenix.Naming.humanize(action.state),
+       case action.state do
          :allow -> "success"
          :timeout -> "warning"
          :block -> "danger"
          _ -> "gray"
        end}
 
-  def method_menu_items do
+  def action_state_badge(_actor), do: {nil, "gray"}
+
+  def embed_menu_items do
     [
       %{
-        name: :magic_link,
-        label: "Magic link",
-        icon: "remix-link",
-        path: ~p"/app/methods/magic-link",
+        name: :install,
+        label: "Installation",
+        icon: "remix-install-line",
+        path: ~p"/app/embed/install",
+        link_type: "live_patch"
+      },
+      %{
+        name: :api,
+        label: "Headless API",
+        icon: "remix-code-s-slash-line",
+        path: ~p"/app/embed/api",
+        link_type: "live_patch"
+      },
+      %{
+        name: :login,
+        label: "Login window",
+        icon: "remix-window-line",
+        path: ~p"/app/embed/login",
+        link_type: "live_patch"
+      },
+      %{
+        name: :guard,
+        label: "Identity guard",
+        icon: "remix-police-badge-line",
+        path: ~p"/app/embed/guard",
+        link_type: "live_patch"
+      }
+    ]
+  end
+
+  def authenticator_menu_items do
+    [
+      %{
+        name: :email,
+        label: "Email",
+        icon: "remix-mail-open-line",
+        path: ~p"/app/authenticators/email",
         link_type: "live_patch"
       },
       %{
         name: :sms,
         label: "SMS",
         icon: "remix-message-2-line",
-        path: ~p"/app/methods/sms",
+        path: ~p"/app/authenticators/sms",
         link_type: "live_patch"
       },
       %{
-        name: :email,
-        label: "Email",
-        icon: "remix-mail-line",
-        path: ~p"/app/methods/email",
+        name: :whatsapp,
+        label: "WhatsApp",
+        icon: "remix-whatsapp-line",
+        path: ~p"/app/authenticators/whatsapp",
         link_type: "live_patch"
       },
       %{
-        name: :authenticator,
-        label: "Authenticator (TOTP)",
+        name: :magic_link,
+        label: "Magic link",
+        icon: "remix-link",
+        path: ~p"/app/authenticators/magic-link",
+        link_type: "live_patch"
+      },
+      %{
+        name: :totp,
+        label: "Time-based OTP",
         icon: "remix-smartphone-line",
-        path: ~p"/app/methods/authenticator",
+        path: ~p"/app/authenticators/totp",
         link_type: "live_patch"
       },
       %{
         name: :security_key,
         label: "Security key",
-        icon: "remix-shield-keyhole-line",
-        path: ~p"/app/methods/security-key",
+        icon: "remix-usb-line",
+        path: ~p"/app/authenticators/security-key",
         link_type: "live_patch"
       },
       %{
         name: :passkey,
         label: "Passkey",
-        icon: "remix-pass-valid-line",
-        path: ~p"/app/methods/passkey",
+        icon: "remix-fingerprint-line",
+        path: ~p"/app/authenticators/passkey",
+        link_type: "live_patch"
+      },
+      %{
+        name: :recovery_codes,
+        label: "Recovery codes",
+        icon: "remix-file-list-line",
+        path: ~p"/app/authenticators/recovery-codes",
         link_type: "live_patch"
       }
     ]
+  end
+
+  def authenticator_details(%Action{authenticator: authenticator}) do
+    authenticator_menu_items()
+    |> Enum.find(&(&1[:name] == authenticator))
+    |> Map.take([:label, :icon])
   end
 
   def actor_menu_items(%Actor{} = actor) do
@@ -90,41 +144,47 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :details,
         label: "Details",
-        icon: "remix-shield-keyhole-line",
         path: ~p"/app/users/#{actor}/edit",
         link_type: "live_patch"
       },
       %{
         name: :activity,
-        label: "Activity",
-        icon: "remix-file-list-3-line",
+        label: "Authenticators",
         path: ~p"/app/users/#{actor}/activity",
         link_type: "live_patch"
       }
     ]
   end
 
-  def embed_menu_items do
+  def email_menu_items(%EmailTemplate{} = email_template, language \\ :en) do
     [
       %{
-        name: :secrets,
-        label: "App secrets",
-        icon: "remix-instance-line",
-        path: ~p"/app/embed/secrets",
+        name: :edit,
+        label: gettext("Email"),
+        path: ~p"/app/emails/#{email_template}/#{language}/edit",
         link_type: "live_patch"
       },
       %{
-        name: :login_page,
-        label: "Login page",
-        icon: "remix-window-line",
-        path: ~p"/app/embed/login-page",
+        name: :code,
+        label: gettext("Code"),
+        path: ~p"/app/emails/#{email_template}/#{language}/code",
+        link_type: "live_patch"
+      }
+    ]
+  end
+
+  def domain_menu_items do
+    [
+      %{
+        name: :sending,
+        label: gettext("Email sending"),
+        path: ~p"/app/domain/send",
         link_type: "live_patch"
       },
       %{
-        name: :auth_guard,
-        label: "Auth guard",
-        icon: "remix-shield-user-line",
-        path: ~p"/app/embed/auth-guard",
+        name: :branding,
+        label: gettext("Link branding"),
+        path: ~p"/app/domain/track",
         link_type: "live_patch"
       }
     ]
@@ -201,22 +261,12 @@ defmodule PasswordlessWeb.Helpers do
   def user_state(nil), do: nil
   def user_state(%User{} = user), do: user.state
 
-  def user_2fa_enabled(nil), do: false
-  def user_2fa_enabled(%User{} = user), do: Accounts.two_factor_auth_enabled?(user)
+  def user_org_name(%User{current_org: %Org{name: name}}) when is_binary(name), do: Util.truncate(name)
 
-  def user_2fa_badge(nil), do: {nil, "danger"}
-
-  def user_2fa_badge(%User{} = user),
-    do:
-      {if(Accounts.two_factor_auth_enabled?(user), do: gettext("2FA Enabled"), else: gettext("2FA Disabled")),
-       if(Accounts.two_factor_auth_enabled?(user), do: "success", else: "danger")}
-
-  def user_states, do: Enum.map(User.states(), &{String.capitalize(Atom.to_string(&1)), &1})
-
-  def user_org_name(%User{current_org: %Org{name: name}}) when is_binary(name), do: name
   def user_org_name(_), do: nil
 
-  def user_app_name(%User{current_app: %App{name: name}}) when is_binary(name), do: name
+  def user_app_name(%User{current_app: %App{name: name}}) when is_binary(name), do: Util.truncate(name)
+
   def user_app_name(_), do: nil
 
   def user_impersonated?(%User{current_impersonator: %User{}}), do: true
@@ -227,17 +277,35 @@ defmodule PasswordlessWeb.Helpers do
 
   def admin?(%User{}), do: false
 
-  def format_date_time(date, format \\ "%b %d %H:%M")
+  def format_date_time(date, format \\ "%d %B %Y, %H:%M")
   def format_date_time(nil, _format), do: ""
   def format_date_time(date, format), do: Timex.format!(date, format, :strftime)
 
-  def format_date(date, format \\ "%-d %b %Y")
+  def format_date(date, format \\ "%-d %B %Y")
   def format_date(nil, _format), do: ""
   def format_date(date, format), do: Timex.format!(date, format, :strftime)
 
-  def user_role(%Membership{role: role}) when is_atom(role), do: String.capitalize(Atom.to_string(role))
+  def format_month_range(%Date{} = month) do
+    start_date = Timex.beginning_of_month(month)
+    end_date = Timex.end_of_month(month)
 
-  def user_role(%Membership{}), do: "-"
+    "#{format_date(start_date, "%-d")} - #{format_date(end_date, "%-d %B %Y")}"
+  end
+
+  def current_month?(%Date{} = month) do
+    span_start = Timex.beginning_of_month(month)
+    span_end = Timex.end_of_month(month)
+
+    interval =
+      Timex.Interval.new(
+        from: span_start,
+        until: span_end,
+        left_open: false,
+        right_open: false
+      )
+
+    Timex.today() in interval
+  end
 
   def user_added(%Membership{inserted_at: %DateTime{} = inserted_at}), do: format_date_time(inserted_at)
 
@@ -265,6 +333,8 @@ defmodule PasswordlessWeb.Helpers do
 
   def log_action_badge(%Log{action: action}),
     do: {translate_action(action), Enum.at(@common_colors, :erlang.phash2(action, length(@common_colors)))}
+
+  def random_color(term), do: Enum.at(@common_colors, :erlang.phash2(term, length(@common_colors)))
 
   @icon_mapping %{
     "create_auth_token" => "🔑",
@@ -320,8 +390,6 @@ defmodule PasswordlessWeb.Helpers do
     end
   end
 
-  def random_color(term, colors \\ @common_colors), do: Enum.at(colors, :erlang.phash2(term, length(colors)))
-
   def auth_token_scopes(%AuthToken{scopes: [_ | _] = scopes}) when length(scopes) > 2,
     do:
       scopes
@@ -336,13 +404,6 @@ defmodule PasswordlessWeb.Helpers do
 
   def auth_token_scopes(_), do: "-"
 
-  def status_page_visibilities,
-    do: [
-      public: {gettext("Anyone with link can view"), "primary"},
-      private: {gettext("Password protected"), "purple"},
-      hidden: {gettext("Not accessible"), "danger"}
-    ]
-
   # Autofocuses the input
   # <input {alpine_autofocus()} />
   def alpine_autofocus do
@@ -350,15 +411,6 @@ defmodule PasswordlessWeb.Helpers do
       "x-data": "",
       "x-init": "$nextTick(() => { $el.focus() });"
     }
-  end
-
-  @doc """
-  When you want to display code in a heex template, you can use this helper to escape it.
-  """
-  def code_block(code) do
-    Phoenix.HTML.raw("""
-    <pre>#{code}</pre>
-    """)
   end
 
   ## SEO
@@ -381,23 +433,4 @@ defmodule PasswordlessWeb.Helpers do
   end
 
   def assign_page_description(socket, _description), do: socket
-
-  # Date
-
-  def current_month_menu_item do
-    date = DateTime.utc_now()
-    "#{date.year}:#{date.month}"
-  end
-
-  def last_months_menu(limit \\ 2) do
-    now = DateTime.utc_now()
-
-    for_result =
-      for i <- 0..limit do
-        date = Timex.shift(now, months: -i)
-        %{name: "#{date.year}:#{date.month}", label: Timex.format!(date, "%b %Y", :strftime)}
-      end
-
-    [%{name: "custom", label: "Custom"} | Enum.reverse(for_result)]
-  end
 end

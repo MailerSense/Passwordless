@@ -13,7 +13,7 @@ defmodule PasswordlessWeb.Components.ThemeSwitch do
       <.theme_switch />
   """
   def theme_switch(assigns) do
-    assigns = assign_new(assigns, :id, fn -> "theme_switch_#{:rand.uniform(10_000_000) + 1}" end)
+    assigns = assign_new(assigns, :id, fn -> Util.id("theme_switch") end)
 
     ~H"""
     <button
@@ -32,32 +32,24 @@ defmodule PasswordlessWeb.Components.ThemeSwitch do
   attr :class, :string, default: ""
 
   def wide_theme_switch(assigns) do
-    assigns = assign_new(assigns, :id, fn -> "theme_switch_#{:rand.uniform(10_000_000) + 1}" end)
+    assigns = assign_new(assigns, :id, fn -> Util.id("theme_switch") end)
 
     ~H"""
     <button
       phx-hook="ColorSchemeHook"
       type="button"
       aria-label="Change color scheme"
-      id={@id}
+      id={Ecto.UUID.generate()}
       class={[
-        "p-1 px-1.5 flex rounded-full items-center justify-center bg-slate-200 dark:bg-slate-900",
+        "h-12 px-1.5 bg-slate-800 rounded-full border border-slate-700 flex items-center w-full",
         @class
       ]}
     >
-      <div class={[
-        "flex items-center justify-center py-2.5 px-6 text-sm font-semibold leading-tight rounded-full whitespace-nowrap select-none gap-2.5",
-        "bg-white text-slate-900 shadow-1 dark:bg-transparent dark:shadow-none dark:text-slate-400",
-        "grow"
-      ]}>
+      <div class="grow shrink basis-0 h-9 p-2 bg-slate-900 dark:bg-transparent text-white dark:text-slate-400 rounded-full justify-center items-center gap-2 flex select-none">
         <.icon name="remix-sun-fill" class="w-[18px] h-[18px]" />
         <p class="text-sm font-semibold leading-tight">Light</p>
       </div>
-      <div class={[
-        "flex items-center justify-center py-2.5 px-6 text-sm font-semibold leading-tight rounded-full whitespace-nowrap select-none gap-2.5",
-        "dark:bg-slate-700 dark:text-white dark:shadow-1",
-        "grow"
-      ]}>
+      <div class="grow shrink basis-0 h-9 p-2 bg-transparent dark:bg-slate-900 text-slate-400 dark:text-white rounded-full justify-center items-center gap-2 flex select-none">
         <.icon name="remix-moon-fill" class="w-[18px] h-[18px]" />
         <p class="text-sm font-semibold leading-tight">Dark</p>
       </div>

@@ -1,17 +1,2 @@
 <%!-- This should match max_width in `public.html.heex`. Options: ["sm", "md", "lg", "xl", "full"] --%>
 <% max_width = "xl" %>
-<.hero max_width={max_width} current_user={@current_user} />
-<.product_features
-  max_width={max_width}
-  features={PasswordlessWeb.Product.features()}
-  minor_features={PasswordlessWeb.Product.minor_features()}
-/>
-<.code_cta max_width={max_width} />
-<.benefits
-  max_width={max_width}
-  quotas={PasswordlessWeb.Product.benefit_quotas()}
-  highligts={PasswordlessWeb.Product.benefit_highlights()}
-/>
-<.benefits_cta max_width={max_width} />
-<.testimonials testimonials={PasswordlessWeb.Product.testimonials()} />
-<.pricing_cta max_width={max_width} />

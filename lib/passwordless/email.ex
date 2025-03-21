@@ -5,48 +5,67 @@ defmodule Passwordless.Email do
 
   use Passwordless.Schema
 
+  import Ecto.Query
+
   alias Database.ChangesetExt
   alias Passwordless.Actor
-  alias Passwordless.App
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :address,
+             :primary,
+             :verified
+           ]}
   @derive {
     Flop.Schema,
-    filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
+    filterable: [:id], sortable: [:id]
   }
   schema "emails" do
     field :address, :string
     field :primary, :boolean, default: false
     field :verified, :boolean, default: false
+    field :opted_out, :boolean, virtual: true
+    field :opted_out_at, :utc_datetime_usec
 
-    belongs_to :app, App, type: :binary_id
     belongs_to :actor, Actor, type: :binary_id
 
     timestamps()
     soft_delete_timestamp()
   end
 
+  def put_virtuals(%__MODULE__{opted_out_at: opted_out_at} = email) do
+    %__MODULE__{email | opted_out: not is_nil(opted_out_at)}
+  end
+
   @fields ~w(
     address
     primary
     verified
-    app_id
+    opted_out_at
     actor_id
   )a
-  @required_fields @fields
+  @required_fields @fields -- [:opted_out_at]
 
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
+  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
     actor_email
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_email()
-    |> unique_constraint([:app_id, :actor_id, :primary], error_key: :primary)
-    |> unique_constraint([:app_id, :actor_id, :address], error_key: :address)
-    |> unsafe_validate_unique([:app_id, :actor_id, :primary], Passwordless.Repo, error_key: :primary)
-    |> unsafe_validate_unique([:app_id, :actor_id, :address], Passwordless.Repo, error_key: :address)
-    |> assoc_constraint(:app)
+    |> unique_constraint([:actor_id, :primary], error_key: :primary)
+    |> unique_constraint([:actor_id, :address], error_key: :address)
+    |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo,
+      query: from(e in __MODULE__, where: e.primary == true),
+      prefix: Keyword.get(opts, :prefix),
+      error_key: :primary
+    )
+    |> unsafe_validate_unique([:actor_id, :address], Passwordless.Repo,
+      prefix: Keyword.get(opts, :prefix),
+      error_key: :address
+    )
     |> assoc_constraint(:actor)
   end
 

@@ -14,7 +14,7 @@ defmodule Passwordless.Accounts.User do
   alias Passwordless.Organizations.Org
   alias Passwordless.Security.Roles
 
-  @states ~w(inactive locked active)a
+  @states ~w(active locked)a
 
   schema "users" do
     field :name, :string
@@ -143,7 +143,7 @@ defmodule Passwordless.Accounts.User do
   A user changeset for passwordless registration.
   """
   def passwordless_registration_changeset(%__MODULE__{} = user, attrs \\ %{}) do
-    %__MODULE__{user | state: :inactive}
+    %__MODULE__{user | state: :locked}
     |> cast(attrs, [:email])
     |> validate_email()
     |> validate_state()
@@ -278,12 +278,11 @@ defmodule Passwordless.Accounts.User do
   defp validate_name(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 160)
+    |> validate_length(:name, min: 1, max: 255)
   end
 
   defp validate_state(changeset) do
     ChangesetExt.validate_state(changeset,
-      inactive: [:active],
       locked: [:active],
       active: [:locked]
     )

@@ -1,0 +1,48 @@
+<div class="px-6 pb-6">
+  <.form
+    id="edit-template-version"
+    for={@version_form}
+    phx-change="validate_version"
+    phx-submit="save_version"
+  >
+    <.field field={@version_form[:subject]} required required_asterix={false} />
+    <.field field={@version_form[:preheader]} />
+    <.field
+      type="select"
+      field={@version_form[:current_language]}
+      label={gettext("Language")}
+      options={@languages}
+      icon={@flag_icon}
+      icon_class="pc-select-input__flag"
+      required
+      required_asterix={false}
+    />
+    <.a
+      to={~p"/app/emails/#{@template}/#{@language}/#{@live_action}?variables=true"}
+      label={gettext("Learn about variables")}
+      styled
+      link_type="live_patch"
+    />
+  </.form>
+  <.form_separator />
+  <.form_header title={gettext("Preview")} />
+  <.p class="mb-6">
+    Send a test email to your verified account email address to see how it looks when delivered.
+  </.p>
+  <.field
+    type="email"
+    name="email"
+    label={gettext("Email")}
+    value={user_email(@current_user)}
+    readonly
+  />
+  <div class="flex">
+    <.button
+      type="button"
+      label={gettext("Send")}
+      icon="remix-mail-send-line"
+      color="light"
+      phx-click="send_preview"
+    />
+  </div>
+</div>

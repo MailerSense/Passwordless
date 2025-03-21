@@ -14,8 +14,6 @@ defmodule PasswordlessWeb.Org.Hooks do
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
 
-  @cache_ttl :timer.minutes(3 * 60)
-
   def on_mount(:fetch_current_org, _params, session, socket) do
     socket =
       socket
@@ -64,17 +62,7 @@ defmodule PasswordlessWeb.Org.Hooks do
     assign_new(socket, :current_membership, fn ->
       case {socket.assigns[:current_user], session["org_id"]} do
         {%User{} = user, org_id} when is_binary(org_id) ->
-          key = "membership:org:#{org_id}:user:#{user.id}"
-
-          case Cache.get(key) do
-            %Membership{} = membership ->
-              membership
-
-            nil ->
-              membership = Organizations.get_membership!(user, org_id)
-              Cache.put(key, membership, ttl: @cache_ttl)
-              membership
-          end
+          Organizations.get_membership!(user, org_id)
 
         _ ->
           nil

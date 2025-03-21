@@ -2,7 +2,7 @@
   <% origin = "right" %>
   <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
     <.form
-      id="edit-org-form"
+      id="create-org-form"
       for={@form}
       phx-target={@myself}
       phx-submit="save"
@@ -13,6 +13,7 @@
         placeholder={gettext("e.g. YourOrg")}
         autocomplete="organization"
         required
+        phx-debounce="blur"
       />
       <.field
         type="email"
@@ -20,6 +21,7 @@
         placeholder={gettext("e.g. you@org.com")}
         autocomplete="email"
         required
+        phx-debounce="blur"
       />
     </.form>
 
@@ -32,10 +34,10 @@
         phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
       />
       <.button
-        id="edit-org-form-submit"
+        id="create-org-form-submit"
         size="wide"
         type="submit"
-        form="edit-org-form"
+        form="create-org-form"
         disabled={not @form.source.valid?}
         label={
           if @live_action == :new,

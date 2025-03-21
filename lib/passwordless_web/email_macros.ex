@@ -20,6 +20,8 @@ defmodule PasswordlessWeb.EmailMacros do
             |> reply_to({unquote(reply_to_name), unquote(reply_to)})
             |> assign(:unsubscribe_url, unsubscribe_url)
           end
+
+          def unquote(:"#{kind}_email_address")(), do: unquote(email)
         end
       end
 

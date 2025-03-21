@@ -3,6 +3,9 @@ defmodule Passwordless.Application do
 
   use Application
 
+  @secret Application.compile_env!(:passwordless, :secret_manager)
+  @secret_name Keyword.fetch!(@secret, :secret_name)
+
   @impl true
   def start(_type, _args) do
     :logger.add_handler(:sentry_handler, Sentry.LoggerHandler, %{
@@ -34,6 +37,7 @@ defmodule Passwordless.Application do
         |> Kernel.++([
           {Phoenix.PubSub, name: Passwordless.PubSub},
           {Task.Supervisor, name: Passwordless.BackgroundTask},
+          {Passwordless.SecretVault, @secret_name},
           Cache,
           {Oban, Application.fetch_env!(:passwordless, Oban)},
           {Passwordless.HealthCheck, health_checks()},

@@ -111,7 +111,7 @@ defmodule PasswordlessWeb.Components.Form do
     doc: "The type of input"
   )
 
-  attr(:wrapper_classes, :string, default: "pc-form-field-wrapper", doc: "CSS class for wrapper")
+  attr :wrapper_classes, :string, default: "pc-form-field-wrapper", doc: "CSS class for wrapper"
   attr :rest, :global, include: @form_attrs
 
   @doc "Use this when you want to include the label and some margin."
@@ -775,22 +775,24 @@ defmodule PasswordlessWeb.Components.Form do
   attr(:class, :any, default: "", doc: "extra classes for the help text")
   attr(:title, :string, default: nil, doc: "context/help for your field")
   attr(:subtitle, :string, default: nil, doc: "context/help for your field")
+  attr(:no_margin, :boolean, default: false, doc: "context/help for your field")
   attr(:rest, :global)
 
   def form_header(assigns) do
     ~H"""
-    <h3 class={["pc-form-header", @class]} {@rest}>
+    <h3 class={["pc-form-header", unless(@no_margin, do: "mb-6"), @class]} {@rest}>
       {@title}
     </h3>
     """
   end
 
   attr(:class, :any, default: "", doc: "extra classes for the help text")
+  attr(:no_margin, :boolean, default: false, doc: "context/help for your field")
   attr(:rest, :global)
 
   def form_separator(assigns) do
     ~H"""
-    <span class={["pc-form-separator", @class]} {@rest}></span>
+    <span class={["pc-form-separator", unless(@no_margin, do: "my-6"), @class]} {@rest}></span>
     """
   end
 

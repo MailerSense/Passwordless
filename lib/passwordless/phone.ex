@@ -5,14 +5,25 @@ defmodule Passwordless.Phone do
 
   use Passwordless.Schema
 
+  import Ecto.Query
+
   alias Database.ChangesetExt
   alias Passwordless.Actor
-  alias Passwordless.App
 
   @channels ~w(sms whatsapp)a
+
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :number,
+             :region,
+             :canonical,
+             :primary,
+             :verified
+           ]}
   @derive {
     Flop.Schema,
-    filterable: [:id], sortable: [:id], custom_fields: [], adapter_opts: []
+    filterable: [:id], sortable: [:id]
   }
   schema "phones" do
     field :number, :string
@@ -21,12 +32,33 @@ defmodule Passwordless.Phone do
     field :primary, :boolean, default: false
     field :verified, :boolean, default: false
     field :channels, {:array, Ecto.Enum}, values: @channels, default: [:sms]
+    field :opted_out, :boolean, virtual: true
+    field :opted_out_at, :utc_datetime_usec
 
-    belongs_to :app, App, type: :binary_id
     belongs_to :actor, Actor, type: :binary_id
 
     timestamps()
     soft_delete_timestamp()
+  end
+
+  def put_virtuals(%__MODULE__{opted_out_at: opted_out_at} = phone) do
+    %__MODULE__{phone | opted_out: not is_nil(opted_out_at)}
+  end
+
+  def format(%__MODULE__{canonical: canonical}) when is_binary(canonical) do
+    case ExPhoneNumber.parse(canonical, "") do
+      {:ok, number} -> ExPhoneNumber.format(number, :international)
+      _ -> canonical
+    end
+  end
+
+  def format(%__MODULE__{region: region, number: number}) when is_binary(region) and is_binary(number) do
+    with {:ok, phone_number} <- ExPhoneNumber.parse(number, region),
+         true <- ExPhoneNumber.is_possible_number?(phone_number) do
+      ExPhoneNumber.format(phone_number, :international)
+    else
+      _ -> nil
+    end
   end
 
   @fields ~w(
@@ -36,35 +68,35 @@ defmodule Passwordless.Phone do
     primary
     verified
     channels
-    app_id
+    opted_out_at
     actor_id
   )a
-  @required_fields @fields
+  @required_fields @fields -- [:opted_out_at]
 
   @doc """
   A regional changeset.
   """
-  def regional_changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
+  def regional_changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
     excluded = [:canonical]
 
     actor_email
     |> cast(attrs, @fields -- excluded)
     |> validate_required(@required_fields -- excluded)
     |> validate_regional_phone_number()
-    |> base_changeset()
+    |> base_changeset(opts)
   end
 
   @doc """
   A canonical changeset.
   """
-  def canonical_changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
+  def canonical_changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
     excluded = [:number, :region]
 
     actor_email
     |> cast(attrs, @fields -- excluded)
     |> validate_required(@required_fields -- excluded)
     |> validate_canonical_phone_number()
-    |> base_changeset()
+    |> base_changeset(opts)
   end
 
   # Private
@@ -96,7 +128,7 @@ defmodule Passwordless.Phone do
     with {:ok, phone_number} <- ExPhoneNumber.parse(canonical, ""),
          true <- ExPhoneNumber.is_possible_number?(phone_number) do
       changeset
-      |> put_change(:number, phone_number.national_number)
+      |> put_change(:number, to_string(phone_number.national_number))
       |> put_change(:region, ExPhoneNumber.Metadata.get_region_code_for_country_code(phone_number.country_code))
     else
       {:error, message} -> add_error(changeset, :canonical, message)
@@ -106,14 +138,20 @@ defmodule Passwordless.Phone do
 
   defp validate_canonical_phone_number(changeset), do: changeset
 
-  defp base_changeset(changeset) do
+  defp base_changeset(changeset, opts \\ []) do
     changeset
     |> validate_channels()
-    |> unique_constraint([:app_id, :actor_id, :primary], error_key: :primary)
-    |> unique_constraint([:app_id, :actor_id, :canonical], error_key: :canonical)
-    |> unsafe_validate_unique([:app_id, :actor_id, :primary], Passwordless.Repo, error_key: :primary)
-    |> unsafe_validate_unique([:app_id, :actor_id, :canonical], Passwordless.Repo, error_key: :canonical)
-    |> assoc_constraint(:app)
+    |> unique_constraint([:actor_id, :primary], error_key: :primary)
+    |> unique_constraint([:actor_id, :canonical], error_key: :canonical)
+    |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo,
+      prefix: Keyword.get(opts, :prefix),
+      query: from(p in __MODULE__, where: p.primary == true),
+      error_key: :primary
+    )
+    |> unsafe_validate_unique([:actor_id, :canonical], Passwordless.Repo,
+      prefix: Keyword.get(opts, :prefix),
+      error_key: :canonical
+    )
     |> assoc_constraint(:actor)
   end
 

@@ -1,0 +1,48 @@
+<div class="p-6">
+  <.field name="app_id" value={@app.id} label="App ID" readonly copyable={true} class="font-mono" />
+  <.field
+    name="app_secret"
+    value={@signed}
+    label="App Secret"
+    type="password"
+    readonly
+    viewable={true}
+    class="font-mono"
+  />
+  <div class="flex flex-col gap-6">
+    <.form_separator no_margin />
+    <.form_header title="Instructions" no_margin />
+    <.code_block
+      language={:typescript}
+      code={
+        ~s"""
+        import hljs from "highlight.js/lib/core";
+        import { Hook, makeHook } from "phoenix_typed_hook";
+
+        class HighlightHook extends Hook {
+          public mounted() {
+            this.run("mounted", this.el);
+          }
+
+          public updated() {
+            this.run("updated", this.el);
+          }
+
+          private run(_lifecycleMethod: "mounted" | "updated", el: HTMLElement) {
+            hljs.highlightElement(el.querySelector("code")!);
+          }
+        }
+
+        export default makeHook(HighlightHook);
+        """
+      }
+    />
+    <.p>
+      Use the App ID to embed the login & authentication guards in your frontend. Never publish the App Secret, use it only when calling the API from your backend. If your secret is compromised, you can
+      regenerate it at any time.
+    </.p>
+    <.alert color="warning" with_icon>
+      Never publish your App Secret anywhere. Ideally, store in secret vault like AWS SecretsManager and only retrieve at runtime.
+    </.alert>
+  </div>
+</div>

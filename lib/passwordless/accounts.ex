@@ -223,7 +223,7 @@ defmodule Passwordless.Accounts do
 
   ## State
 
-  def activate_user!(%User{state: :inactive} = user) do
+  def activate_user!(%User{state: :locked} = user) do
     user =
       user
       |> User.state_changeset(%{state: :active})

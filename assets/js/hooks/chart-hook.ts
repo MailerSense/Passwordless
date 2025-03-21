@@ -25,19 +25,15 @@ class ChartHook extends Hook {
           name: "series3",
           data: [32, 45, 32, 34, 52, 41, 32],
         },
-        {
-          name: "series4",
-          data: [62, 45, 62, 74, 21, 13, 56],
-        },
       ],
       chart: {
-        height: 350,
-        type: "area",
+        height: 200,
+        type: "bar",
         toolbar: {
           show: false,
         },
         animations: {
-          enabled: true,
+          enabled: false,
           speed: 500,
         },
         stacked: false,
@@ -46,8 +42,9 @@ class ChartHook extends Hook {
         enabled: false,
       },
       stroke: {
-        curve: "smooth",
-        width: 4,
+        show: true,
+        width: 2,
+        colors: ["transparent"],
       },
       xaxis: {
         type: "datetime",
@@ -87,14 +84,21 @@ class ChartHook extends Hook {
         position: "top",
         horizontalAlign: "left",
       },
-      fill: {
-        type: "gradient",
-        gradient: {
-          shadeIntensity: 1,
-          inverseColors: false,
-          opacityFrom: 0.25,
-          opacityTo: 0.05,
-          stops: [25, 100, 100, 100],
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          borderRadius: 10,
+          borderRadiusApplication: "end", // 'around', 'end'
+          borderRadiusWhenStacked: "last", // 'all', 'last'
+          dataLabels: {
+            total: {
+              enabled: true,
+              style: {
+                fontSize: "13px",
+                fontWeight: 900,
+              },
+            },
+          },
         },
       },
       grid: {

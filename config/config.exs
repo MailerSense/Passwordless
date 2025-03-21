@@ -27,6 +27,12 @@ config :passwordless,
   generators: [timestamp_type: :utc_datetime_usec],
   migration_primary_key: [type: :uuid]
 
+config :passwordless, :multitenant,
+  repo: Passwordless.Repo,
+  tenant_field: :id,
+  tenant_prefix: "app_",
+  tenant_migrations: "tenant_migrations"
+
 # Configures the session
 config :passwordless, :session,
   salt: "N7Amr6UvJN64wB3iLstI9fwNJGAIZpVmJDxOHWVx+VtKaT3d8nTeH5UZNJxniSse",
@@ -48,12 +54,13 @@ config :passwordless, PasswordlessWeb.Endpoint,
 
 # Configures AWS
 config :ex_aws,
-  region: "us-east-1",
+  region: "eu-west-1",
   http_client: Passwordless.ExAwsClient
 
 # Configures Oban
 config :passwordless, Oban,
   repo: Passwordless.Repo,
+  prefix: "oban",
   queues: [
     default: 100,
     mailer: [local_limit: 10, global_limit: 20],
@@ -70,6 +77,12 @@ config :passwordless, Oban,
     {Oban.Pro.Plugins.DynamicCron, crontab: []}
   ]
 
+config :money,
+  default_currency: :USD,
+  symbol: true,
+  symbol_on_right: false,
+  symbol_space: false
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
@@ -82,14 +95,13 @@ config :passwordless, :cache, adapter: Cache.InMemory
 # Configures the object storage
 config :passwordless, :storage, adapter: Storage.Local
 
+# Configures the secret manager
+config :passwordless, :secret_manager,
+  adapter: SecretManager.Local,
+  secret_name: "passwordless"
+
 # Configures the media uploader to local
 config :passwordless, :media_upload, adapter: Passwordless.Media.Upload.Local
-
-# Configures the media uploader to local
-config :passwordless, :audience_import, bucket: ""
-
-# Configures the thumbnail storage for templates
-config :passwordless, :template_thumbnail, bucket: ""
 
 config :passwordless, :media,
   buckets: [
@@ -100,13 +112,13 @@ config :passwordless, :media,
 config :passwordless, :emails,
   support: [
     name: "Passwordless",
-    email: "noreply@support.getlivecheck.com",
+    email: "noreply@support.passwordlesstools.com",
     reply_to: "hello@passwordless.tools",
     reply_to_name: "Passwordless Support"
   ],
   alerts: [
     name: "Passwordless Alert",
-    email: "noreply@alerts.getlivecheck.com",
+    email: "noreply@alerts.passwordlesstools.com",
     reply_to: "hello@passwordless.tools",
     reply_to_name: "Passwordless Support"
   ]
@@ -266,11 +278,38 @@ config :passwordless, :content_security_policy, %{
       end
 }
 
-config :flop, repo: Passwordless.Repo, default_limit: 15
+config :flop, repo: Passwordless.Repo, default_limit: 10
 config :tesla, :adapter, {Tesla.Adapter.Finch, name: Passwordless.Finch}
 
 config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
+
+config :passwordless, :aws,
+  region: "eu-west-1",
+  account: "123456789012",
+  regions: %{
+    "af-south-1" => %{"description" => "Africa (Cape Town)"},
+    "ap-northeast-1" => %{"description" => "Asia Pacific (Tokyo)"},
+    "ap-northeast-2" => %{"description" => "Asia Pacific (Seoul)"},
+    "ap-east-1" => %{"description" => "Asia Pacific (Hong Kong)"},
+    "ap-south-1" => %{"description" => "Asia Pacific (Mumbai)"},
+    "ap-southeast-1" => %{"description" => "Asia Pacific (Singapore)"},
+    "ap-southeast-2" => %{"description" => "Asia Pacific (Sydney)"},
+    "ap-southeast-3" => %{"description" => "Asia Pacific (Jakarta)"},
+    "ca-central-1" => %{"description" => "Canada (Central)"},
+    "eu-central-1" => %{"description" => "EU (Frankfurt)"},
+    "eu-west-1" => %{"description" => "EU (Ireland)"},
+    "eu-west-2" => %{"description" => "EU (London)"},
+    "eu-west-3" => %{"description" => "EU (Paris)"},
+    "eu-north-1" => %{"description" => "EU (Stockholm)"},
+    "eu-south-1" => %{"description" => "EU (Milan)"},
+    "me-south-1" => %{"description" => "Middle East (Bahrain)"},
+    "sa-east-1" => %{"description" => "South America (Sao Paulo)"},
+    "us-east-1" => %{"description" => "US East (N. Virginia)"},
+    "us-east-2" => %{"description" => "US East (Ohio)"},
+    "us-west-1" => %{"description" => "US West (N. California)"},
+    "us-west-2" => %{"description" => "US West (Oregon)"}
+  }
 
 config :passwordless, :trial_period_days, 14
 
@@ -800,6 +839,11 @@ config :passwordless, :languages,
   io: "Ido",
   or: "Oriya",
   bi: "Bislama"
+
+config :passwordless, :email_templates,
+  magic_link_first_sign_in: [
+    subject: "Welcome to Passwordless"
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

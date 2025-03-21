@@ -66,6 +66,17 @@ defmodule PasswordlessWeb.EmailTestingController do
   end
 
   def preview(conn, %{"email_name" => email_name}) do
+    templates =
+      Enum.map(@email_templates, fn template ->
+        %{
+          name: template,
+          icon: nil,
+          label: Phoenix.Naming.humanize(template),
+          path: ~p"/dev/emails/preview/#{template}",
+          link_type: "live_patch"
+        }
+      end)
+
     conn
     |> put_root_layout(html: {PasswordlessWeb.Layouts, :empty})
     |> render(
@@ -73,7 +84,7 @@ defmodule PasswordlessWeb.EmailTestingController do
       %{
         email: generate_email(email_name, conn.assigns.current_user),
         email_name: email_name,
-        email_options: @email_templates,
+        email_options: templates,
         iframe_url: url(~p"/dev/emails/show/#{email_name}")
       }
     )

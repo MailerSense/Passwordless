@@ -7,7 +7,7 @@ defmodule Passwordless.MixProject do
     [
       app: :passwordless,
       version: @version,
-      elixir: "1.18.2",
+      elixir: "1.18.3",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -64,15 +64,16 @@ defmodule Passwordless.MixProject do
       {:swoosh, "~> 1.16"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.26.2"},
+      {:gettext, "~> 0.26.2", override: true},
       {:jason, "~> 1.4"},
       {:bandit, "~> 1.6"},
       {:libcluster, "~> 3.5", only: [:dev, :prod]},
       {:flop, "~> 0.26.1"},
       {:email_checker, "~> 0.2.4"},
-      {:live_toast, "~> 0.6.4"},
-      {:rustler, "~> 0.34.0"},
+      {:live_toast, "~> 0.7.0"},
+      {:rustler, "~> 0.36.1"},
       {:floki, "~> 0.37.0"},
+      {:memoize, "~> 1.4"},
 
       # Emails
       {:phoenix_swoosh, "~> 1.2"},
@@ -100,12 +101,12 @@ defmodule Passwordless.MixProject do
       # Assets
       {:tailwind, "~> 0.2.4", runtime: Mix.env() == :dev},
       {:heroicons,
-       github: "tailwindlabs/heroicons", tag: "v2.1.5", sparse: "optimized", app: false, compile: false, depth: 1},
+       github: "tailwindlabs/heroicons", tag: "v2.2.0", sparse: "optimized", app: false, compile: false, depth: 1},
 
       # Observability
-      {:sentry, "~> 10.6"},
-      {:backpex, "~> 0.10.0"},
-      {:ecto_psql_extras, "~> 0.8.2"},
+      {:sentry, "~> 10.8"},
+      {:backpex, "~> 0.11.0"},
+      {:ecto_psql_extras, "~> 0.8.7"},
 
       # Media
       {:image, "~> 0.47.0"},
@@ -128,6 +129,7 @@ defmodule Passwordless.MixProject do
       {:domainatrex, "~> 3.0"},
       {:sizeable, "~> 1.0"},
       {:crontab, "~> 1.1"},
+      {:typed_struct, "~> 0.3.0"},
 
       # Markdown
       {:earmark, "~> 1.4"},
@@ -171,10 +173,12 @@ defmodule Passwordless.MixProject do
       {:stripity_stripe, "~> 3.1"},
 
       # AWS
+      {:aws, "~> 1.0"},
       {:ex_aws, "~> 2.5"},
       {:ex_aws_s3, "~> 2.5"},
       {:ex_aws_kms, "~> 2.4"},
       {:ex_aws_ses, "~> 2.4"},
+      {:ex_aws_sns, "~> 2.3"},
       {:ex_aws_secretsmanager, "~> 2.0"},
       {:aws_rds_castore, "~> 1.2"},
 

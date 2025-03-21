@@ -8,8 +8,6 @@ defmodule PasswordlessWeb.User.ProfileLive do
   alias Passwordless.Accounts.User
   alias Passwordless.Activity
 
-  @upload_provider Passwordless.Media.Upload.Local
-
   @impl true
   def mount(_params, _session, socket) do
     {:ok, apply_action(socket, socket.assigns.live_action)}
@@ -64,7 +62,7 @@ defmodule PasswordlessWeb.User.ProfileLive do
 
         socket =
           socket
-          |> LiveToast.put_toast(:info, gettext("Profile updated."))
+          |> put_toast(:info, gettext("Profile has been updated."), title: gettext("Success"))
           |> assign(current_user: user)
           |> assign_form(User.profile_changeset(user))
 
@@ -73,7 +71,7 @@ defmodule PasswordlessWeb.User.ProfileLive do
       {:error, changeset} ->
         socket =
           socket
-          |> LiveToast.put_toast(:error, gettext("Failed to update profile!"))
+          |> put_toast(:error, gettext("Failed to update profile!"), title: gettext("Error"))
           |> assign_form(changeset)
 
         {:noreply, socket}

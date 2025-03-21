@@ -3,6 +3,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
   use Phoenix.Component
 
   import PasswordlessWeb.Components.Container
+  import PasswordlessWeb.Components.Field
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Link
 
@@ -27,10 +28,35 @@ defmodule PasswordlessWeb.Components.PageComponents do
     """
   end
 
+  @doc """
+  Allows you to have a heading on the left side, and some action buttons on the right (default slot)
+  """
+
+  attr :class, :string, default: ""
+  attr :field, Phoenix.HTML.FormField, required: true
+  slot :inner_block
+
+  def subpage_header(assigns) do
+    ~H"""
+    <div class={["pc-page-header", @class]}>
+      <div class="relative">
+        <.field type="editor" field={@field} />
+        <div class="pc-editor-field-icon">
+          <.icon name="remix-pencil-line" class="pc-editor-field-icon__icon" />
+        </div>
+      </div>
+
+      <%= if @inner_block do %>
+        {render_slot(@inner_block)}
+      <% end %>
+    </div>
+    """
+  end
+
   @doc "Gives you a white background with shadow."
   attr :class, :any, default: nil
+  attr :card, :boolean, default: false
   attr :padded, :boolean, default: false
-  attr :shadow_class, :string, default: "shadow-1"
   attr :rest, :global
   slot :inner_block
 
@@ -38,12 +64,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
     ~H"""
     <section
       {@rest}
-      class={[
-        "pc-box",
-        @shadow_class,
-        @class,
-        if(@padded, do: "p-6", else: "")
-      ]}
+      class={["pc-box", @class, if(@card, do: "pc-box__card"), if(@padded, do: "pc-box__padded")]}
     >
       {render_slot(@inner_block)}
     </section>
@@ -90,39 +111,6 @@ defmodule PasswordlessWeb.Components.PageComponents do
     """
   end
 
-  @doc """
-  Provides a container with a sidebar on the left and main content on the right. Useful for things like user settings.
-
-  ---------------------------------
-  | Sidebar | Main                |
-  |         |                     |
-  |         |                     |
-  |         |                     |
-  ---------------------------------
-  """
-
-  attr :current_page, :atom
-
-  attr :menu_items, :list,
-    required: true,
-    doc: "list of maps with keys :name, :path, :label, :icon (atom)"
-
-  slot(:inner_block)
-
-  def sidebar_tabs_container(assigns) do
-    ~H"""
-    <.box class="flex flex-col border border-slate-200 divide-y divide-slate-200 dark:border-none dark:divide-slate-700 md:divide-y-0 md:divide-x md:flex-row">
-      <div class="flex-shrink-0 py-6 md:w-72">
-        <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
-      </div>
-
-      <div class="flex-grow px-4 py-6 sm:p-6 lg:pb-8">
-        {render_slot(@inner_block)}
-      </div>
-    </.box>
-    """
-  end
-
   attr :current, :atom
   attr :name, :string
   attr :path, :string
@@ -139,15 +127,21 @@ defmodule PasswordlessWeb.Components.PageComponents do
       link_type="live_redirect"
       class={[
         "group",
-        "pc-sidebar__menu-item",
+        "pc-sidebar__menu-item group",
         menu_item_classes(@is_active?)
       ]}
     >
-      <.icon name={@icon} class={["w-6 h-6", menu_item_icon_classes(@is_active?)]} />
+      <.icon
+        :if={Util.present?(@icon)}
+        name={@icon}
+        class={["w-6 h-6", menu_item_icon_classes(@is_active?)]}
+      />
       {@label}
     </.a>
     """
   end
+
+  # Private
 
   defp menu_item_classes(true), do: "pc-sidebar__menu-item--active"
   defp menu_item_classes(false), do: "pc-sidebar__menu-item--inactive"

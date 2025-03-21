@@ -73,7 +73,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
   def badge_select(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "badge-select-#{:rand.uniform(10_000_000) + 1}" end)
+      |> assign_new(:id, fn -> Util.id("badge-select") end)
       |> assign_new(:selected_idx, fn ->
         case {assigns[:options], assigns[:selected]} do
           {[_ | _] = options, %{value: value}} when not is_nil(value) ->
@@ -99,7 +99,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
       </Field.field_label>
       <button
         type="button"
-        class="custom-select relative block w-full h-[46px] px-3.5 py-2 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-600 focus:ring-4 focus:ring-primary-600 dark:focus:ring-primary-700/50 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-950 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none"
+        class="custom-select relative block w-full h-[46px] px-3 py-2 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-400 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-950 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none"
         x-ref="button"
         disabled={@disabled}
         @click="open = !open"
@@ -109,7 +109,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
       >
         <%= if @selected do %>
           <span class="flex items-center gap-2">
-            <Badge.badge size="sm" label={@selected.label} color={@selected.color} />
+            <Badge.badge with_dot size="sm" label={@selected.label} color={@selected.color} />
             <span :if={Util.present?(@selected[:name])} class="block truncate pe-4">
               {@selected[:name]}
             </span>
@@ -117,7 +117,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
           <span class="absolute inset-y-0 right-0 flex items-center pr-2 ml-3 pointer-events-none">
             <Icon.icon
               name="remix-arrow-down-s-line"
-              class="w-5 h-5 text-slate-400 dark:text-slate-500"
+              class="w-6 h-6 text-slate-600 dark:text-slate-300"
             />
           </span>
         <% else %>
@@ -130,7 +130,10 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
         x-transition:leave="transition ease-in duration-100"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        class="absolute z-20 w-full mt-1 overflow-auto text-base bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2 rounded-lg"
+        class={[
+          "absolute z-50 w-full mt-1 overflow-auto text-base bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-4 rounded-lg",
+          "p-1"
+        ]}
         @click.away="open = false"
         tabindex="-1"
         role="listbox"
@@ -139,7 +142,8 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
           :if={not @required}
           role="option"
           class={[
-            if(@selected_idx == nil, do: "bg-slate-50 dark:bg-slate-700"),
+            if(@selected_idx == nil, do: "bg-slate-100 dark:bg-slate-800"),
+            "rounded",
             "relative py-2 pl-3 text-slate-900 dark:text-white cursor-pointer select-none pr-9 hover:bg-slate-50 dark:hover:bg-slate-700"
           ]}
           {li_assigns(nil)}
@@ -152,13 +156,21 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
           :for={{option, idx} <- Enum.with_index(@options)}
           role="option"
           class={[
-            if(idx == @selected_idx, do: "bg-slate-50 dark:bg-slate-700"),
-            "relative py-2 pl-3 text-slate-900 dark:text-white cursor-pointer select-none pr-9 hover:bg-slate-50 dark:hover:bg-slate-700"
+            "rounded",
+            "relative py-2 px-2.5 text-slate-900 dark:text-white cursor-pointer select-none hover:bg-slate-50 dark:hover:bg-slate-700"
           ]}
           {li_assigns(idx)}
         >
-          <div class="flex items-center gap-2">
-            <Badge.badge size="sm" label={option.label} color={option.color} />
+          <div class={[
+            "flex items-center gap-2",
+            if(idx != @selected_idx, do: "pl-7")
+          ]}>
+            <Icon.icon
+              :if={idx == @selected_idx}
+              name="remix-check-fill"
+              class="w-5 h-5 text-slate-900 dark:text-white"
+            />
+            <Badge.badge with_dot size="sm" label={option.label} color={option.color} />
             <span :if={option[:name]} class="block truncate">
               {option[:name]}
             </span>

@@ -1,85 +1,80 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
-  <.page_header title={gettext("Users")}>
-    <div class="flex gap-3">
-      <.button
-        to={~p"/app/users/import"}
-        size="md"
+  <.data_table
+    meta={@meta}
+    items={@actors}
+    title={gettext("All users")}
+    switch_items={
+      [
+        %{name: :all, label: gettext("All"), clear: true}
+      ] ++ Enum.map(Actor.states(), &%{name: &1, label: Phoenix.Naming.humanize(&1)})
+    }
+  >
+    <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
+    <:col field={:search} searchable filterable={[:==]} />
+    <:col :let={actor} field={:name} sortable>
+      <.a
+        to={~p"/app/users/#{actor}/edit"}
+        label={Actor.handle(actor)}
+        styled
+        link_type="live_redirect"
+      />
+    </:col>
+    <:col :let={actor} field={:email} sortable>
+      {Actor.email(actor)}
+    </:col>
+    <:col :let={actor} field={:phone} sortable>
+      <% phone = Actor.phone(actor) %>
+      <div :if={Util.present?(phone)} class="flex items-center gap-2">
+        <.icon name={"flag-#{Actor.phone_region(actor)}"} class="pc-flag-icon" /> {phone}
+      </div>
+    </:col>
+    <:col :let={actor} field={:state} sortable switchable filterable={[:==]}>
+      <% {badge_label, badge_color} = actor_state_badge(actor) %>
+      <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+    </:col>
+    <:col :let={actor} label={gettext("Added")} field={:inserted_at} sortable>
+      {format_date(actor.inserted_at)}
+    </:col>
+    <:col actions></:col>
+    <:actions :let={actor}>
+      <.icon_button
+        to={~p"/app/users/#{actor}/delete"}
+        size="sm"
+        icon="custom-trash"
         color="light"
-        label={gettext("Import")}
-        icon="remix-download-line"
+        title={gettext("Remove")}
         link_type="live_patch"
       />
-      <.button
-        to={~p"/app/users/new"}
-        size="md"
-        color="primary"
-        label={gettext("Create")}
-        icon="remix-add-circle-line"
+      <.icon_button
+        to={~p"/app/users/#{actor}/edit"}
+        size="sm"
+        icon="custom-edit"
+        color="light"
+        title={gettext("Edit")}
         link_type="live_patch"
       />
-    </div>
-  </.page_header>
-
-  <div class="flex flex-col gap-6">
-    <.data_table
-      meta={@meta}
-      items={@actors}
-      title={gettext("All users")}
-      title_func={@title_func}
-      switch_items={
-        [
-          %{name: :all, label: gettext("All"), clear: true}
-        ] ++ Enum.map(Actor.states(), &%{name: &1, label: Phoenix.Naming.humanize(&1)})
-      }
-    >
-      <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
-      <:col field={:search} searchable filterable={[:==]} />
-      <:col :let={actor} field={:name}>
-        <.a
-          to={~p"/app/users/#{actor}/edit"}
-          class="pc-user-badge"
-          label={Actor.handle(actor)}
-          link_type="live_redirect"
+    </:actions>
+    <:header_actions>
+      <div class="flex gap-3">
+        <.button
+          to={apply_filters(@filters, @meta, ~p"/app/users/import")}
+          size="xs"
+          color="light"
+          label={gettext("Import")}
+          icon="remix-download-line"
+          link_type="live_patch"
         />
-      </:col>
-      <:col :let={actor} field={:email} sortable>
-        {Actor.email(actor)}
-      </:col>
-      <:col :let={actor} field={:phone} sortable>
-        <div class="flex items-center gap-2">
-          <.icon name={"flag-#{Actor.phone_region(actor)}"} class="pc-flag-icon" /> {Actor.phone(
-            actor
-          )}
-        </div>
-      </:col>
-      <:col :let={actor} field={:state} sortable switchable filterable={[:==]}>
-        <% {badge_label, badge_color} = actor_state_badge(actor) %>
-        <.badge size="sm" label={badge_label} color={badge_color} />
-      </:col>
-      <:col :let={actor} label={gettext("Joined")} field={:inserted_at} sortable>
-        {format_date_time(actor.inserted_at)}
-      </:col>
-      <:col actions></:col>
-      <:actions :let={actor}>
-        <.dropdown placement="left">
-          <:trigger_element>
-            <.icon name="custom-more-dots" class="w-5 h-5" />
-          </:trigger_element>
-          <.dropdown_menu_item link_type="live_redirect" to={~p"/app/users/#{actor}/edit"}>
-            <.icon name="remix-pencil-line" class="w-6 h-6 shrink-0" />
-            {gettext("Edit")}
-          </.dropdown_menu_item>
-          <.dropdown_menu_item link_type="live_patch" to={~p"/app/users/#{actor}/delete"}>
-            <.icon
-              name="remix-delete-bin-line"
-              class="w-6 h-6 shrink-0 text-danger-700 dark:text-danger-400"
-            />
-            <span class="text-danger-700 dark:text-danger-400">{gettext("Delete")}</span>
-          </.dropdown_menu_item>
-        </.dropdown>
-      </:actions>
-    </.data_table>
-  </div>
+        <.button
+          to={apply_filters(@filters, @meta, ~p"/app/users/new")}
+          size="xs"
+          color="primary"
+          label={gettext("Create")}
+          icon="remix-add-circle-line"
+          link_type="live_patch"
+        />
+      </div>
+    </:header_actions>
+  </.data_table>
 </.layout>
 
 <%= case @live_action do %>
@@ -88,7 +83,7 @@
       id={@live_action}
       title={@page_title}
       subtitle={@page_subtitle}
-      actor={Ecto.build_assoc(@current_app, :actors)}
+      actor={%Actor{}}
       module={PasswordlessWeb.App.ActorLive.FormComponent}
       live_action={@live_action}
       current_org={@current_org}

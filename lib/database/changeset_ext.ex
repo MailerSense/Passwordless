@@ -142,6 +142,28 @@ defmodule Database.ChangesetExt do
     end)
   end
 
+  def validate_url(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
+    changeset
+    |> ensure_trimmed(field)
+    |> ensure_lowercase(field)
+    |> validate_length(field, min: 1, max: 1024)
+    |> validate_change(field, fn ^field, url ->
+      case URI.parse(url) do
+        %URI{scheme: scheme} when not is_nil(scheme) and scheme not in ["http", "https"] ->
+          [{field, "is missing a scheme (e.g. https)"}]
+
+        %URI{host: nil} ->
+          [{field, "is missing a host"}]
+
+        %URI{host: host} ->
+          case :inet.gethostbyname(Kernel.to_charlist(host)) do
+            {:ok, _} -> []
+            {:error, _} -> [{field, "invalid host"}]
+          end
+      end
+    end)
+  end
+
   @doc """
   Validates the state and verifies it is allowed by the transitions.
   """

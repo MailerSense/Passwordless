@@ -19,7 +19,7 @@
       <.button
         icon="remix-save-line"
         label={gettext("Save changes")}
-        disabled={not @form.source.valid?}
+        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
       />
     </div>
   </.form>

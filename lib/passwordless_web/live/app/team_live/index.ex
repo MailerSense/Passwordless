@@ -10,8 +10,10 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
+  alias Passwordless.Repo
   alias Passwordless.Security.Guard
   alias Passwordless.Security.Policy.Accounts, as: AccountsPolicy
+  alias Passwordless.Security.Roles
   alias PasswordlessWeb.Components.DataTable
 
   @data_table_opts [
@@ -29,15 +31,23 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   end
 
   @impl true
-  def handle_params(%{"id" => id} = params, _url, socket) do
+  def handle_params(%{"id" => id} = params, url, socket) do
     membership = Organizations.get_membership!(socket.assigns.current_org, id)
+    socket = assign(socket, membership: membership)
 
-    {:noreply,
-     socket
-     |> assign(membership: membership)
-     |> assign_filters(params)
-     |> assign_memberships(params)
-     |> apply_action(socket.assigns.live_action, Map.put(params, :membership, membership))}
+    params
+    |> Map.drop(["id"])
+    |> handle_params(url, socket)
+  end
+
+  @impl true
+  def handle_params(%{"invitation_id" => invitation_id} = params, url, socket) do
+    invitation = Organizations.get_invitation_by_org!(socket.assigns.current_org, invitation_id)
+    socket = assign(socket, invitation: invitation)
+
+    params
+    |> Map.drop(["invitation_id"])
+    |> handle_params(url, socket)
   end
 
   @impl true
@@ -46,7 +56,8 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
      socket
      |> apply_action(socket.assigns.live_action, params)
      |> assign_filters(params)
-     |> assign_memberships(params)}
+     |> assign_memberships(params)
+     |> assign_invitations()}
   end
 
   @impl true
@@ -86,12 +97,39 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
 
         {:noreply,
          socket
-         |> put_flash(:info, gettext("Invitation sent successfully."))
+         |> put_toast(:info, gettext("Invitation sent to the given email address."), title: gettext("Success"))
          |> push_patch(to: ~p"/app/team")}
 
       {:error, changeset} ->
         {:noreply, assign_form(socket, changeset)}
     end
+  end
+
+  @impl true
+  def handle_event("delete_invitation", %{"id" => id}, socket) do
+    invitation = Organizations.get_invitation_by_org!(socket.assigns.current_org, id)
+
+    case Organizations.delete_invitation(invitation) do
+      {:ok, _invitation} ->
+        {:noreply,
+         socket
+         |> put_toast(:info, gettext("Invitation has been deleted."), title: gettext("Success"))
+         |> push_navigate(to: ~p"/app/team")}
+
+      {:error, _} ->
+        {:noreply,
+         socket
+         |> put_toast(:error, gettext("Failed to delete invitation!"), title: gettext("Error"))
+         |> push_navigate(to: ~p"/app/team")}
+    end
+  end
+
+  @impl true
+  def handle_event("resend_invitation", %{"id" => id}, socket) do
+    {:noreply,
+     socket
+     |> put_toast(:info, gettext("Invitation resent successfully."), title: gettext("Success"))
+     |> push_patch(to: ~p"/app/team")}
   end
 
   @impl true
@@ -104,9 +142,10 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
         if membership.user_id == socket.assigns.current_user.id do
           {:noreply,
            socket
-           |> LiveToast.put_toast(
+           |> put_toast(
              :info,
-             gettext("You have left %{org_name}!", org_name: org.name)
+             gettext("You have left %{org_name}!", org_name: org.name),
+             title: gettext("Success")
            )
            |> push_navigate(to: PasswordlessWeb.Helpers.home_path(socket.assigns.current_user))}
         else
@@ -114,14 +153,14 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
 
           {:noreply,
            socket
-           |> LiveToast.put_toast(:info, gettext("Member deleted successfully."))
+           |> put_toast(:info, gettext("Member has been deleted."), title: gettext("Success"))
            |> push_patch(to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/team"))}
         end
 
       {:error, _changeset} ->
         {:noreply,
          socket
-         |> LiveToast.put_toast(:error, gettext("Failed to delete member!"))
+         |> put_toast(:error, gettext("Failed to delete member!"), title: gettext("Error"))
          |> push_patch(to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/team"))}
     end
   end
@@ -152,7 +191,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   defp apply_action(socket, :edit, _params) do
     assign(socket,
       page_title: gettext("Edit teammate"),
-      page_subtitle: gettext("View member details and edit their role within your organization")
+      page_subtitle: gettext("View member details and edit their role within your organization.")
     )
   end
 
@@ -176,7 +215,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
 
   defp apply_action(socket, :invite, _params) do
     assign(socket,
-      page_title: gettext("Invite teammate"),
+      page_title: gettext("Invite"),
       page_subtitle:
         gettext(
           "Invite a new user to join your organization. They will join as a member, and you can later grant them more permissions."
@@ -184,10 +223,17 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
     )
   end
 
-  defp apply_action(socket, :invitations, _params) do
+  defp apply_action(socket, :resend_invitation, _params) do
     assign(socket,
-      page_title: gettext("Invitations"),
-      page_subtitle: gettext("View users that have been invited to your organization")
+      page_title: gettext("Resend invitation"),
+      page_subtitle: gettext("Resend an invitation to join your organization")
+    )
+  end
+
+  defp apply_action(socket, :delete_invitation, _params) do
+    assign(socket,
+      page_title: gettext("Delete invitation"),
+      page_subtitle: gettext("Delete an invitation to join your organization")
     )
   end
 
@@ -216,5 +262,35 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
       _ ->
         socket
     end
+  end
+
+  defp assign_invitations(socket) do
+    case socket.assigns[:current_org] do
+      %Org{} = org ->
+        assign(socket, invitations: org |> Invitation.get_by_org() |> Repo.all())
+
+      _ ->
+        assign(socket, invitations: [])
+    end
+  end
+
+  attr :role, :atom, required: true
+  attr :rest, :global, doc: "Any additional HTML attributes to add to the floating container."
+
+  defp role_badge(assigns) do
+    IO.inspect(assigns.role)
+
+    details =
+      Enum.find_value(Roles.org_role_descriptions(), fn {role, {description, color}} ->
+        if role == assigns.role do
+          %{role: Phoenix.Naming.humanize(role), color: color}
+        end
+      end)
+
+    assigns = assign(assigns, details)
+
+    ~H"""
+    <.badge size="sm" color={@color} label={@role} {@rest} />
+    """
   end
 end

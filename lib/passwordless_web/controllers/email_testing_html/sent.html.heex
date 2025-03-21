@@ -1,11 +1,15 @@
-<.layout current_user={@current_user} current_page={:dev_sent_emails} current_section={:dev}>
+<.layout
+  current_user={@current_user}
+  current_page={:dev_sent_emails}
+  current_section={:dev}
+  padded={false}
+>
   <div>
     <.alert
       color="info"
       with_icon
       label={gettext("To see emails here, you must peform an action e.g change email")}
     />
-    <iframe class="w-full h-screen px-12 pt-10 overflow-auto bg-white" src="/dev/mailbox">
-    </iframe>
+    <iframe class="w-full h-screen overflow-auto bg-white" src="/dev/mailbox"></iframe>
   </div>
 </.layout>

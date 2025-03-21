@@ -2,14 +2,26 @@
   <% origin = "right" %>
   <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
     <.form
-      id="edit-actor-form"
+      id="manage-actor-form"
       for={@form}
       phx-target={@myself}
       phx-submit="save"
       phx-change="validate"
     >
-      <.field field={@form[:name]} autocomplete="name" phx-debounce="blur" required />
-      <.field type="select" field={@form[:language]} options={@languages} required />
+      <.field field={@form[:name]} autocomplete="name" required />
+      <.field
+        field={@form[:user_id]}
+        label={gettext("User ID")}
+        help_text={gettext("Unique external ID you can assign to each user")}
+      />
+      <.field
+        field={@form[:language]}
+        type="select"
+        options={@languages}
+        icon_class="pc-select-input__flag"
+        icon_mapping={@flag_mapping}
+        required
+      />
     </.form>
 
     <:actions>
@@ -21,10 +33,10 @@
         phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
       />
       <.button
-        id="edit-actor-form-submit"
+        id="manage-actor-form-submit"
         size="wide"
         type="submit"
-        form="edit-actor-form"
+        form="manage-actor-form"
         disabled={not @form.source.valid?}
         label={
           if @live_action == :new,

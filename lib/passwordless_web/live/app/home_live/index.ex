@@ -4,11 +4,14 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   alias Passwordless.Action
   alias Passwordless.Actor
+  alias Passwordless.App
   alias PasswordlessWeb.Components.DataTable
+  alias PasswordlessWeb.Endpoint
 
   @data_table_opts [
     for: Action,
-    default_limit: 30,
+    count: 0,
+    default_limit: 25,
     default_order: %{
       order_by: [:id],
       order_directions: [:desc]
@@ -22,8 +25,44 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
+    app = socket.assigns.current_app
+
+    action =
+      case Map.get(params, "id") do
+        id when is_binary(id) -> Passwordless.get_action!(app, id)
+        nil -> nil
+      end
+
+    if connected?(socket), do: Endpoint.subscribe(Action.topic_for(app))
+
+    top_actions =
+      app
+      |> Passwordless.get_top_actions_cached()
+      |> Enum.map(fn %{
+                       total: total,
+                       states: %{timeout: timeout, block: block, allow: allow},
+                       action: action
+                     } ->
+        %{
+          key: action,
+          name: Phoenix.Naming.humanize(Macro.underscore(action)),
+          value: total,
+          progress: %{
+            max: total,
+            items: [
+              %{key: :allow, value: allow, color: "success"},
+              %{key: :timeout, value: timeout, color: "warning"},
+              %{key: :block, value: block, color: "danger"}
+            ]
+          }
+        }
+      end)
+
+    authenticators = Passwordless.list_authenticators(app)
+
     {:noreply,
      socket
+     |> assign(top_actions: top_actions, action: action, count: estimate_count(app), authenticators: authenticators)
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}
   end
@@ -40,13 +79,10 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   @impl true
   def handle_event("load_more", _params, socket) do
-    if socket.assigns.finished do
+    if socket.assigns[:finished] do
       {:noreply, socket}
     else
-      query =
-        socket.assigns.current_app
-        |> Action.get_by_app()
-        |> Action.preload_actor()
+      query = actor_query(socket.assigns.current_app)
 
       assigns = Map.take(socket.assigns, ~w(cursor)a)
 
@@ -63,6 +99,23 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   end
 
   @impl true
+  def handle_info(%{event: _event, payload: %Action{} = action}, socket) do
+    socket = if(has_filters?(socket), do: socket, else: stream_insert(socket, :actions, action, at: 0))
+
+    socket =
+      socket
+      |> update(:count, &(&1 + 1))
+      |> update_top_actions(action)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(_params, socket) do
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_async(:load_actions, {:ok, %{actions: actions, meta: meta, cursor: cursor}}, socket) do
     socket = assign(socket, meta: meta, cursor: cursor, finished: Enum.empty?(actions))
     socket = stream(socket, :actions, actions)
@@ -71,12 +124,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   end
 
   @impl true
-  def handle_info(%{event: _event, payload: %Action{} = action}, socket) do
-    {:noreply, stream_insert(socket, :actions, action, at: 0)}
-  end
-
-  @impl true
-  def handle_info(_params, socket) do
+  def handle_async(_event, _reply, socket) do
     {:noreply, socket}
   end
 
@@ -89,11 +137,15 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     )
   end
 
+  defp apply_action(socket, :view) do
+    assign(socket,
+      page_title: gettext("View action"),
+      page_subtitle: gettext("Review the action details and the events that led to it")
+    )
+  end
+
   defp assign_actions(socket, params) do
-    query =
-      socket.assigns.current_app
-      |> Action.get_by_app()
-      |> Action.preload_actor()
+    query = actor_query(socket.assigns.current_app)
 
     params = Map.take(params, ~w(filters order_by order_directions))
 
@@ -111,7 +163,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   end
 
   defp load_actions(query, %{cursor: cursor}) do
-    filters = %{"first" => 30, "after" => cursor}
+    filters = %{"first" => 25, "after" => cursor}
     {actions, meta} = DataTable.search(query, filters, @data_table_opts)
 
     cursor =
@@ -121,5 +173,47 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
       end
 
     %{actions: actions, meta: meta, cursor: cursor}
+  end
+
+  defp estimate_count(%App{} = app) do
+    Database.QueryExt.count_estimate(app, Action)
+  end
+
+  defp has_filters?(socket) do
+    case socket.assigns[:filters] do
+      filters when is_map(filters) and map_size(filters) > 0 -> true
+      _ -> false
+    end
+  end
+
+  defp actor_query(%App{} = app) do
+    app
+    |> Action.get_by_app()
+    |> Action.get_by_states([:allow, :timeout, :block])
+    |> Action.preload_actor()
+  end
+
+  defp update_top_actions(socket, %Action{name: action_name, state: state} = action) do
+    update(socket, :top_actions, fn top_actions ->
+      Enum.map(top_actions, fn
+        %{key: ^action_name, items: items, value: value} = top_action ->
+          items =
+            Enum.map(
+              items,
+              fn
+                %{key: ^state, value: value} ->
+                  %{key: state, value: value + 1}
+
+                item ->
+                  item
+              end
+            )
+
+          %{top_action | value: value + 1, items: items}
+
+        top_action ->
+          top_action
+      end)
+    end)
   end
 end

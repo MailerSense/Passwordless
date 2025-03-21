@@ -1,18 +1,139 @@
-<.tabbed_settings_layout current_user={@current_user} current_page={:billing}>
+<.layout current_user={@current_user} current_page={:billing} current_section={:app}>
   <div class="flex flex-col gap-6">
-    <div class="flex justify-between items-center gap-3">
-      <h3 class={["text-lg font-semibold text-slate-900 dark:text-white"]}>
-        {gettext("Billing")}
-      </h3>
+    <.box card>
+      <.form_header title={gettext("Passwordless Pro")} no_margin />
+      <.p>
+        {gettext(
+          "You have %{mau} Monthly Active Users (MAU) out of %{max_mau}. This quota is shared across all apps in %{org}. Table below shows precise usage of services and estimated charges for your organization. Have any questions? Reach out to our support.",
+          mau: Util.number!(@mau_count),
+          max_mau: Util.number!(15_000),
+          org: @current_org.name,
+          month: format_date(Date.utc_today()),
+          reset_date: format_date(Date.utc_today())
+        )}
+      </.p>
+      <div class="flex items-center gap-3">
+        <.a
+          to={~p"/app/reports"}
+          label={gettext("Manage my plan")}
+          styled
+          link_type="live_redirect"
+        />
+        <.a
+          to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
+          label={gettext("Contact support")}
+          styled
+          link_type="a"
+        />
+      </div>
+    </.box>
+    <.simple_table
+      items={[
+        %{
+          id: UUIDv7.autogenerate(),
+          app: "Super app",
+          name: "MAU quota",
+          period: Date.utc_today(),
+          free_tier: "None",
+          usage: {1000, 1500},
+          estimated_charge: Money.new(1000)
+        },
+        %{
+          id: UUIDv7.autogenerate(),
+          app: "Super app",
+          name: "SMS quota",
+          free_tier: "100 / day",
+          period: Date.utc_today(),
+          usage: {100, 1500},
+          estimated_charge: Money.new(1000)
+        }
+      ]}
+      count={2}
+      title={gettext("Billing items")}
+    >
+      <:if_empty>
+        {gettext("No %{models} found", models: gettext("billing items"))}
+      </:if_empty>
+      <:col :let={item} field={:app}>
+        {Util.truncate(item.app)}
+      </:col>
+      <:col field={:name} />
+      <:col :let={item} field={:period}>
+        {format_month_range(item.period)}
+      </:col>
+      <:col :let={item} field={:state}>
+        <% {label, color} =
+          if current_month?(item.period),
+            do: {gettext("Current"), "success"},
+            else: {gettext("Past"), "gray"} %>
 
-      <.button
-        to={~p"/"}
-        size="md"
-        color="primary"
-        label={gettext("Manage plan")}
-        icon="remix-external-link-line"
-        link_type="a"
-      />
-    </div>
+        <.badge label={label} color={color} size="sm" />
+      </:col>
+
+      <:col :let={item} field={:usage}>
+        <div class="flex items-center gap-2">
+          <.progress
+            color="primary"
+            value={elem(item.usage, 0)}
+            max={elem(item.usage, 1)}
+            class="min-w-36"
+          />
+
+          {gettext("%{used} / %{total}",
+            used: Util.number!(elem(item.usage, 0)),
+            total: Util.number!(elem(item.usage, 1))
+          )}
+        </div>
+      </:col>
+      <:col field={:estimated_charge} />
+      <:col actions></:col>
+      <:actions :let={item}>
+        <.icon_button
+          to={~p"/app/billing/{@item}/edit"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.simple_table>
+
+    <.simple_table items={[]} count={0} title={gettext("Invoices")}>
+      <:if_empty>
+        {gettext("No %{models} found", models: gettext("invoices"))}
+      </:if_empty>
+      <:col field={:name} body_class="w-full" />
+      <:col actions></:col>
+      <:actions :let={identity}>
+        <.icon_button
+          to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          link_type="live_patch"
+        />
+        <.icon_button
+          to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+
+      <:header_actions>
+        <.button
+          to={~p"/app/domain/dns/download"}
+          size="xs"
+          color="light"
+          icon="remix-download-line"
+          label={gettext("Download")}
+          download
+        />
+      </:header_actions>
+    </.simple_table>
   </div>
-</.tabbed_settings_layout>
+</.layout>

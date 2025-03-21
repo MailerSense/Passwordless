@@ -54,7 +54,7 @@ defmodule PasswordlessWeb.User.PasswordLive do
 
     case Accounts.update_user_password(user, password, user_params) do
       {:ok, _user} ->
-        put_flash(socket, :info, gettext("Password updated successfully."))
+        put_toast(:info, gettext("Password has been updated."), title: gettext("Success"))
 
       {:error, changeset} ->
         {:noreply, assign_form(socket, changeset)}
@@ -71,7 +71,9 @@ defmodule PasswordlessWeb.User.PasswordLive do
 
     {:noreply,
      socket
-     |> LiveToast.put_toast(:info, gettext("You will receive instructions to reset your password shortly."))
+     |> put_toast(:info, gettext("You will receive instructions to reset your password shortly."),
+       title: gettext("Success")
+     )
      |> push_patch(to: ~p"/app/password")}
   end
 

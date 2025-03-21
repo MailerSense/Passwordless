@@ -125,6 +125,7 @@ defmodule PasswordlessWeb do
       use PasswordlessWeb.Components
       use Gettext, backend: PasswordlessWeb.Gettext
 
+      import LiveToast, only: [put_toast: 3, put_toast: 4]
       import PasswordlessWeb.CoreComponents
       import PasswordlessWeb.Helpers
       import Phoenix.HTML

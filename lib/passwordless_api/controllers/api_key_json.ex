@@ -3,7 +3,7 @@ defmodule PasswordlessApi.AuthTokenJSON do
   JSON views for API key controller.
   """
 
-  alias Passwordless.Organizations.AuthToken
+  alias Passwordless.AuthToken
 
   def show(%{auth_token: %AuthToken{} = auth_token}) do
     %{scopes: auth_token.scopes}

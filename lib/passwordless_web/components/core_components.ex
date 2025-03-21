@@ -4,6 +4,7 @@ defmodule PasswordlessWeb.CoreComponents do
   use PasswordlessWeb, :verified_routes
   use PasswordlessWeb.Components
   use Gettext, backend: PasswordlessWeb.Gettext
+  use Memoize
 
   import PasswordlessWeb.Helpers
 
@@ -20,14 +21,14 @@ defmodule PasswordlessWeb.CoreComponents do
 
   def tabbed_layout(assigns) do
     ~H"""
-    <.box class={["flex", @class]}>
+    <div class={["flex h-screen overflow-y-hidden bg-white dark:bg-transparent", @class]}>
       <nav class="pc-sidebar__nav">
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </nav>
-      <div class={["flex-grow", @inner_class]}>
+      <div class={["flex-grow overflow-y-auto", @inner_class]}>
         {render_slot(@inner_block)}
       </div>
-    </.box>
+    </div>
     """
   end
 
@@ -129,10 +130,14 @@ defmodule PasswordlessWeb.CoreComponents do
   attr :current_user, :map, default: nil
   attr :current_page, :any, required: true
   attr :current_section, :atom, required: true
+  attr :current_subpage, :atom, default: nil
   attr :app_menu_items, :list
+  attr :org_menu_items, :list
   attr :user_menu_items, :list
   attr :main_menu_items, :list
+  attr :section_menu_items, :list
   attr :home_path, :string
+  attr :padded, :boolean, default: true
 
   slot :inner_block
 
@@ -140,9 +145,13 @@ defmodule PasswordlessWeb.CoreComponents do
     assigns =
       assigns
       |> assign_new(:home_path, fn -> home_path(assigns[:current_user]) end)
+      |> assign_new(:org_menu_items, fn -> org_menu_items(assigns[:current_user]) end)
       |> assign_new(:user_menu_items, fn -> user_menu_items(assigns[:current_user]) end)
-      |> assign_new(:main_menu_items, fn -> main_menu_items(assigns[:current_section], assigns[:current_user]) end)
+      |> assign_new(:main_menu_items, fn ->
+        main_menu_items(assigns[:current_section], assigns[:current_user])
+      end)
       |> assign_new(:app_menu_items, fn -> app_menu_items(assigns[:current_user]) end)
+      |> assign_new(:section_menu_items, fn -> section_menu_items(assigns[:current_user]) end)
 
     assigns =
       update(assigns, :current_page, fn
@@ -150,21 +159,55 @@ defmodule PasswordlessWeb.CoreComponents do
         page when is_binary(page) -> map_active_path_to_menu_item(assigns[:main_menu_items], page)
       end)
 
+    dropdown_type =
+      cond do
+        assigns[:current_page] in [:home, :users, :reports, :embed, :authenticators] ->
+          :app
+
+        assigns[:current_page] in [:billing] ->
+          :org
+
+        assigns[:current_subpage] in [:app_settings, :domain] ->
+          :app
+
+        assigns[:current_subpage] in [:team, :organization, :edit_projects] ->
+          :org
+
+        true ->
+          :global
+      end
+
+    assigns = assign(assigns, dropdown_type: dropdown_type)
+
     ~H"""
-    <.stacked_layout
+    <.sidebar_layout
       home_path={@home_path}
       current_user={@current_user}
       current_page={@current_page}
+      current_section={@current_section}
+      current_subpage={@current_subpage}
       app_menu_items={@app_menu_items}
       user_menu_items={@user_menu_items}
       main_menu_items={@main_menu_items}
+      section_menu_items={@section_menu_items}
     >
       <:logo>
-        <.logo class="h-6" />
+        <.logo variant="light" class="h-6" />
       </:logo>
 
-      {render_slot(@inner_block)}
-    </.stacked_layout>
+      <:dropdown>
+        <.topbar_dropdown
+          current_user={@current_user}
+          app_menu_items={@app_menu_items}
+          org_menu_items={@org_menu_items}
+          dropdown_type={@dropdown_type}
+        />
+      </:dropdown>
+
+      <.div_wrapper class="p-6" wrap={@padded}>
+        {render_slot(@inner_block)}
+      </.div_wrapper>
+    </.sidebar_layout>
     """
   end
 
@@ -281,6 +324,109 @@ defmodule PasswordlessWeb.CoreComponents do
     """
   end
 
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :code, :any, required: true
+  attr :label, :string, default: nil
+  attr :language, :atom, values: [:javascript, :typescript, :json, :html], required: true
+  attr :language_class, :string, default: nil
+  attr :rest, :global
+
+  def code_block(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:language_class, fn -> "language-#{assigns[:language]}" end)
+      |> assign_new(:id, fn -> Util.id("code-block") end)
+      |> update(:code, fn code ->
+        Passwordless.Formatter.format!(code, assigns[:language])
+      end)
+
+    ~H"""
+    <%= if Util.present?(@label) do %>
+      <div class="pc-form-field-wrapper">
+        <.form_label>{@label}</.form_label>
+        <pre id={@id} phx-hook="HighlightHook">
+          <code class={[@class, @language_class, "text-sm font-mono rounded-lg"]}>{@code}</code>
+        </pre>
+      </div>
+    <% else %>
+      <pre id={@id} phx-hook="HighlightHook">
+        <code class={[@class, @language_class, "text-sm font-mono rounded-lg"]}>{@code}</code>
+      </pre>
+    <% end %>
+    """
+  end
+
+  attr :id, :string
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+
+  attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
+
+  attr :label, :string, default: nil
+  attr :errors, :list, default: []
+  attr :name, :string
+  attr :rest, :global
+
+  def code_editor(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    assigns =
+      assigns
+      |> assign_new(:id, fn -> Util.id("code-editor") end)
+      |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
+      |> assign_new(:name, fn -> field.name end)
+      |> assign_new(:label, fn -> PhoenixHTMLHelpers.Form.humanize(field.field) end)
+
+    ~H"""
+    <.field_error :for={msg <- @errors}>{msg}</.field_error>
+    """
+  end
+
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :code, :any, required: true
+  attr :label, :string, default: nil
+  attr :disabled, :boolean, default: false
+  attr :rest, :global
+
+  def json_block(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:id, fn -> Util.id("json-block") end)
+      |> update(:code, fn code ->
+        Passwordless.Formatter.format!(code, :json)
+      end)
+
+    ~H"""
+    <%= if Util.present?(@label) do %>
+      <div class="pc-form-field-wrapper">
+        <.form_label>{@label}</.form_label>
+        <div class={[
+          @class,
+          "text-sm rounded-lg p-2 border border-slate-300 dark:border-slate-600 shadow-m2",
+          if(@disabled, do: "bg-slate-100 dark:bg-slate-700", else: "dark:bg-slate-900")
+        ]}>
+          <code id={@id} phx-hook="JSONHook" data-json={@code}></code>
+        </div>
+      </div>
+    <% else %>
+      <div class={[
+        @class,
+        "text-sm rounded-lg p-2 border border-slate-300 dark:border-slate-600 shadow-m2",
+        if(@disabled, do: "bg-slate-100 dark:bg-slate-800", else: "dark:bg-slate-900")
+      ]}>
+        <code id={@id} phx-hook="JSONHook" data-json={@code}></code>
+      </div>
+    <% end %>
+    """
+  end
+
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :checked, :boolean, required: true
+  attr :rest, :global
+
+  def check_mark(assigns) do
+    ~H"""
+    <.icon :if={assigns[:checked]} name="remix-check-line" class="w-5 h-5" />
+    """
+  end
+
   @doc """
   Translates an error message using gettext.
   """
@@ -334,8 +480,20 @@ defmodule PasswordlessWeb.CoreComponents do
 
   # Private
 
-  defp menu_items_grouped?(menu_items) do
-    Enum.all?(menu_items, &Map.has_key?(&1, :title))
+  attr :wrap, :boolean, default: false
+  attr :class, :any, default: nil
+  slot :inner_block, required: true
+
+  defp div_wrapper(assigns) do
+    ~H"""
+    <%= if @wrap do %>
+      <div class={@class}>
+        {render_slot(@inner_block)}
+      </div>
+    <% else %>
+      {render_slot(@inner_block)}
+    <% end %>
+    """
   end
 
   defp map_active_path_to_menu_item(menu_items, current_path) do
@@ -360,5 +518,64 @@ defmodule PasswordlessWeb.CoreComponents do
       {path, "/" = to} -> String.equivalent?(path, to)
       {path, to} -> String.starts_with?(path, to)
     end
+  end
+
+  attr :current_user, :map, default: nil
+
+  attr :app_menu_items, :list, required: false
+  attr :org_menu_items, :list, required: false
+  attr :dropdown_type, :atom, required: true, values: [:project, :org, :global]
+
+  defp topbar_dropdown(%{dropdown_type: :app} = assigns) do
+    ~H"""
+    <.dropdown
+      label={PasswordlessWeb.Helpers.user_app_name(@current_user)}
+      label_icon="remix-instance-line"
+      placement="right"
+    >
+      <.dropdown_menu_item link_type="live_redirect" to={~p"/app/apps/new"}>
+        <.icon name="remix-add-line" class="w-5 h-5" />
+        {gettext("New App")}
+      </.dropdown_menu_item>
+      <.form :for={app <- @app_menu_items} for={nil} action={~p"/app/apps/switch"} method="post">
+        <.input type="hidden" name="app_id" value={app.id} />
+        <button class="pc-dropdown__menu-item">
+          <.icon name="remix-instance-line" class="w-5 h-5" />
+          <span class="line-clamp-1">{app.name}</span>
+        </button>
+      </.form>
+    </.dropdown>
+    """
+  end
+
+  defp topbar_dropdown(%{dropdown_type: :org} = assigns) do
+    ~H"""
+    <.dropdown
+      label={PasswordlessWeb.Helpers.user_org_name(@current_user)}
+      label_icon="remix-building-line"
+      placement="right"
+    >
+      <.dropdown_menu_item link_type="live_redirect" to={~p"/app/organization/new"}>
+        <.icon name="remix-add-line" class="w-5 h-5" />
+        {gettext("New Organization")}
+      </.dropdown_menu_item>
+      <.form :for={org <- @org_menu_items} for={nil} action={~p"/app/org/switch"} method="post">
+        <.input type="hidden" name="org_id" value={org.id} />
+        <button class="pc-dropdown__menu-item">
+          <.icon name="remix-building-line" class="w-5 h-5" />
+          <span class="line-clamp-1">{org.name}</span>
+        </button>
+      </.form>
+    </.dropdown>
+    """
+  end
+
+  defp topbar_dropdown(%{dropdown_type: :global} = assigns) do
+    ~H"""
+    <span class="pc-dropdown__trigger-button--with-label--md-solid h-[42px] select-none cursor-not-allowed">
+      <.icon name="remix-global-line" class="pc-dropdown__icon" />
+      <span>{gettext("Global")}</span>
+    </span>
+    """
   end
 end

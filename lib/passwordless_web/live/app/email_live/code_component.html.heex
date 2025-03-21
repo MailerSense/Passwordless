@@ -1,0 +1,32 @@
+<div id="block-container" phx-hook="EditorHook">
+  <.form
+    id="edit-template-version"
+    for={@version_form}
+    phx-change="validate_version"
+    phx-submit="save_version"
+    class="m-6"
+  >
+    <.field type="hidden" field={@version_form[:mjml_body]} class="source" />
+    <.field
+      type="select"
+      icon="remix-brush-2-line"
+      icon_class="pc-select-input__icon"
+      field={@version_form[:current_style]}
+      label={gettext("Style")}
+      options={@styles}
+      required
+      required_asterix={false}
+    />
+    <.p class="mb-6">
+      MJML is an email templating language similar to HTML. Choose a base style and customize it in the editor below.
+    </.p>
+    <.a
+      label={gettext("Learn about MJML")}
+      link_type="a"
+      to="https://mjml.io"
+      styled
+      target="_blank"
+    />
+  </.form>
+  <div id="mjml-editor-container" class="editor" phx-update="ignore"></div>
+</div>

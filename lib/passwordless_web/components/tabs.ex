@@ -86,8 +86,7 @@ defmodule PasswordlessWeb.Components.Tabs do
   end
 
   def tab_menu(assigns) do
-    assigns =
-      assign_new(assigns, :id, fn -> "tab-menu-#{:rand.uniform(10_000_000) + 1}" end)
+    assigns = assign_new(assigns, :id, fn -> Util.id("tab-menu") end)
 
     ~H"""
     <%= case @mode do %>
