@@ -1,6 +1,6 @@
-defmodule Passwordless.Methods.WhatsApp do
+defmodule Passwordless.Authenticators.WhatsApp do
   @moduledoc """
-  A WhatsApp method.
+  A WhatsApp authenticator.
   """
 
   use Passwordless.Schema
@@ -13,7 +13,7 @@ defmodule Passwordless.Methods.WhatsApp do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "whatsapp_methods" do
+  schema "whatsapp_authenticators" do
     field :enabled, :boolean, default: true
     field :expires, :integer, default: 5
     field :language, Ecto.Enum, values: @languages, default: :en, virtual: true

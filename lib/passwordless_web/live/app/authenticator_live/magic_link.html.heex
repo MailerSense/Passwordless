@@ -33,13 +33,17 @@
       />
     </div>
     <.email_preview
-      to={~p"/app/emails/#{@email_template}/en/edit?return_to=#{~p"/app/methods/magic-link"}"}
+      to={
+        ~p"/app/emails/#{@email_template}/en/edit?return_to=#{~p"/app/authenticators/magic-link"}"
+      }
       name={gettext("Edit email template")}
       preview={@email_version.html_body}
       link_type="live_redirect"
     />
     <.a
-      to={~p"/app/emails/#{@email_template}/en/edit?return_to=#{~p"/app/methods/magic-link"}"}
+      to={
+        ~p"/app/emails/#{@email_template}/en/edit?return_to=#{~p"/app/authenticators/magic-link"}"
+      }
       label={gettext("Edit email template")}
       styled
       link_type="live_redirect"

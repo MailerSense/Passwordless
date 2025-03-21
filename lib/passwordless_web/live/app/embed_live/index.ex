@@ -2,6 +2,13 @@ defmodule PasswordlessWeb.App.EmbedLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
+  @tabs [
+    install: PasswordlessWeb.App.EmbedLive.Secrets,
+    api: PasswordlessWeb.App.EmbedLive.Secrets,
+    login: PasswordlessWeb.App.EmbedLive.Secrets,
+    guard: PasswordlessWeb.App.EmbedLive.Secrets
+  ]
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, apply_action(socket, socket.assigns.live_action)}
@@ -9,7 +16,10 @@ defmodule PasswordlessWeb.App.EmbedLive.Index do
 
   @impl true
   def handle_params(_params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action)}
+    {:noreply,
+     socket
+     |> apply_action(socket.assigns.live_action)
+     |> assign(module: Keyword.fetch!(@tabs, socket.assigns.live_action))}
   end
 
   @impl true

@@ -32,11 +32,17 @@ defmodule Passwordless.Phone do
     field :primary, :boolean, default: false
     field :verified, :boolean, default: false
     field :channels, {:array, Ecto.Enum}, values: @channels, default: [:sms]
+    field :opted_out, :boolean, virtual: true
+    field :opted_out_at, :utc_datetime_usec
 
     belongs_to :actor, Actor, type: :binary_id
 
     timestamps()
     soft_delete_timestamp()
+  end
+
+  def put_virtuals(%__MODULE__{opted_out_at: opted_out_at} = phone) do
+    %__MODULE__{phone | opted_out: not is_nil(opted_out_at)}
   end
 
   def format(%__MODULE__{canonical: canonical}) when is_binary(canonical) do
@@ -62,9 +68,10 @@ defmodule Passwordless.Phone do
     primary
     verified
     channels
+    opted_out_at
     actor_id
   )a
-  @required_fields @fields
+  @required_fields @fields -- [:opted_out_at]
 
   @doc """
   A regional changeset.

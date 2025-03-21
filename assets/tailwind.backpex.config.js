@@ -1,8 +1,4 @@
 const colors = require("tailwindcss/colors");
-const plugin = require("tailwindcss/plugin");
-const fs = require("fs");
-const path = require("path");
-
 const scienceBlue = {
   50: "#EFF8FF",
   100: "#D1E9FF",

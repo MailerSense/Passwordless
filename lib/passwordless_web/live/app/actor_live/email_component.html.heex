@@ -25,6 +25,11 @@
           )
         }
       />
+      <.field
+        type="checkbox"
+        field={@form[:opted_out]}
+        help_text={gettext("User has opted out of receiving emails from the system.")}
+      />
     </.form>
 
     <:actions>

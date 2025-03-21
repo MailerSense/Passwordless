@@ -57,7 +57,11 @@
       </:header_actions>
     </.data_table>
 
-    <.simple_table items={@invitations} title={gettext("Invitations")}>
+    <.simple_table
+      items={@invitations}
+      count={Enum.count(@invitations)}
+      title={gettext("Invitations")}
+    >
       <:if_empty>{gettext("No %{models} found", models: gettext("invitations"))}</:if_empty>
       <:col field={:email} />
       <:col :let={invitation} field={:inserted_at} label="Sent">

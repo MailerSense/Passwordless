@@ -1,6 +1,6 @@
-defmodule Passwordless.Methods.SecurityKey do
+defmodule Passwordless.Authenticators.SecurityKey do
   @moduledoc """
-  An security key method.
+  An security key authenticator.
   """
 
   use Passwordless.Schema
@@ -12,7 +12,7 @@ defmodule Passwordless.Methods.SecurityKey do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "security_key_methods" do
+  schema "security_key_authenticators" do
     field :enabled, :boolean, default: true
     field :relying_party_id, :string
 

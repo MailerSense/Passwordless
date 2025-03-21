@@ -1,6 +1,6 @@
-defmodule Passwordless.Methods.Passkey do
+defmodule Passwordless.Authenticators.Passkey do
   @moduledoc """
-  An passkey method.
+  An passkey authenticator.
   """
 
   use Passwordless.Schema
@@ -20,7 +20,7 @@ defmodule Passwordless.Methods.Passkey do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "passkey_methods" do
+  schema "passkey_authenticators" do
     field :enabled, :boolean, default: true
     field :relying_party_id, :string
     field :uplift_prompt_interval, Ecto.Enum, values: @uplift_intervals, default: :every_challenge

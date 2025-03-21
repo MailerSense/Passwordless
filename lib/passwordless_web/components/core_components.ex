@@ -161,13 +161,13 @@ defmodule PasswordlessWeb.CoreComponents do
 
     dropdown_type =
       cond do
-        assigns[:current_page] in [:home, :users, :reports, :embed, :methods] ->
+        assigns[:current_page] in [:home, :users, :reports, :embed, :authenticators] ->
           :app
 
         assigns[:current_page] in [:billing] ->
           :org
 
-        assigns[:current_subpage] in [:app, :domain] ->
+        assigns[:current_subpage] in [:app_settings, :domain] ->
           :app
 
         assigns[:current_subpage] in [:team, :organization, :edit_projects] ->
@@ -358,7 +358,9 @@ defmodule PasswordlessWeb.CoreComponents do
 
   attr :id, :string
   attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+
   attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
+
   attr :label, :string, default: nil
   attr :errors, :list, default: []
   attr :name, :string

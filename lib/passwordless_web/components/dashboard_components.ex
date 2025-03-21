@@ -141,12 +141,24 @@ defmodule PasswordlessWeb.DashboardComponents do
   attr :rest, :global
 
   def action_stat(assigns) do
+    assigns =
+      assign(
+        assigns,
+        :grid_class,
+        case Enum.count(assigns[:items]) do
+          1 -> "lg:grid-cols-1"
+          2 -> "lg:grid-cols-2"
+          3 -> "lg:grid-cols-3"
+          _ -> "lg:grid-cols-4"
+        end
+      )
+
     ~H"""
     <div class={["flex flex-col gap-6", @class]} {@rest}>
       <div class={[
+        @grid_class,
         "grid grid-cols-1",
-        "lg:grid-cols-3",
-        "gap-12 lg:gap-0 lg:divide-x divide-slate-200 dark:divide-slate-700"
+        "gap-6 lg:gap-0 lg:divide-x divide-slate-200 dark:divide-slate-700"
       ]}>
         <div
           :for={item <- @items}
@@ -155,11 +167,11 @@ defmodule PasswordlessWeb.DashboardComponents do
             "lg:first:pl-0 lg:last:pr-0"
           ]}
         >
-          <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
+          <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold">
             {item.name}
           </badge>
           <h2 class="text-slate-900 dark:text-white text-2xl font-bold">
-            {Passwordless.Locale.Number.to_string!(item.value)} {ngettext(
+            {Util.number!(item.value)} {ngettext(
               "time",
               "times",
               item.value
@@ -167,9 +179,9 @@ defmodule PasswordlessWeb.DashboardComponents do
           </h2>
           <%= case item.progress do %>
             <% %{max: max, items: items} when is_list(items) -> %>
-              <.multi_progress max={max} class="flex-grow" items={items} />
+              <.multi_progress max={max} items={items} />
             <% %{max: max, value: value, color: color} -> %>
-              <.progress max={max} class="flex-grow" value={value} color={color} />
+              <.progress max={max} value={value} color={color} />
           <% end %>
         </div>
       </div>
@@ -406,6 +418,49 @@ defmodule PasswordlessWeb.DashboardComponents do
 
       {render_slot(@inner_block)}
     </div>
+    """
+  end
+
+  attr :to, :string, required: true
+  attr :icon, :string, required: true
+  attr :class, :string, default: nil
+  attr :title, :string, required: true
+  attr :subtitle, :string, required: true
+  attr :link_type, :string, default: "live_redirect"
+  attr :enabled, :boolean, required: true
+
+  attr :color, :string,
+    default: "blue",
+    values: ["blue", "indigo", "purple", "slate"]
+
+  def quick_action(assigns) do
+    assigns =
+      assign(assigns,
+        badge_label: if(assigns[:enabled], do: gettext("Enabled"), else: gettext("Disabled")),
+        badge_color: if(assigns[:enabled], do: "success", else: "gray")
+      )
+
+    ~H"""
+    <.a
+      to={@to}
+      link_type={@link_type}
+      class={[
+        "flex flex-col items-center justify-center gap-4 px-6",
+        "lg:first:pl-0 lg:last:pr-0",
+        "transition duration-150 ease-in-out hover:bg-gray-50 focus:bg-gray-100 active:bg-gray-100 dark:hover:bg-gray-700 dark:focus:bg-gray-600 dark:active:bg-gray-600",
+        @class
+      ]}
+    >
+      <span class={["p-2 rounded-lg", "pc-quickadd--#{@color}-bg"]}>
+        <.icon name={@icon} class={["w-8 h-8", "pc-quickadd--#{@color}-text"]} />
+      </span>
+      <div class="flex flex-col gap-1 items-center">
+        <span class="text-base font-semibold leading-tight text-gray-900 dark:text-white">
+          {@title}
+        </span>
+        <.badge size="sm" color={@badge_color} label={@badge_label} />
+      </div>
+    </.a>
     """
   end
 end

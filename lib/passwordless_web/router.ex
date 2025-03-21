@@ -141,15 +141,15 @@ defmodule PasswordlessWeb.Router do
       live "/users/:id/edit/phone/:phone_id/delete", App.ActorLive.Edit, :delete_phone
       live "/users/:id/delete", App.ActorLive.Index, :delete
 
-      # Methods
-      live "/methods/email", App.MethodLive.Index, :email
-      live "/methods/sms", App.MethodLive.Index, :sms
-      live "/methods/whatsapp", App.MethodLive.Index, :whatsapp
-      live "/methods/magic-link", App.MethodLive.Index, :magic_link
-      live "/methods/authenticator", App.MethodLive.Index, :authenticator
-      live "/methods/security-key", App.MethodLive.Index, :security_key
-      live "/methods/passkey", App.MethodLive.Index, :passkey
-      live "/methods/recovery-codes", App.MethodLive.Index, :recovery_codes
+      # Authenticators
+      live "/authenticators/email", App.AuthenticatorLive.Index, :email
+      live "/authenticators/sms", App.AuthenticatorLive.Index, :sms
+      live "/authenticators/whatsapp", App.AuthenticatorLive.Index, :whatsapp
+      live "/authenticators/magic-link", App.AuthenticatorLive.Index, :magic_link
+      live "/authenticators/totp", App.AuthenticatorLive.Index, :totp
+      live "/authenticators/security-key", App.AuthenticatorLive.Index, :security_key
+      live "/authenticators/passkey", App.AuthenticatorLive.Index, :passkey
+      live "/authenticators/recovery-codes", App.AuthenticatorLive.Index, :recovery_codes
 
       # Email
       live "/emails/:id/:language/edit", App.EmailLive.Edit, :edit
@@ -159,7 +159,10 @@ defmodule PasswordlessWeb.Router do
       live "/reports", App.ReportLive.Index, :index
 
       # Embed & API
-      live "/embed", App.EmbedLive.Index, :index
+      live "/embed/install", App.EmbedLive.Index, :install
+      live "/embed/api", App.EmbedLive.Index, :api
+      live "/embed/login", App.EmbedLive.Index, :login
+      live "/embed/guard", App.EmbedLive.Index, :guard
 
       # Team
       live "/team", App.TeamLive.Index, :index

@@ -8,9 +8,9 @@ defmodule Passwordless.App do
   import Ecto.Query
 
   alias Database.ChangesetExt
+  alias Passwordless.Authenticators
   alias Passwordless.Domain
   alias Passwordless.EmailTemplate
-  alias Passwordless.Methods
   alias Passwordless.Organizations.Org
 
   @states ~w(active)a
@@ -30,14 +30,14 @@ defmodule Passwordless.App do
 
     has_one :domain, Domain
 
-    has_one :email, Methods.Email
-    has_one :sms, Methods.SMS
-    has_one :whatsapp, Methods.WhatsApp
-    has_one :magic_link, Methods.MagicLink
-    has_one :authenticator, Methods.Authenticator
-    has_one :security_key, Methods.SecurityKey
-    has_one :passkey, Methods.Passkey
-    has_one :recovery_codes, Methods.RecoveryCodes
+    has_one :email, Authenticators.Email
+    has_one :sms, Authenticators.SMS
+    has_one :whatsapp, Authenticators.WhatsApp
+    has_one :magic_link, Authenticators.MagicLink
+    has_one :totp, Authenticators.TOTP
+    has_one :security_key, Authenticators.SecurityKey
+    has_one :passkey, Authenticators.Passkey
+    has_one :recovery_codes, Authenticators.RecoveryCodes
 
     has_many :email_templates, EmailTemplate
 

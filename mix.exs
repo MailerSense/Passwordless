@@ -101,7 +101,7 @@ defmodule Passwordless.MixProject do
       # Assets
       {:tailwind, "~> 0.2.4", runtime: Mix.env() == :dev},
       {:heroicons,
-       github: "tailwindlabs/heroicons", tag: "v2.1.5", sparse: "optimized", app: false, compile: false, depth: 1},
+       github: "tailwindlabs/heroicons", tag: "v2.2.0", sparse: "optimized", app: false, compile: false, depth: 1},
 
       # Observability
       {:sentry, "~> 10.8"},
@@ -178,6 +178,7 @@ defmodule Passwordless.MixProject do
       {:ex_aws_s3, "~> 2.5"},
       {:ex_aws_kms, "~> 2.4"},
       {:ex_aws_ses, "~> 2.4"},
+      {:ex_aws_sns, "~> 2.3"},
       {:ex_aws_secretsmanager, "~> 2.0"},
       {:aws_rds_castore, "~> 1.2"},
 

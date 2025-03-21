@@ -14,6 +14,7 @@ defmodule Passwordless do
   alias Passwordless.Action
   alias Passwordless.Actor
   alias Passwordless.App
+  alias Passwordless.Authenticators
   alias Passwordless.Domain
   alias Passwordless.DomainRecord
   alias Passwordless.Email
@@ -21,11 +22,21 @@ defmodule Passwordless do
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateVersion
   alias Passwordless.Event
-  alias Passwordless.Methods
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
+
+  @authenticators [
+    magic_link: Authenticators.MagicLink,
+    email: Authenticators.Email,
+    sms: Authenticators.SMS,
+    whatsapp: Authenticators.WhatsApp,
+    totp: Authenticators.TOTP,
+    security_key: Authenticators.SecurityKey,
+    passkey: Authenticators.Passkey,
+    recovery_codes: Authenticators.RecoveryCodes
+  ]
 
   @doc """
   Looks up `Application` config or raises if keyspace is not configured.
@@ -76,8 +87,8 @@ defmodule Passwordless do
   def create_full_app(%Org{} = org, attrs \\ %{}) do
     Repo.transact(fn ->
       with {:ok, app} <- create_app(org, attrs),
-           {:ok, _methods} <-
-             create_methods(app, %{
+           {:ok, _authenticators} <-
+             create_authenticators(app, %{
                magic_link: %{
                  sender: "verify",
                  sender_name: app.name,
@@ -87,7 +98,7 @@ defmodule Passwordless do
                  sender: "verify",
                  sender_name: app.name
                },
-               authenticator: %{
+               totp: %{
                  issuer_name: app.name
                },
                security_key: %{
@@ -178,23 +189,12 @@ defmodule Passwordless do
     end)
   end
 
-  # Methods
+  # Authenticators
 
-  def create_methods(%App{} = app, defaults \\ %{}) do
-    methods = [
-      magic_link: Methods.MagicLink,
-      email: Methods.Email,
-      sms: Methods.SMS,
-      whatsapp: Methods.WhatsApp,
-      authenticator: Methods.Authenticator,
-      security_key: Methods.SecurityKey,
-      passkey: Methods.Passkey,
-      recovery_codes: Methods.RecoveryCodes
-    ]
-
+  def create_authenticators(%App{} = app, defaults \\ %{}) do
     Repo.transact(fn ->
-      methods =
-        methods
+      authenticators =
+        @authenticators
         |> Enum.reject(fn {key, _mod} ->
           Repo.exists?(Ecto.assoc(app, key))
         end)
@@ -205,18 +205,32 @@ defmodule Passwordless do
           |> Repo.insert!()
         end)
 
-      {:ok, methods}
+      {:ok, authenticators}
     end)
   end
 
-  crud(:magic_link, :magic_link, Passwordless.Methods.MagicLink)
-  crud(:email, :email, Passwordless.Methods.Email)
-  crud(:sms, :sms, Passwordless.Methods.SMS)
-  crud(:whatsapp, :whatsapp, Passwordless.Methods.WhatsApp)
-  crud(:authenticator, :authenticator, Passwordless.Methods.Authenticator)
-  crud(:security_key, :security_key, Passwordless.Methods.SecurityKey)
-  crud(:passkey, :passkey, Passwordless.Methods.Passkey)
-  crud(:recovery_codes, :recovery_codes, Passwordless.Methods.RecoveryCodes)
+  crud(:magic_link, :magic_link, Passwordless.Authenticators.MagicLink)
+  crud(:email, :email, Passwordless.Authenticators.Email)
+  crud(:sms, :sms, Passwordless.Authenticators.SMS)
+  crud(:whatsapp, :whatsapp, Passwordless.Authenticators.WhatsApp)
+  crud(:totp, :totp, Passwordless.Authenticators.TOTP)
+  crud(:security_key, :security_key, Passwordless.Authenticators.SecurityKey)
+  crud(:passkey, :passkey, Passwordless.Authenticators.Passkey)
+  crud(:recovery_codes, :recovery_codes, Passwordless.Authenticators.RecoveryCodes)
+
+  def list_authenticators(%App{} = app) do
+    @authenticators
+    |> Enum.map(fn {key, _mod} -> {key, Repo.one(Ecto.assoc(app, key))} end)
+    |> Enum.reject(fn {_, mod} -> is_nil(mod) end)
+    |> Enum.map(fn {key, authenticator} ->
+      params =
+        PasswordlessWeb.Helpers.authenticator_menu_items()
+        |> Enum.find(&(&1[:name] == key))
+        |> Map.take([:label, :icon, :path])
+
+      Map.merge(%{id: key, enabled: authenticator.enabled}, params)
+    end)
+  end
 
   # Actor
 
@@ -293,11 +307,11 @@ defmodule Passwordless do
     actor
     |> Ecto.assoc(:emails)
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
+    |> Email.put_virtuals()
   end
 
   def change_actor_email(%App{} = app, %Email{} = email, attrs \\ %{}) do
-    opts = [prefix: Tenant.to_prefix(app)]
-    Email.changeset(email, attrs, opts)
+    Email.changeset(email, attrs, prefix: Tenant.to_prefix(app))
   end
 
   def create_actor_email(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
@@ -327,11 +341,11 @@ defmodule Passwordless do
     actor
     |> Ecto.assoc(:phones)
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
+    |> Phone.put_virtuals()
   end
 
   def change_actor_phone(%App{} = app, %Phone{} = phone, attrs \\ %{}) do
-    opts = [prefix: Tenant.to_prefix(app)]
-    Phone.canonical_changeset(phone, attrs, opts)
+    Phone.canonical_changeset(phone, attrs, prefix: Tenant.to_prefix(app))
   end
 
   def create_actor_phone(%App{} = app, %Actor{} = actor, attrs \\ %{}) do

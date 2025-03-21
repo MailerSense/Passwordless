@@ -37,6 +37,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :address, :citext, null: false
       add :primary, :boolean, null: false, default: false
       add :verified, :boolean, null: false, default: false
+      add :opted_out_at, :utc_datetime_usec
 
       add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
 
@@ -60,6 +61,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :primary, :boolean, null: false, default: false
       add :verified, :boolean, null: false, default: false
       add :channels, {:array, :string}, null: false, default: []
+      add :opted_out_at, :utc_datetime_usec
 
       add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
 
@@ -140,7 +142,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :name, :string, null: false
       add :state, :string, null: false
       add :token, :binary
-      add :method, :string
+      add :authenticator, :string
       add :attempts, :integer, null: false, default: 0
       add :expires_at, :utc_datetime_usec
       add :completed_at, :utc_datetime_usec
@@ -169,5 +171,39 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create index(:events, [:action_id])
+
+    ## Messages
+
+    create table(:email_messages, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :state, :string, null: false
+      add :sender, :citext, null: false
+      add :sender_name, :string
+      add :recipient, :citext, null: false
+      add :recipient_name, :string
+      add :reply_to, :citext, null: false
+      add :reply_to_name, :string
+      add :subject, :string, null: false
+      add :preheader, :string
+      add :external_id, :string
+      add :text_content, :text, null: false
+      add :html_content, :text, null: false
+
+      add :metadata, :map
+
+      add :event_id, references(:events, type: :uuid, on_delete: :delete_all), null: false
+      add :email_id, references(:emails, type: :uuid, on_delete: :delete_all), null: false
+
+      add :email_template_id,
+          references(:email_templates, type: :uuid, on_delete: :delete_all, prefix: "public"),
+          null: false
+
+      timestamps()
+    end
+
+    create index(:email_messages, [:email_id])
+    create index(:email_messages, [:email_template_id])
+    create unique_index(:email_messages, [:event_id])
+    create unique_index(:email_messages, [:external_id])
   end
 end

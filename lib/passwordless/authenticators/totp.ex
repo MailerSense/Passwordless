@@ -1,22 +1,20 @@
-defmodule Passwordless.Methods.SMS do
+defmodule Passwordless.Authenticators.TOTP do
   @moduledoc """
-  An SMS method.
+  A TOTP authenticator.
   """
 
   use Passwordless.Schema
 
   alias Passwordless.App
 
-  @languages ~w(en de fr)a
-
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "sms_methods" do
+  schema "totp_authenticators" do
     field :enabled, :boolean, default: true
-    field :expires, :integer, default: 5
-    field :language, Ecto.Enum, values: @languages, default: :en, virtual: true
+    field :issuer_name, :string
+    field :hide_download_screen, :boolean, default: false
 
     belongs_to :app, App, type: :binary_id
 
@@ -25,13 +23,11 @@ defmodule Passwordless.Methods.SMS do
 
   @fields ~w(
     enabled
-    expires
-    language
+    issuer_name
+    hide_download_screen
     app_id
   )a
   @required_fields @fields
-
-  def languages, do: @languages
 
   @doc """
   A changeset.
@@ -40,7 +36,6 @@ defmodule Passwordless.Methods.SMS do
     actor_email
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> validate_number(:expires, greater_than: 0, less_than_or_equal_to: 60)
     |> unique_constraint(:app_id)
     |> unsafe_validate_unique(:app_id, Passwordless.Repo)
     |> assoc_constraint(:app)

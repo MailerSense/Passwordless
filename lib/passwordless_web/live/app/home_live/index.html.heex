@@ -8,7 +8,6 @@
           period: format_month_range(Date.utc_today())
         )}
       </.p>
-      <.form_separator no_margin />
       <.action_stat
         legend={[
           %{color: "bg-success-500", label: gettext("Allow")},
@@ -18,7 +17,25 @@
         items={@top_actions}
       />
     </.box>
-
+    <.box card>
+      <.form_header title={gettext("Authenticators")} no_margin />
+      <.p>
+        {gettext(
+          "Enable authentication methods users can use to proove their identity within your app."
+        )}
+      </.p>
+      <div class="grid grid-cols-5 divide-x divide-slate-200 dark:divide-slate-700">
+        <.quick_action
+          :for={item <- @authenticators |> Enum.take(5)}
+          to={item.path}
+          enabled={item.enabled}
+          subtitle="Enabled"
+          title={item.label}
+          icon={item.icon}
+          link_type="live_redirect"
+        />
+      </div>
+    </.box>
     <.box card>
       <.form_header title={gettext("API keys")} no_margin />
       <.p>
@@ -26,7 +43,7 @@
           "Embed Passwordless in your frontend and use the API to manage users and actions."
         )}
       </.p>
-      <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2">
+      <div>
         <.field
           name="test"
           value={@current_app.id}
@@ -34,7 +51,6 @@
           readonly
           copyable={true}
           class="font-mono"
-          wrapper_class="!mb-0"
         />
         <.field
           name="test2"
@@ -44,10 +60,14 @@
           readonly
           viewable={true}
           class="font-mono"
-          wrapper_class="!mb-0"
         />
       </div>
-      <.a label={gettext("Setup your app")} to={~p"/app/embed"} styled link_type="live_redirect" />
+      <.a
+        label={gettext("Setup your app")}
+        to={~p"/app/embed/install"}
+        styled
+        link_type="live_redirect"
+      />
     </.box>
 
     <.stream_table
@@ -77,8 +97,8 @@
         <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
 
-      <:col :let={action} label={gettext("Method")} field={:method}>
-        <% %{label: label, icon: icon} = method_details(action) %>
+      <:col :let={action} field={:authenticator}>
+        <% %{label: label, icon: icon} = authenticator_details(action) %>
         <div class="flex items-center gap-2">
           <.icon name={icon} class="w-4 h-4" />
           {label}

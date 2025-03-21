@@ -1,4 +1,4 @@
-<.layout current_user={@current_user} current_page={:methods} current_section={:app}>
+<.layout current_user={@current_user} current_page={:authenticators} current_section={:app}>
   <.form
     id="edit-email-template-form"
     for={@template_form}
@@ -12,7 +12,7 @@
           type="button"
           color="light"
           label={gettext("Cancel")}
-          to={@return_to || ~p"/app/methods/email"}
+          to={@return_to || ~p"/app/authenticators/email"}
           link_type="live_patch"
         />
         <.button

@@ -7,6 +7,7 @@ defmodule Passwordless.Event do
 
   alias Database.ChangesetExt
   alias Passwordless.Action
+  alias Passwordless.EmailMessage
 
   @kinds ~w(created verified failed exhausted timed_out)a
   @derive {
@@ -19,6 +20,8 @@ defmodule Passwordless.Event do
     field :ip_address, :string
     field :country, :string
     field :city, :string
+
+    has_one :email_message, EmailMessage
 
     belongs_to :action, Action
 

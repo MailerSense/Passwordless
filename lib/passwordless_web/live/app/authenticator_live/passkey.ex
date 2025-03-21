@@ -1,17 +1,21 @@
-defmodule PasswordlessWeb.App.MethodLive.Passkey do
+defmodule PasswordlessWeb.App.AuthenticatorLive.Passkey do
   @moduledoc false
 
   use PasswordlessWeb, :live_component
 
   alias Passwordless.App
-  alias Passwordless.Methods.Passkey
+  alias Passwordless.Authenticators.Passkey
   alias Passwordless.Repo
 
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
     passkey = Repo.preload(app, :passkey).passkey
     changeset = Passwordless.change_passkey(passkey)
-    intervals = Enum.map(Passkey.intervals(), fn interval -> {Phoenix.Naming.humanize(interval), interval} end)
+
+    intervals =
+      Enum.map(Passkey.intervals(), fn interval ->
+        {Phoenix.Naming.humanize(interval), interval}
+      end)
 
     {:ok,
      socket

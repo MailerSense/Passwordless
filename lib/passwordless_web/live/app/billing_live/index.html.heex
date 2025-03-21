@@ -48,6 +48,7 @@
           estimated_charge: Money.new(1000)
         }
       ]}
+      count={2}
       title={gettext("Billing items")}
     >
       <:if_empty>
@@ -79,8 +80,8 @@
           />
 
           {gettext("%{used} / %{total}",
-            used: elem(item.usage, 0),
-            total: elem(item.usage, 1)
+            used: Util.number!(elem(item.usage, 0)),
+            total: Util.number!(elem(item.usage, 1))
           )}
         </div>
       </:col>
@@ -98,7 +99,7 @@
       </:actions>
     </.simple_table>
 
-    <.simple_table items={[]} title={gettext("Invoices")}>
+    <.simple_table items={[]} count={0} title={gettext("Invoices")}>
       <:if_empty>
         {gettext("No %{models} found", models: gettext("invoices"))}
       </:if_empty>

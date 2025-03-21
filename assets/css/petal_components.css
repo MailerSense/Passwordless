@@ -239,13 +239,43 @@
   @apply mb-3;
 }
 .pc-text {
-  @apply text-slate-500 dark:text-slate-400;
+  @apply text-slate-600 dark:text-slate-300;
 }
-.pc-text--small {
+.pc-text--sm {
+  @apply text-sm;
+}
+.pc-text--md {
   @apply text-base;
 }
-.pc-text--large {
+.pc-text--lg {
   @apply text-lg;
+}
+
+/* QuickAdd */
+
+.pc-quickadd--blue-text {
+  @apply text-blue-500 dark:text-blue-100;
+}
+.pc-quickadd--indigo-text {
+  @apply text-indigo-500 dark:text-indigo-100;
+}
+.pc-quickadd--purple-text {
+  @apply text-purple-500 dark:text-purple-100;
+}
+.pc-quickadd--slate-text {
+  @apply text-slate-500 dark:text-slate-100;
+}
+.pc-quickadd--blue-bg {
+  @apply bg-blue-500/20 dark:bg-blue-700;
+}
+.pc-quickadd--indigo-bg {
+  @apply bg-indigo-500/20 dark:bg-indigo-700;
+}
+.pc-quickadd--purple-bg {
+  @apply bg-purple-500/20 dark:bg-purple-700;
+}
+.pc-quickadd--slate-bg {
+  @apply bg-slate-500/20 dark:bg-slate-700;
 }
 
 /* Badges */
@@ -435,7 +465,7 @@
 }
 
 .pc-link--styled {
-  @apply flex items-center gap-1 text-info-600 dark:text-info-300 underline;
+  @apply flex items-center gap-1 text-info-600 dark:text-info-300 underline underline-offset-4;
 }
 
 .pc-link--styled__disabled {
@@ -1627,7 +1657,7 @@ input[type="color" i]::-moz-color-swatch {
 .pc-stream-table__wrapper {
 }
 .pc-table__th {
-  @apply text-xs text-left font-medium select-none;
+  @apply text-xs text-left font-medium select-none whitespace-nowrap;
 }
 .pc-table__th--md {
   @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-3;

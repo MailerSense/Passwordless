@@ -1,10 +1,10 @@
 <.layout
   current_user={@current_user}
-  current_page={:methods}
+  current_page={:authenticators}
   current_section={:app}
   padded={false}
 >
-  <.tabbed_layout current_page={@live_action} menu_items={method_menu_items()}>
+  <.tabbed_layout current_page={@live_action} menu_items={authenticator_menu_items()}>
     <.live_component id={@live_action} app={@current_app} module={@module} />
   </.tabbed_layout>
 </.layout>
@@ -15,7 +15,7 @@
       id={@live_action}
       title={@page_title}
       subtitle={@page_subtitle}
-      module={PasswordlessWeb.App.MethodLive.SMSLearnComponent}
+      module={PasswordlessWeb.App.AuthenticatorLive.SMSLearnComponent}
       live_action={@live_action}
     />
   <% true -> %>

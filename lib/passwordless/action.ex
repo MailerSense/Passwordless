@@ -12,7 +12,7 @@ defmodule Passwordless.Action do
   alias Passwordless.Event
 
   @states ~w(allow timeout block challenge_required)a
-  @methods ~w(email sms whatsapp magic_link authenticator security_key passkey recovery_codes)a
+  @authenticators ~w(email sms whatsapp magic_link totp security_key passkey recovery_codes)a
 
   @derive {
     Flop.Schema,
@@ -22,7 +22,7 @@ defmodule Passwordless.Action do
     field :name, :string
     field :state, Ecto.Enum, values: @states, default: :challenge_required
     field :token, :binary, redact: true
-    field :method, Ecto.Enum, values: @methods
+    field :authenticator, Ecto.Enum, values: @authenticators
     field :attempts, :integer, default: 0
     field :expires_at, :utc_datetime_usec
     field :completed_at, :utc_datetime_usec
@@ -35,14 +35,16 @@ defmodule Passwordless.Action do
   end
 
   def states, do: @states
-  def methods, do: @methods
+  def authenticators, do: @authenticators
 
   def topic_for(%App{} = app), do: "actions:#{app.id}"
 
   def first_event(%__MODULE__{events: [_ | _] = events}) do
     events
     |> Enum.sort_by(& &1.inserted_at, :asc)
-    |> Enum.find(fn %Event{city: city, country: country} -> is_binary(city) and is_binary(country) end)
+    |> Enum.find(fn %Event{city: city, country: country} ->
+      is_binary(city) and is_binary(country)
+    end)
   end
 
   @doc """
@@ -77,7 +79,7 @@ defmodule Passwordless.Action do
     name
     state
     token
-    method
+    authenticator
     attempts
     expires_at
     completed_at

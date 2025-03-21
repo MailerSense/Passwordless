@@ -77,7 +77,6 @@ const murder = {
 
 module.exports = {
   safelist: [
-    { pattern: /^grid-cols-.+/ },
     { pattern: /^flag-.+/ },
     { pattern: /^bg-streetlight-\d+/ },
     { pattern: /^from-streetlight-\d+/ },
@@ -187,7 +186,7 @@ module.exports = {
       ]),
     ),
 
-    // Embed new iconset
+    // Embed remix iconset
     plugin(function ({ matchComponents, theme }) {
       let iconsDir = path.join(__dirname, "./vendor/remix");
       let values = {};

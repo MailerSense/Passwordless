@@ -58,9 +58,11 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
         }
       end)
 
+    authenticators = Passwordless.list_authenticators(app)
+
     {:noreply,
      socket
-     |> assign(top_actions: top_actions, action: action, count: estimate_count(app))
+     |> assign(top_actions: top_actions, action: action, count: estimate_count(app), authenticators: authenticators)
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}
   end

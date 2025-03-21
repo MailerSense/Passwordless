@@ -279,7 +279,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     ## Methods
 
-    create table(:magic_link_methods, primary_key: false) do
+    create table(:magic_link_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :expires, :integer, null: false, default: 15
@@ -295,10 +295,10 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create unique_index(:magic_link_methods, [:app_id])
-    create unique_index(:magic_link_methods, [:domain_id])
+    create unique_index(:magic_link_authenticators, [:app_id])
+    create unique_index(:magic_link_authenticators, [:domain_id])
 
-    create table(:sms_methods, primary_key: false) do
+    create table(:sms_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :expires, :integer, null: false, default: 5
@@ -308,9 +308,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create unique_index(:sms_methods, [:app_id])
+    create unique_index(:sms_authenticators, [:app_id])
 
-    create table(:whatsapp_methods, primary_key: false) do
+    create table(:whatsapp_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :expires, :integer, null: false, default: 5
@@ -320,9 +320,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create unique_index(:whatsapp_methods, [:app_id])
+    create unique_index(:whatsapp_authenticators, [:app_id])
 
-    create table(:email_methods, primary_key: false) do
+    create table(:email_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :expires, :integer, null: false, default: 15
@@ -337,10 +337,10 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create unique_index(:email_methods, [:app_id])
-    create unique_index(:email_methods, [:domain_id])
+    create unique_index(:email_authenticators, [:app_id])
+    create unique_index(:email_authenticators, [:domain_id])
 
-    create table(:authenticator_methods, primary_key: false) do
+    create table(:totp_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :issuer_name, :string, null: false
@@ -351,9 +351,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create unique_index(:authenticator_methods, [:app_id])
+    create unique_index(:totp_authenticators, [:app_id])
 
-    create table(:security_key_methods, primary_key: false) do
+    create table(:security_key_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :relying_party_id, :string, null: false
@@ -364,9 +364,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create unique_index(:security_key_methods, [:app_id])
+    create unique_index(:security_key_authenticators, [:app_id])
 
-    create table(:passkey_methods, primary_key: false) do
+    create table(:passkey_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :relying_party_id, :string, null: false
@@ -379,9 +379,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create unique_index(:passkey_methods, [:app_id])
+    create unique_index(:passkey_authenticators, [:app_id])
 
-    create table(:recovery_codes_methods, primary_key: false) do
+    create table(:recovery_codes_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :hide_on_enrollment, :boolean, null: false, default: false
@@ -392,7 +392,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create unique_index(:recovery_codes_methods, [:app_id])
+    create unique_index(:recovery_codes_authenticators, [:app_id])
 
     ## Activity Log
 

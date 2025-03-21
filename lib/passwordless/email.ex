@@ -25,6 +25,8 @@ defmodule Passwordless.Email do
     field :address, :string
     field :primary, :boolean, default: false
     field :verified, :boolean, default: false
+    field :opted_out, :boolean, virtual: true
+    field :opted_out_at, :utc_datetime_usec
 
     belongs_to :actor, Actor, type: :binary_id
 
@@ -32,13 +34,18 @@ defmodule Passwordless.Email do
     soft_delete_timestamp()
   end
 
+  def put_virtuals(%__MODULE__{opted_out_at: opted_out_at} = email) do
+    %__MODULE__{email | opted_out: not is_nil(opted_out_at)}
+  end
+
   @fields ~w(
     address
     primary
     verified
+    opted_out_at
     actor_id
   )a
-  @required_fields @fields
+  @required_fields @fields -- [:opted_out_at]
 
   @doc """
   A changeset.

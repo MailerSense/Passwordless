@@ -1,6 +1,6 @@
-defmodule Passwordless.Methods.Authenticator do
+defmodule Passwordless.Authenticators.RecoveryCodes do
   @moduledoc """
-  An Authenticator method.
+  An recovery codes authenticator.
   """
 
   use Passwordless.Schema
@@ -11,10 +11,10 @@ defmodule Passwordless.Methods.Authenticator do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "authenticator_methods" do
+  schema "recovery_codes_authenticators" do
     field :enabled, :boolean, default: true
-    field :issuer_name, :string
-    field :hide_download_screen, :boolean, default: false
+    field :hide_on_enrollment, :boolean, default: false
+    field :skip_on_programatic, :boolean, default: false
 
     belongs_to :app, App, type: :binary_id
 
@@ -23,8 +23,8 @@ defmodule Passwordless.Methods.Authenticator do
 
   @fields ~w(
     enabled
-    issuer_name
-    hide_download_screen
+    hide_on_enrollment
+    skip_on_programatic
     app_id
   )a
   @required_fields @fields

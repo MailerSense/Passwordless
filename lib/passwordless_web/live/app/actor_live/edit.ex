@@ -272,4 +272,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
         {:noreply, assign_form(socket, changeset)}
     end
   end
+
+  defp translate_channel(:sms), do: gettext("SMS")
+  defp translate_channel(:whatsapp), do: gettext("WhatsApp")
 end

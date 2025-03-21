@@ -145,7 +145,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
               label: "Support"
             },
             %{
-              to: ~p"/app/embed",
+              to: ~p"/app/embed/install",
               label: "Docs",
               link_type: "live_redirect"
             }

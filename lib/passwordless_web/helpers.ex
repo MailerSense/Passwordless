@@ -39,70 +39,103 @@ defmodule PasswordlessWeb.Helpers do
 
   def action_state_badge(_actor), do: {nil, "gray"}
 
-  def method_menu_items do
+  def embed_menu_items do
+    [
+      %{
+        name: :install,
+        label: "Installation",
+        icon: "remix-install-line",
+        path: ~p"/app/embed/install",
+        link_type: "live_patch"
+      },
+      %{
+        name: :api,
+        label: "Headless API",
+        icon: "remix-code-s-slash-line",
+        path: ~p"/app/embed/api",
+        link_type: "live_patch"
+      },
+      %{
+        name: :login,
+        label: "Login window",
+        icon: "remix-window-line",
+        path: ~p"/app/embed/login",
+        link_type: "live_patch"
+      },
+      %{
+        name: :guard,
+        label: "Identity guard",
+        icon: "remix-police-badge-line",
+        path: ~p"/app/embed/guard",
+        link_type: "live_patch"
+      }
+    ]
+  end
+
+  def authenticator_menu_items do
     [
       %{
         name: :email,
         label: "Email",
-        icon: "remix-mail-line",
-        path: ~p"/app/methods/email",
+        icon: "remix-mail-open-line",
+        path: ~p"/app/authenticators/email",
         link_type: "live_patch"
       },
       %{
         name: :sms,
         label: "SMS",
         icon: "remix-message-2-line",
-        path: ~p"/app/methods/sms",
+        path: ~p"/app/authenticators/sms",
         link_type: "live_patch"
       },
       %{
         name: :whatsapp,
         label: "WhatsApp",
         icon: "remix-whatsapp-line",
-        path: ~p"/app/methods/whatsapp",
+        path: ~p"/app/authenticators/whatsapp",
         link_type: "live_patch"
       },
       %{
         name: :magic_link,
         label: "Magic link",
         icon: "remix-link",
-        path: ~p"/app/methods/magic-link",
+        path: ~p"/app/authenticators/magic-link",
         link_type: "live_patch"
       },
       %{
-        name: :authenticator,
-        label: "Authenticator (TOTP)",
+        name: :totp,
+        label: "Time-based OTP",
         icon: "remix-smartphone-line",
-        path: ~p"/app/methods/authenticator",
+        path: ~p"/app/authenticators/totp",
         link_type: "live_patch"
       },
       %{
         name: :security_key,
         label: "Security key",
         icon: "remix-usb-line",
-        path: ~p"/app/methods/security-key",
+        path: ~p"/app/authenticators/security-key",
         link_type: "live_patch"
       },
       %{
         name: :passkey,
         label: "Passkey",
         icon: "remix-fingerprint-line",
-        path: ~p"/app/methods/passkey",
+        path: ~p"/app/authenticators/passkey",
         link_type: "live_patch"
       },
       %{
         name: :recovery_codes,
         label: "Recovery codes",
         icon: "remix-file-list-line",
-        path: ~p"/app/methods/recovery-codes",
+        path: ~p"/app/authenticators/recovery-codes",
         link_type: "live_patch"
       }
     ]
   end
 
-  def method_details(%Action{method: method}) do
-    method_menu_items()
-    |> Enum.find(&(&1[:name] == method))
+  def authenticator_details(%Action{authenticator: authenticator}) do
+    authenticator_menu_items()
+    |> Enum.find(&(&1[:name] == authenticator))
     |> Map.take([:label, :icon])
   end
 
@@ -229,9 +262,11 @@ defmodule PasswordlessWeb.Helpers do
   def user_state(%User{} = user), do: user.state
 
   def user_org_name(%User{current_org: %Org{name: name}}) when is_binary(name), do: Util.truncate(name)
+
   def user_org_name(_), do: nil
 
   def user_app_name(%User{current_app: %App{name: name}}) when is_binary(name), do: Util.truncate(name)
+
   def user_app_name(_), do: nil
 
   def user_impersonated?(%User{current_impersonator: %User{}}), do: true
@@ -273,6 +308,7 @@ defmodule PasswordlessWeb.Helpers do
   end
 
   def user_added(%Membership{inserted_at: %DateTime{} = inserted_at}), do: format_date_time(inserted_at)
+
   def user_added(%Membership{}), do: ""
 
   def is_admin?(%User{} = user), do: User.is_admin?(user)

@@ -1,16 +1,16 @@
-defmodule PasswordlessWeb.App.MethodLive.Index do
+defmodule PasswordlessWeb.App.AuthenticatorLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
-  @methods [
-    magic_link: PasswordlessWeb.App.MethodLive.MagicLink,
-    sms: PasswordlessWeb.App.MethodLive.SMS,
-    whatsapp: PasswordlessWeb.App.MethodLive.Whatsapp,
-    email: PasswordlessWeb.App.MethodLive.Email,
-    authenticator: PasswordlessWeb.App.MethodLive.Authenticator,
-    security_key: PasswordlessWeb.App.MethodLive.SecurityKey,
-    passkey: PasswordlessWeb.App.MethodLive.Passkey,
-    recovery_codes: PasswordlessWeb.App.MethodLive.RecoveryCodes
+  @authenticators [
+    magic_link: PasswordlessWeb.App.AuthenticatorLive.MagicLink,
+    sms: PasswordlessWeb.App.AuthenticatorLive.SMS,
+    whatsapp: PasswordlessWeb.App.AuthenticatorLive.Whatsapp,
+    email: PasswordlessWeb.App.AuthenticatorLive.Email,
+    totp: PasswordlessWeb.App.AuthenticatorLive.TOTP,
+    security_key: PasswordlessWeb.App.AuthenticatorLive.SecurityKey,
+    passkey: PasswordlessWeb.App.AuthenticatorLive.Passkey,
+    recovery_codes: PasswordlessWeb.App.AuthenticatorLive.RecoveryCodes
   ]
 
   @impl true
@@ -26,17 +26,17 @@ defmodule PasswordlessWeb.App.MethodLive.Index do
      socket
      |> apply_action(socket.assigns.live_action, params)
      |> assign(sms_learn?: sms_learn?)
-     |> assign(module: Keyword.fetch!(@methods, socket.assigns.live_action))}
+     |> assign(module: Keyword.fetch!(@authenticators, socket.assigns.live_action))}
   end
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/methods/#{socket.assigns.live_action}")}
+    {:noreply, push_patch(socket, to: ~p"/app/authenticators/#{socket.assigns.live_action}")}
   end
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/methods/#{socket.assigns.live_action}")}
+    {:noreply, push_patch(socket, to: ~p"/app/authenticators/#{socket.assigns.live_action}")}
   end
 
   @impl true
@@ -58,8 +58,8 @@ defmodule PasswordlessWeb.App.MethodLive.Index do
 
   defp apply_action(socket, _action, _params) do
     assign(socket,
-      page_title: gettext("Methods"),
-      page_subtitle: gettext("Manage magic link settings")
+      page_title: gettext("Authenticators"),
+      page_subtitle: gettext("Manage authenticator settings")
     )
   end
 end

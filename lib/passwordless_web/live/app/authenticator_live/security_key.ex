@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.MethodLive.SecurityKey do
+defmodule PasswordlessWeb.App.AuthenticatorLive.SecurityKey do
   @moduledoc false
 
   use PasswordlessWeb, :live_component

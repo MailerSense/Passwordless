@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.MethodLive.RecoveryCodes do
+defmodule PasswordlessWeb.App.AuthenticatorLive.RecoveryCodes do
   @moduledoc false
 
   use PasswordlessWeb, :live_component

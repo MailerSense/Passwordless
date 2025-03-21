@@ -49,8 +49,8 @@ defmodule Passwordless.Organizations.OrgSeeder do
     {:ok, magic_link_template} = Passwordless.seed_email_template(app, :magic_link_sign_in, :en)
     {:ok, email_otp_template} = Passwordless.seed_email_template(app, :email_otp_sign_in, :en)
 
-    {:ok, _methods} =
-      Passwordless.create_methods(app, %{
+    {:ok, _authenticators} =
+      Passwordless.create_authenticators(app, %{
         magic_link: %{
           sender: "verify",
           sender_name: app.name,
@@ -64,7 +64,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
           domain_id: domain.id,
           email_template_id: email_otp_template.id
         },
-        authenticator: %{
+        totp: %{
           issuer_name: app.name
         },
         security_key: %{
@@ -112,11 +112,11 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
       {:ok, _recovery_codes} = Passwordless.create_actor_recovery_codes(app, actor)
 
-      for _ <- 1..1 do
+      for _ <- 1..10 do
         {:ok, action} =
           Passwordless.create_action(app, actor, %{
             name: Enum.random(~w(signIn withdraw placeOrder)),
-            method: Enum.random(Action.methods()),
+            authenticator: Enum.random(Action.authenticators()),
             state: Enum.random(Action.states())
           })
 

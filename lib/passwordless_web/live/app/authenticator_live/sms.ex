@@ -1,11 +1,11 @@
-defmodule PasswordlessWeb.App.MethodLive.SMS do
+defmodule PasswordlessWeb.App.AuthenticatorLive.SMS do
   @moduledoc false
 
   use PasswordlessWeb, :live_component
 
   alias Passwordless.App
+  alias Passwordless.Authenticators.SMS
   alias Passwordless.Locale
-  alias Passwordless.Methods.SMS
   alias Passwordless.Repo
 
   @impl true

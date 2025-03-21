@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.MethodLive.SMSLearnComponent do
+defmodule PasswordlessWeb.App.AuthenticatorLive.SMSLearnComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 

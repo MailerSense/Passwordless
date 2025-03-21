@@ -34,7 +34,7 @@
 
     <div class="flex flex-col gap-6">
       <.box padded>
-        <.field type="radio-group" label="" field={@form[:state]} options={@states} />
+        <.field type="radio-group" field={@form[:state]} options={@states} />
         <.field field={@form[:user_id]} label={gettext("User ID")} disabled={not @user_active} />
         <.field
           field={@form[:language]}
@@ -97,6 +97,9 @@
         <:col :let={email} field={:primary}>
           <.check_mark checked={email.primary} />
         </:col>
+        <:col :let={email} field={:opted_out}>
+          <.check_mark checked={email.opted_out} />
+        </:col>
         <:col actions></:col>
         <:actions :let={email}>
           <.icon_button
@@ -136,10 +139,14 @@
             )}
           </div>
         </:col>
-        <:col :let={email} field={:channels}>
+        <:col :let={phone} field={:channels}>
           <div class="flex items-center gap-2">
-            <.badge size="sm" label="SMS" color="purple" />
-            <.badge size="sm" label="Whatsapp" color="indigo" />
+            <.badge
+              :for={channel <- phone.channels}
+              size="sm"
+              label={translate_channel(channel)}
+              color={random_color(channel)}
+            />
           </div>
         </:col>
         <:col :let={phone} field={:verified}>
@@ -147,6 +154,9 @@
         </:col>
         <:col :let={phone} field={:primary}>
           <.check_mark checked={phone.primary} />
+        </:col>
+        <:col :let={phone} field={:opted_out}>
+          <.check_mark checked={phone.opted_out} />
         </:col>
         <:col actions></:col>
         <:actions :let={phone}>
@@ -231,11 +241,12 @@
           />
         </:actions>
       </.simple_table>
-      <.simple_table
-        items={@totps}
-        count={Enum.count([])}
-        title={gettext("Authenticators (TOTPs)")}
-      >
+      <.form_separator no_margin />
+      <.form_header title={gettext("Mobile applications")} no_margin />
+      <.p class="text-slate-600 dark:text-slate-300">
+        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
+      </.p>
+      <.simple_table items={@totps} count={Enum.count([])} title={gettext("Time-based OTPs")}>
         <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
         <:col field={:name} body_class="w-full" />
         <:col actions></:col>

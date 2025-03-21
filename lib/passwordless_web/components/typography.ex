@@ -112,8 +112,8 @@ defmodule PasswordlessWeb.Components.Typography do
   end
 
   attr(:size, :string,
-    default: "small",
-    values: ["small", "large"],
+    default: "md",
+    values: ["xs", "md", "lg"],
     doc: "slideover point of origin"
   )
 

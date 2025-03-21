@@ -25,7 +25,11 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :wrapper_class, :any, default: "pc-table__wrapper pc-data-table__wrapper", doc: "CSS class to add to the table"
+
+  attr :wrapper_class, :any,
+    default: "pc-table__wrapper pc-data-table__wrapper",
+    doc: "CSS class to add to the table"
+
   attr :base_url_params, :map, required: false
 
   attr :form_target, :string,
@@ -241,7 +245,12 @@ defmodule PasswordlessWeb.Components.DataTable do
       |> assign_new(:base_url_params, fn -> %{} end)
 
     ~H"""
-    <section class={["pc-table__wrapper", "pc-stream-table__wrapper", @class]}>
+    <section class={[
+      "pc-table__wrapper",
+      "pc-stream-table__wrapper",
+      @class,
+      unless(@finished, do: "pb-[calc(200vh)]")
+    ]}>
       <.table_header
         :if={@title}
         badge={@badge}
@@ -423,7 +432,11 @@ defmodule PasswordlessWeb.Components.DataTable do
           assign(assigns, :badge, Passwordless.Locale.Number.to_string!(assigns[:count]))
 
         Util.present?(assigns[:meta]) ->
-          assign(assigns, :badge, Passwordless.Locale.Number.to_string!(assigns[:meta].total_count))
+          assign(
+            assigns,
+            :badge,
+            Passwordless.Locale.Number.to_string!(assigns[:meta].total_count)
+          )
 
         true ->
           assigns

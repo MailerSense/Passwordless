@@ -1,6 +1,6 @@
-defmodule Passwordless.Methods.Email do
+defmodule Passwordless.Authenticators.Email do
   @moduledoc """
-  An Email method.
+  An Email authenticator.
   """
 
   use Passwordless.Schema
@@ -17,7 +17,7 @@ defmodule Passwordless.Methods.Email do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "email_methods" do
+  schema "email_authenticators" do
     field :enabled, :boolean, default: true
     field :expires, :integer, default: 15
     field :sender, :string

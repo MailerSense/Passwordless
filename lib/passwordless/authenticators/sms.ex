@@ -1,20 +1,22 @@
-defmodule Passwordless.Methods.RecoveryCodes do
+defmodule Passwordless.Authenticators.SMS do
   @moduledoc """
-  An recovery codes method.
+  An SMS authenticator.
   """
 
   use Passwordless.Schema
 
   alias Passwordless.App
 
+  @languages ~w(en de fr)a
+
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "recovery_codes_methods" do
+  schema "sms_authenticators" do
     field :enabled, :boolean, default: true
-    field :hide_on_enrollment, :boolean, default: false
-    field :skip_on_programatic, :boolean, default: false
+    field :expires, :integer, default: 5
+    field :language, Ecto.Enum, values: @languages, default: :en, virtual: true
 
     belongs_to :app, App, type: :binary_id
 
@@ -23,11 +25,13 @@ defmodule Passwordless.Methods.RecoveryCodes do
 
   @fields ~w(
     enabled
-    hide_on_enrollment
-    skip_on_programatic
+    expires
+    language
     app_id
   )a
   @required_fields @fields
+
+  def languages, do: @languages
 
   @doc """
   A changeset.
@@ -36,6 +40,7 @@ defmodule Passwordless.Methods.RecoveryCodes do
     actor_email
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> validate_number(:expires, greater_than: 0, less_than_or_equal_to: 60)
     |> unique_constraint(:app_id)
     |> unsafe_validate_unique(:app_id, Passwordless.Repo)
     |> assoc_constraint(:app)

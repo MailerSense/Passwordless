@@ -1,6 +1,6 @@
-defmodule Passwordless.Methods.MagicLink do
+defmodule Passwordless.Authenticators.MagicLink do
   @moduledoc """
-  A magic link method.
+  A magic link authenticator.
   """
 
   use Passwordless.Schema
@@ -17,7 +17,7 @@ defmodule Passwordless.Methods.MagicLink do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "magic_link_methods" do
+  schema "magic_link_authenticators" do
     field :enabled, :boolean, default: true
     field :expires, :integer, default: 15
     field :sender, :string
