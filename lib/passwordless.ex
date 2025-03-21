@@ -29,10 +29,10 @@ defmodule Passwordless do
   alias Passwordless.Repo
 
   @authenticators [
-    magic_link: Authenticators.MagicLink,
     email: Authenticators.Email,
     sms: Authenticators.SMS,
     whatsapp: Authenticators.WhatsApp,
+    magic_link: Authenticators.MagicLink,
     totp: Authenticators.TOTP,
     security_key: Authenticators.SecurityKey,
     passkey: Authenticators.Passkey,

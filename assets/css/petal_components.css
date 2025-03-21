@@ -1139,16 +1139,16 @@ input[type="color" i]::-moz-color-swatch {
   @apply text-base font-medium leading-normal px-4 py-3 transition duration-150 rounded-xl select-none;
 }
 .pc-sidebar__menu-item--active {
-  @apply bg-primary-50 text-primary-700 dark:bg-slate-700 dark:text-white dark:hover:text-white relative;
+  @apply bg-primary-50 text-primary-700 dark:bg-slate-800 dark:text-white dark:hover:text-white relative;
 }
 .pc-sidebar__menu-item-icon--active {
   @apply text-primary-700 group-hover:text-primary-700 dark:text-white dark:group-hover:text-white;
 }
 .pc-sidebar__menu-item--inactive {
-  @apply text-slate-600 hover:bg-primary-50 hover:text-primary-700 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-50;
+  @apply text-slate-600 hover:bg-primary-50 hover:text-primary-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50;
 }
 .pc-sidebar__menu-item-icon--inactive {
-  @apply text-slate-600 group-hover:text-primary-700 dark:text-slate-300 dark:group-hover:text-white;
+  @apply text-slate-600 group-hover:text-primary-700 dark:text-slate-400 dark:group-hover:text-white;
 }
 
 /* Loading */
