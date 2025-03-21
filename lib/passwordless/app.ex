@@ -9,6 +9,7 @@ defmodule Passwordless.App do
 
   alias Database.ChangesetExt
   alias Passwordless.Authenticators
+  alias Passwordless.AuthToken
   alias Passwordless.Domain
   alias Passwordless.EmailTemplate
   alias Passwordless.Organizations.Org
@@ -29,6 +30,7 @@ defmodule Passwordless.App do
     field :secondary_button_color, :string, default: "#FFFFFF"
 
     has_one :domain, Domain
+    has_one :auth_token, AuthToken
 
     has_one :email, Authenticators.Email
     has_one :sms, Authenticators.SMS

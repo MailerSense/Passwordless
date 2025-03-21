@@ -105,25 +105,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create index(:org_invitations, [:user_id])
     create unique_index(:org_invitations, [:org_id, :email])
 
-    ## API Keys
-
-    create table(:auth_tokens, primary_key: false) do
-      add :id, :uuid, primary_key: true
-      add :key, :binary, null: false
-      add :name, :string, null: false
-      add :state, :string, null: false
-      add :scopes, {:array, :string}, null: false, default: []
-      add :signature, :string, null: false
-
-      add :org_id, references(:orgs, type: :uuid, on_delete: :delete_all), null: false
-
-      timestamps()
-      soft_delete_column()
-    end
-
-    create index(:auth_tokens, [:org_id])
-    create unique_index(:auth_tokens, [:key], where: "deleted_at is null")
-
     ## Billing
 
     create table(:billing_customers, primary_key: false) do
@@ -206,6 +187,24 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create index(:apps, [:org_id], where: "deleted_at is null")
+
+    ## Auth tokens
+
+    create table(:auth_tokens, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :key, :binary, null: false
+      add :name, :string, null: false
+      add :state, :string, null: false
+      add :scopes, {:array, :string}, null: false, default: []
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create unique_index(:auth_tokens, [:key], where: "deleted_at is null")
+    create unique_index(:auth_tokens, [:app_id], where: "deleted_at is null")
 
     ## Domain
 

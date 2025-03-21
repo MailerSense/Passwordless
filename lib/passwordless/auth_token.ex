@@ -1,4 +1,4 @@
-defmodule Passwordless.Organizations.AuthToken do
+defmodule Passwordless.AuthToken do
   @moduledoc """
   API keys for interacting with Passwordless via JSON API.
   """
@@ -8,56 +8,55 @@ defmodule Passwordless.Organizations.AuthToken do
   import Ecto.Query
 
   alias Database.ChangesetExt
-  alias Passwordless.Organizations.Org
+  alias Passwordless.App
   alias Passwordless.Security.Roles
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
 
-  @size 32
+  @size 16
   @states ~w(active revoked)a
 
   @derive {
     Flop.Schema,
-    sortable: [:id, :name, :scopes, :state, :inserted_at], filterable: [:id]
+    sortable: [:id], filterable: [:id]
   }
   schema "auth_tokens" do
-    field :key, :binary
+    field :key, :binary, redact: true
     field :name, :string
     field :state, Ecto.Enum, values: @states, default: :active
-    field :scopes, {:array, Ecto.Enum}, values: Roles.auth_token_scopes()
-    field :signature, :string
+    field :scopes, {:array, Ecto.Enum}, values: Roles.auth_token_scopes(), default: []
 
-    belongs_to :org, Org, type: :binary_id
+    belongs_to :app, App, type: :binary_id
 
     timestamps()
     soft_delete_timestamp()
   end
 
   @doc """
-  Creates a new API key for the given org.
+  Creates a new API key for the given app.
   """
-  def new(%Org{} = org, attrs \\ %{}) do
+  def new(%App{} = app, attrs \\ %{}) do
     {key, key_signed} = generate_key()
 
-    params =
-      attrs
-      |> Map.put("key", key)
-      |> Map.put("signature", generate_signature(key_signed))
-      |> Map.put_new("scopes", [])
+    params = Map.put(attrs, "key", key)
 
     changeset =
-      org
-      |> Ecto.build_assoc(:auth_tokens)
+      app
+      |> Ecto.build_assoc(:auth_token)
       |> changeset(params)
 
     {key_signed, changeset}
   end
 
+  def sign(%__MODULE__{key: key}) do
+    Token.sign(Endpoint, key_salt(), key)
+  end
+
   @doc """
-  Get invitations for an organization.
+  Get invitations for an app.
   """
-  def get_by_org(query \\ __MODULE__, %Org{} = org) do
-    from q in query, where: [org_id: ^org.id]
+  def get_by_app(query \\ __MODULE__, %App{} = app) do
+    from q in query, where: [app_id: ^app.id]
   end
 
   @doc """
@@ -68,15 +67,15 @@ defmodule Passwordless.Organizations.AuthToken do
   end
 
   @doc """
-  Get the organization and key for an api key.
+  Get the app and key for an api key.
   """
-  def get_org_and_key(auth_token) when is_binary(auth_token) do
+  def get_app_and_key(auth_token) when is_binary(auth_token) do
     with {:ok, key} <- verify_key(auth_token) do
       {:ok,
-       from(o in Org,
-         join: a in assoc(o, :auth_tokens),
-         where: a.key == ^key,
-         select: {o, a}
+       from(a in App,
+         join: at in assoc(a, :auth_tokens),
+         where: at.key == ^key,
+         select: {a, at}
        )}
     end
   end
@@ -91,7 +90,7 @@ defmodule Passwordless.Organizations.AuthToken do
 
   def can?(%__MODULE__{}, _scope), do: false
 
-  @fields ~w(signature key name state scopes org_id)a
+  @fields ~w(key name state scopes app_id)a
   @required_fields @fields
 
   @doc """
@@ -104,10 +103,12 @@ defmodule Passwordless.Organizations.AuthToken do
     |> validate_scopes()
     |> validate_name()
     |> validate_key()
-    |> assoc_constraint(:org)
+    |> unique_constraint(:app_id)
+    |> unsafe_validate_unique(:app_id, Passwordless.Repo)
+    |> assoc_constraint(:app)
   end
 
-  @create_fields ~w(name scopes org_id)a
+  @create_fields ~w(name scopes app_id)a
   @create_required_fields @create_fields
 
   @doc """
@@ -119,7 +120,9 @@ defmodule Passwordless.Organizations.AuthToken do
     |> validate_required(@create_required_fields)
     |> validate_scopes()
     |> validate_name()
-    |> assoc_constraint(:org)
+    |> unique_constraint(:app_id)
+    |> unsafe_validate_unique(:app_id, Passwordless.Repo)
+    |> assoc_constraint(:app)
   end
 
   # Private
@@ -141,13 +144,6 @@ defmodule Passwordless.Organizations.AuthToken do
     changeset
     |> update_change(:scopes, &Enum.uniq/1)
     |> validate_length(:scopes, min: 1)
-  end
-
-  defp generate_signature(signed_token) when is_binary(signed_token) do
-    case String.split(signed_token, ".", parts: 3) do
-      [_kind, payload, _signature] -> Util.slice_central(payload, @size)
-      _ -> nil
-    end
   end
 
   defp generate_key do

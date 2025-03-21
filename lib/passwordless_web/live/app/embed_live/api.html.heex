@@ -1,8 +1,8 @@
 <div class="p-6">
-  <.field name="test" value={@app.id} label="App ID" readonly copyable={true} class="font-mono" />
+  <.field name="app_id" value={@app.id} label="App ID" readonly copyable={true} class="font-mono" />
   <.field
-    name="test2"
-    value="lololololo"
+    name="app_secret"
+    value={@signed}
     label="App Secret"
     type="password"
     readonly

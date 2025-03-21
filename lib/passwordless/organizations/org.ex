@@ -9,7 +9,6 @@ defmodule Passwordless.Organizations.Org do
   alias Passwordless.Accounts.User
   alias Passwordless.Activity.Log
   alias Passwordless.App
-  alias Passwordless.Organizations.AuthToken
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
 
@@ -32,7 +31,6 @@ defmodule Passwordless.Organizations.Org do
 
     has_many :apps, App
     has_many :logs, Log
-    has_many :auth_tokens, AuthToken
     has_many :memberships, Membership
     has_many :invitations, Invitation
 

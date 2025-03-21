@@ -5,9 +5,9 @@ defmodule Passwordless.Activity do
 
   alias Passwordless.Accounts.User
   alias Passwordless.Activity.Log
+  alias Passwordless.AuthToken
   alias Passwordless.Billing.Customer
   alias Passwordless.Billing.Subscription
-  alias Passwordless.Organizations.AuthToken
   alias Passwordless.Organizations.Org
   alias Passwordless.Repo
 

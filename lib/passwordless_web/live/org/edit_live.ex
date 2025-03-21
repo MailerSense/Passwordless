@@ -22,7 +22,6 @@ defmodule PasswordlessWeb.Org.EditLive do
 
     {:noreply,
      socket
-     |> assign_new(:org_menu_items, fn -> PasswordlessWeb.Helpers.org_menu_items(current_user) end)
      |> assign_form(changeset)
      |> apply_action(socket.assigns.live_action)}
   end

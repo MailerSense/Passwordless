@@ -40,6 +40,12 @@ defmodule Passwordless.Organizations.OrgSeeder do
         "display_name" => "Demo App"
       })
 
+    {:ok, auth_token, _signed_api_key} =
+      Passwordless.create_auth_token(app, %{"name" => "App Secret", "scopes" => [:sync]})
+
+    Logger.warning("----------- AUTH TOKEN ------------")
+    Logger.warning(auth_token)
+
     {:ok, domain} =
       Passwordless.create_domain(app, %{
         name: "auth.passwordlesstools.com",

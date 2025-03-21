@@ -8,7 +8,7 @@ defmodule PasswordlessApi.Auth do
 
   import Plug.Conn
 
-  alias Passwordless.Organizations.AuthToken
+  alias Passwordless.AuthToken
   alias Passwordless.Organizations.Org
   alias Passwordless.Repo
   alias PasswordlessWeb.FallbackController

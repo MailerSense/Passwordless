@@ -15,6 +15,7 @@ defmodule Passwordless do
   alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Authenticators
+  alias Passwordless.AuthToken
   alias Passwordless.Domain
   alias Passwordless.DomainRecord
   alias Passwordless.Email
@@ -130,6 +131,42 @@ defmodule Passwordless do
 
   def delete_app(%App{} = app) do
     Repo.soft_delete(app)
+  end
+
+  ## API Keys
+
+  def get_auth_token!(%App{} = app, id) when is_binary(id) do
+    app
+    |> AuthToken.get_by_app()
+    |> Repo.get!(id)
+  end
+
+  def create_auth_token(%App{} = app, attrs \\ %{}) do
+    {signed_key, changeset} = AuthToken.new(app, attrs)
+
+    with {:ok, auth_token} <- Repo.insert(changeset) do
+      {:ok, auth_token, signed_key}
+    end
+  end
+
+  def change_auth_token(%AuthToken{} = auth_token, attrs \\ %{}) do
+    if Ecto.get_meta(auth_token, :state) == :loaded do
+      AuthToken.changeset(auth_token, attrs)
+    else
+      AuthToken.create_changeset(auth_token, attrs)
+    end
+  end
+
+  def update_auth_token(%AuthToken{} = auth_token, attrs \\ %{}) do
+    auth_token
+    |> AuthToken.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def revoke_auth_token(%AuthToken{} = auth_token) do
+    auth_token
+    |> AuthToken.changeset(%{state: :revoked})
+    |> Repo.update()
   end
 
   # Domains

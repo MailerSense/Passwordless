@@ -10,9 +10,9 @@ defmodule PasswordlessWeb.Helpers do
   alias Passwordless.Activity.Log
   alias Passwordless.Actor
   alias Passwordless.App
+  alias Passwordless.AuthToken
   alias Passwordless.EmailTemplate
   alias Passwordless.Organizations
-  alias Passwordless.Organizations.AuthToken
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
 
