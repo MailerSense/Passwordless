@@ -105,7 +105,7 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :totp,
         label: "Time-based OTP",
-        icon: "remix-smartphone-line",
+        icon: "remix-qr-code-line",
         path: ~p"/app/authenticators/totp",
         link_type: "live_patch"
       },
