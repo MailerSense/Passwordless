@@ -5,7 +5,6 @@ defmodule Passwordless.Organizations do
 
   alias Database.QueryExt
   alias Passwordless.Accounts.User
-  alias Passwordless.AuthToken
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org

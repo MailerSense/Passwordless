@@ -11,6 +11,7 @@ defmodule Passwordless.App do
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
   alias Passwordless.Domain
+  alias Passwordless.EmailMessageMapping
   alias Passwordless.EmailTemplate
   alias Passwordless.Organizations.Org
 
@@ -42,6 +43,7 @@ defmodule Passwordless.App do
     has_one :recovery_codes, Authenticators.RecoveryCodes
 
     has_many :email_templates, EmailTemplate
+    has_many :email_message_mappings, EmailMessageMapping
 
     belongs_to :org, Org, type: :binary_id
 

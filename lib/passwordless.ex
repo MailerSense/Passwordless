@@ -12,6 +12,7 @@ defmodule Passwordless do
 
   alias Database.Tenant
   alias Passwordless.Action
+  alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Authenticators
@@ -22,7 +23,6 @@ defmodule Passwordless do
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateVersion
-  alias Passwordless.Event
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
@@ -441,7 +441,7 @@ defmodule Passwordless do
   def create_event(%App{} = app, %Action{} = action, attrs \\ %{}) do
     action
     |> Ecto.build_assoc(:events)
-    |> Event.changeset(attrs)
+    |> ActionEvent.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 

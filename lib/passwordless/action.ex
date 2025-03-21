@@ -7,12 +7,14 @@ defmodule Passwordless.Action do
 
   import Ecto.Query
 
+  alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
-  alias Passwordless.Event
 
   @states ~w(allow timeout block challenge_required)a
   @authenticators ~w(email sms whatsapp magic_link totp security_key passkey recovery_codes)a
+
+  @state_machines []
 
   @derive {
     Flop.Schema,
@@ -21,13 +23,12 @@ defmodule Passwordless.Action do
   schema "actions" do
     field :name, :string
     field :state, Ecto.Enum, values: @states, default: :challenge_required
-    field :token, :binary, redact: true
-    field :authenticator, Ecto.Enum, values: @authenticators
     field :attempts, :integer, default: 0
     field :expires_at, :utc_datetime_usec
     field :completed_at, :utc_datetime_usec
+    field :authenticator, Ecto.Enum, values: @authenticators
 
-    has_many :events, Event
+    has_many :events, ActionEvent
 
     belongs_to :actor, Actor, type: :binary_id
 
@@ -42,7 +43,7 @@ defmodule Passwordless.Action do
   def first_event(%__MODULE__{events: [_ | _] = events}) do
     events
     |> Enum.sort_by(& &1.inserted_at, :asc)
-    |> Enum.find(fn %Event{city: city, country: country} ->
+    |> Enum.find(fn %ActionEvent{city: city, country: country} ->
       is_binary(city) and is_binary(country)
     end)
   end
@@ -78,17 +79,17 @@ defmodule Passwordless.Action do
   @fields ~w(
     name
     state
-    token
-    authenticator
     attempts
     expires_at
     completed_at
+    authenticator
     actor_id
   )a
   @required_fields ~w(
     name
     state
     attempts
+    authenticator
     actor_id
   )a
 

@@ -1,6 +1,6 @@
-defmodule Passwordless.Event do
+defmodule Passwordless.ActionEvent do
   @moduledoc """
-  An actor avent.
+  An action avent.
   """
 
   use Passwordless.Schema
@@ -15,16 +15,15 @@ defmodule Passwordless.Event do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "events" do
+  schema "action_events" do
     field :kind, Ecto.Enum, values: @kinds, default: :created
     field :user_agent, :string
     field :ip_address, :string
     field :country, :string
     field :city, :string
 
-    has_one :email_message, EmailMessage
-
-    belongs_to :action, Action
+    belongs_to :action, Action, type: :binary_id
+    belongs_to :email_message, EmailMessage, type: :binary_id
 
     timestamps(updated_at: false)
   end
@@ -36,6 +35,7 @@ defmodule Passwordless.Event do
     country
     city
     action_id
+    email_message_id
   )a
   @required_fields ~w(
     kind
@@ -54,6 +54,7 @@ defmodule Passwordless.Event do
     |> validate_string(:country)
     |> validate_string(:city)
     |> assoc_constraint(:action)
+    |> assoc_constraint(:email_message)
   end
 
   # Private
