@@ -22,4 +22,12 @@ defmodule StateMachine.Utils do
     raise ArgumentError,
           "Expecting `:fun` of arity 1 from current module or captured function `&Mod.fun/1` as a callback, given: #{inspect(x)}"
   end
+
+  def state_kind(keyword) do
+    cond do
+      Keyword.has_key?(keyword, :success) -> :success
+      Keyword.has_key?(keyword, :fail) -> :fail
+      true -> :progress
+    end
+  end
 end

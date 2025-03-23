@@ -1,10 +1,8 @@
 defmodule Passwordless.Flows do
   @moduledoc false
 
-  alias Passwordless.Flows
-
   @flows [
-    email_otp: Flows.EmailOTP
+    email_otp: Passwordless.Flows.EmailOTP
   ]
 
   def all_flows do

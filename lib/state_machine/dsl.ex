@@ -3,7 +3,7 @@ defmodule StateMachine.DSL do
   These macros help generating State Machine definition in a given Module.
   """
 
-  import StateMachine.Utils, only: [keyword_splat: 2]
+  import StateMachine.Utils, only: [keyword_splat: 2, state_kind: 1]
 
   alias StateMachine.Context
   alias StateMachine.Event
@@ -159,6 +159,7 @@ defmodule StateMachine.DSL do
 
       @states %State{
         name: unquote(Macro.escape(name)),
+        kind: state_kind(unquote(opts)),
         before_leave: keyword_splat(unquote(opts), :before_leave),
         after_leave: keyword_splat(unquote(opts), :after_leave),
         before_enter: keyword_splat(unquote(opts), :before_enter),
@@ -272,7 +273,8 @@ defmodule StateMachine.DSL do
           to: Keyword.get(unquote(opts), :to),
           before: keyword_splat(unquote(opts), :before),
           after: keyword_splat(unquote(opts), :after),
-          guards: Guard.prepare(unquote(opts))
+          guards: Guard.prepare(unquote(opts)),
+          schema: Keyword.get(unquote(opts), :schema)
         }
       end)
     end
@@ -293,6 +295,12 @@ defmodule StateMachine.DSL do
         __state_machine__()
         |> Context.build(model)
         |> Introspection.allowed_events()
+      end
+
+      def current_progress(model) do
+        context = Context.build(__state_machine__(), model)
+        state = context.definition.state_getter.(context)
+        get_in(context.definition.states, [Access.key(state, %{}), Access.key(:kind)])
       end
 
       def trigger_with_context(model, event, payload \\ nil) do

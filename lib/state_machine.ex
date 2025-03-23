@@ -88,6 +88,7 @@ defmodule StateMachine do
 
       import StateMachine.DSL
 
+      alias StateMachine.Context
       alias StateMachine.Introspection
     end
   end

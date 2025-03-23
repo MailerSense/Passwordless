@@ -129,7 +129,7 @@ defmodule Passwordless.MixProject do
       {:domainatrex, "~> 3.0"},
       {:sizeable, "~> 1.0"},
       {:crontab, "~> 1.1"},
-      {:typed_struct, "~> 0.3.0"},
+      {:typedstruct, "~> 0.5.3"},
 
       # Markdown
       {:earmark, "~> 1.4"},

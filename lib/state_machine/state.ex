@@ -14,8 +14,11 @@ defmodule StateMachine.State do
   @callback get(ctx :: Context.t(any)) :: atom()
   @callback set(ctx :: Context.t(model), state :: atom) :: Context.t(model) when model: var
 
+  @type state_kind :: :success | :fail | :progress
+
   @type t(model) :: %__MODULE__{
           name: atom,
+          kind: state_kind(),
           before_enter: list(Callback.t(model)),
           after_enter: list(Callback.t(model)),
           before_leave: list(Callback.t(model)),
@@ -27,6 +30,7 @@ defmodule StateMachine.State do
   @enforce_keys [:name]
   defstruct [
     :name,
+    kind: :progress,
     before_enter: [],
     after_enter: [],
     before_leave: [],
