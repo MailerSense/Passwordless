@@ -1,4 +1,4 @@
-defmodule Passwordless.Identity.Deleter do
+defmodule Passwordless.Domain.Deleter do
   @moduledoc """
   Periodically deletes email identities that have not passed AWS SES verification.
   """

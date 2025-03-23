@@ -10,6 +10,7 @@ defmodule Passwordless.EmailMessage do
   alias Database.ChangesetExt
   alias Passwordless.ActionEvent
   alias Passwordless.Email
+  alias Passwordless.EmailEvent
   alias Passwordless.EmailTemplate
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
@@ -63,7 +64,8 @@ defmodule Passwordless.EmailMessage do
       end
     end
 
-    has_many :events, ActionEvent
+    has_many :email_events, EmailEvent
+    has_many :action_events, ActionEvent
 
     belongs_to :email, Email, type: :binary_id
     belongs_to :email_template, EmailTemplate, type: :binary_id

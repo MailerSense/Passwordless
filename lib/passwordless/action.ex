@@ -10,11 +10,10 @@ defmodule Passwordless.Action do
   alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
+  alias Passwordless.Flows
 
   @states ~w(allow timeout block challenge_required)a
   @authenticators ~w(email sms whatsapp magic_link totp security_key passkey recovery_codes)a
-
-  @state_machines []
 
   @derive {
     Flop.Schema,
@@ -22,7 +21,11 @@ defmodule Passwordless.Action do
   }
   schema "actions" do
     field :name, :string
-    field :state, Ecto.Enum, values: @states, default: :challenge_required
+    field :flow, Ecto.Enum, values: Flows.all_flows(), default: :email_otp
+    field :state, Ecto.Enum, values: Flows.all_states(), default: :started
+    field :nonce, :binary
+
+    field :code, :string
     field :attempts, :integer, default: 0
     field :expires_at, :utc_datetime_usec
     field :completed_at, :utc_datetime_usec

@@ -81,6 +81,65 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create index(:email_messages, [:email_id])
     create index(:email_messages, [:email_template_id])
 
+    ## Email events
+
+    create table(:email_events, primary_key: false) do
+      add :id, :uuid, primary_key: true
+
+      # Open
+      add :open_ip_address, :string
+      add :open_user_agent, :string
+
+      # Click
+      add :click_url, :string
+      add :click_url_tags, {:array, :string}
+      add :click_ip_address, :string
+      add :click_user_agent, :string
+
+      # Bounce
+      add :bounce_type, :string
+      add :bounce_subtype, :string
+      add :bounced_recipients, :map
+
+      # Complaint
+      add :complaint_type, :string
+      add :complaint_subtype, :string
+      add :complaint_user_agent, :string
+      add :complained_recipients, :map
+
+      # Delivery
+      add :delivery_smtp_response, :string
+      add :delivery_reporting_mta, :string
+      add :delivery_processing_time_millis, :integer
+
+      # Reject
+      add :reject_reason, :string
+
+      # Delay
+      add :delay_reason, :string
+      add :delay_reporting_mta, :string
+      add :delay_expiration_time, :utc_datetime_usec
+      add :delayed_recipients, :map
+
+      # Subscription
+      add :subscription_source, :string
+      add :subscription_contact_list, :string
+
+      # Rendering failure
+      add :rendering_error_message, :string
+      add :rendering_teplate_name, :string
+
+      # Suspend
+      add :suspend_reason, :string
+
+      add :email_message_id, references(:email_messages, type: :uuid, on_delete: :delete_all),
+        null: false
+
+      timestamps(updated_at: false)
+    end
+
+    create index(:email_events, [:email_message_id])
+
     ## Phones
 
     create table(:phones, primary_key: false) do
@@ -104,6 +163,21 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create unique_index(:phones, [:actor_id, :canonical], where: "deleted_at is null")
 
     execute "create index phones_canonical_gin_trgm_idx on #{prefix()}.phones using gin (canonical gin_trgm_ops);"
+
+    ## Phone messages
+
+    create table(:phone_messages, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :recipient, :citext, null: false
+      add :recipient_name, :string
+      add :text_content, :text, null: false
+
+      add :phone_id, references(:phones, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create index(:phone_messages, [:phone_id])
 
     ## TOTPS
 
@@ -170,8 +244,12 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create table(:actions, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
+      add :flow, :string, null: false
       add :state, :string, null: false
-      add :attempts, :integer, null: false, default: 0
+      add :nonce, :binary, null: false
+
+      add :code, :binary
+      add :attempts, :integer, default: 0
       add :expires_at, :utc_datetime_usec
       add :completed_at, :utc_datetime_usec
       add :authenticator, :string, null: false
@@ -182,19 +260,20 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create index(:actions, [:actor_id])
+    create unique_index(:actions, [:nonce])
 
     ## Action events
 
     create table(:action_events, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :kind, :string, null: false
-      add :user_agent, :text
-      add :ip_address, :string
-      add :country, :string
-      add :city, :string
+      add :flow, :string, null: false
+      add :event, :string, null: false
+      add :state, :string, null: false
+      add :metadata, :map, null: false, default: %{}
 
       add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
       add :email_message_id, references(:email_messages, type: :uuid, on_delete: :nilify_all)
+      add :phone_message_id, references(:phone_messages, type: :uuid, on_delete: :nilify_all)
 
       timestamps(updated_at: false)
     end
