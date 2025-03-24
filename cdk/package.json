@@ -30,7 +30,7 @@
     "@aws-cdk/app-staging-synthesizer-alpha": "2.160.0-alpha.0",
     "@aws-cdk/lambda-layer-kubectl-v29": "^2.1.0",
     "@sindresorhus/slugify": "^2.2.1",
-    "aws-cdk-lib": "^2.167.1",
+    "aws-cdk-lib": "^2.185.0",
     "cdk-nag": "^2.34.2",
     "constructs": "^10.4.2",
     "source-map-support": "^0.5.21"
