@@ -14,7 +14,6 @@ defmodule StateMachine.Transition do
   @type t(model) :: %__MODULE__{
           from: atom,
           to: atom,
-          schema: module() | nil,
           before: list(Callback.t(model)),
           after: list(Callback.t(model)),
           guards: list(Guard.t(model))
@@ -26,7 +25,6 @@ defmodule StateMachine.Transition do
   defstruct [
     :from,
     :to,
-    :schema,
     before: [],
     after: [],
     guards: []

@@ -6,13 +6,15 @@ defmodule Passwordless.Action do
   use Passwordless.Schema
 
   import Ecto.Query
+  import PolymorphicEmbed
 
   alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Flows
 
-  @states ~w(allow timeout block challenge_required)a
+  @flows ~w(email)a
+  @states ~w(allow timeout block pending)a
   @authenticators ~w(email sms whatsapp magic_link totp security_key passkey recovery_codes)a
 
   @derive {
@@ -21,15 +23,18 @@ defmodule Passwordless.Action do
   }
   schema "actions" do
     field :name, :string
-    field :flow, Ecto.Enum, values: Flows.all_flows(), default: :email_otp
-    field :state, Ecto.Enum, values: Flows.all_states(), default: :started
-    field :nonce, :binary
-
-    field :code, :string
-    field :attempts, :integer, default: 0
-    field :expires_at, :utc_datetime_usec
-    field :completed_at, :utc_datetime_usec
+    field :flow, Ecto.Enum, values: @flows
+    field :state, Ecto.Enum, values: @states
     field :authenticator, Ecto.Enum, values: @authenticators
+
+    polymorphic_embeds_one(:data,
+      types: [
+        email: Flows.Email
+      ],
+      use_parent_field_for_type: :flow,
+      on_type_not_found: :raise,
+      on_replace: :update
+    )
 
     has_many :events, ActionEvent
 
@@ -38,6 +43,7 @@ defmodule Passwordless.Action do
     timestamps()
   end
 
+  def flows, do: @flows
   def states, do: @states
   def authenticators, do: @authenticators
 
@@ -81,20 +87,12 @@ defmodule Passwordless.Action do
 
   @fields ~w(
     name
+    flow
     state
-    attempts
-    expires_at
-    completed_at
     authenticator
     actor_id
   )a
-  @required_fields ~w(
-    name
-    state
-    attempts
-    authenticator
-    actor_id
-  )a
+  @required_fields @fields -- [:authenticator]
 
   @doc """
   A changeset.
@@ -104,5 +102,6 @@ defmodule Passwordless.Action do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> assoc_constraint(:actor)
+    |> cast_polymorphic_embed(:data, required: true)
   end
 end

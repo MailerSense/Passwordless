@@ -183,6 +183,11 @@ defmodule TypedStruct.Cast do
   def from!(_base_struct, _attrs), do: nil
 
   @doc false
+  def do_new(mod, attrs) when is_struct(attrs) do
+    do_new(mod, Map.from_struct(attrs))
+  end
+
+  @doc false
   def do_new(mod, attrs) when not is_struct(attrs) and is_map(attrs) do
     mod.__struct__()
     |> cast(attrs, mod.__all__())

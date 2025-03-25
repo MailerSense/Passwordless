@@ -15,6 +15,7 @@ defmodule Passwordless.Application do
     children =
       if System.get_env("DATABASE_MIGRATION") do
         [
+          Passwordless.Vault,
           Passwordless.Repo,
           {Finch, name: Passwordless.Finch},
           {Finch, name: Passwordless.Finch.AWS},
@@ -24,6 +25,7 @@ defmodule Passwordless.Application do
         ]
       else
         [
+          Passwordless.Vault,
           Passwordless.Repo,
           PasswordlessWeb.Telemetry,
           {Finch, name: Passwordless.Finch},

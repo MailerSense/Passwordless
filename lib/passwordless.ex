@@ -423,6 +423,20 @@ defmodule Passwordless do
     |> Repo.insert(opts)
   end
 
+  # Flow
+
+  def run_flow(%App{} = app, %{action_id: id, step: step, payload: payload}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    Repo.transact(fn ->
+      with %Action{data: %mod{} = data} = action <- Repo.get(Action, id, opts),
+           {:ok, new_data} <- apply(mod, :trigger, [data, step, payload]),
+           {:ok, action} <- action |> Action.changeset(%{data: new_data}) |> Repo.update(opts),
+           {:ok, event} <- insert_action_event(app, action, %{data: new_data}),
+           do: {:ok, action, event}
+    end)
+  end
+
   # Action
 
   def get_action!(%App{} = app, id) do
@@ -433,6 +447,26 @@ defmodule Passwordless do
     actor
     |> Ecto.build_assoc(:actions)
     |> Action.changeset(attrs)
+    |> Repo.insert(prefix: Tenant.to_prefix(app))
+  end
+
+  def update_action_in_flow(%App{} = app, %Action{} = action, attrs \\ %{}) do
+    action
+    |> Action.changeset(attrs)
+    |> Repo.update(prefix: Tenant.to_prefix(app))
+  end
+
+  def insert_action_event(%App{} = app, %Action{} = action, attrs \\ %{}) do
+    attrs =
+      case attrs do
+        %{event: event} = attrs when is_struct(event) -> attrs |> Map.merge(Map.from_struct(event)) |> Map.drop([:event])
+        %{event: event} = attrs when is_map(event) -> attrs |> Map.merge(event) |> Map.drop([:event])
+        _ -> attrs
+      end
+
+    action
+    |> Ecto.build_assoc(:events)
+    |> ActionEvent.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 

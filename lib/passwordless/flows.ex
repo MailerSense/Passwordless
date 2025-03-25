@@ -2,7 +2,7 @@ defmodule Passwordless.Flows do
   @moduledoc false
 
   @flows [
-    email_otp: Passwordless.Flows.EmailOTP
+    email: Passwordless.Flows.Email
   ]
 
   def all_flows do
@@ -22,4 +22,6 @@ defmodule Passwordless.Flows do
     |> Enum.flat_map(& &1.all_states())
     |> Enum.uniq()
   end
+
+  def fetch!(flow), do: Keyword.fetch!(@flows, flow)
 end

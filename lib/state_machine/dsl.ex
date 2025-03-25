@@ -221,6 +221,7 @@ defmodule StateMachine.DSL do
 
         @events %Event{
           name: unquote(name),
+          schema: Keyword.get(unquote(opts), :schema),
           transitions: unquote(transitions),
           before: keyword_splat(unquote(opts), :before),
           after: keyword_splat(unquote(opts), :after),
@@ -273,8 +274,7 @@ defmodule StateMachine.DSL do
           to: Keyword.get(unquote(opts), :to),
           before: keyword_splat(unquote(opts), :before),
           after: keyword_splat(unquote(opts), :after),
-          guards: Guard.prepare(unquote(opts)),
-          schema: Keyword.get(unquote(opts), :schema)
+          guards: Guard.prepare(unquote(opts))
         }
       end)
     end
@@ -295,6 +295,11 @@ defmodule StateMachine.DSL do
         __state_machine__()
         |> Context.build(model)
         |> Introspection.allowed_events()
+      end
+
+      def current_state(model) do
+        context = Context.build(__state_machine__(), model)
+        context.definition.state_getter.(context)
       end
 
       def current_progress(model) do

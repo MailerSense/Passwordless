@@ -15,6 +15,7 @@ defmodule StateMachine.Event do
 
   @type t(model) :: %__MODULE__{
           name: atom,
+          schema: module() | nil,
           transitions: list(Transition.t(model)),
           before: list(Callback.t(model)),
           after: list(Callback.t(model)),
@@ -26,6 +27,7 @@ defmodule StateMachine.Event do
   @enforce_keys [:name]
   defstruct [
     :name,
+    schema: nil,
     transitions: [],
     before: [],
     after: [],
@@ -52,8 +54,9 @@ defmodule StateMachine.Event do
     context = %{ctx | payload: payload, event: event}
 
     with {_, %Event{} = e} <- {:event, Map.get(context.definition.events, event)},
-         {_, %Transition{} = t} <- {:transition, find_transition(context, e)} do
-      Transition.run(%{context | transition: t})
+         {_, %Transition{} = t} <- {:transition, find_transition(context, e)},
+         {:ok, p} <- validate_payload(e, payload) do
+      Transition.run(%{context | payload: p, transition: t})
     else
       {item, _} -> %{context | status: :failed, error: {item, "Couldn't resolve #{item}"}}
     end
@@ -68,7 +71,8 @@ defmodule StateMachine.Event do
     Callback.apply_chain(ctx, callbacks, :"#{pos}_event")
   end
 
-  @spec find_transition(Context.t(model), t(model)) :: Transition.t(model) | nil when model: var
+  # Private
+
   defp find_transition(ctx, event) do
     if Guard.check(ctx, event) do
       state = ctx.definition.state_getter.(ctx)
@@ -78,4 +82,10 @@ defmodule StateMachine.Event do
       end)
     end
   end
+
+  defp validate_payload(%Event{schema: schema}, payload) when is_atom(schema) and not is_nil(schema) do
+    apply(schema, :new, [payload])
+  end
+
+  defp validate_payload(_event, payload), do: {:ok, payload}
 end

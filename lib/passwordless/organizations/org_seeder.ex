@@ -122,12 +122,27 @@ defmodule Passwordless.Organizations.OrgSeeder do
         {:ok, action} =
           Passwordless.create_action(app, actor, %{
             name: Enum.random(~w(signIn withdraw placeOrder)),
-            authenticator: Enum.random(Action.authenticators()),
-            state: Enum.random(Action.states())
+            flow: Enum.random(Action.flows()),
+            state: Enum.random(Action.states()),
+            data: %{
+              code: "123456",
+              state: :started,
+              attempts: 0
+            },
+            authenticator: Enum.random(Action.authenticators())
           })
 
         {:ok, _event} =
           Passwordless.create_event(app, action, %{
+            flow: "email_otp",
+            event: "send_otp",
+            from_state: "started",
+            to_state: "otp_sent",
+            metadata: %{
+              code: "123456",
+              state: :started,
+              attempts: 0
+            },
             user_agent: Faker.Internet.UserAgent.desktop_user_agent(),
             ip_address: Faker.Internet.ip_v4_address(),
             country: Faker.Address.country_code(),

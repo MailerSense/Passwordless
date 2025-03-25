@@ -8,18 +8,17 @@ defmodule Passwordless.ActionEvent do
   alias Database.ChangesetExt
   alias Passwordless.Action
   alias Passwordless.EmailMessage
-  alias Passwordless.Flows
 
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
   schema "action_events" do
-    field :flow, Ecto.Enum, values: Flows.all_flows(), default: :email_otp
-    field :event, Ecto.Enum, values: Flows.all_events(), default: :send_otp
-    field :state, Ecto.Enum, values: Flows.all_states(), default: :started
-
-    # Metadata
+    field :flow, :string
+    field :event, :string
+    field :from_state, :string
+    field :to_state, :string
+    field :metadata, :map, default: %{}
 
     # User
     field :user_agent, :string
@@ -34,8 +33,11 @@ defmodule Passwordless.ActionEvent do
   end
 
   @fields ~w(
+    flow
     event
-    state
+    from_state
+    to_state
+    metadata
     user_agent
     ip_address
     country
@@ -44,8 +46,11 @@ defmodule Passwordless.ActionEvent do
     email_message_id
   )a
   @required_fields ~w(
+flow
     event
-    state
+    from_state
+    to_state
+    metadata
     action_id
   )a
 
