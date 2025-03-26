@@ -1,4 +1,4 @@
-defmodule Passwordless.Flows.Email do
+defmodule Passwordless.Flows.EmailOTP do
   @moduledoc """
   Email OTP flow.
   """
@@ -7,6 +7,9 @@ defmodule Passwordless.Flows.Email do
   use Ecto.Schema
 
   import Ecto.Changeset
+
+  alias Passwordless.Action
+  alias Passwordless.Email
 
   @states ~w(started otp_sent otp_valid otp_invalid otp_exhausted)a
   @otp_size 6
@@ -73,7 +76,7 @@ defmodule Passwordless.Flows.Email do
     end
   end
 
-  def send_otp(%__MODULE__{} = mod) do
+  def send_otp(%__MODULE__{} = mod, %Context{payload: %{email: %Email{} = email}}) do
     mod
     |> changeset(%{code: Util.random_numeric_string(@otp_size)})
     |> apply_action(:new)

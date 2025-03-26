@@ -46,7 +46,7 @@ defmodule Passwordless.ActionEvent do
     email_message_id
   )a
   @required_fields ~w(
-flow
+    flow
     event
     from_state
     to_state

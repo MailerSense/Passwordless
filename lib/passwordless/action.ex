@@ -8,14 +8,14 @@ defmodule Passwordless.Action do
   import Ecto.Query
   import PolymorphicEmbed
 
+  alias Database.ChangesetExt
   alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Flows
 
-  @flows ~w(email)a
+  @flows ~w(email_otp)a
   @states ~w(allow timeout block pending)a
-  @authenticators ~w(email sms whatsapp magic_link totp security_key passkey recovery_codes)a
 
   @derive {
     Flop.Schema,
@@ -25,11 +25,10 @@ defmodule Passwordless.Action do
     field :name, :string
     field :flow, Ecto.Enum, values: @flows
     field :state, Ecto.Enum, values: @states
-    field :authenticator, Ecto.Enum, values: @authenticators
 
-    polymorphic_embeds_one(:data,
+    polymorphic_embeds_one(:flow_data,
       types: [
-        email: Flows.Email
+        email_otp: Flows.EmailOTP
       ],
       use_parent_field_for_type: :flow,
       on_type_not_found: :raise,
@@ -45,8 +44,6 @@ defmodule Passwordless.Action do
 
   def flows, do: @flows
   def states, do: @states
-  def authenticators, do: @authenticators
-
   def topic_for(%App{} = app), do: "actions:#{app.id}"
 
   def first_event(%__MODULE__{events: [_ | _] = events}) do
@@ -89,10 +86,9 @@ defmodule Passwordless.Action do
     name
     flow
     state
-    authenticator
     actor_id
   )a
-  @required_fields @fields -- [:authenticator]
+  @required_fields @fields
 
   @doc """
   A changeset.
@@ -101,7 +97,21 @@ defmodule Passwordless.Action do
     action
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> validate_name()
+    |> validate_state()
     |> assoc_constraint(:actor)
-    |> cast_polymorphic_embed(:data, required: true)
+    |> cast_polymorphic_embed(:flow_data, required: true)
+  end
+
+  # Private
+
+  defp validate_name(changeset) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(:name)
+    |> validate_length(:name, min: 1, max: 1024)
+  end
+
+  defp validate_state(changeset) do
+    ChangesetExt.validate_state(changeset, pending: [:allow, :timeout, :block])
   end
 end

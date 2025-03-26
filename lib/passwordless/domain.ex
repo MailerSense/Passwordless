@@ -136,15 +136,12 @@ defmodule Passwordless.Domain do
   defp validate_state(changeset) do
     ChangesetExt.validate_state(
       changeset,
-      [
-        aws_not_started: [:aws_pending, :aws_success],
-        aws_pending: [:aws_success, :aws_failed, :aws_temporary_failure],
-        aws_temporary_failure: [:aws_pending, :aws_success, :aws_failed, :aws_temporary_failure],
-        aws_success: [:all_records_verified, :some_records_missing],
-        all_records_verified: [:some_records_missing],
-        some_records_missing: [:all_records_verified]
-      ],
-      :state
+      aws_not_started: [:aws_pending, :aws_success],
+      aws_pending: [:aws_success, :aws_failed, :aws_temporary_failure],
+      aws_temporary_failure: [:aws_pending, :aws_success, :aws_failed, :aws_temporary_failure],
+      aws_success: [:all_records_verified, :some_records_missing],
+      all_records_verified: [:some_records_missing],
+      some_records_missing: [:all_records_verified]
     )
   end
 end

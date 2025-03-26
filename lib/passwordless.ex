@@ -23,6 +23,8 @@ defmodule Passwordless do
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateVersion
+  alias Passwordless.Mailer
+  alias Passwordless.MailerExecutor
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
@@ -425,15 +427,15 @@ defmodule Passwordless do
 
   # Flow
 
-  def run_flow(%App{} = app, %{action_id: id, step: step, payload: payload}) do
+  def run_flow(%App{} = app, %{action_id: id, event: event, payload: payload}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
     Repo.transact(fn ->
-      with %Action{data: %mod{} = data} = action <- Repo.get(Action, id, opts),
-           {:ok, new_data} <- apply(mod, :trigger, [data, step, payload]),
-           {:ok, action} <- action |> Action.changeset(%{data: new_data}) |> Repo.update(opts),
-           {:ok, event} <- insert_action_event(app, action, %{data: new_data}),
-           do: {:ok, action, event}
+      with %Action{flow_data: %mod{} = data} = action <- Repo.get(Action, id, opts),
+           {:ok, new_data} <- apply(mod, :trigger, [data, event, payload]),
+           {:ok, new_action} <- action |> Action.changeset(%{data: new_data}) |> Repo.update(opts),
+           {:ok, event} <- insert_action_event(app, action, new_action, %{event: event}),
+           do: {:ok, new_action, event}
     end)
   end
 
@@ -456,15 +458,24 @@ defmodule Passwordless do
     |> Repo.update(prefix: Tenant.to_prefix(app))
   end
 
-  def insert_action_event(%App{} = app, %Action{} = action, attrs \\ %{}) do
-    attrs =
-      case attrs do
-        %{event: event} = attrs when is_struct(event) -> attrs |> Map.merge(Map.from_struct(event)) |> Map.drop([:event])
-        %{event: event} = attrs when is_map(event) -> attrs |> Map.merge(event) |> Map.drop([:event])
-        _ -> attrs
-      end
+  def insert_action_event(
+        %App{} = app,
+        %Action{flow: _flow, flow_data: old_flow} = _old_action,
+        %Action{flow: flow, flow_data: new_flow} = new_action,
+        attrs \\ %{}
+      ) do
+    from_state = apply(old_flow, :current_state, [])
+    to_state = apply(new_flow, :current_state, [])
 
-    action
+    attrs =
+      Map.merge(attrs, %{
+        flow: flow,
+        from_state: from_state,
+        to_state: to_state,
+        metadata: Util.sanitize(new_flow)
+      })
+
+    new_action
     |> Ecto.build_assoc(:events)
     |> ActionEvent.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
@@ -650,5 +661,26 @@ defmodule Passwordless do
       fn -> get_app_mau_count(app, date) end,
       ttl: :timer.hours(1)
     )
+  end
+
+  @doc """
+  Deliver a pin code to sign in without a password.
+  """
+  def deliver_email_otp(%App{} = app, %Actor{} = actor, %Action{} = action, %Email{} = email, attrs \\ %{}) do
+    nil
+  end
+
+  # Private
+
+  defp deliver(%Swoosh.Email{} = email) do
+    with {:ok, _job} <- enqueue_worker(Mailer.to_map(email)) do
+      {:ok, email}
+    end
+  end
+
+  defp enqueue_worker(email) do
+    %{email: email}
+    |> MailerExecutor.new()
+    |> Oban.insert()
   end
 end

@@ -97,8 +97,8 @@
         <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
 
-      <:col :let={action} field={:authenticator}>
-        <% %{label: label, icon: icon} = authenticator_details(action) %>
+      <:col :let={action} field={:flow}>
+        <% %{label: label, icon: icon} = flow_details(action) %>
         <div class="flex items-center gap-2">
           <.icon name={icon} class="w-4 h-4" />
           {label}
