@@ -30,7 +30,7 @@
     <.simple_table
       items={[
         %{
-          id: UUIDv7.autogenerate(),
+          id: Uniq.UUID.uuid7(),
           app: "Super app",
           name: "MAU quota",
           period: Date.utc_today(),
@@ -39,7 +39,7 @@
           estimated_charge: Money.new(1000)
         },
         %{
-          id: UUIDv7.autogenerate(),
+          id: Uniq.UUID.uuid7(),
           app: "Super app",
           name: "SMS quota",
           free_tier: "100 / day",

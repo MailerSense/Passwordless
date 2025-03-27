@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.RecoveryCodes do
   An recovery codes authenticator.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "aurcodes"
 
   alias Passwordless.App
 
@@ -16,7 +16,7 @@ defmodule Passwordless.Authenticators.RecoveryCodes do
     field :hide_on_enrollment, :boolean, default: false
     field :skip_on_programatic, :boolean, default: false
 
-    belongs_to :app, App, type: :binary_id
+    belongs_to :app, App
 
     timestamps()
   end

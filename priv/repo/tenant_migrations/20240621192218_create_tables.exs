@@ -243,10 +243,10 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create table(:actions, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :name, :text, null: false
+      add :name, :string, null: false
       add :flow, :string, null: false
       add :state, :string, null: false
-      add :flow_data, :map
+      add :completed_at, :utc_datetime_usec
 
       add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
 
@@ -254,6 +254,19 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create index(:actions, [:actor_id])
+
+    create table(:otps, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :code, :binary, null: false
+      add :attempts, :integer, null: false, default: 0
+      add :expires_at, :utc_datetime_usec, null: false
+
+      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:otps, [:action_id])
 
     ## Action events
 

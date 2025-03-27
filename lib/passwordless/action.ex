@@ -3,16 +3,15 @@ defmodule Passwordless.Action do
   An actor avent.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "actn"
 
   import Ecto.Query
-  import PolymorphicEmbed
 
   alias Database.ChangesetExt
   alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
-  alias Passwordless.Flows
+  alias Passwordless.OTP
 
   @flows ~w(email_otp)a
   @states ~w(allow timeout block pending)a
@@ -26,18 +25,11 @@ defmodule Passwordless.Action do
     field :flow, Ecto.Enum, values: @flows
     field :state, Ecto.Enum, values: @states
 
-    polymorphic_embeds_one(:flow_data,
-      types: [
-        email_otp: Flows.EmailOTP
-      ],
-      use_parent_field_for_type: :flow,
-      on_type_not_found: :raise,
-      on_replace: :update
-    )
+    has_one :otp, OTP
 
     has_many :events, ActionEvent
 
-    belongs_to :actor, Actor, type: :binary_id
+    belongs_to :actor, Actor
 
     timestamps()
   end
@@ -100,7 +92,6 @@ defmodule Passwordless.Action do
     |> validate_name()
     |> validate_state()
     |> assoc_constraint(:actor)
-    |> cast_polymorphic_embed(:flow_data, required: true)
   end
 
   # Private

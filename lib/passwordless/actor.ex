@@ -3,7 +3,7 @@ defmodule Passwordless.Actor do
   An actor.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "user"
 
   import Ecto.Query
 

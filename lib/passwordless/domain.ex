@@ -1,11 +1,12 @@
 defmodule Passwordless.Domain do
   @moduledoc false
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "dmain"
 
   import Ecto.Query
 
   alias Database.ChangesetExt
+  alias Passwordless.App
   alias Passwordless.DomainRecord
 
   @kinds ~w(root_domain sub_domain)a
@@ -34,7 +35,7 @@ defmodule Passwordless.Domain do
 
     has_many :records, DomainRecord
 
-    belongs_to :app, App, type: :binary_id
+    belongs_to :app, App
 
     timestamps()
     soft_delete_timestamp()

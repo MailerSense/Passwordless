@@ -3,7 +3,7 @@ defmodule Passwordless.EmailMessage do
   An email message.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "emmsg"
 
   import Ecto.Query
 
@@ -67,8 +67,8 @@ defmodule Passwordless.EmailMessage do
     has_many :email_events, EmailEvent
     has_many :action_events, ActionEvent
 
-    belongs_to :email, Email, type: :binary_id
-    belongs_to :email_template, EmailTemplate, type: :binary_id
+    belongs_to :email, Email
+    belongs_to :email_template, EmailTemplate
 
     timestamps()
   end

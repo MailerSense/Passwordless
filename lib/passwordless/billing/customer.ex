@@ -3,7 +3,7 @@ defmodule Passwordless.Billing.Customer do
   A customer is something that has a subscription to a product.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "blcust"
 
   import Ecto.Query
 

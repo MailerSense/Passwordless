@@ -1,9 +1,9 @@
-defmodule Passwordless.SecurityKeyHolder do
+defmodule Passwordless.SecurityKey do
   @moduledoc """
   A WebAuthn identity.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "seckey"
 
   alias Passwordless.Actor
   alias Passwordless.App
@@ -15,8 +15,8 @@ defmodule Passwordless.SecurityKeyHolder do
   schema "security_key_holders" do
     field :handle, :string
 
-    belongs_to :app, App, type: :binary_id
-    belongs_to :actor, Actor, type: :binary_id
+    belongs_to :app, App
+    belongs_to :actor, Actor
 
     timestamps()
     soft_delete_timestamp()

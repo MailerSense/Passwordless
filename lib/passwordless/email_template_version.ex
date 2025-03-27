@@ -3,7 +3,7 @@ defmodule Passwordless.EmailTemplateVersion do
   An email template to be dynamically sent.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "emtplver"
 
   alias Passwordless.EmailTemplate
 
@@ -27,7 +27,7 @@ defmodule Passwordless.EmailTemplateVersion do
     field :json_body, :map
     field :mjml_body, :string
 
-    belongs_to :email_template, EmailTemplate, type: :binary_id
+    belongs_to :email_template, EmailTemplate
 
     timestamps()
     soft_delete_timestamp()

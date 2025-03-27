@@ -328,15 +328,18 @@ defmodule Database.Tenant do
   end
 
   def to_prefix(tenant, nil), do: tenant
-  def to_prefix(tenant, prefix), do: "#{prefix}#{tenant}"
+  def to_prefix(tenant, prefix), do: prefix <> tenant
 
   @doc """
   Returns the value of the configured tenant field on the given `map`.
   """
   def tenant_field(map) do
-    map
-    |> Map.get(@tenant_field)
-    |> String.replace("-", "_")
+    case map
+         |> Map.get(@tenant_field)
+         |> Passwordless.PrefixedUUID.slug_to_uuid() do
+      {:ok, _prefix, uuid} -> String.replace(uuid, "-", "_")
+      _ -> raise "The tenant field must be a PrefixedUUID"
+    end
   end
 
   defp reserved_message(tenant) do

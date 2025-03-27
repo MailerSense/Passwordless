@@ -3,7 +3,7 @@ defmodule Passwordless.Organizations.Org do
   An organization is a group of users that can collaborate on resources.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "org"
 
   alias Database.ChangesetExt
   alias Passwordless.Accounts.User

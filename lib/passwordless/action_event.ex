@@ -3,7 +3,7 @@ defmodule Passwordless.ActionEvent do
   An action avent.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "aevnt"
 
   alias Database.ChangesetExt
   alias Passwordless.Action
@@ -26,8 +26,8 @@ defmodule Passwordless.ActionEvent do
     field :country, :string
     field :city, :string
 
-    belongs_to :action, Action, type: :binary_id
-    belongs_to :email_message, EmailMessage, type: :binary_id
+    belongs_to :action, Action
+    belongs_to :email_message, EmailMessage
 
     timestamps(updated_at: false)
   end

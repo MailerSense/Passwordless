@@ -3,7 +3,7 @@ defmodule Passwordless.Billing.Subscription do
   Represents a subscription to a billing plan.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "blsub"
 
   import Ecto.Query
 

@@ -278,8 +278,6 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   attr :rest, :global, doc: "Any additional HTML attributes to add to the floating container."
 
   defp role_badge(assigns) do
-    IO.inspect(assigns.role)
-
     details =
       Enum.find_value(Roles.org_role_descriptions(), fn {role, {description, color}} ->
         if role == assigns.role do

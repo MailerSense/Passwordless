@@ -1,6 +1,7 @@
 defmodule Passwordless.Organizations.Invitation do
   @moduledoc false
-  use Passwordless.Schema
+
+  use Passwordless.Schema, prefix: "orginv"
 
   import Ecto.Query
 
@@ -18,8 +19,8 @@ defmodule Passwordless.Organizations.Invitation do
   schema "org_invitations" do
     field :email, :string
 
-    belongs_to :org, Org, type: :binary_id
-    belongs_to :user, User, type: :binary_id
+    belongs_to :org, Org
+    belongs_to :user, User
 
     timestamps()
   end

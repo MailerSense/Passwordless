@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.TOTP do
   A TOTP authenticator.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "autotp"
 
   alias Passwordless.App
 
@@ -16,7 +16,7 @@ defmodule Passwordless.Authenticators.TOTP do
     field :issuer_name, :string
     field :hide_download_screen, :boolean, default: false
 
-    belongs_to :app, App, type: :binary_id
+    belongs_to :app, App
 
     timestamps()
   end

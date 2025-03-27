@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.WhatsApp do
   A WhatsApp authenticator.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "auwhtsp"
 
   alias Passwordless.App
 
@@ -18,7 +18,7 @@ defmodule Passwordless.Authenticators.WhatsApp do
     field :expires, :integer, default: 5
     field :language, Ecto.Enum, values: @languages, default: :en, virtual: true
 
-    belongs_to :app, App, type: :binary_id
+    belongs_to :app, App
 
     timestamps()
   end

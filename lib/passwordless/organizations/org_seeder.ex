@@ -94,7 +94,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
         Passwordless.create_actor(app, %{
           name: Faker.Person.name(),
           state: Util.pick(active: 80, locked: 20),
-          user_id: UUIDv7.autogenerate(),
+          user_id: Uniq.UUID.uuid7(),
           properties: %{
             "email" => email,
             "phone" => phone
@@ -123,12 +123,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
           Passwordless.create_action(app, actor, %{
             name: Enum.random(~w(signIn withdraw placeOrder)),
             state: Enum.random(Action.states()),
-            flow: Enum.random(Action.flows()),
-            flow_data: %{
-              code: "123456",
-              state: :started,
-              attempts: 0
-            }
+            flow: Enum.random(Action.flows())
           })
 
         {:ok, _event} =

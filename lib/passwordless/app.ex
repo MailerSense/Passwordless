@@ -3,7 +3,7 @@ defmodule Passwordless.App do
   An app contains passwordless resources.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "app"
 
   import Ecto.Query
 
@@ -45,7 +45,7 @@ defmodule Passwordless.App do
     has_many :email_templates, EmailTemplate
     has_many :email_message_mappings, EmailMessageMapping
 
-    belongs_to :org, Org, type: :binary_id
+    belongs_to :org, Org
 
     timestamps()
     soft_delete_timestamp()

@@ -8,7 +8,6 @@ defmodule Passwordless.Flows.EmailOTP do
 
   import Ecto.Changeset
 
-  alias Passwordless.Action
   alias Passwordless.Email
 
   @states ~w(started otp_sent otp_valid otp_invalid otp_exhausted)a
@@ -31,6 +30,9 @@ defmodule Passwordless.Flows.EmailOTP do
     |> validate_required(@required_fields)
     |> validate_format(:code, ~r/^\d{#{@otp_size}}$/, message: "should be a 6 digit number")
     |> validate_number(:attempts, greater_than: 0, less_than_or_equal_to: @max_attempts)
+  end
+
+  def handle(%__MODULE__{} = mod, :send_otp, %Passwordless.Flows.Context{} = ctx, attrs) do
   end
 
   defmachine field: :state do

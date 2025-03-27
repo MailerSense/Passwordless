@@ -3,7 +3,7 @@ defmodule Passwordless.EmailEvent do
   Email events like sends, opens and bounces etc.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "eevent"
 
   alias Database.ChangesetExt
   alias Passwordless.EmailMessage
@@ -128,7 +128,7 @@ defmodule Passwordless.EmailEvent do
     # Suspend
     field :suspend_reason, :string
 
-    belongs_to :email_message, EmailMessage, type: :binary_id
+    belongs_to :email_message, EmailMessage
 
     timestamps(updated_at: false)
   end

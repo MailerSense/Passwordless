@@ -3,7 +3,7 @@ defmodule Passwordless.Activity.Log do
   The log of activity on key entities in the system.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "actlog"
 
   import Ecto.Query
 
@@ -78,17 +78,17 @@ defmodule Passwordless.Activity.Log do
     field :happened_at, :utc_datetime_usec
 
     # Org
-    belongs_to :org, Passwordless.Organizations.Org, type: :binary_id
-    belongs_to :user, Passwordless.Accounts.User, type: :binary_id
-    belongs_to :auth_token, Passwordless.AuthToken, type: :binary_id
-    belongs_to :target_user, Passwordless.Accounts.User, type: :binary_id
+    belongs_to :org, Passwordless.Organizations.Org
+    belongs_to :user, Passwordless.Accounts.User
+    belongs_to :auth_token, Passwordless.AuthToken
+    belongs_to :target_user, Passwordless.Accounts.User
 
     # App
-    belongs_to :app, Passwordless.App, type: :binary_id
+    belongs_to :app, Passwordless.App
 
     # Billing
-    belongs_to :billing_customer, Passwordless.Billing.Customer, type: :binary_id
-    belongs_to :billing_subscription, Passwordless.Billing.Subscription, type: :binary_id
+    belongs_to :billing_customer, Passwordless.Billing.Customer
+    belongs_to :billing_subscription, Passwordless.Billing.Subscription
 
     timestamps(updated_at: false)
   end
@@ -242,7 +242,8 @@ defmodule Passwordless.Activity.Log do
             %{actions: [_ | _] = actions, required: [_ | _] = required}, acc ->
               {if(action in actions, do: required, else: []), acc}
 
-            %{action_matcher: action_matcher, required: [_ | _] = required}, acc when is_function(action_matcher, 1) ->
+            %{action_matcher: action_matcher, required: [_ | _] = required}, acc
+            when is_function(action_matcher, 1) ->
               {if(action_matcher.(action), do: required, else: []), acc}
 
             _, acc ->

@@ -1,7 +1,7 @@
 defmodule Passwordless.RecoveryCodes do
   @moduledoc false
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "rcodes"
 
   alias Passwordless.Actor
 
@@ -11,7 +11,7 @@ defmodule Passwordless.RecoveryCodes do
       field :used_at, :utc_datetime_usec
     end
 
-    belongs_to :actor, Actor, type: :binary_id
+    belongs_to :actor, Actor
 
     timestamps()
     soft_delete_timestamp()

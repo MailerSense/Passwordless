@@ -113,8 +113,9 @@ defmodule Passwordless.MixProject do
       {:nimble_csv, "~> 1.2"},
 
       # Utils
-      {:uuidv7, "~> 1.0.0"},
+      {:uniq, "~> 0.6.1"},
       {:blankable, "~> 1.0.0"},
+      {:one_and_done, "~> 0.1.6"},
       {:currency_formatter, "~> 0.8"},
       {:timex, "~> 3.7"},
       {:slugify, "~> 1.3"},
@@ -131,7 +132,6 @@ defmodule Passwordless.MixProject do
       {:crontab, "~> 1.1"},
       {:cloak_ecto, "~> 1.3"},
       {:typedstruct, "~> 0.5.3"},
-      {:polymorphic_embed, "~> 5.0"},
 
       # Markdown
       {:earmark, "~> 1.4"},

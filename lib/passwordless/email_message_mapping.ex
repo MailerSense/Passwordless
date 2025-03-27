@@ -18,7 +18,7 @@ defmodule Passwordless.EmailMessageMapping do
     field :ses_id, :string, primary_key: true
     field :email_message_id, :binary_id
 
-    belongs_to :app, App, type: :binary_id
+    belongs_to :app, App
 
     timestamps(updated_at: false)
   end

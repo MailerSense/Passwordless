@@ -3,7 +3,7 @@ defmodule Passwordless.Accounts.Token do
   A token is assigned to a user for a specific context (purpose).
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "acctkn"
 
   import Ecto.Query
 
@@ -30,7 +30,7 @@ defmodule Passwordless.Accounts.Token do
     # Virtual
     field :name, :map, virtual: true
 
-    belongs_to :user, User, type: :binary_id
+    belongs_to :user, User
 
     timestamps()
   end

@@ -3,7 +3,7 @@ defmodule Passwordless.Organizations.Membership do
   An organization membership schema.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "orgmbr"
 
   import Ecto.Query
 
@@ -37,8 +37,8 @@ defmodule Passwordless.Organizations.Membership do
     field :name, :string, virtual: true
     field :email, :string, virtual: true
 
-    belongs_to :org, Org, type: :binary_id
-    belongs_to :user, User, type: :binary_id
+    belongs_to :org, Org
+    belongs_to :user, User
 
     timestamps()
   end

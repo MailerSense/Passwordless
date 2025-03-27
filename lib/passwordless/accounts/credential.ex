@@ -4,7 +4,7 @@ defmodule Passwordless.Accounts.Credential do
   and can be used for social login.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "acccred"
 
   alias Passwordless.Accounts.User
 
@@ -14,7 +14,7 @@ defmodule Passwordless.Accounts.Credential do
     field :subject, :string
     field :provider, Ecto.Enum, values: @providers
 
-    belongs_to :user, User, type: :binary_id
+    belongs_to :user, User
 
     timestamps()
   end

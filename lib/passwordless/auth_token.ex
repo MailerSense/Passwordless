@@ -3,7 +3,7 @@ defmodule Passwordless.AuthToken do
   API keys for interacting with Passwordless via JSON API.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "authtkn"
 
   import Ecto.Query
 
@@ -26,7 +26,7 @@ defmodule Passwordless.AuthToken do
     field :state, Ecto.Enum, values: @states, default: :active
     field :scopes, {:array, Ecto.Enum}, values: Roles.auth_token_scopes(), default: []
 
-    belongs_to :app, App, type: :binary_id
+    belongs_to :app, App
 
     timestamps()
     soft_delete_timestamp()

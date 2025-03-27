@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.Passkey do
   An passkey authenticator.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "aupkey"
 
   alias Database.ChangesetExt
   alias Passwordless.App
@@ -30,7 +30,7 @@ defmodule Passwordless.Authenticators.Passkey do
       field :url, :string
     end
 
-    belongs_to :app, App, type: :binary_id
+    belongs_to :app, App
 
     timestamps()
   end
