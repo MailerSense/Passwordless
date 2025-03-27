@@ -82,6 +82,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :preheader, :string
       add :text_content, :text, null: false
       add :html_content, :text, null: false
+      add :current, :boolean, null: false, default: false
 
       add :metadata, :map
 
@@ -97,6 +98,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create index(:email_messages, [:email_id])
     create index(:email_messages, [:email_template_id])
+    create unique_index(:email_messages, [:action_id], where: "\"current\"")
 
     ## Email events
 

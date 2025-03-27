@@ -48,6 +48,7 @@ defmodule Passwordless.EmailMessage do
     field :external_id, :string
     field :text_content, :string
     field :html_content, :string
+    field :current, :boolean, default: false
 
     embeds_one :metadata, Metadata, on_replace: :delete do
       field :source, :string
@@ -101,7 +102,8 @@ defmodule Passwordless.EmailMessage do
     external_id
     text_content
     html_content
-    event_id
+    current
+    action_id
     email_id
     email_template_id
   )a
@@ -113,7 +115,8 @@ defmodule Passwordless.EmailMessage do
     subject
     text_content
     html_content
-    event_id
+    current
+    action_id
     email_id
     email_template_id
   )a
@@ -121,7 +124,7 @@ defmodule Passwordless.EmailMessage do
   @doc """
   A message changeset.
   """
-  def changeset(%__MODULE__{} = message, attrs \\ %{}) do
+  def changeset(%__MODULE__{} = message, attrs \\ %{}, opts \\ []) do
     message
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
@@ -138,6 +141,12 @@ defmodule Passwordless.EmailMessage do
     |> assoc_constraint(:event)
     |> assoc_constraint(:email)
     |> assoc_constraint(:email_template)
+    |> unique_constraint([:action_id, :current], error_key: :current)
+    |> unsafe_validate_unique([:action_id, :current], Passwordless.Repo,
+      query: from(e in __MODULE__, where: e.current),
+      prefix: Keyword.get(opts, :prefix),
+      error_key: :current
+    )
     |> cast_embed(:metadata, with: &metadata_changeset/2)
   end
 

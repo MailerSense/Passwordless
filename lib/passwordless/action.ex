@@ -25,6 +25,8 @@ defmodule Passwordless.Action do
     field :flow, Ecto.Enum, values: @flows
     field :state, Ecto.Enum, values: @states
 
+    has_one :email_message, EmailMessage, where: [current: true]
+
     has_many :events, ActionEvent
     has_many :email_messages, EmailMessage
 
