@@ -336,7 +336,7 @@ defmodule Database.Tenant do
   def tenant_field(map) do
     case map
          |> Map.get(@tenant_field)
-         |> Passwordless.PrefixedUUID.slug_to_uuid() do
+         |> Database.PrefixedUUID.slug_to_uuid() do
       {:ok, _prefix, uuid} -> String.replace(uuid, "-", "_")
       _ -> raise "The tenant field must be a PrefixedUUID"
     end

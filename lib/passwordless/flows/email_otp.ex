@@ -32,7 +32,7 @@ defmodule Passwordless.Flows.EmailOTP do
     |> validate_number(:attempts, greater_than: 0, less_than_or_equal_to: @max_attempts)
   end
 
-  def handle(%__MODULE__{} = mod, :send_otp, %Passwordless.Flows.Context{} = ctx, attrs) do
+  def handle(%__MODULE__{} = mod, :send_otp, attrs) do
   end
 
   defmachine field: :state do
@@ -94,7 +94,8 @@ defmodule Passwordless.Flows.EmailOTP do
   Verify if the OTP code is valid.
   """
   def otp_valid?(%__MODULE__{code: code}, %Context{payload: %{code: candidate}})
-      when is_binary(code) and byte_size(code) == 6 and is_binary(candidate) and byte_size(candidate) == 6,
+      when is_binary(code) and byte_size(code) == 6 and is_binary(candidate) and
+             byte_size(candidate) == 6,
       do: Plug.Crypto.secure_compare(code, candidate)
 
   def otp_valid?(%__MODULE__{}, %Context{}), do: false

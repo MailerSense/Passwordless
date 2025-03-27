@@ -1,4 +1,4 @@
-defmodule Passwordless.PrefixedUUID do
+defmodule Database.PrefixedUUID do
   @moduledoc false
   use Ecto.ParameterizedType
 
@@ -7,8 +7,8 @@ defmodule Passwordless.PrefixedUUID do
 
   ## Examples
 
-      @primary_key {:id, MyApp.PrefixedUUID, prefix: "acct", autogenerate: true}
-      @foreign_key_type MyApp.PrefixedUUID
+      @primary_key {:id, Database.PrefixedUUID, prefix: "acct", autogenerate: true}
+      @foreign_key_type Database.PrefixedUUID
   """
   @impl true
   def init(opts) do

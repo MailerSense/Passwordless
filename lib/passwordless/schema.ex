@@ -15,12 +15,12 @@ defmodule Passwordless.Schema do
 
       @type t :: %__MODULE__{}
 
-      @spec prefix() :: String.t()
+      @spec prefix() :: binary()
       def prefix, do: unquote(prefix)
 
-      @primary_key {:id, Passwordless.PrefixedUUID, prefix: unquote(prefix), autogenerate: true}
+      @primary_key {:id, Database.PrefixedUUID, prefix: unquote(prefix), autogenerate: true}
       @timestamps_opts [type: :utc_datetime_usec]
-      @foreign_key_type Passwordless.PrefixedUUID
+      @foreign_key_type Database.PrefixedUUID
     end
   end
 end

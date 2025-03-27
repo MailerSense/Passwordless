@@ -18,7 +18,7 @@ defmodule Passwordless.Action do
 
   @derive {
     Flop.Schema,
-    filterable: [:id], sortable: [:id, :state, :inserted_at]
+    filterable: [:id], sortable: [:id]
   }
   schema "actions" do
     field :name, :string
@@ -27,7 +27,7 @@ defmodule Passwordless.Action do
 
     has_one :email_message, EmailMessage, where: [current: true]
 
-    has_many :events, ActionEvent
+    has_many :action_events, ActionEvent
     has_many :email_messages, EmailMessage
 
     belongs_to :actor, Actor
@@ -37,15 +37,17 @@ defmodule Passwordless.Action do
 
   def flows, do: @flows
   def states, do: @states
-  def topic_for(%App{} = app), do: "actions:#{app.id}"
+  def topic_for(%App{} = app), do: "#{prefix()}:#{app.id}"
 
-  def first_event(%__MODULE__{events: [_ | _] = events}) do
+  def first_event(%__MODULE__{action_events: [_ | _] = events}) do
     events
     |> Enum.sort_by(& &1.inserted_at, :asc)
     |> Enum.find(fn %ActionEvent{city: city, country: country} ->
       is_binary(city) and is_binary(country)
     end)
   end
+
+  def first_event(%__MODULE__{}), do: nil
 
   @doc """
   Get by app.
