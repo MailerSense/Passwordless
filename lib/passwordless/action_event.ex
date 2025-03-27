@@ -7,7 +7,6 @@ defmodule Passwordless.ActionEvent do
 
   alias Database.ChangesetExt
   alias Passwordless.Action
-  alias Passwordless.EmailMessage
 
   @derive {
     Flop.Schema,
@@ -27,7 +26,6 @@ defmodule Passwordless.ActionEvent do
     field :city, :string
 
     belongs_to :action, Action
-    belongs_to :email_message, EmailMessage
 
     timestamps(updated_at: false)
   end
@@ -43,7 +41,6 @@ defmodule Passwordless.ActionEvent do
     country
     city
     action_id
-    email_message_id
   )a
   @required_fields ~w(
     flow

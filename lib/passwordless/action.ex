@@ -11,7 +11,7 @@ defmodule Passwordless.Action do
   alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
-  alias Passwordless.OTP
+  alias Passwordless.EmailMessage
 
   @flows ~w(email_otp)a
   @states ~w(allow timeout block pending)a
@@ -25,9 +25,8 @@ defmodule Passwordless.Action do
     field :flow, Ecto.Enum, values: @flows
     field :state, Ecto.Enum, values: @states
 
-    has_one :otp, OTP
-
     has_many :events, ActionEvent
+    has_many :email_messages, EmailMessage
 
     belongs_to :actor, Actor
 

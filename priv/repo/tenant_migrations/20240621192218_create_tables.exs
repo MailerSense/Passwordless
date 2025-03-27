@@ -30,6 +30,22 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     execute "create index actors_properties_gin_trgm_idx on #{prefix()}.actors using gin ((properties::text) gin_trgm_ops) where deleted_at is null;"
 
+    ## Action
+
+    create table(:actions, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :name, :string, null: false
+      add :flow, :string, null: false
+      add :state, :string, null: false
+      add :completed_at, :utc_datetime_usec
+
+      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create index(:actions, [:actor_id])
+
     ## Emails
 
     create table(:emails, primary_key: false) do
@@ -70,6 +86,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :metadata, :map
 
       add :email_id, references(:emails, type: :uuid, on_delete: :delete_all), null: false
+      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
 
       add :email_template_id,
           references(:email_templates, type: :uuid, on_delete: :delete_all, prefix: "public"),
@@ -173,6 +190,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :text_content, :text, null: false
 
       add :phone_id, references(:phones, type: :uuid, on_delete: :delete_all), null: false
+      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
     end
@@ -239,34 +257,37 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       soft_delete_column()
     end
 
-    ## Action
-
-    create table(:actions, primary_key: false) do
-      add :id, :uuid, primary_key: true
-      add :name, :string, null: false
-      add :flow, :string, null: false
-      add :state, :string, null: false
-      add :completed_at, :utc_datetime_usec
-
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
-
-      timestamps()
-    end
-
-    create index(:actions, [:actor_id])
+    ## Action details
 
     create table(:otps, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :code, :binary, null: false
       add :attempts, :integer, null: false, default: 0
       add :expires_at, :utc_datetime_usec, null: false
+      add :accepted_at, :utc_datetime_usec
 
-      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
+      add :email_message_id, references(:email_messages, type: :uuid, on_delete: :nilify_all)
+      add :phone_message_id, references(:phone_messages, type: :uuid, on_delete: :nilify_all)
 
       timestamps()
     end
 
-    create unique_index(:otps, [:action_id])
+    create unique_index(:otps, [:email_message_id])
+    create unique_index(:otps, [:phone_message_id])
+
+    create table(:magic_links, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :token, :binary, null: false
+      add :expires_at, :utc_datetime_usec, null: false
+      add :accepted_at, :utc_datetime_usec
+
+      add :email_message_id, references(:email_messages, type: :uuid, on_delete: :delete_all),
+        null: false
+
+      timestamps()
+    end
+
+    create unique_index(:magic_links, [:email_message_id])
 
     ## Action events
 
@@ -283,8 +304,6 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :city, :string
 
       add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
-      add :email_message_id, references(:email_messages, type: :uuid, on_delete: :nilify_all)
-      add :phone_message_id, references(:phone_messages, type: :uuid, on_delete: :nilify_all)
 
       timestamps(updated_at: false)
     end

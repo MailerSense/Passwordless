@@ -8,10 +8,12 @@ defmodule Passwordless.EmailMessage do
   import Ecto.Query
 
   alias Database.ChangesetExt
-  alias Passwordless.ActionEvent
+  alias Passwordless.Action
   alias Passwordless.Email
   alias Passwordless.EmailEvent
   alias Passwordless.EmailTemplate
+  alias Passwordless.MagicLink
+  alias Passwordless.OTP
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
 
@@ -64,9 +66,12 @@ defmodule Passwordless.EmailMessage do
       end
     end
 
-    has_many :email_events, EmailEvent
-    has_many :action_events, ActionEvent
+    has_one :otp, OTP
+    has_one :magic_link, MagicLink
 
+    has_many :email_events, EmailEvent
+
+    belongs_to :action, Action
     belongs_to :email, Email
     belongs_to :email_template, EmailTemplate
 

@@ -9,6 +9,7 @@ defmodule Passwordless.Email do
 
   alias Database.ChangesetExt
   alias Passwordless.Actor
+  alias Passwordless.EmailMessage
 
   @derive {Jason.Encoder,
            only: [
@@ -27,6 +28,8 @@ defmodule Passwordless.Email do
     field :verified, :boolean, default: false
     field :opted_out, :boolean, virtual: true
     field :opted_out_at, :utc_datetime_usec
+
+    has_many :email_messages, EmailMessage
 
     belongs_to :actor, Actor
 

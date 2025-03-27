@@ -1,19 +1,17 @@
-defmodule Passwordless.OTP do
+defmodule Passwordless.MagicLink do
   @moduledoc """
-  A one-time password.
+  A magic link.
   """
 
-  use Passwordless.Schema, prefix: "otp"
+  use Passwordless.Schema, prefix: "mglnk"
 
   alias Passwordless.EmailMessage
 
-  @size 6
-  @attempts 3
+  @size 16
 
   @derive {Jason.Encoder,
            only: [
              :id,
-             :attempts,
              :expires_at,
              :accepted_at
            ]}
@@ -21,9 +19,8 @@ defmodule Passwordless.OTP do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "otps" do
-    field :code, Passwordless.EncryptedBinary
-    field :attempts, :integer, default: 0
+  schema "magic_links" do
+    field :token, Passwordless.EncryptedBinary
     field :expires_at, :utc_datetime_usec
     field :expires_in, :integer, virtual: true
     field :accepted_at, :utc_datetime_usec
@@ -34,8 +31,7 @@ defmodule Passwordless.OTP do
   end
 
   @fields ~w(
-    code
-    attempts
+    token
     expires_in
     expires_at
     accepted_at
@@ -43,16 +39,13 @@ defmodule Passwordless.OTP do
   )a
   @required_fields @fields -- [:expires_in, :accepted_at, :email_message_id]
 
-  def changeset(%__MODULE__{} = otp, attrs \\ %{}, opts \\ []) do
-    otp
+  def changeset(%__MODULE__{} = magic_link, attrs \\ %{}, opts \\ []) do
+    magic_link
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> validate_format(:code, ~r/^\d{#{@size}}$/, message: "should be a 6 digit number")
-    |> validate_number(:attempts, greater_than: 0, less_than_or_equal_to: @attempts)
+    |> validate_length(:token, is: @size, count: :bytes)
     |> assoc_constraint(:email_message)
     |> unique_constraint(:email_message_id)
     |> unsafe_validate_unique(:email_message_id, Passwordless.Repo)
   end
-
-  def generate_code, do: Util.random_numeric_string(@size)
 end
