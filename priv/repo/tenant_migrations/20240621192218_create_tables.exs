@@ -55,6 +55,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create index(:actions, [:name])
+    create index(:actions, [:rule_id])
     create index(:actions, [:actor_id])
 
     ## Challenge
@@ -63,6 +64,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :flow, :string, null: false
       add :state, :string, null: false
+      add :current, :boolean, null: false, default: false
 
       add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
 
@@ -70,6 +72,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create index(:challenges, [:action_id])
+    create unique_index(:challenges, [:action_id], where: "\"current\"")
 
     ## Emails
 
@@ -122,8 +125,9 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create index(:email_messages, [:email_id])
+    create index(:email_messages, [:challenge_id])
     create index(:email_messages, [:email_template_id])
-    create unique_index(:email_messages, [:action_id], where: "\"current\"")
+    create unique_index(:email_messages, [:challenge_id], where: "\"current\"")
 
     ## Email events
 
@@ -223,6 +227,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create index(:phone_messages, [:phone_id])
+    create index(:email_messages, [:challenge_id])
 
     ## TOTPS
 

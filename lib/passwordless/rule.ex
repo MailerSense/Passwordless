@@ -11,7 +11,7 @@ defmodule Passwordless.Rule do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "action_rules" do
+  schema "rules" do
     field :condition, :map, default: %{}
     field :effects, :map, default: %{}
 

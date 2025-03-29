@@ -7,7 +7,6 @@ defmodule Passwordless.Challenge do
 
   alias Database.ChangesetExt
   alias Passwordless.Action
-  alias Passwordless.ActionEvent
   alias Passwordless.EmailMessage
 
   @state_machines [
@@ -28,7 +27,7 @@ defmodule Passwordless.Challenge do
   @flows Keyword.keys(@state_machines)
   @states @state_machines
           |> Keyword.values()
-          |> Enum.flat_map(fn [{state, follows}] -> [state | follows] end)
+          |> Enum.flat_map(&Enum.flat_map(&1, fn {s, f} -> [s | f] end))
           |> Enum.uniq()
 
   @derive {
@@ -42,7 +41,6 @@ defmodule Passwordless.Challenge do
 
     has_one :email_message, EmailMessage, where: [current: true]
 
-    has_many :action_events, ActionEvent
     has_many :email_messages, EmailMessage
 
     belongs_to :action, Action
