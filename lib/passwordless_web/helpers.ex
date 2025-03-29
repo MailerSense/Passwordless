@@ -11,6 +11,7 @@ defmodule PasswordlessWeb.Helpers do
   alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.AuthToken
+  alias Passwordless.Challenge
   alias Passwordless.EmailTemplate
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Membership
@@ -133,7 +134,7 @@ defmodule PasswordlessWeb.Helpers do
     ]
   end
 
-  def flow_details(%Action{flow: flow}) do
+  def flow_details(%Action{challenge: %Challenge{flow: flow}}) do
     Keyword.get(
       [
         email_otp: %{label: gettext("Email OTP"), icon: "remix-mail-open-line"},

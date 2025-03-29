@@ -11,9 +11,9 @@ defmodule Passwordless.Action do
   alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
-  alias Passwordless.EmailMessage
+  alias Passwordless.Challenge
+  alias Passwordless.Rule
 
-  @flows ~w(email_otp)a
   @states ~w(allow timeout block pending)a
 
   @derive {
@@ -22,21 +22,21 @@ defmodule Passwordless.Action do
   }
   schema "actions" do
     field :name, :string
-    field :flow, Ecto.Enum, values: @flows
     field :state, Ecto.Enum, values: @states
 
-    has_one :email_message, EmailMessage, where: [current: true]
+    has_one :challenge, Challenge, where: [current: true]
 
+    has_many :challenges, Challenge
     has_many :action_events, ActionEvent
-    has_many :email_messages, EmailMessage
 
+    belongs_to :rule, Rule
     belongs_to :actor, Actor
 
     timestamps()
   end
 
-  def flows, do: @flows
   def states, do: @states
+
   def topic_for(%App{} = app), do: "#{prefix()}:#{app.id}"
 
   def first_event(%__MODULE__{action_events: [_ | _] = events}) do
@@ -97,12 +97,22 @@ defmodule Passwordless.Action do
     |> assoc_constraint(:actor)
   end
 
+  @doc """
+  A state changeset.
+  """
+  def state_changeset(%__MODULE__{} = action, attrs \\ %{}) do
+    action
+    |> cast(attrs, [:state])
+    |> validate_required([:state])
+    |> validate_state()
+  end
+
   # Private
 
   defp validate_name(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 1024)
+    |> validate_length(:name, min: 1, max: 255)
   end
 
   defp validate_state(changeset) do

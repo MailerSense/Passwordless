@@ -8,7 +8,7 @@ defmodule Passwordless.EmailMessage do
   import Ecto.Query
 
   alias Database.ChangesetExt
-  alias Passwordless.Action
+  alias Passwordless.Challenge
   alias Passwordless.Email
   alias Passwordless.EmailEvent
   alias Passwordless.EmailTemplate
@@ -72,9 +72,9 @@ defmodule Passwordless.EmailMessage do
 
     has_many :email_events, EmailEvent
 
-    belongs_to :action, Action
     belongs_to :email, Email
     belongs_to :email_template, EmailTemplate
+    belongs_to :challenge, Challenge
 
     timestamps()
   end

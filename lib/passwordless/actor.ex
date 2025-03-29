@@ -87,7 +87,9 @@ defmodule Passwordless.Actor do
   """
   def handle(%__MODULE__{name: name}) when is_binary(name), do: name
   def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
+
   def handle(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical), do: canonical
+
   def handle(%__MODULE__{user_id: user_id}) when is_binary(user_id), do: user_id
   def handle(%__MODULE__{id: id}) when is_binary(id), do: id
   def handle(%__MODULE__{}), do: nil
@@ -99,6 +101,7 @@ defmodule Passwordless.Actor do
   def phone(%__MODULE__{}), do: nil
 
   def phone_region(%__MODULE__{phone: %Phone{region: region}}) when is_binary(region), do: String.downcase(region)
+
   def phone_region(%__MODULE__{}), do: nil
 
   @doc """

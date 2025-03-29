@@ -30,21 +30,46 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     execute "create index actors_properties_gin_trgm_idx on #{prefix()}.actors using gin ((properties::text) gin_trgm_ops) where deleted_at is null;"
 
+    ## Action Behavior
+
+    create table(:rules, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :condition, :map, null: false, default: %{}
+      add :effects, :map, null: false, default: %{}
+
+      timestamps()
+    end
+
     ## Action
 
     create table(:actions, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
-      add :flow, :string, null: false
       add :state, :string, null: false
       add :completed_at, :utc_datetime_usec
 
+      add :rule_id, references(:rules, type: :uuid, on_delete: :delete_all), null: false
       add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
     end
 
+    create index(:actions, [:name])
     create index(:actions, [:actor_id])
+
+    ## Challenge
+
+    create table(:challenges, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :flow, :string, null: false
+      add :state, :string, null: false
+
+      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create index(:challenges, [:action_id])
 
     ## Emails
 
@@ -87,7 +112,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :metadata, :map
 
       add :email_id, references(:emails, type: :uuid, on_delete: :delete_all), null: false
-      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
+      add :challenge_id, references(:challenges, type: :uuid, on_delete: :delete_all), null: false
 
       add :email_template_id,
           references(:email_templates, type: :uuid, on_delete: :delete_all, prefix: "public"),
@@ -192,7 +217,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :text_content, :text, null: false
 
       add :phone_id, references(:phones, type: :uuid, on_delete: :delete_all), null: false
-      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
+      add :challenge_id, references(:challenges, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
     end

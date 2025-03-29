@@ -33,6 +33,14 @@ defmodule Passwordless.OTP do
     timestamps()
   end
 
+  def valid?(%__MODULE__{attempts: attempts}, _candidate) when attempts >= @attempts, do: false
+
+  def valid?(%__MODULE__{code: code, expires_at: expires_at}, candidate) when is_binary(code) and is_binary(candidate) do
+    DateTime.after?(expires_at, DateTime.utc_now()) and Plug.Crypto.secure_compare(code, candidate)
+  end
+
+  def valid?(%__MODULE__{}, _candidate), do: false
+
   @fields ~w(
     code
     attempts
