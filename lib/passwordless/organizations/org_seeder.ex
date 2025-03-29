@@ -122,8 +122,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
         {:ok, action} =
           Passwordless.create_action(app, actor, %{
             name: Enum.random(~w(signIn withdraw placeOrder)),
-            state: Enum.random(Action.states()),
-            flow: Enum.random(Action.flows())
+            state: Enum.random(Action.states())
           })
 
         {:ok, _event} =

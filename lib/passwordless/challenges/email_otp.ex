@@ -22,13 +22,13 @@ defmodule Passwordless.Challenges.EmailOTP do
   alias Passwordless.Repo
   alias Swoosh.Email, as: SwooshEmail
 
-  @flow :email_otp
+  @challenge :email_otp
 
   @impl true
   def handle(
         %App{} = app,
         %Actor{} = actor,
-        %Action{challenge: %Challenge{flow: @flow, state: state} = challenge} = action,
+        %Action{challenge: %Challenge{type: @challenge, state: state} = challenge} = action,
         event: :send_otp,
         attrs: %{email: %Email{} = email, authenticator: %Authenticators.Email{} = authenticator}
       )
@@ -50,7 +50,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   def handle(
         %App{} = app,
         %Actor{} = _actor,
-        %Action{challenge: %Challenge{flow: @flow, state: state} = challenge} = action,
+        %Action{challenge: %Challenge{type: @type, state: state} = challenge} = action,
         event: :validate_otp,
         attrs: %{code: code}
       )

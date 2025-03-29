@@ -134,7 +134,7 @@ defmodule PasswordlessWeb.Helpers do
     ]
   end
 
-  def flow_details(%Action{challenge: %Challenge{flow: flow}}) do
+  def flow_details(%Action{challenge: %Challenge{type: type}}) do
     Keyword.get(
       [
         email_otp: %{label: gettext("Email OTP"), icon: "remix-mail-open-line"},
@@ -146,7 +146,7 @@ defmodule PasswordlessWeb.Helpers do
         passkey: %{label: gettext("Passkey"), icon: "remix-fingerprint-line"},
         recovery_codes: %{label: gettext("Recovery codes"), icon: "remix-file-list-line"}
       ],
-      flow
+      type
     )
   end
 

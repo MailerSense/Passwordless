@@ -62,7 +62,7 @@ defmodule Passwordless.Challenge do
     :magic_link_validated
   ]
 
-  @flows Keyword.keys(@state_machines)
+  @types Keyword.keys(@state_machines)
   @states @state_machines
           |> Keyword.values()
           |> Enum.flat_map(&Enum.flat_map(&1, fn {s, f} -> [s | f] end))
@@ -73,7 +73,7 @@ defmodule Passwordless.Challenge do
     filterable: [:id], sortable: [:id]
   }
   schema "challenges" do
-    field :flow, Ecto.Enum, values: @flows
+    field :type, Ecto.Enum, values: @types
     field :state, Ecto.Enum, values: @states
     field :current, :boolean, default: false
 
@@ -86,14 +86,14 @@ defmodule Passwordless.Challenge do
     timestamps()
   end
 
-  def flows, do: @flows
+  def types, do: @types
   def states, do: @states
 
   def validated?(%__MODULE__{state: state}) when state in @end_states, do: true
   def validated?(_), do: false
 
   @fields ~w(
-    flow
+    type
     state
     current
     action_id
@@ -130,11 +130,11 @@ defmodule Passwordless.Challenge do
   # Private
 
   defp validate_state(changeset) do
-    with {_, flow} <- fetch_field(changeset, :flow),
-         {:ok, machine} <- Keyword.fetch(@state_machines, flow) do
+    with {_, type} <- fetch_field(changeset, :type),
+         {:ok, machine} <- Keyword.fetch(@state_machines, type) do
       ChangesetExt.validate_state(changeset, machine)
     else
-      _ -> add_error(changeset, :state, "state machine for flow not found")
+      _ -> add_error(changeset, :state, "state machine for type not found")
     end
   end
 end
