@@ -13,6 +13,7 @@ defmodule Passwordless.App do
   alias Passwordless.Domain
   alias Passwordless.EmailMessageMapping
   alias Passwordless.EmailTemplate
+  alias Passwordless.MagicLinkMapping
   alias Passwordless.Organizations.Org
 
   @states ~w(active)a
@@ -44,6 +45,7 @@ defmodule Passwordless.App do
 
     has_many :email_templates, EmailTemplate
     has_many :email_message_mappings, EmailMessageMapping
+    has_many :magic_link_mappings, MagicLinkMapping
 
     belongs_to :org, Org
 

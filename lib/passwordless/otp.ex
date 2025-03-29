@@ -25,13 +25,14 @@ defmodule Passwordless.OTP do
     field :code, Passwordless.EncryptedBinary
     field :attempts, :integer, default: 0
     field :expires_at, :utc_datetime_usec
-    field :expires_in, :integer, virtual: true
     field :accepted_at, :utc_datetime_usec
 
     belongs_to :email_message, EmailMessage
 
     timestamps()
   end
+
+  def size, do: @size
 
   def valid?(%__MODULE__{attempts: attempts}, _candidate) when attempts >= @attempts, do: false
 
@@ -44,17 +45,17 @@ defmodule Passwordless.OTP do
   @fields ~w(
     code
     attempts
-    expires_in
     expires_at
     accepted_at
     email_message_id
   )a
-  @required_fields @fields -- [:expires_in, :accepted_at, :email_message_id]
+  @required_fields @fields -- [:accepted_at, :email_message_id]
 
   def changeset(%__MODULE__{} = otp, attrs \\ %{}, opts \\ []) do
     otp
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> validate_length(:code, is: @size)
     |> validate_format(:code, ~r/^\d{#{@size}}$/, message: "should be a 6 digit number")
     |> validate_number(:attempts, greater_than: 0, less_than_or_equal_to: @attempts)
     |> assoc_constraint(:email_message)

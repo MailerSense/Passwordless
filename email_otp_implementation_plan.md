@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Email OTP (One-Time Password) flow is a security mechanism that allows users to authenticate by receiving a time-limited code via email. The implementation will focus on the state machine logic in the `handle(%__MODULE__{} = mod, :send_otp, attrs)` method of the `Passwordless.Flows.EmailOTP` module.
+The Email OTP (One-Time Password) flow is a security mechanism that allows users to authenticate by receiving a time-limited code via email. The implementation will focus on the state machine logic in the `handle(%__MODULE__{} = mod, :send_otp, attrs)` method of the `Passwordless.Challenges.EmailOTP` module.
 
 ## System Components
 

@@ -1,7 +1,9 @@
-defmodule Passwordless.Flows.EmailOTP do
+defmodule Passwordless.Challenges.EmailOTP do
   @moduledoc """
   Email OTP flow.
   """
+
+  @behaviour Passwordless.Challenge
 
   import Ecto.Query
 
@@ -21,42 +23,44 @@ defmodule Passwordless.Flows.EmailOTP do
   alias Swoosh.Email, as: SwooshEmail
 
   @flow :email_otp
-  @otp_size 6
-  @otp_expiry :timer.minutes(10)
 
-  @doc """
-  Handle the logic for sending an OTP email.
-  """
-  def handle(%App{} = app, %Actor{} = actor, %Action{challenge: %Challenge{flow: @flow, state: state}} = action,
+  @impl true
+  def handle(
+        %App{} = app,
+        %Actor{} = actor,
+        %Action{challenge: %Challenge{flow: @flow, state: state} = challenge} = action,
         event: :send_otp,
         attrs: %{email: %Email{} = email, authenticator: %Authenticators.Email{} = authenticator}
       )
-      when state in [:otp_sent, :otp_invalid] do
-    otp_code = Util.random_numeric_string(@otp_size)
+      when state in [:started, :otp_sent] do
+    otp_code = OTP.generate_code()
 
     with {:ok, email_template} <- get_email_template(authenticator),
          {:ok, email_template_version} <- get_latest_template_version(actor, email_template),
          {:ok, email_message} <-
            create_email_message(action, email, email_template, email_template_version, otp_code),
          :ok <- update_existing_messages(app, action),
-         {:ok, _otp} <- create_otp(email_message, otp_code),
-         {:ok, action} <- update_action_state(action, :otp_sent),
+         {:ok, _otp} <- create_otp(authenticator, email_message, otp_code),
+         {:ok, challenge} <- update_challenge_state(app, challenge, :otp_sent),
          :ok <- queue_email_for_sending(email_message, email, otp_code),
-         do: {:ok, action}
+         do: {:ok, %Action{action | challenge: challenge}}
   end
 
-  def handle(%App{} = app, %Actor{} = actor, %Action{challenge: %Challenge{flow: @flow, state: state}} = action,
+  @impl true
+  def handle(
+        %App{} = app,
+        %Actor{} = _actor,
+        %Action{challenge: %Challenge{flow: @flow, state: state} = challenge} = action,
         event: :validate_otp,
         attrs: %{code: code}
       )
       when state in [:otp_sent] and is_binary(code) do
-    case action
-         |> Ecto.assoc(:email_message)
-         |> Repo.one()
-         |> Repo.preload(:otp) do
-      %OTP{} = otp ->
+    case challenge |> Ecto.assoc(:email_message) |> Repo.one() |> Repo.preload(:otp) do
+      %EmailMessage{otp: %OTP{} = otp} ->
         if OTP.valid?(otp, code) do
-          update_action_state(action, :allowed)
+          with {:ok, challenge} <- update_challenge_state(app, challenge, :otp_validated) do
+            {:ok, %Action{action | challenge: challenge}}
+          end
         else
           {:error, :otp_invalid}
         end
@@ -128,7 +132,7 @@ defmodule Passwordless.Flows.EmailOTP do
   end
 
   defp update_existing_messages(%App{} = app, %Action{} = action) do
-    opts = [prefix: Tenant.to_prefix(app)]
+    opts = [prefix: Database.Tenant.to_prefix(app)]
 
     action
     |> Ecto.assoc(:email_messages)
@@ -140,8 +144,9 @@ defmodule Passwordless.Flows.EmailOTP do
     end
   end
 
-  defp create_otp(%EmailMessage{} = email_message, otp_code) when is_binary(otp_code) do
-    expires_at = DateTime.add(DateTime.utc_now(), @otp_expiry, :millisecond)
+  defp create_otp(%Authenticators.Email{} = authenticator, %EmailMessage{} = email_message, otp_code)
+       when is_binary(otp_code) do
+    expires_at = DateTime.add(DateTime.utc_now(), authenticator.expires, :minute)
 
     email_message
     |> Ecto.build_assoc(:otp)
@@ -174,9 +179,19 @@ defmodule Passwordless.Flows.EmailOTP do
     String.replace(content, "{{otp_code}}", otp_code)
   end
 
-  defp update_action_state(%Action{} = action, state) do
+  defp update_challenge_state(%App{} = app, %Challenge{} = challenge, state) do
+    opts = [prefix: Database.Tenant.to_prefix(app)]
+
+    challenge
+    |> Challenge.state_changeset(%{state: state})
+    |> Repo.update(opts)
+  end
+
+  defp update_action_state(%App{} = app, %Action{} = action, state) do
+    opts = [prefix: Database.Tenant.to_prefix(app)]
+
     action
     |> Action.state_changeset(%{state: state})
-    |> Repo.update()
+    |> Repo.update(opts)
   end
 end

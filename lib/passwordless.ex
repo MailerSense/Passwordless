@@ -425,9 +425,9 @@ defmodule Passwordless do
     |> Repo.insert(opts)
   end
 
-  # Flow
+  # Action
 
-  def run_flow(%App{} = app, %{action_id: id, event: event, payload: payload}) do
+  def continue(%App{} = app, %{action_id: id, event: event, payload: payload}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
     # Repo.transact(fn ->

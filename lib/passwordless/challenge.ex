@@ -9,19 +9,57 @@ defmodule Passwordless.Challenge do
   alias Passwordless.Action
   alias Passwordless.EmailMessage
 
+  @typedoc """
+  The authenticator that can be used to authenticate the user.
+  """
+  @type authenticator ::
+          Passwordless.Authenticators.Email.t()
+          | Passwordless.Authenticators.SMS.t()
+          | Passwordless.Authenticators.WhatsApp.t()
+          | Passwordless.Authenticators.MagicLink.t()
+          | Passwordless.Authenticators.TOTP.t()
+          | Passwordless.Authenticators.RecoveryCodes.t()
+
+  @typedoc """
+  The attributes that can be passed to the handle function.
+  """
+  @type handle_attrs :: %{
+          optional(:code) => String.t(),
+          optional(:token) => String.t(),
+          optional(:email) => Passwordless.Email.t(),
+          optional(:phone) => Passwordless.Phone.t(),
+          optional(:authenticator) => authenticator()
+        }
+
+  @doc """
+  Handle the authentication challenge.
+  """
+  @callback handle(app :: Passwordless.App.t(), actor :: Passwordless.Actor.t(), action :: Passwordless.Action.t(),
+              event: atom(),
+              attrs: handle_attrs()
+            ) :: {:ok, Passwordless.Action.t()} | {:error, atom()}
+
   @state_machines [
     email_otp: [
+      started: [:otp_sent],
       otp_sent: [:otp_sent, :otp_validated]
     ],
     sms_otp: [
+      started: [:otp_sent],
       otp_sent: [:otp_sent, :otp_validated]
     ],
     whatsapp_otp: [
+      started: [:otp_sent],
       otp_sent: [:otp_sent, :otp_validated]
     ],
     magic_link: [
+      started: [:magic_link_sent],
       magic_link_sent: [:magic_link_sent, :magic_link_validated]
     ]
+  ]
+  @end_states [
+    :otp_validated,
+    :magic_link_validated
   ]
 
   @flows Keyword.keys(@state_machines)
@@ -50,6 +88,9 @@ defmodule Passwordless.Challenge do
 
   def flows, do: @flows
   def states, do: @states
+
+  def validated?(%__MODULE__{state: state}) when state in @end_states, do: true
+  def validated?(_), do: false
 
   @fields ~w(
     flow
