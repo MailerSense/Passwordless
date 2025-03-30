@@ -27,7 +27,11 @@ defmodule Passwordless.Actor do
              :language,
              :totps,
              :emails,
-             :phones
+             :phones,
+             :properties,
+             :inserted_at,
+             :updated_at,
+             :deleted_at
            ]}
   @derive {
     Flop.Schema,

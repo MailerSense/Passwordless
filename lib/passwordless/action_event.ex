@@ -8,15 +8,19 @@ defmodule Passwordless.ActionEvent do
   alias Database.ChangesetExt
   alias Passwordless.Action
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :event,
+             :metadata,
+             :inserted_at
+           ]}
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
   schema "action_events" do
-    field :flow, :string
     field :event, :string
-    field :from_state, :string
-    field :to_state, :string
     field :metadata, :map, default: %{}
 
     # User

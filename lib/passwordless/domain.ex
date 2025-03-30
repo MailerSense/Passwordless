@@ -23,6 +23,18 @@ defmodule Passwordless.Domain do
   )a
   @states @aws_states ++ @dns_states
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :name,
+             :kind,
+             :state,
+             :verified,
+             :records,
+             :inserted_at,
+             :updated_at,
+             :deleted_at
+           ]}
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]

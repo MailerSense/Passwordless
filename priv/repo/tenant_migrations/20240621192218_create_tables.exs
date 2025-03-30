@@ -62,7 +62,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create table(:challenges, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :flow, :string, null: false
+      add :type, :string, null: false
       add :state, :string, null: false
       add :current, :boolean, null: false, default: false
 
@@ -325,10 +325,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create table(:action_events, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :flow, :string, null: false
       add :event, :string, null: false
-      add :from_state, :string, null: false
-      add :to_state, :string, null: false
       add :metadata, :map, null: false, default: %{}
       add :user_agent, :string
       add :ip_address, :string

@@ -5,6 +5,17 @@ defmodule Passwordless.RecoveryCodes do
 
   alias Passwordless.Actor
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :inserted_at,
+             :updated_at,
+             :deleted_at
+           ]}
+  @derive {
+    Flop.Schema,
+    filterable: [:id], sortable: [:id]
+  }
   schema "recovery_codes" do
     embeds_many :codes, Code, on_replace: :delete do
       field :code, :string, redact: true

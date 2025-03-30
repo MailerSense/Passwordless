@@ -7,6 +7,14 @@ defmodule Passwordless.Rule do
 
   alias Passwordless.Action
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :condition,
+             :effects,
+             :inserted_at,
+             :updated_at
+           ]}
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]

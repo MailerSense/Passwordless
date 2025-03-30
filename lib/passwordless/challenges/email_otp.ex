@@ -37,8 +37,7 @@ defmodule Passwordless.Challenges.EmailOTP do
 
     with {:ok, email_template} <- get_email_template(authenticator),
          {:ok, email_template_version} <- get_latest_template_version(actor, email_template),
-         {:ok, email_message} <-
-           create_email_message(action, email, email_template, email_template_version, otp_code),
+         {:ok, email_message} <- create_email_message(action, email, email_template, email_template_version, otp_code),
          :ok <- update_existing_messages(app, action),
          {:ok, _otp} <- create_otp(authenticator, email_message, otp_code),
          {:ok, challenge} <- update_challenge_state(app, challenge, :otp_sent),

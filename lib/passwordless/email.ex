@@ -16,7 +16,11 @@ defmodule Passwordless.Email do
              :id,
              :address,
              :primary,
-             :verified
+             :verified,
+             :opted_out_at,
+             :inserted_at,
+             :updated_at,
+             :deleted_at
            ]}
   @derive {
     Flop.Schema,

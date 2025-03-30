@@ -10,6 +10,20 @@ defmodule Passwordless.EmailTemplateVersion do
   @styles ~w(clean card)a
   @languages ~w(en de fr)a
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :language,
+             :subject,
+             :preheader,
+             :text_body,
+             :html_body,
+             :json_body,
+             :mjml_body,
+             :inserted_at,
+             :updated_at,
+             :deleted_at
+           ]}
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
