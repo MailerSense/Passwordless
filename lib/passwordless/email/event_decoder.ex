@@ -1,13 +1,20 @@
 defmodule Passwordless.Email.EventDecoder do
   @moduledoc false
 
+  alias Passwordless.App
+  alias Passwordless.Email.Guardian
   alias Passwordless.Email.LogParser
+  alias Passwordless.EmailEvent
+  alias Passwordless.EmailMessage
+  alias Passwordless.EmailMessageMapping
+  alias Passwordless.Repo
 
   def create_message_from_event(raw_message) when is_map(raw_message) do
     with {:ok, parsed_log, parsed_message, parsed_event} <- LogParser.parse(raw_message) do
       Repo.transact(fn ->
-        with {:ok, message} <- update_message_from_event(parsed_message),
-             {:ok, event} <- create_message_event(parsed_event),
+        with {:ok, app, message} <- get_message_by_external_id(parsed_message),
+             {:ok, message} <- update_message(app, message, parsed_message),
+             {:ok, event} <- create_message_event(app, message, parsed_event),
              {:ok, log} <- Activity.log(:email, message, event, parsed_log),
              {:ok, _suppression} <- Guardian.check(log),
              do: {:ok, message}
@@ -19,23 +26,37 @@ defmodule Passwordless.Email.EventDecoder do
 
   # Private
 
-  defp create_message_event(attrs) when is_map(attrs) do
-    %MessageEvent{}
-    |> MessageEvent.changeset(attrs)
-    |> Repo.insert()
+  defp create_message_event(%App{} = app, %EmailMessage{} = message, attrs) do
+    opts = [prefix: Database.Tenant.to_prefix(app)]
+
+    message
+    |> Ecto.build_assoc(:email_events)
+    |> EmailEvent.changeset(attrs)
+    |> Repo.insert(opts)
   end
 
-  defp update_message_from_event(%{external_id: external_id} = attrs) when is_binary(external_id) do
-    case Repo.one(Message.get_by_external_id(external_id)) do
-      %Message{} = message ->
-        message
-        |> Message.external_changeset(attrs)
-        |> Repo.update()
+  defp update_message(%App{} = app, %EmailMessage{} = message, attrs) do
+    opts = [prefix: Database.Tenant.to_prefix(app)]
+
+    message
+    |> EmailMessage.external_changeset(attrs)
+    |> Repo.update(opts)
+  end
+
+  defp get_message_by_external_id(%{external_id: external_id}) when is_binary(external_id) do
+    case Repo.one(EmailMessageMapping.get_by_ses_id(external_id)) do
+      {%EmailMessageMapping{email_message_id: email_message_id}, %App{} = app} ->
+        opts = [prefix: Database.Tenant.to_prefix(app)]
+
+        case Repo.get(EmailMessage, email_message_id, opts) do
+          %EmailMessage{} = message -> {:ok, app, message}
+          _ -> {:error, :message_not_found}
+        end
 
       _ ->
         {:error, :message_not_found}
     end
   end
 
-  defp update_message_from_event(_), do: {:error, :message_not_found}
+  defp get_message_by_external_id(_), do: {:error, :message_not_found}
 end

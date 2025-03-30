@@ -177,6 +177,13 @@ defmodule Passwordless do
     Repo.one!(Ecto.assoc(app, :domain))
   end
 
+  def get_domain(domain_id) when is_binary(domain_id) do
+    case Repo.get(Domain, domain_id) do
+      %Domain{} = domain -> {:ok, domain}
+      _ -> {:error, :not_found}
+    end
+  end
+
   def list_domain_record(%Domain{} = domain) do
     DomainRecord.order(Repo.preload(domain, :records).records)
   end

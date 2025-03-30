@@ -17,10 +17,7 @@ defmodule Passwordless.EventQueue.Deduplicator do
 
   @impl true
   def init(%Source{} = source) do
-    producers =
-      for index <- Source.consumers(),
-          do: {Producer.via(source.id, index), []}
-
+    producers = for index <- Source.consumers(), do: {Producer.via(source.id, index), []}
     {:producer_consumer, source, subscribe_to: producers}
   end
 
@@ -48,7 +45,7 @@ defmodule Passwordless.EventQueue.Deduplicator do
           Message.ack(message)
           false
         else
-          Cache.put(key, true, ttl: :timer.minutes(5))
+          Cache.put(key, true, ttl: :timer.hours(1))
           true
         end
     end)

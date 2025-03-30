@@ -5,6 +5,23 @@ defmodule Passwordless.Mailer do
 
   use Swoosh.Mailer, otp_app: :passwordless
 
+  alias Passwordless.Domain
+  alias Swoosh.Email
+
+  @doc """
+  Sends an email message via SES from a given cloud environment & session.
+  """
+  def deliver_via_domain(%Email{} = email, %Domain{} = domain) do
+    {:ok, %{id: message_id}} =
+      email
+      |> Email.put_provider_option(:domain, domain)
+      |> deliver()
+
+    {:ok, message_id}
+  rescue
+    e -> {:error, e}
+  end
+
   def to_map(%Swoosh.Email{} = email) do
     %{
       "to" => contact_to_map(email.to),

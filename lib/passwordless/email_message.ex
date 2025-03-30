@@ -46,7 +46,6 @@ defmodule Passwordless.EmailMessage do
     field :reply_to_name, :string
     field :subject, :string
     field :preheader, :string
-    field :external_id, :string
     field :text_content, :string
     field :html_content, :string
     field :current, :boolean, default: false
@@ -100,7 +99,6 @@ defmodule Passwordless.EmailMessage do
     reply_to_name
     subject
     preheader
-    external_id
     text_content
     html_content
     current
@@ -140,7 +138,6 @@ defmodule Passwordless.EmailMessage do
     |> validate_subject()
     |> validate_preheader()
     |> validate_content()
-    |> validate_external_id()
     |> assoc_constraint(:email)
     |> assoc_constraint(:domain)
     |> assoc_constraint(:challenge)
@@ -155,7 +152,6 @@ defmodule Passwordless.EmailMessage do
   end
 
   @external_fields ~w(
-    external_id
     sender
     sender_name
     recipient
@@ -172,8 +168,6 @@ defmodule Passwordless.EmailMessage do
     |> ChangesetExt.validate_email_format(:recipient)
     |> validate_text(:sender_name)
     |> validate_text(:recipient_name)
-    |> validate_required([:external_id])
-    |> validate_external_id()
   end
 
   def sign_token(%__MODULE__{id: id}) when is_binary(id) do
@@ -214,12 +208,6 @@ defmodule Passwordless.EmailMessage do
     |> validate_required([:text_content, :html_content])
     |> update_change(:text_content, &HtmlSanitizeEx.strip_tags/1)
     |> update_change(:html_content, &HtmlSanitizeEx.html5/1)
-  end
-
-  defp validate_external_id(changeset) do
-    changeset
-    |> ChangesetExt.ensure_trimmed(:external_id)
-    |> unique_constraint(:external_id)
   end
 
   @metadata_fields ~w(

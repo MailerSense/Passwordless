@@ -5,9 +5,8 @@ defmodule Passwordless.EventQueue.Consumer do
 
   alias Passwordless.Email.EventDecoder
   alias Passwordless.EventQueue.Message
-  alias Passwordless.EventQueue.Source
 
-  def start_link(%Message{data: data, source: %Source{} = source} = message) do
+  def start_link(%Message{data: data} = message) do
     Task.start_link(fn ->
       EventDecoder.create_message_from_event(data)
       Message.ack(message)

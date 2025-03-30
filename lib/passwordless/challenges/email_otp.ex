@@ -54,7 +54,7 @@ defmodule Passwordless.Challenges.EmailOTP do
            ),
          {:ok, otp} <- create_otp(authenticator, email_message, otp_code),
          {:ok, challenge} <- update_challenge_state(app, challenge, :otp_sent),
-         :ok <- queue_email_for_sending(email_message, email, otp_code),
+         :ok <- enqueue_email_message(email_message, domain, otp_code),
          do:
            {:ok,
             %Action{
@@ -190,7 +190,7 @@ defmodule Passwordless.Challenges.EmailOTP do
     end
   end
 
-  defp queue_email_for_sending(%EmailMessage{} = email_message, %Email{} = email, otp_code) do
+  defp enqueue_email_message(%EmailMessage{} = email_message, %Domain{} = domain, otp_code) do
     swoosh_email =
       SwooshEmail.new()
       |> SwooshEmail.from({email_message.sender_name, email_message.sender})
@@ -200,7 +200,7 @@ defmodule Passwordless.Challenges.EmailOTP do
       |> SwooshEmail.text_body(email_message.text_content)
 
     with {:ok, _job} <-
-           %{email: Mailer.to_map(swoosh_email)}
+           %{email: Mailer.to_map(swoosh_email), domain_id: domain.id}
            |> MailerExecutor.new()
            |> Oban.insert() do
       email_message

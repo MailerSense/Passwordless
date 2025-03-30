@@ -6,6 +6,7 @@ defmodule Passwordless.EmailMessageMapping do
   use Ecto.Schema
 
   import Ecto.Changeset
+  import Ecto.Query
 
   alias Database.ChangesetExt
   alias Passwordless.App
@@ -21,6 +22,15 @@ defmodule Passwordless.EmailMessageMapping do
     belongs_to :app, App
 
     timestamps(updated_at: false)
+  end
+
+  def get_by_ses_id(ses_id) when is_binary(ses_id) do
+    from(
+      m in __MODULE__,
+      where: m.ses_id == ^ses_id,
+      left_join: a in assoc(m, :app),
+      select: {m, a}
+    )
   end
 
   @fields ~w(
