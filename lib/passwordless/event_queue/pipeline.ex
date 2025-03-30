@@ -19,7 +19,7 @@ defmodule Passwordless.EventQueue.Pipeline do
   @impl true
   def init(%Source{} = source) do
     producers =
-      for index <- 1..10,
+      for index <- Source.consumers(),
           do: Supervisor.child_spec({Producer, [source, index]}, id: "producer_#{source.id}#{index}")
 
     children =

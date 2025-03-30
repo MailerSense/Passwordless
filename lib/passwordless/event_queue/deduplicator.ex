@@ -18,7 +18,7 @@ defmodule Passwordless.EventQueue.Deduplicator do
   @impl true
   def init(%Source{} = source) do
     producers =
-      for index <- 1..10,
+      for index <- Source.consumers(),
           do: {Producer.via(source.id, index), []}
 
     {:producer_consumer, source, subscribe_to: producers}
