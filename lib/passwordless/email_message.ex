@@ -9,6 +9,7 @@ defmodule Passwordless.EmailMessage do
 
   alias Database.ChangesetExt
   alias Passwordless.Challenge
+  alias Passwordless.Domain
   alias Passwordless.Email
   alias Passwordless.EmailEvent
   alias Passwordless.EmailTemplate
@@ -76,24 +77,18 @@ defmodule Passwordless.EmailMessage do
     has_one :otp, OTP
     has_one :magic_link, MagicLink
 
-    has_many :email_events, EmailEvent
+    has_many :email_events, EmailEvent, preload_order: [asc: :inserted_at]
 
     belongs_to :email, Email
-    belongs_to :email_template, EmailTemplate
+    belongs_to :domain, Domain
     belongs_to :challenge, Challenge
+    belongs_to :email_template, EmailTemplate
 
     timestamps()
   end
 
   def states, do: @states
   def failed_states, do: ~w(rejected bounced supressed complaint_received)a
-
-  @doc """
-  Get the message with the given external ID.
-  """
-  def get_by_external_id(query \\ __MODULE__, external_id) when is_binary(external_id) do
-    from q in query, where: q.external_id == ^external_id
-  end
 
   @fields ~w(
     state
@@ -109,8 +104,9 @@ defmodule Passwordless.EmailMessage do
     text_content
     html_content
     current
-    action_id
     email_id
+    domain_id
+    challenge_id
     email_template_id
   )a
 
@@ -122,8 +118,9 @@ defmodule Passwordless.EmailMessage do
     text_content
     html_content
     current
-    action_id
     email_id
+    domain_id
+    challenge_id
     email_template_id
   )a
 
@@ -144,8 +141,9 @@ defmodule Passwordless.EmailMessage do
     |> validate_preheader()
     |> validate_content()
     |> validate_external_id()
-    |> assoc_constraint(:event)
     |> assoc_constraint(:email)
+    |> assoc_constraint(:domain)
+    |> assoc_constraint(:challenge)
     |> assoc_constraint(:email_template)
     |> unique_constraint([:action_id, :current], error_key: :current)
     |> unsafe_validate_unique([:action_id, :current], Passwordless.Repo,

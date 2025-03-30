@@ -39,10 +39,10 @@ defmodule Passwordless.Accounts.User do
 
     has_one :totp, TOTP
 
-    has_many :tokens, Token
-    has_many :credentials, Credential
-    has_many :invitations, Invitation
-    has_many :memberships, Membership
+    has_many :tokens, Token, preload_order: [asc: :inserted_at]
+    has_many :credentials, Credential, preload_order: [asc: :inserted_at]
+    has_many :invitations, Invitation, preload_order: [asc: :inserted_at]
+    has_many :memberships, Membership, preload_order: [asc: :inserted_at]
 
     many_to_many :orgs, Org, join_through: Membership, unique: true
 

@@ -115,6 +115,10 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :metadata, :map
 
       add :email_id, references(:emails, type: :uuid, on_delete: :delete_all), null: false
+
+      add :domain_id, references(:domains, type: :uuid, on_delete: :delete_all, prefix: "public"),
+        null: false
+
       add :challenge_id, references(:challenges, type: :uuid, on_delete: :delete_all), null: false
 
       add :email_template_id,
@@ -125,6 +129,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create index(:email_messages, [:email_id])
+    create index(:email_messages, [:domain_id])
     create index(:email_messages, [:challenge_id])
     create index(:email_messages, [:email_template_id])
     create unique_index(:email_messages, [:challenge_id], where: "\"current\"")

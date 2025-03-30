@@ -113,12 +113,21 @@ config :passwordless, :emails,
   support: [
     name: "Passwordless",
     email: "noreply@support.passwordlesstools.com",
+    domain: "support.passwordlesstools.com",
     reply_to: "hello@passwordless.tools",
     reply_to_name: "Passwordless Support"
   ],
   alerts: [
     name: "Passwordless Alert",
     email: "noreply@alerts.passwordlesstools.com",
+    domain: "alerts.passwordlesstools.com",
+    reply_to: "hello@passwordless.tools",
+    reply_to_name: "Passwordless Support"
+  ],
+  challenge: [
+    name: "Passwordless Tools",
+    email: "verify@auth.passwordlesstools.com",
+    domain: "auth.passwordlesstools.com",
     reply_to: "hello@passwordless.tools",
     reply_to_name: "Passwordless Support"
   ]

@@ -37,8 +37,8 @@ defmodule Passwordless.Action do
 
     has_one :challenge, Challenge, where: [current: true]
 
-    has_many :challenges, Challenge
-    has_many :action_events, ActionEvent
+    has_many :challenges, Challenge, preload_order: [asc: :inserted_at]
+    has_many :action_events, ActionEvent, preload_order: [asc: :inserted_at]
 
     belongs_to :rule, Rule
     belongs_to :actor, Actor

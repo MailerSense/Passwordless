@@ -45,7 +45,7 @@ defmodule Passwordless.Domain do
     field :state, Ecto.Enum, values: @states, default: :aws_not_started
     field :verified, :boolean, default: false
 
-    has_many :records, DomainRecord
+    has_many :records, DomainRecord, preload_order: [asc: :inserted_at]
 
     belongs_to :app, App
 

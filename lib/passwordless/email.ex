@@ -33,7 +33,7 @@ defmodule Passwordless.Email do
     field :opted_out, :boolean, virtual: true
     field :opted_out_at, :utc_datetime_usec
 
-    has_many :email_messages, EmailMessage
+    has_many :email_messages, EmailMessage, preload_order: [asc: :inserted_at]
 
     belongs_to :actor, Actor
 

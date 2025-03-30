@@ -73,10 +73,10 @@ defmodule Passwordless.Actor do
 
     has_one :recovery_codes, RecoveryCodes
 
-    has_many :totps, TOTP
-    has_many :emails, Email
-    has_many :phones, Phone
-    has_many :actions, Action
+    has_many :totps, TOTP, preload_order: [asc: :inserted_at]
+    has_many :emails, Email, preload_order: [asc: :inserted_at]
+    has_many :phones, Phone, preload_order: [asc: :inserted_at]
+    has_many :actions, Action, preload_order: [asc: :inserted_at]
 
     timestamps()
     soft_delete_timestamp()

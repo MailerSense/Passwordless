@@ -23,7 +23,7 @@ defmodule Passwordless.Rule do
     field :condition, :map, default: %{}
     field :effects, :map, default: %{}
 
-    has_many :actions, Action
+    has_many :actions, Action, preload_order: [asc: :inserted_at]
 
     timestamps()
   end

@@ -90,7 +90,7 @@ defmodule Passwordless.Challenge do
 
     has_one :email_message, EmailMessage, where: [current: true]
 
-    has_many :email_messages, EmailMessage
+    has_many :email_messages, EmailMessage, preload_order: [asc: :inserted_at]
 
     belongs_to :action, Action
 

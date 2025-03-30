@@ -12,6 +12,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   alias Passwordless.App
   alias Passwordless.Authenticators
   alias Passwordless.Challenge
+  alias Passwordless.Domain
   alias Passwordless.Email
   alias Passwordless.EmailMessage
   alias Passwordless.EmailTemplate
@@ -20,6 +21,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   alias Passwordless.MailerExecutor
   alias Passwordless.OTP
   alias Passwordless.Repo
+  alias PasswordlessWeb.Email, as: EmailWeb
   alias Swoosh.Email, as: SwooshEmail
 
   @challenge :email_otp
@@ -37,12 +39,32 @@ defmodule Passwordless.Challenges.EmailOTP do
 
     with {:ok, email_template} <- get_email_template(authenticator),
          {:ok, email_template_version} <- get_latest_template_version(actor, email_template),
-         {:ok, email_message} <- create_email_message(action, email, email_template, email_template_version, otp_code),
+         {:ok, domain} <- get_sending_domain(authenticator),
          :ok <- update_existing_messages(app, action),
-         {:ok, _otp} <- create_otp(authenticator, email_message, otp_code),
+         {:ok, email_message} <-
+           create_email_message(
+             actor,
+             action,
+             domain,
+             email,
+             email_template,
+             email_template_version,
+             authenticator,
+             otp_code
+           ),
+         {:ok, otp} <- create_otp(authenticator, email_message, otp_code),
          {:ok, challenge} <- update_challenge_state(app, challenge, :otp_sent),
          :ok <- queue_email_for_sending(email_message, email, otp_code),
-         do: {:ok, %Action{action | challenge: challenge}}
+         do:
+           {:ok,
+            %Action{
+              action
+              | challenge: %Challenge{
+                  challenge
+                  | email_message: %EmailMessage{email_message | otp: otp},
+                    email_messages: Repo.preload(challenge, :email_messages).email_messages
+                }
+            }}
   end
 
   @impl true
@@ -76,64 +98,66 @@ defmodule Passwordless.Challenges.EmailOTP do
   end
 
   defp get_latest_template_version(%Actor{} = actor, %EmailTemplate{} = template) do
-    template_version =
-      template
-      |> Ecto.assoc(:versions)
-      |> where([v], v.language == ^actor.language)
-      |> Repo.one()
+    case template
+         |> Ecto.assoc(:versions)
+         |> where([v], v.language == ^actor.language)
+         |> Repo.one() do
+      %EmailTemplateVersion{} = version ->
+        {:ok, version}
 
-    if template_version do
-      {:ok, template_version}
-    else
-      template_version =
-        template
-        |> Ecto.assoc(:versions)
-        |> where([v], v.language == :en)
-        |> Repo.one()
-
-      if template_version do
-        {:ok, template_version}
-      else
-        {:error, :template_not_found}
-      end
+      _ ->
+        case template
+             |> Ecto.assoc(:versions)
+             |> where([v], v.language == :en)
+             |> Repo.one() do
+          %EmailTemplateVersion{} = version -> {:ok, version}
+          _ -> {:error, :template_not_found}
+        end
     end
   end
 
   defp create_email_message(
-         %Action{} = action,
+         %Actor{} = actor,
+         %Action{challenge: %Challenge{} = challenge} = action,
+         %Domain{} = domain,
          %Email{} = email,
          %EmailTemplate{} = template,
          %EmailTemplateVersion{} = version,
+         %Authenticators.Email{} = authenticator,
          otp_code
        ) do
     # Render the email content with the OTP code
     html_content = render_email_content(version.html_body || "", otp_code)
     text_content = render_email_content(version.text_body || "", otp_code)
 
-    # Create the email message
-    %EmailMessage{}
-    |> EmailMessage.changeset(%{
+    attrs = %{
       state: :created,
-      sender: Application.get_env(:passwordless, :sender_email, "noreply@example.com"),
-      sender_name: Application.get_env(:passwordless, :sender_name, "Passwordless"),
+      sender: authenticator.sender,
+      sender_name: authenticator.sender_name,
       recipient: email.address,
-      recipient_name: nil,
+      recipient_name: Actor.handle(actor),
       subject: version.subject,
       preheader: version.preheader,
       text_content: text_content,
       html_content: html_content,
       current: true,
-      action_id: action.id,
       email_id: email.id,
+      domain_id: domain.id,
+      challenge_id: challenge.id,
       email_template_id: template.id
-    })
+    }
+
+    # Create the email message
+    challenge
+    |> Ecto.build_assoc(:email_messages)
+    |> EmailMessage.changeset(attrs)
     |> Repo.insert()
   end
 
-  defp update_existing_messages(%App{} = app, %Action{} = action) do
+  defp update_existing_messages(%App{} = app, %Action{challenge: %Challenge{} = challenge}) do
     opts = [prefix: Database.Tenant.to_prefix(app)]
 
-    action
+    challenge
     |> Ecto.assoc(:email_messages)
     |> where([m], m.current == true)
     |> Repo.update_all([set: [current: false]], opts)
@@ -151,6 +175,19 @@ defmodule Passwordless.Challenges.EmailOTP do
     |> Ecto.build_assoc(:otp)
     |> OTP.changeset(%{code: otp_code, expires_at: expires_at})
     |> Repo.insert()
+  end
+
+  defp get_sending_domain(%Authenticators.Email{} = authenticator) do
+    case Repo.preload(authenticator, :domain) do
+      %Authenticators.Email{domain: %Domain{} = domain} ->
+        {:ok, domain}
+
+      nil ->
+        case Repo.get_by(Domain, name: EmailWeb.challenge_email_domain()) do
+          %Domain{} = domain -> {:ok, domain}
+          _ -> {:error, :default_domain_not_found}
+        end
+    end
   end
 
   defp queue_email_for_sending(%EmailMessage{} = email_message, %Email{} = email, otp_code) do

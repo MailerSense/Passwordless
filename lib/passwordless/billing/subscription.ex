@@ -43,7 +43,7 @@ defmodule Passwordless.Billing.Subscription do
 
     belongs_to :customer, Customer
 
-    has_many :items, SubscriptionItem
+    has_many :items, SubscriptionItem, preload_order: [asc: :inserted_at]
 
     timestamps()
     soft_delete_timestamp()

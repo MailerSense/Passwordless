@@ -57,9 +57,9 @@ defmodule Passwordless.App do
     has_one :passkey, Authenticators.Passkey
     has_one :recovery_codes, Authenticators.RecoveryCodes
 
-    has_many :email_templates, EmailTemplate
-    has_many :email_message_mappings, EmailMessageMapping
-    has_many :magic_link_mappings, MagicLinkMapping
+    has_many :email_templates, EmailTemplate, preload_order: [asc: :inserted_at]
+    has_many :email_message_mappings, EmailMessageMapping, preload_order: [asc: :inserted_at]
+    has_many :magic_link_mappings, MagicLinkMapping, preload_order: [asc: :inserted_at]
 
     belongs_to :org, Org
 

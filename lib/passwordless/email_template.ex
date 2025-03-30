@@ -24,7 +24,7 @@ defmodule Passwordless.EmailTemplate do
   schema "email_templates" do
     field :name, :string
 
-    has_many :versions, EmailTemplateVersion
+    has_many :versions, EmailTemplateVersion, preload_order: [asc: :inserted_at]
 
     belongs_to :app, App
 
