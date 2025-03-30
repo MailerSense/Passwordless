@@ -17,6 +17,8 @@ defmodule Passwordless.Authenticators.SecurityKey do
     field :relying_party_id, :string
 
     embeds_many :expected_origins, ExpectedOrigin, on_replace: :delete do
+      @derive Jason.Encoder
+
       field :url, :string
     end
 

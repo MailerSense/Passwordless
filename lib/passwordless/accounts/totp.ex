@@ -14,6 +14,8 @@ defmodule Passwordless.Accounts.TOTP do
     field :code, :string, virtual: true
 
     embeds_many :backup_codes, BackupCode, on_replace: :delete do
+      @derive Jason.Encoder
+
       field :code, :string
       field :used_at, :utc_datetime_usec
     end

@@ -18,6 +18,8 @@ defmodule Passwordless.RecoveryCodes do
   }
   schema "recovery_codes" do
     embeds_many :codes, Code, on_replace: :delete do
+      @derive Jason.Encoder
+
       field :code, :string, redact: true
       field :used_at, :utc_datetime_usec
     end

@@ -51,17 +51,23 @@ defmodule Passwordless.EmailMessage do
     field :current, :boolean, default: false
 
     embeds_one :metadata, Metadata, on_replace: :delete do
+      @derive Jason.Encoder
+
       field :source, :string
       field :source_arn, :string
       field :sending_account_id, :string
       field :headers_truncated, :boolean
 
       embeds_many :tags, Tag, on_replace: :delete do
+        @derive Jason.Encoder
+
         field :name, :string
         field :value, {:array, :string}
       end
 
       embeds_many :headers, Header, on_replace: :delete do
+        @derive Jason.Encoder
+
         field :name, :string
         field :value, :string
       end

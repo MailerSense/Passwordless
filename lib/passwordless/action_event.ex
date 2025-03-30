@@ -23,12 +23,7 @@ defmodule Passwordless.ActionEvent do
     field :event, :string
 
     embeds_one :metadata, Metadata, on_replace: :delete do
-      @derive {Jason.Encoder,
-               only: [
-                 :before,
-                 :after,
-                 :attrs
-               ]}
+      @derive Jason.Encoder
 
       field :before, :map, default: %{}
       field :after, :map, default: %{}

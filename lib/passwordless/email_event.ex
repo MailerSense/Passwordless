@@ -80,6 +80,8 @@ defmodule Passwordless.EmailEvent do
     field :bounce_subtype, Ecto.Enum, values: @bounce_subtypes
 
     embeds_many :bounced_recipients, BouncedRecipient, on_replace: :delete do
+      @derive Jason.Encoder
+
       field :name, :string
       field :email, :string
       field :status, :string
@@ -93,6 +95,8 @@ defmodule Passwordless.EmailEvent do
     field :complaint_user_agent, :string
 
     embeds_many :complained_recipients, ComplainedRecipient, on_replace: :delete do
+      @derive Jason.Encoder
+
       field :name, :string
       field :email, :string
     end
@@ -111,6 +115,8 @@ defmodule Passwordless.EmailEvent do
     field :delay_expiration_time, :utc_datetime_usec
 
     embeds_many :delayed_recipients, DelayedRecipient, on_replace: :delete do
+      @derive Jason.Encoder
+
       field :name, :string
       field :email, :string
       field :status, :string
