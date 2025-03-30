@@ -1,16 +1,16 @@
-defmodule Passwordless.Email.Queue.Producer do
+defmodule Passwordless.EventQueue.Producer do
   @moduledoc """
   Producer for Amazon SQS/SNS events
   """
 
   use GenStage
 
-  alias Passwordless.Email.Queue.Message
-  alias Passwordless.Email.Queue.Source
+  alias Passwordless.EventQueue.Message
+  alias Passwordless.EventQueue.Source
 
   require Logger
 
-  @registry Passwordless.Email.Queue.Registry
+  @registry Passwordless.EventQueue.Registry
   @max_messages 10
   @receive_interval :timer.seconds(5)
   @default_receive_opts %{"WaitTimeSeconds" => 10, "VisibilityTimeout" => 30}
@@ -19,7 +19,7 @@ defmodule Passwordless.Email.Queue.Producer do
     @moduledoc false
     use TypedStruct
 
-    alias Passwordless.Email.Queue.Source
+    alias Passwordless.EventQueue.Source
 
     typedstruct do
       field :source, Source.t(), enforce: true

@@ -1,15 +1,15 @@
-defmodule Passwordless.Email.Queue.ConsumerManager do
+defmodule Passwordless.EventQueue.ConsumerManager do
   @moduledoc """
   Manages the lifecycle of event consumers.
   """
 
   use ConsumerSupervisor
 
-  alias Passwordless.Email.Queue.Consumer
-  alias Passwordless.Email.Queue.Deduplicator
-  alias Passwordless.Email.Queue.Source
+  alias Passwordless.EventQueue.Consumer
+  alias Passwordless.EventQueue.Deduplicator
+  alias Passwordless.EventQueue.Source
 
-  @registry Passwordless.Email.Queue.Registry
+  @registry Passwordless.EventQueue.Registry
 
   def start_link(%Source{} = source) do
     ConsumerSupervisor.start_link(__MODULE__, source, name: via(source.id))

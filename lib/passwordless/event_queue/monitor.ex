@@ -1,12 +1,12 @@
-defmodule Passwordless.Email.Queue.Monitor do
+defmodule Passwordless.EventQueue.Monitor do
   @moduledoc """
   Monitors the health of the event sources.
   """
 
   use GenServer
 
-  alias Passwordless.Email.Queue.Manager
-  alias Passwordless.Email.Queue.Source
+  alias Passwordless.EventQueue.Manager
+  alias Passwordless.EventQueue.Source
 
   require Logger
 

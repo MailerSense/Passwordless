@@ -1,16 +1,16 @@
-defmodule Passwordless.Email.Queue.Pipeline do
+defmodule Passwordless.EventQueue.Pipeline do
   @moduledoc """
   A pipeline for consuming and processing events from Amazon SQS/SNS.
   """
 
   use Supervisor
 
-  alias Passwordless.Email.Queue.ConsumerManager
-  alias Passwordless.Email.Queue.Deduplicator
-  alias Passwordless.Email.Queue.Producer
-  alias Passwordless.Email.Queue.Source
+  alias Passwordless.EventQueue.ConsumerManager
+  alias Passwordless.EventQueue.Deduplicator
+  alias Passwordless.EventQueue.Producer
+  alias Passwordless.EventQueue.Source
 
-  @registry Passwordless.Email.Queue.Registry
+  @registry Passwordless.EventQueue.Registry
 
   def start_link(%Source{} = source) do
     Supervisor.start_link(__MODULE__, source, name: via(source.id))

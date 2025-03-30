@@ -1,11 +1,11 @@
-defmodule Passwordless.Email.Queue.Message do
+defmodule Passwordless.EventQueue.Message do
   @moduledoc """
   A message received from Amazon SQS.
   """
 
   use TypedStruct
 
-  alias Passwordless.Email.Queue.Source
+  alias Passwordless.EventQueue.Source
 
   typedstruct do
     field :id, binary(), enforce: true

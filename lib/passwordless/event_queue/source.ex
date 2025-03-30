@@ -1,4 +1,4 @@
-defmodule Passwordless.Email.Queue.Source do
+defmodule Passwordless.EventQueue.Source do
   @moduledoc false
 
   use TypedStruct

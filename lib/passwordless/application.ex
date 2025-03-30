@@ -41,7 +41,7 @@ defmodule Passwordless.Application do
           {Task.Supervisor, name: Passwordless.BackgroundTask},
           {Passwordless.SecretVault, @secret_name},
           Cache,
-          Passwordless.Email.Queue.Manager,
+          Passwordless.EventQueue.Manager,
           {Oban, Application.fetch_env!(:passwordless, Oban)},
           {Passwordless.HealthCheck, health_checks()},
           PasswordlessWeb.Endpoint

@@ -1,14 +1,14 @@
-defmodule Passwordless.Email.Queue.PipelineManager do
+defmodule Passwordless.EventQueue.PipelineManager do
   @moduledoc """
   Dynamically spawns processing pipelines for events from Amazon SQS/SNS.
   """
 
   use DynamicSupervisor
 
-  alias Passwordless.Email.Queue.Pipeline
-  alias Passwordless.Email.Queue.Source
+  alias Passwordless.EventQueue.Pipeline
+  alias Passwordless.EventQueue.Source
 
-  @registry Passwordless.Email.Queue.Registry
+  @registry Passwordless.EventQueue.Registry
 
   def start_link(_opts) do
     DynamicSupervisor.start_link(__MODULE__, nil, name: __MODULE__)

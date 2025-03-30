@@ -1,15 +1,15 @@
-defmodule Passwordless.Email.Queue.Deduplicator do
+defmodule Passwordless.EventQueue.Deduplicator do
   @moduledoc """
   Deduplicates SQS messages based on their IDs.
   """
 
   use GenStage
 
-  alias Passwordless.Email.Queue.Message
-  alias Passwordless.Email.Queue.Producer
-  alias Passwordless.Email.Queue.Source
+  alias Passwordless.EventQueue.Message
+  alias Passwordless.EventQueue.Producer
+  alias Passwordless.EventQueue.Source
 
-  @registry Passwordless.Email.Queue.Registry
+  @registry Passwordless.EventQueue.Registry
 
   def start_link(%Source{} = source) do
     GenStage.start_link(__MODULE__, source, name: via(source.id))

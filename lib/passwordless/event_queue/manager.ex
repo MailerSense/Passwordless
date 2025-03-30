@@ -1,18 +1,19 @@
-defmodule Passwordless.Email.Queue.Manager do
+defmodule Passwordless.EventQueue.Manager do
   @moduledoc """
   Manages the lifecycle of event processing pipelines.
   """
 
   use Supervisor
 
-  alias Passwordless.Email.Queue.Monitor
-  alias Passwordless.Email.Queue.PipelineManager
-  alias Passwordless.Email.Queue.Source
+  alias Passwordless.EventQueue.Monitor
+  alias Passwordless.EventQueue.PipelineManager
+  alias Passwordless.EventQueue.Source
 
   require Logger
 
-  @registry Passwordless.Email.Queue.Registry
+  @registry Passwordless.EventQueue.Registry
   @queues Application.compile_env!(:passwordless, :queues)
+  @env Application.compile_env!(:passwordless, :env)
 
   def start_link(_opts) do
     Supervisor.start_link(__MODULE__, nil, name: __MODULE__)
