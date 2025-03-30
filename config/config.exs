@@ -132,6 +132,8 @@ config :passwordless, :emails,
     reply_to_name: "Passwordless Support"
   ]
 
+config :passwordless, :queues, email_notifications: %{sqs_queue_url: ""}
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.23.0",
