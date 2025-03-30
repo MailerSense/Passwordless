@@ -74,6 +74,7 @@ defmodule Passwordless.Challenge do
              :type,
              :state,
              :current,
+             :email_message,
              :email_messages,
              :inserted_at,
              :updated_at

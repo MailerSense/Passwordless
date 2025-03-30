@@ -1,7 +1,7 @@
 defmodule Passwordless.Domain do
   @moduledoc false
 
-  use Passwordless.Schema, prefix: "domn"
+  use Passwordless.Schema, prefix: "domain"
 
   import Ecto.Query
 

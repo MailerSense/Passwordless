@@ -21,9 +21,20 @@ defmodule Passwordless.ActionEvent do
   }
   schema "action_events" do
     field :event, :string
-    field :metadata, :map, default: %{}
 
-    # User
+    embeds_one :metadata, Metadata, on_replace: :delete do
+      @derive {Jason.Encoder,
+               only: [
+                 :before,
+                 :after,
+                 :attrs
+               ]}
+
+      field :before, :map, default: %{}
+      field :after, :map, default: %{}
+      field :attrs, :map, default: %{}
+    end
+
     field :user_agent, :string
     field :ip_address, :string
     field :country, :string

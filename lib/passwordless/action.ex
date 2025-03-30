@@ -3,7 +3,7 @@ defmodule Passwordless.Action do
   An actor avent.
   """
 
-  use Passwordless.Schema, prefix: "actn"
+  use Passwordless.Schema, prefix: "action"
 
   import Ecto.Query
 
@@ -21,6 +21,7 @@ defmodule Passwordless.Action do
              :id,
              :name,
              :state,
+             :challenge,
              :challenges,
              :action_events,
              :inserted_at,
