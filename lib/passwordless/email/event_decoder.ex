@@ -44,7 +44,7 @@ defmodule Passwordless.Email.EventDecoder do
   end
 
   defp get_message_by_external_id(%{external_id: external_id}) when is_binary(external_id) do
-    case Repo.one(EmailMessageMapping.get_by_ses_id(external_id)) do
+    case Repo.one(EmailMessageMapping.get_by_external_id(external_id)) do
       {%EmailMessageMapping{email_message_id: email_message_id}, %App{} = app} ->
         opts = [prefix: Database.Tenant.to_prefix(app)]
 

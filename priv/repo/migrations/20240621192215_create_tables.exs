@@ -396,7 +396,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     ## Message mapping
 
     create table(:email_message_mappings, primary_key: false) do
-      add :ses_id, :string, primary_key: true
+      add :external_id, :string, primary_key: true
       add :email_message_id, :uuid, null: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false

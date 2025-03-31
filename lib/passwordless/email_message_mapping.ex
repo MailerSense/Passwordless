@@ -16,7 +16,7 @@ defmodule Passwordless.EmailMessageMapping do
   @foreign_key_type Database.PrefixedUUID
 
   schema "email_message_mapping" do
-    field :ses_id, :string, primary_key: true
+    field :external_id, :string, primary_key: true
     field :email_message_id, :binary_id
 
     belongs_to :app, App
@@ -24,17 +24,17 @@ defmodule Passwordless.EmailMessageMapping do
     timestamps(updated_at: false)
   end
 
-  def get_by_ses_id(ses_id) when is_binary(ses_id) do
+  def get_by_external_id(external_id) when is_binary(external_id) do
     from(
       m in __MODULE__,
-      where: m.ses_id == ^ses_id,
+      where: m.external_id == ^external_id,
       left_join: a in assoc(m, :app),
       select: {m, a}
     )
   end
 
   @fields ~w(
-    ses_id
+    external_id
     email_message_id
     app_id
   )a
@@ -48,7 +48,7 @@ defmodule Passwordless.EmailMessageMapping do
     message_mapping
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> ChangesetExt.ensure_trimmed(:ses_id)
+    |> ChangesetExt.ensure_trimmed(:external_id)
     |> unique_constraint(:email_message_id)
     |> unsafe_validate_unique(:email_message_id, Passwordless.Repo)
     |> assoc_constraint(:app)
