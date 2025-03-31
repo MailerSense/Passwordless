@@ -8,6 +8,18 @@ defmodule Passwordless.EmailEvent do
   alias Database.ChangesetExt
   alias Passwordless.EmailMessage
 
+  @kinds ~w(
+    open
+    click
+    bounce
+    complaint
+    delivery
+    reject
+    delay
+    subscription
+    rendering_failure
+    suspend
+  )a
   @bounce_types ~w(
     transient
     permanent
@@ -62,6 +74,9 @@ defmodule Passwordless.EmailEvent do
     sortable: [:id], filterable: [:id]
   }
   schema "email_events" do
+    # Kind
+    field :kind, Ecto.Enum, values: @kinds
+
     # Feedback
     field :feedback_id, :string
 
@@ -140,6 +155,7 @@ defmodule Passwordless.EmailEvent do
   end
 
   @fields ~w(
+    kind
     feedback_id
     open_ip_address
     open_user_agent
@@ -166,7 +182,7 @@ defmodule Passwordless.EmailEvent do
     suspend_reason
   )a
 
-  @required_fields ~w()a
+  @required_fields ~w(kind)a
 
   @doc """
   A changeset to create a new email event.

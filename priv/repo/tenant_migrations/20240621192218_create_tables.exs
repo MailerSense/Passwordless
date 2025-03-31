@@ -139,6 +139,9 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create table(:email_events, primary_key: false) do
       add :id, :uuid, primary_key: true
 
+      # Kind
+      add :kind, :string, null: false
+
       # Open
       add :open_ip_address, :string
       add :open_user_agent, :string

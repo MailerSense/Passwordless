@@ -10,13 +10,12 @@ defmodule Passwordless.Email.EventDecoder do
   alias Passwordless.Repo
 
   def create_message_from_event(raw_message) when is_map(raw_message) do
-    with {:ok, parsed_log, parsed_message, parsed_event} <- LogParser.parse(raw_message) do
+    with {:ok, parsed_message, parsed_event} <- LogParser.parse(raw_message) do
       Repo.transact(fn ->
         with {:ok, app, message} <- get_message_by_external_id(parsed_message),
              {:ok, message} <- update_message(app, message, parsed_message),
              {:ok, event} <- create_message_event(app, message, parsed_event),
-             {:ok, log} <- Activity.log(:email, message, event, parsed_log),
-             {:ok, _suppression} <- Guardian.check(log),
+             {:ok, _suppression} <- Guardian.check(app, event, message),
              do: {:ok, message}
       end)
     end
@@ -49,8 +48,11 @@ defmodule Passwordless.Email.EventDecoder do
         opts = [prefix: Database.Tenant.to_prefix(app)]
 
         case Repo.get(EmailMessage, email_message_id, opts) do
-          %EmailMessage{} = message -> {:ok, app, message}
-          _ -> {:error, :message_not_found}
+          %EmailMessage{} = message ->
+            {:ok, app, Repo.preload(message, [:domain, {:email, [:actor]}])}
+
+          _ ->
+            {:error, :message_not_found}
         end
 
       _ ->

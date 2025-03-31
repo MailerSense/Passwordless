@@ -1,18 +1,17 @@
-defmodule MailerSense.Email.Guardian do
+defmodule Passwordless.Email.Guardian do
   @moduledoc """
   Guards the reputation of email contacts based on the email activity.
   """
 
   import Ecto.Query
 
-  alias MailerSense.Activity
-  alias MailerSense.Activity.Log
-  alias MailerSense.Audience
-  alias MailerSense.Audience.Contact
-  alias MailerSense.Email
-  alias MailerSense.Email.Event
-  alias MailerSense.Email.Identity
-  alias MailerSense.Repo
+  alias Passwordless.Actor
+  alias Passwordless.App
+  alias Passwordless.Domain
+  alias Passwordless.Email
+  alias Passwordless.EmailEvent
+  alias Passwordless.EmailMessage
+  alias Passwordless.Repo
 
   @window 1000
   @faulty_actions ~w(
@@ -32,15 +31,11 @@ defmodule MailerSense.Email.Guardian do
     spam_complaint: 0.001
   ]
 
-  def check(%Log{
-        org_id: org_id,
-        domain: :email,
-        action: :"message.bounce",
-        event: %Event{bounce_type: :permanent},
-        email_identity_id: identity_id,
-        audience_contact_id: contact_id
-      })
-      when is_binary(org_id) and is_binary(identity_id) and is_binary(contact_id),
+  def check(
+        %App{} = app,
+        %EmailEvent{kind: :bounce, bounce_type: :permanent} = event,
+        %EmailMessage{email: %Email{actor: %Actor{} = actor}, domain: %Domain{} = domain} = message
+      ),
       do: suppress_contact(org_id, contact_id, identity_id, :hard_bounce)
 
   def check(%Log{

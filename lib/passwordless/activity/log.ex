@@ -11,11 +11,12 @@ defmodule Passwordless.Activity.Log do
   alias Passwordless.Accounts.User
   alias Passwordless.Activity.Filter, as: ActivityFilter
   alias Passwordless.App
+  alias Passwordless.Domain
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Org
 
-  @domains ~w(org user)a
-  @domain_actions [
+  @caregories ~w(org user)a
+  @category_actions [
     org: ~w(
       org.update_profile
       org.update_member
@@ -58,7 +59,7 @@ defmodule Passwordless.Activity.Log do
       subscription_item.deleted
     )a
   ]
-  @actions @domain_actions |> Keyword.values() |> Enum.flat_map(& &1)
+  @actions @category_actions |> Keyword.values() |> Enum.flat_map(& &1)
 
   @derive {
     Flop.Schema,
@@ -73,7 +74,7 @@ defmodule Passwordless.Activity.Log do
   }
   schema "activity_logs" do
     field :action, Ecto.Enum, values: @actions
-    field :domain, Ecto.Enum, values: @domains
+    field :category, Ecto.Enum, values: @caregories
     field :metadata, :map
     field :happened_at, :utc_datetime_usec
 
@@ -86,6 +87,9 @@ defmodule Passwordless.Activity.Log do
     # App
     belongs_to :app, Passwordless.App
 
+    # Email
+    belongs_to :domain, Domain, type: :binary_id
+
     # Billing
     belongs_to :billing_customer, Passwordless.Billing.Customer
     belongs_to :billing_subscription, Passwordless.Billing.Subscription
@@ -93,7 +97,7 @@ defmodule Passwordless.Activity.Log do
     timestamps(updated_at: false)
   end
 
-  def domain_action, do: @domain_actions
+  def domain_action, do: @category_actions
 
   def full_recipient_parts(%__MODULE__{user: %User{name: name, email: email}}), do: {:user, name, email}
 
@@ -204,6 +208,9 @@ defmodule Passwordless.Activity.Log do
     app_id
     billing_customer_id
     billing_subscription_id
+    email_event_id
+    email_message_id
+    domain_id
   )a
 
   @required_fields ~w(
@@ -225,6 +232,9 @@ defmodule Passwordless.Activity.Log do
     |> assoc_constraint(:auth_token)
     |> assoc_constraint(:target_user)
     |> assoc_constraint(:app)
+    |> assoc_constraint(:email_event)
+    |> assoc_constraint(:email_message)
+    |> assoc_constraint(:domain)
   end
 
   @doc """

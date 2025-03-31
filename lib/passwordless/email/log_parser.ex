@@ -77,10 +77,10 @@ defmodule Passwordless.Email.LogParser do
 
     with {:ok, kind} <- kind,
          {:ok, object_name} <- Map.fetch(@objects, kind),
-         {:ok, log, message, event} <- parse_mail(payload["mail"]),
-         {:ok, log_details, message_details, event_details} <- parse_object(kind, payload[object_name]),
+         {:ok, message} <- parse_mail(payload["mail"]),
+         {:ok, message_details, event_details} <- parse_object(kind, payload[object_name]),
          :ok <- message_valid?(message),
-         do: {:ok, Map.merge(log, log_details), Map.merge(message, message_details), Map.merge(event, event_details)}
+         do: {:ok, Map.merge(message, message_details), event_details}
   end
 
   def parse(_), do: {:error, :invalid_payload}
@@ -126,8 +126,9 @@ defmodule Passwordless.Email.LogParser do
           }
       end)
 
-    {:ok, %{action: :"message.bounce"}, %{state: :bounced},
+    {:ok, %{state: :bounced},
      %{
+       kind: :bounce,
        feedback_id: feedback_id,
        bounce_type: bounce_type,
        bounce_subtype: bounce_subtype,
@@ -174,8 +175,9 @@ defmodule Passwordless.Email.LogParser do
         %{name: name, email: email}
       end)
 
-    {:ok, %{action: :"message.complain"}, %{state: :complaint_received},
+    {:ok, %{state: :complaint_received},
      %{
+       kind: :complain,
        feedback_id: feedback_id,
        complaint_type: complaint_type,
        complaint_subtype: complaint_subtype,
@@ -217,8 +219,9 @@ defmodule Passwordless.Email.LogParser do
         _ -> nil
       end
 
-    {:ok, %{action: :"message.deliver"}, %{state: :delivered},
+    {:ok, %{state: :delivered},
      %{
+       kind: :deliver,
        recipients: recipients,
        delivery_smtp_response: smtp_response,
        delivery_reporting_mta: reporting_mta,
@@ -227,10 +230,10 @@ defmodule Passwordless.Email.LogParser do
      }}
   end
 
-  defp parse_object("Send", %{}), do: {:ok, %{action: :"message.send"}, %{state: :sent}, %{}}
+  defp parse_object("Send", %{}), do: {:ok, %{state: :sent}, %{kind: :sent}}
 
   defp parse_object("Reject", %{"reason" => reason}) when is_binary(reason),
-    do: {:ok, %{action: :"message.reject"}, %{state: :rejected}, %{reject_reason: :bad_request}}
+    do: {:ok, %{state: :rejected}, %{kind: :reject, reject_reason: :bad_request}}
 
   defp parse_object("Open", %{"timestamp" => timestamp} = payload) when is_binary(timestamp) do
     timestamp =
@@ -251,8 +254,9 @@ defmodule Passwordless.Email.LogParser do
         _ -> nil
       end
 
-    {:ok, %{action: :"message.open"}, %{state: :opened},
+    {:ok, %{state: :opened},
      %{
+       kind: :open,
        open_user_agent: user_agent,
        open_ip_address: ip_address,
        happened_at: timestamp
@@ -290,8 +294,9 @@ defmodule Passwordless.Email.LogParser do
         _ -> nil
       end
 
-    {:ok, %{action: :"message.click"}, %{state: :clicked},
+    {:ok, %{state: :clicked},
      %{
+       kind: :click,
        click_url: link,
        click_url_tags: link_tags,
        click_user_agent: user_agent,
@@ -340,8 +345,9 @@ defmodule Passwordless.Email.LogParser do
           }
       end)
 
-    {:ok, %{action: :"message.delay"}, %{state: :delayed},
+    {:ok, %{state: :delayed},
      %{
+       kind: :delay,
        delay_reason: delay_type,
        delay_reporting_mta: reporting_mta,
        delay_expiration_time: expiration_time,
@@ -369,8 +375,9 @@ defmodule Passwordless.Email.LogParser do
         _ -> nil
       end
 
-    {:ok, %{action: :"message.subscribe"}, %{},
+    {:ok, %{},
      %{
+       kind: :subscribe,
        source: source,
        contact_list: contact_list,
        happened_at: timestamp
@@ -390,8 +397,9 @@ defmodule Passwordless.Email.LogParser do
         _ -> nil
       end
 
-    {:ok, %{action: :"message.fail_rendering"}, %{},
+    {:ok, %{},
      %{
+       kind: :fail_rendering,
        error_message: error_message,
        teplate_name: teplate_name,
        happened_at: DateTime.utc_now()
@@ -471,7 +479,7 @@ defmodule Passwordless.Email.LogParser do
       |> Map.put_new(:recipient, dest_email)
       |> Map.put_new(:recipient_name, dest_name)
 
-    {:ok, %{happened_at: timestamp}, parsed_message, %{}}
+    {:ok, parsed_message}
   end
 
   defp parse_mail(_), do: {:error, :invalid_payload}
