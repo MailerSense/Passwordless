@@ -70,6 +70,7 @@ defmodule Passwordless.EmailTemplateVersion do
   @required_fields ~w(
     language
     subject
+    preheader
     email_template_id
   )a
 

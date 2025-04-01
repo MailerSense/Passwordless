@@ -123,7 +123,7 @@ defmodule PasswordlessWeb.User.SecurityLive do
           type="password"
           field={@user_form[:current_password]}
           value={@current_password}
-          phx-debounce="blur-sm"
+          phx-debounce="blur"
           label={gettext("Password")}
           placeholder={gettext("Enter your password")}
           autocomplete="current-password"

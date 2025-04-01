@@ -256,10 +256,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create table(:email_template_versions, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :language, :string, null: false
-
       add :subject, :string, null: false
-      add :preheader, :string
+      add :language, :string, null: false
+      add :preheader, :string, null: false
 
       add :text_body, :text
       add :html_body, :text
@@ -454,7 +453,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create index(:activity_logs, [:org_id])
     create index(:activity_logs, [:org_id, :action])
-    create index(:activity_logs, [:org_id, :domain])
+    create index(:activity_logs, [:org_id, :category])
     create index(:activity_logs, [:user_id])
     create index(:activity_logs, [:auth_token_id])
     create index(:activity_logs, [:target_user_id])

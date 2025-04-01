@@ -176,7 +176,7 @@ config :tailwind,
   ],
   backpex: [
     args: ~w(
-      --config=assets/tailwind.backpex.config.js
+      --input=assets/css/backpex.css
       --output=priv/static/assets/backpex.css
     ),
     cd: Path.expand("..", __DIR__)
