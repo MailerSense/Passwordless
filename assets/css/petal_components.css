@@ -1139,7 +1139,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply text-base font-medium leading-normal px-4 py-3 transition duration-150 rounded-xl select-none;
 }
 .pc-sidebar__menu-item--active {
-  @apply bg-primary-50 text-primary-700 dark:bg-slate-800 dark:text-white dark:hover:text-white relative;
+  @apply bg-primary-100 text-primary-700 dark:bg-slate-800 dark:text-white dark:hover:text-white relative;
 }
 .pc-sidebar__menu-item-icon--active {
   @apply text-primary-700 group-hover:text-primary-700 dark:text-white dark:group-hover:text-white;

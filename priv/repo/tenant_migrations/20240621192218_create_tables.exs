@@ -71,7 +71,6 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       timestamps()
     end
 
-    create index(:challenges, [:action_id])
     create unique_index(:challenges, [:action_id], where: "\"current\"")
 
     ## Emails
@@ -130,7 +129,6 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create index(:email_messages, [:email_id])
     create index(:email_messages, [:domain_id])
-    create index(:email_messages, [:challenge_id])
     create index(:email_messages, [:email_template_id])
     create unique_index(:email_messages, [:challenge_id], where: "\"current\"")
 
@@ -235,7 +233,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create index(:phone_messages, [:phone_id])
-    create index(:email_messages, [:challenge_id])
+    create index(:phone_messages, [:challenge_id])
 
     ## TOTPS
 

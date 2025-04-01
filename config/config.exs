@@ -166,19 +166,19 @@ config :passwordless,
        {PasswordlessWeb.CoreComponents, :translate_error}
 
 config :tailwind,
-  version: "4.0.0",
+  version: "4.1.0",
   default: [
     args: ~w(
-    --input=css/app.css
-    --output=../priv/static/assets/app.css
-  ),
+      --input=css/app.css
+      --output=../priv/static/assets/app.css
+    ),
     cd: Path.expand("../assets", __DIR__)
   ],
   backpex: [
     args: ~w(
-    --config=tailwind.backpex.config.js
-    --output=../priv/static/assets/backpex.css
-  ),
+      --config=assets/tailwind.backpex.config.js
+      --output=../priv/static/assets/backpex.css
+    ),
     cd: Path.expand("../assets", __DIR__)
   ]
 
