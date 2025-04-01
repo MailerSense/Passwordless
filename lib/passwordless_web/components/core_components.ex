@@ -572,7 +572,7 @@ defmodule PasswordlessWeb.CoreComponents do
 
   defp topbar_dropdown(%{dropdown_type: :global} = assigns) do
     ~H"""
-    <span class="pc-dropdown__trigger-button--with-label--md-solid h-[42px] select-none cursor-not-allowed">
+    <span class="pc-dropdown__trigger-button--with-label--md-solid select-none cursor-not-allowed">
       <.icon name="remix-global-line" class="pc-dropdown__icon" />
       <span>{gettext("Global")}</span>
     </span>

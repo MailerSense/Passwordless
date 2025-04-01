@@ -4,8 +4,8 @@
 @import "tippy.js/dist/tippy.css";
 @import "highlight.js/styles/monokai.css";
 
-@config '../tailwind.config.js';
-
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
 @plugin "../custom.tailwind.plugin.js";
 @plugin "../flag.tailwind.plugin.js";
 @plugin "../heroicon.tailwind.plugin.js";
@@ -50,6 +50,114 @@
 @variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
 @variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
 @variant phx-change-loading (.phx-change-loading&, .phx-change-loading &);
+
+@theme {
+  --font-sans: "Inter var", "sans-serif";
+  --font-mono: "JetBrains Mono", "monospace";
+  --font-display: "Sora", "sans-serif";
+
+  --shadow-m2: 0 1px 2px 0 rgb(16 24 40 / 0.05);
+  --shadow-m3: 0 1px 2px 0 rgb(16 24 40 / 0.05);
+  --shadow-0: 0 1px 3px 0 rgb(16 24 40 / 0.1),
+    0 1px 2px 0px rgb(16 24 40 / 0.06);
+  --shadow-1: 0 4px 8px -2px rgb(16 24 40 / 0.1),
+    0 2px 4px -2px rgb(16 24 40 / 0.06);
+  --shadow-2: 0 12px 16px -4px rgb(16 24 40 / 0.08),
+    0 4px 6px -2px rgb(16 24 40 / 0.03);
+  --shadow-3: 0 20px 24px -4px rgb(16 24 40 / 0.08),
+    0 8px 8px -4px rgb(16 24 40 / 0.03);
+  --shadow-4: 0 24px 48px -12px rgb(16 24 40 / 0.18);
+
+  --color-primary-50: #eff8ff;
+  --color-primary-100: #d1e9ff;
+  --color-primary-200: #b2ddff;
+  --color-primary-300: #84caff;
+  --color-primary-400: #53b1fd;
+  --color-primary-500: #2e90fa;
+  --color-primary-600: #1570ef;
+  --color-primary-700: #175cd3;
+  --color-primary-800: #1849a9;
+  --color-primary-900: #194185;
+  --color-primary-950: #162a55;
+
+  /* Blue (scienceBlue) - used as blue and info */
+  --color-blue-50: #eff8ff;
+  --color-blue-100: #d1e9ff;
+  --color-blue-200: #b2ddff;
+  --color-blue-300: #84caff;
+  --color-blue-400: #53b1fd;
+  --color-blue-500: #2e90fa;
+  --color-blue-600: #1570ef;
+  --color-blue-700: #175cd3;
+  --color-blue-800: #1849a9;
+  --color-blue-900: #194185;
+  --color-blue-950: #162a55;
+
+  --color-info-50: #eff8ff;
+  --color-info-100: #d1e9ff;
+  --color-info-200: #b2ddff;
+  --color-info-300: #84caff;
+  --color-info-400: #53b1fd;
+  --color-info-500: #2e90fa;
+  --color-info-600: #1570ef;
+  --color-info-700: #175cd3;
+  --color-info-800: #1849a9;
+  --color-info-900: #194185;
+  --color-info-950: #162a55;
+
+  /* Danger (murder) */
+  --color-danger-50: #fff0f0;
+  --color-danger-100: #ffdddd;
+  --color-danger-200: #ffc0c0;
+  --color-danger-300: #ff9494;
+  --color-danger-400: #ff5757;
+  --color-danger-500: #ff2323;
+  --color-danger-600: #ff0000;
+  --color-danger-700: #d70000;
+  --color-danger-800: #b10303;
+  --color-danger-900: #920a0a;
+  --color-danger-950: #500000;
+
+  /* Warning (pizazz) */
+  --color-warning-50: #fffbed;
+  --color-warning-100: #fff7d4;
+  --color-warning-200: #ffeba8;
+  --color-warning-300: #ffda71;
+  --color-warning-400: #ffbf38;
+  --color-warning-500: #fda712;
+  --color-warning-600: #f79009;
+  --color-warning-700: #c56a09;
+  --color-warning-800: #9d530f;
+  --color-warning-900: #7e4510;
+  --color-warning-950: #442106;
+
+  /* Success (emerald) */
+  --color-success-50: #f0fdf6;
+  --color-success-100: #ddfbeb;
+  --color-success-200: #bdf5d9;
+  --color-success-300: #89ecbb;
+  --color-success-400: #4fd995;
+  --color-success-500: #31d585;
+  --color-success-600: #1a9f5e;
+  --color-success-700: #187d4d;
+  --color-success-800: #186340;
+  --color-success-900: #165136;
+  --color-success-950: #062d1c;
+
+  /* Streetlight */
+  --color-streetlight-100: #31d585;
+  --color-streetlight-110: #12b76a;
+  --color-streetlight-120: #a6f4c5;
+  --color-streetlight-200: #f79009;
+  --color-streetlight-210: #f79009;
+  --color-streetlight-220: #fedf89;
+  --color-streetlight-300: #f04437;
+  --color-streetlight-310: #f04438;
+  --color-streetlight-320: #fecdca;
+  --color-streetlight-400: #2e90fa;
+  --color-streetlight-410: #2e90fa;
+  --color-streetlight-420: #b2ddff;
+}
 
 .tippy-box[data-theme~="tomato"] {
   @apply bg-gray-500 text-white px-2 py-1.5 text-sm font-semibold;
@@ -181,51 +289,6 @@
     bottom: 0;
     @apply bg-primary-500 dark:bg-primary-400;
   } */
-
-  input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    cursor: pointer;
-    outline: none;
-    @apply h-2 bg-slate-200 dark:bg-slate-700 rounded-full;
-  }
-
-  input[type="range"] {
-    --range: calc(var(--max) - var(--min));
-    --ratio: calc((var(--value) - var(--min)) / var(--range));
-    --sx: calc(0.5 * 2em + var(--ratio) * (100% - 2em));
-  }
-
-  input[type="range"]:focus {
-    outline: none;
-  }
-
-  input[type="range"]::-webkit-slider-runnable-track {
-    @apply h-2 rounded-full;
-    background: linear-gradient(#2e90fa, #2e90fa) 0 / var(--sx) 100% no-repeat,
-      #f1f5f9;
-  }
-
-  .dark input[type="range"]::-webkit-slider-runnable-track {
-    background: linear-gradient(#2e90fa, #2e90fa) 0 / var(--sx) 100% no-repeat,
-      rgba(51, 65, 85, 0.5);
-  }
-
-  input[type="range"]::-moz-range-track {
-    @apply h-2;
-    border: 1px solid #b2b2b2;
-    border-radius: 0.5em;
-    box-shadow: none;
-    background: linear-gradient(#1570ef, #1570ef) 0 / var(--sx) 100% no-repeat,
-      #efefef;
-  }
-
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    @apply h-4 w-4 shadow-0 rounded-full -mt-1;
-    @apply bg-white ring-1 ring-slate-300 dark:ring-slate-400;
-  }
 
   pre {
     white-space: normal;
