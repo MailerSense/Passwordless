@@ -796,7 +796,7 @@
 
   /* Forms */
   .pc-form-field-wrapper {
-    @apply mb-6;
+    @apply [&:not(:last-child)]:mb-6;
   }
   .pc-form-field-wrapper--no-margin {
     @apply mb-0;
