@@ -97,8 +97,6 @@ defmodule Passwordless.Activity.Log do
     timestamps(updated_at: false)
   end
 
-  def domain_action, do: @category_actions
-
   def full_recipient_parts(%__MODULE__{user: %User{name: name, email: email}}), do: {:user, name, email}
 
   def full_recipient_parts(%__MODULE__{}), do: {nil, nil, nil}
@@ -198,7 +196,7 @@ defmodule Passwordless.Activity.Log do
 
   @fields ~w(
     action
-    domain
+    category
     metadata
     happened_at
     org_id
@@ -215,7 +213,7 @@ defmodule Passwordless.Activity.Log do
 
   @required_fields ~w(
     action
-    domain
+    category
     happened_at
   )a
 
