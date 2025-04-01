@@ -1,11 +1,19 @@
-@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+@variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
+@variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
+@variant phx-change-loading (.phx-change-loading&, .phx-change-loading &);
+
+@plugin "../custom.tailwind.plugin.js";
+@plugin "../flag.tailwind.plugin.js";
+@plugin "../heroicon.tailwind.plugin.js";
+@plugin "../remix.tailwind.plugin.js";
+
+@import "tailwindcss" source("../..");
+
 @import "./petal_components.css";
 @import "tippy.js/dist/tippy.css";
 @import "highlight.js/styles/monokai.css";
-
-.dark {
-  color-scheme: dark;
-}
 
 .tippy-box[data-theme~="tomato"] {
   @apply bg-gray-500 text-white px-2 py-1.5 text-sm font-semibold;
