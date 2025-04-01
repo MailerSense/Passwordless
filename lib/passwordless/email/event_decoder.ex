@@ -1,6 +1,7 @@
 defmodule Passwordless.Email.EventDecoder do
   @moduledoc false
 
+  alias Database.Tenant
   alias Passwordless.App
   alias Passwordless.Email.Guardian
   alias Passwordless.Email.SESParser
@@ -25,7 +26,7 @@ defmodule Passwordless.Email.EventDecoder do
   # Private
 
   defp create_message_event(%App{} = app, %EmailMessage{} = message, attrs) do
-    opts = [prefix: Database.Tenant.to_prefix(app)]
+    opts = [prefix: Tenant.to_prefix(app)]
 
     message
     |> Ecto.build_assoc(:email_events)
@@ -34,7 +35,7 @@ defmodule Passwordless.Email.EventDecoder do
   end
 
   defp update_message(%App{} = app, %EmailMessage{} = message, attrs) do
-    opts = [prefix: Database.Tenant.to_prefix(app)]
+    opts = [prefix: Tenant.to_prefix(app)]
 
     message
     |> EmailMessage.external_changeset(attrs)
@@ -44,7 +45,7 @@ defmodule Passwordless.Email.EventDecoder do
   defp get_message_by_external_id(%{external_id: external_id}) when is_binary(external_id) do
     case Repo.one(EmailMessageMapping.get_by_external_id(external_id)) do
       {%EmailMessageMapping{email_message_id: email_message_id}, %App{} = app} ->
-        opts = [prefix: Database.Tenant.to_prefix(app)]
+        opts = [prefix: Tenant.to_prefix(app)]
 
         case Repo.get(EmailMessage, email_message_id, opts) do
           %EmailMessage{} = message ->

@@ -7,6 +7,7 @@ defmodule Passwordless.Challenges.EmailOTP do
 
   import Ecto.Query
 
+  alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.Actor
   alias Passwordless.App
@@ -156,7 +157,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   end
 
   defp update_existing_messages(%App{} = app, %Action{challenge: %Challenge{} = challenge}) do
-    opts = [prefix: Database.Tenant.to_prefix(app)]
+    opts = [prefix: Tenant.to_prefix(app)]
 
     challenge
     |> Ecto.assoc(:email_messages)
@@ -217,7 +218,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   end
 
   defp update_challenge_state(%App{} = app, %Challenge{} = challenge, state) do
-    opts = [prefix: Database.Tenant.to_prefix(app)]
+    opts = [prefix: Tenant.to_prefix(app)]
 
     challenge
     |> Challenge.state_changeset(%{state: state})
@@ -225,7 +226,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   end
 
   defp update_action_state(%App{} = app, %Action{} = action, state) do
-    opts = [prefix: Database.Tenant.to_prefix(app)]
+    opts = [prefix: Tenant.to_prefix(app)]
 
     action
     |> Action.state_changeset(%{state: state})

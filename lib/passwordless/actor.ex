@@ -8,6 +8,7 @@ defmodule Passwordless.Actor do
   import Ecto.Query
 
   alias Database.ChangesetExt
+  alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.App
   alias Passwordless.Email
@@ -112,14 +113,14 @@ defmodule Passwordless.Actor do
   Get none.
   """
   def get_none(query \\ __MODULE__, %App{} = app) do
-    from q in query, prefix: ^Database.Tenant.to_prefix(app), where: false
+    from q in query, prefix: ^Tenant.to_prefix(app), where: false
   end
 
   @doc """
   Get by app.
   """
   def get_by_app(query \\ __MODULE__, %App{} = app) do
-    from q in query, prefix: ^Database.Tenant.to_prefix(app)
+    from q in query, prefix: ^Tenant.to_prefix(app)
   end
 
   @doc """
