@@ -29,7 +29,7 @@ module.exports = function ({ matchComponents, theme }) {
           .replace(/\r?\n|\r/g, "");
 
         return {
-          [`--flag-${name}`]: `url('data:image/svg+xml;base64,${btoa(
+          [`--flag-${name}`]: `url('data:image/svg+xml;utf8,${encodeURIComponent(
             content,
           )}')`,
           background: `var(--flag-${name}) no-repeat`,

@@ -33,7 +33,7 @@ defmodule PasswordlessWeb.App.DomainLive.ChangeComponent do
     changeset = validate_request(domain, request_params)
 
     case Ecto.Changeset.apply_action(changeset, :insert) do
-      {:ok, %{domain: new_domain} = changes} ->
+      {:ok, %{domain: new_domain}} ->
         case Passwordless.replace_domain(app, domain, %{name: new_domain}, default_domain_records(new_domain)) do
           {:ok, _} ->
             {:noreply,

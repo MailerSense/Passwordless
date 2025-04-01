@@ -1157,7 +1157,6 @@
   .pc-radio-card--sm .pc-radio-card__description {
     @apply text-xs;
   }
-
   .pc-radio-card--lg .pc-radio-card__description {
     @apply text-base;
   }
@@ -1166,27 +1165,21 @@
   .pc-radio-card.peer-checked {
     @apply ring-4;
   }
-
   .pc-radio-card.peer-checked\\:border-primary-300 {
     @apply border-primary-300;
   }
-
   .pc-radio-card.peer-checked\\:bg-primary-50 {
     @apply bg-primary-50;
   }
-
   .pc-radio-card.peer-checked\\:ring-primary-100 {
     @apply ring-primary-100;
   }
-
   .pc-radio-card.dark\\:peer-checked\\:bg-primary-700 {
     @apply dark:bg-primary-700;
   }
-
   .pc-radio-card.dark\\:peer-checked\\:ring-primary-800 {
     @apply dark:ring-primary-800;
   }
-
   .pc-field-icon {
     @apply absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none;
   }
