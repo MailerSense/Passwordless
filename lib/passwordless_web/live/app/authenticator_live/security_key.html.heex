@@ -46,17 +46,20 @@
               required
               wrapper_class="!mb-0 w-full grow"
               disabled={not @enabled}
-            />
-            <.icon_form_button
-              size="sm"
-              name="security_key[expected_origins_drop][]"
-              type="button"
-              icon="custom-trash"
-              title={gettext("Remove")}
-              value={expected_origin.index}
-              event={JS.dispatch("change")}
-              disabled={not @enabled}
-            />
+            >
+              <:action>
+                <.icon_form_button
+                  size="sm"
+                  name="security_key[expected_origins_drop][]"
+                  type="button"
+                  icon="custom-trash"
+                  title={gettext("Remove")}
+                  value={expected_origin.index}
+                  event={JS.dispatch("change")}
+                  disabled={not @enabled}
+                />
+              </:action>
+            </.field>
           </div>
         </.inputs_for>
       </div>
