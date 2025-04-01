@@ -21,7 +21,7 @@
         placeholder={gettext("e.g. YourSite")}
         autocomplete="organization"
         required
-        phx-debounce="blur"
+        phx-debounce="blur-sm"
       />
       <.field
         type="url"
@@ -29,14 +29,14 @@
         placeholder={gettext("e.g. https://gmail.com")}
         autocomplete="url"
         required
-        phx-debounce="blur"
+        phx-debounce="blur-sm"
       />
       <.field
         field={@form[:display_name]}
         placeholder={gettext("e.g. YourApp")}
         autocomplete="organization"
         required
-        phx-debounce="blur"
+        phx-debounce="blur-sm"
       />
     </.form>
 

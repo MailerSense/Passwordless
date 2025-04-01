@@ -107,7 +107,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
         <div>
           <.live_file_input
             upload={@upload}
-            class="block w-full text-sm rounded text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 dark:file:bg-slate-700 dark:file:text-slate-300 dark:hover:file:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 cursor-pointer"
+            class="block w-full text-sm rounded-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 dark:file:bg-slate-700 dark:file:text-slate-300 dark:hover:file:bg-slate-600 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 cursor-pointer"
           />
 
           <p :if={@automatic_help_text} class="pc-form-help-text">
@@ -133,7 +133,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
         <%= for entry <- @upload.entries do %>
           <article class="hidden mt-2 justify-items-center phx-submit-loading:block">
             <div class="flex gap-2 w-full">
-              <.progress color="primary" value={entry.progress} max={100} class="flex-grow mt-2" />
+              <.progress color="primary" value={entry.progress} max={100} class="grow mt-2" />
 
               <button
                 type="button"
@@ -218,7 +218,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
         <div>
           <.live_file_input
             upload={@upload}
-            class="block w-full text-sm rounded text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 dark:file:bg-slate-700 dark:file:text-slate-300 dark:hover:file:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 cursor-pointer"
+            class="block w-full text-sm rounded-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 dark:file:bg-slate-700 dark:file:text-slate-300 dark:hover:file:bg-slate-600 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 cursor-pointer"
           />
 
           <p :if={@automatic_help_text} class="pc-form-help-text">
@@ -244,7 +244,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
         <%= for entry <- @upload.entries do %>
           <article class="hidden mt-2 justify-items-center phx-submit-loading:block">
             <div class="flex gap-2 w-full">
-              <.progress color="primary" value={entry.progress} max={100} class="flex-grow mt-2" />
+              <.progress color="primary" value={entry.progress} max={100} class="grow mt-2" />
 
               <button
                 type="button"

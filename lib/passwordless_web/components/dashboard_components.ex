@@ -294,25 +294,25 @@ defmodule PasswordlessWeb.DashboardComponents do
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
       <.form_label>{gettext("Preview")}</.form_label>
 
-      <div class="flex flex-col gap-y-12 flex-auto flex-shrink-0 p-4 bg-slate-100 rounded-lg dark:bg-slate-700/50">
+      <div class="flex flex-col gap-y-12 flex-auto shrink-0 p-4 bg-slate-100 rounded-lg dark:bg-slate-700/50">
         <div class="flex flex-row items-center max-w-md ml-4">
-          <.avatar name="AU" size="md" color="success" class="flex-shrink-0" />
+          <.avatar name="AU" size="md" color="success" class="shrink-0" />
           <div class="relative px-4 py-2 ml-3 text-sm bg-white shadow-0 dark:bg-slate-600 rounded-xl">
             <.unsafe_markdown content={@preview} class="text-black dark:text-white" />
           </div>
         </div>
 
-        <div class="flex flex-row items-center flex-grow w-full h-auto px-4">
+        <div class="flex flex-row items-center grow w-full h-auto px-4">
           <div class="mr-4">
             <button
               type="button"
               id="microphone"
-              class="size-[36px] flex items-center justify-center text-sm text-slate-600 bg-white rounded-full shadow dark:text-white hover:bg-slate-100 ring-slate-300 dark:bg-slate-700 ring-1 dark:ring-slate-500 group dark:hover:bg-slate-600 active:ring-4 active:ring-blue-300 dark:focus:bg-slate-700 active:animate-pulse active:bg-red-400 dark:active:bg-red-500"
+              class="size-[36px] flex items-center justify-center text-sm text-slate-600 bg-white rounded-full shadow-sm dark:text-white hover:bg-slate-100 ring-slate-300 dark:bg-slate-700 ring-1 dark:ring-slate-500 group dark:hover:bg-slate-600 active:ring-4 active:ring-blue-300 dark:focus:bg-slate-700 active:animate-pulse active:bg-red-400 dark:active:bg-red-500"
             >
               <.icon name="hero-microphone-solid" class="w-4 h-4" />
             </button>
           </div>
-          <div class="flex-grow" id="chat-box">
+          <div class="grow" id="chat-box">
             <div class="relative w-full">
               <input
                 id="chat-message"
@@ -320,7 +320,7 @@ defmodule PasswordlessWeb.DashboardComponents do
                 value=""
                 type="textarea"
                 rows="1"
-                class="flex w-full pl-4 border min-h-10 rounded-xl focus:outline-none border border-slate-300 dark:border-slate-600"
+                class="flex w-full pl-4 border min-h-10 rounded-xl focus:outline-hidden border border-slate-300 dark:border-slate-600"
               />
             </div>
           </div>
@@ -328,7 +328,7 @@ defmodule PasswordlessWeb.DashboardComponents do
             <button
               type="submit"
               id="submit-button"
-              class="size-[36px] flex items-center justify-center text-sm text-slate-600 rounded-full shadow dark:text-white ring-slate-300 hover:bg-slate-100 focus:bg-white ring-1 dark:ring-slate-300 group dark:hover:bg-slate-400 bg-white dark:bg-transparent"
+              class="size-[36px] flex items-center justify-center text-sm text-slate-600 rounded-full shadow-sm dark:text-white ring-slate-300 hover:bg-slate-100 focus:bg-white ring-1 dark:ring-slate-300 group dark:hover:bg-slate-400 bg-white dark:bg-transparent"
             >
               <.icon id="icon" name="hero-paper-airplane-solid" class={["w-4 h-4"]} />
             </button>
@@ -365,7 +365,7 @@ defmodule PasswordlessWeb.DashboardComponents do
     ~H"""
     <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
       <%= for backup_code <- @codes do %>
-        <div class="flex items-center justify-center p-3 font-mono bg-slate-300 rounded dark:bg-slate-700">
+        <div class="flex items-center justify-center p-3 font-mono bg-slate-300 rounded-sm dark:bg-slate-700">
           <h4>
             <%= if backup_code.used_at do %>
               <del class="line-through">{backup_code.code}</del>

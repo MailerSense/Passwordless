@@ -123,7 +123,7 @@ defmodule PasswordlessWeb.User.SecurityLive do
           type="password"
           field={@user_form[:current_password]}
           value={@current_password}
-          phx-debounce="blur"
+          phx-debounce="blur-sm"
           label={gettext("Password")}
           placeholder={gettext("Enter your password")}
           autocomplete="current-password"
@@ -167,7 +167,7 @@ defmodule PasswordlessWeb.User.SecurityLive do
 
       <div class="grid grid-cols-1 gap-3 mt-5 mb-10 md:grid-cols-2">
         <%= for backup_code <- @backup_codes do %>
-          <div class="flex items-center justify-center p-3 font-mono bg-slate-300 rounded dark:bg-slate-700">
+          <div class="flex items-center justify-center p-3 font-mono bg-slate-300 rounded-sm dark:bg-slate-700">
             <h4>
               <%= if backup_code.used_at do %>
                 <del class="line-through">{backup_code.code}</del>

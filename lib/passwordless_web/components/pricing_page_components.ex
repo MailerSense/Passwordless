@@ -136,7 +136,7 @@ defmodule PasswordlessWeb.PricingPageComponents do
           @click={"#{@variable} = '#{option.id}'"}
           class="px-4 py-2 rounded-lg gap-2 flex items-center min-h-[38px] cursor-pointer select-none"
           x-bind:class={"{
-            'text-slate-900 bg-white shadow': #{@variable} === '#{option.id}',
+            'text-slate-900 bg-white shadow-sm': #{@variable} === '#{option.id}',
             'text-slate-600': #{@variable} !== '#{option.id}'
           }"}
         >
@@ -145,7 +145,7 @@ defmodule PasswordlessWeb.PricingPageComponents do
           </p>
           <%= if option[:modifier] do %>
             <div class={[
-              "px-1 py-0.5 bg-slate-900 rounded justify-start gap-2.5 flex"
+              "px-1 py-0.5 bg-slate-900 rounded-sm justify-start gap-2.5 flex"
             ]}>
               <p class="text-primary-300 text-xs font-bold">
                 {option.modifier}

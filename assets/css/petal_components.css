@@ -130,7 +130,7 @@
 }
 
 .pc-icon-button__tooltip__text {
-  @apply relative z-10 p-2 text-xs leading-none text-white bg-slate-900 rounded-sm shadow-2 whitespace-nowrap dark:bg-slate-700;
+  @apply relative z-10 p-2 text-xs leading-none text-white bg-slate-900 rounded-xs shadow-2 whitespace-nowrap dark:bg-slate-700;
 }
 
 .pc-icon-button__tooltip__arrow {
@@ -289,7 +289,7 @@
 }
 
 .pc-badge--rectangle {
-  @apply rounded;
+  @apply rounded-sm;
 }
 
 /* Badges - with icon */
@@ -427,7 +427,7 @@
 
 /* Icon Badge */
 .pc-icon-badge {
-  @apply flex items-center rounded whitespace-nowrap gap-2;
+  @apply flex items-center rounded-sm whitespace-nowrap gap-2;
 }
 
 .pc-icon-badge--md {
@@ -481,7 +481,7 @@
   @apply flex items-center justify-between;
 }
 .pc-alert-base-classes {
-  @apply flex items-center w-full gap-2 p-2 text-base rounded-md focus:outline-none;
+  @apply flex items-center w-full gap-2 p-2 text-base rounded-md focus:outline-hidden;
 }
 .pc-alert__heading {
   @apply pt-1 font-bold;
@@ -490,7 +490,7 @@
   @apply py-1 font-normal;
 }
 .pc-alert__dismiss-button {
-  @apply flex p-2 hover:cursor-pointer hover:rounded;
+  @apply flex p-2 hover:cursor-pointer hover:rounded-sm;
 }
 .pc-alert__dismiss-button--info {
   @apply bg-info-100 dark:bg-info-200 hover:bg-info-200 dark:hover:bg-info-300 hover:text-info-800 dark:hover:text-info-900;
@@ -523,7 +523,7 @@
 /* Alerts - with icon */
 
 .pc-alert__icon-container {
-  @apply self-start flex-shrink-0 pt-0.5 w-6 h-6;
+  @apply self-start shrink-0 pt-0.5 w-6 h-6;
 }
 
 /* Alerts - with icon colors */
@@ -534,7 +534,7 @@
 
 /* Forms */
 :not(.pc-form-field-wrapper--no-margin).pc-form-field-wrapper {
-  @apply [&:not(:last-child)]:mb-6;
+  @apply not-last:mb-6;
 }
 :not(.phx-no-feedback).pc-form-field-wrapper--error input,
 :not(.phx-no-feedback).pc-form-field-wrapper--error select,
@@ -553,7 +553,7 @@
 }
 :not(.phx-no-feedback).pc-form-field-wrapper--error .pc-label,
 :not(.phx-no-feedback).pc-form-field-wrapper--error .pc-checkbox-label {
-  @apply !text-danger-600 dark:!text-danger-300;
+  @apply text-danger-600! dark:text-danger-300!;
 }
 
 :not(.phx-no-feedback).pc-form-field-wrapper--success input,
@@ -574,7 +574,7 @@
 }
 :not(.phx-no-feedback).pc-form-field-wrapper--success .pc-label,
 :not(.phx-no-feedback).pc-form-field-wrapper--success .pc-checkbox-label {
-  @apply !text-success-600 dark:!text-success-300;
+  @apply text-success-600! dark:text-success-300!;
 }
 .pc-checkbox-label {
   @apply flex items-center gap-3 text-base font-normal text-slate-900 cursor-pointer dark:text-white peer-disabled:cursor-not-allowed;
@@ -586,7 +586,7 @@
   @apply block mb-2 text-sm font-medium text-slate-700 dark:text-slate-200;
 }
 .pc-label--for-checkbox {
-  @apply !mb-0 font-normal;
+  @apply mb-0! font-normal;
 }
 .pc-label--required:after {
   color: #e32;
@@ -619,16 +619,16 @@
   @apply mt-2 text-sm text-slate-500 dark:text-slate-400;
 }
 .pc-time-select {
-  @apply select-wrapper dark:text-white;
+  @apply dark:text-white;
 }
 .pc-datetime-select {
-  @apply select-wrapper dark:text-white;
+  @apply dark:text-white;
 }
 .pc-date-select {
-  @apply select-wrapper dark:text-white;
+  @apply dark:text-white;
 }
 .pc-switch {
-  @apply relative inline-flex items-center justify-center flex-shrink-0 w-10 h-6 cursor-pointer mr-3;
+  @apply relative inline-flex items-center justify-center shrink-0 w-10 h-6 cursor-pointer mr-3;
 }
 .pc-switch__input {
   @apply absolute w-10 h-6 bg-white border-none rounded-full cursor-pointer peer-checked:border-0 checked:bg-transparent checked:focus:bg-transparent checked:hover:bg-transparent dark:bg-slate-800;
@@ -637,7 +637,7 @@
   @apply absolute h-6 mx-auto transition-colors duration-200 ease-in-out bg-slate-200 border dark:border-slate-900 rounded-full pointer-events-none w-11 dark:bg-slate-900 peer-checked:border-primary-600 dark:peer-checked:border-primary-500 peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500;
 }
 .pc-switch__fake-input-bg {
-  @apply absolute left-0 inline-block w-5 h-5 transition-transform duration-200 ease-in-out transform translate-x-0 bg-white dark:bg-white rounded-full shadow pointer-events-none peer-checked:translate-x-5 dark:peer-checked:bg-white ring-0;
+  @apply absolute left-0 inline-block w-5 h-5 transition-transform duration-200 ease-in-out transform translate-x-0 bg-white dark:bg-white rounded-full shadow-sm pointer-events-none peer-checked:translate-x-5 dark:peer-checked:bg-white ring-0;
 }
 .pc-switch--disabled {
   @apply opacity-50 cursor-not-allowed;
@@ -646,13 +646,13 @@
 /* Text Input */
 
 .pc-text-input--lg {
-  @apply block w-full px-3.5 py-4 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20;
+  @apply block w-full px-3.5 py-4 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20;
 }
 .pc-text-input--md {
-  @apply block w-full px-3 py-2.5 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20;
+  @apply block w-full px-3 py-2.5 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20;
 }
 .pc-text-input--sm {
-  @apply block min-w-16 px-2.5 py-[5px] font-medium border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-xs disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20;
+  @apply block min-w-16 px-2.5 py-[5px] font-medium border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-xs disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20;
 }
 
 /* Password Input */
@@ -738,13 +738,13 @@
   @apply w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2;
 }
 .pc-select-input {
-  @apply ps-10 block w-full px-3.5 py-2.5 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none disabled:opacity-100;
+  @apply ps-10 block w-full px-3.5 py-2.5 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-hidden disabled:opacity-100;
 }
 .pc-select {
-  @apply block w-full py-2 pl-3 pr-10 text-base border-slate-300 rounded-md cursor-pointer focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed focus:outline-none sm:text-sm dark:disabled:bg-slate-700 dark:text-slate-300 dark:bg-slate-800;
+  @apply block w-full py-2 pl-3 pr-10 text-base border border-slate-300 rounded-md cursor-pointer focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed focus:outline-hidden sm:text-sm dark:disabled:bg-slate-700 dark:text-slate-300 dark:bg-slate-800;
 }
 .pc-file-input {
-  @apply text-sm rounded-md cursor-pointer focus:outline-none file:border-0 text-slate-500 file:text-primary-700 file:font-semibold file:px-4 file:py-2 file:mr-6 file:rounded-md hover:file:bg-primary-100 file:bg-primary-200 dark:file:bg-primary-300 hover:dark:file:bg-primary-200;
+  @apply text-sm rounded-md cursor-pointer focus:outline-hidden file:border-0 text-slate-500 file:text-primary-700 file:font-semibold file:px-4 file:py-2 file:mr-6 file:rounded-md hover:file:bg-primary-100 file:bg-primary-200 dark:file:bg-primary-300 dark:hover:file:bg-primary-200;
 }
 .pc-color-input {
 }
@@ -766,7 +766,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply w-full;
 }
 .pc-checkbox {
-  @apply w-5 h-5 transition-all duration-150 ease-linear border-slate-300 rounded cursor-pointer text-primary-600 dark:bg-slate-800 dark:border-slate-600 disabled:bg-slate-300 dark:disabled:bg-slate-600 disabled:cursor-not-allowed;
+  @apply w-5 h-5 transition-all duration-150 ease-linear border-slate-300 rounded-sm cursor-pointer text-primary-600 dark:bg-slate-800 dark:border-slate-600 disabled:bg-slate-300 dark:disabled:bg-slate-600 disabled:cursor-not-allowed;
 }
 .pc-checkbox-group {
   @apply pt-2;
@@ -778,7 +778,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply flex flex-col gap-4 mb-3;
 }
 .pc-checkbox-group--col--sm {
-  @apply flex flex-col gap-2 mb-3 !pt-0;
+  @apply flex flex-col gap-2 mb-3 pt-0!;
 }
 .pc-checkbox-group__item--row {
   @apply inline-flex items-center gap-2 cursor-pointer;
@@ -982,13 +982,13 @@ input[type="color" i]::-moz-color-swatch {
   @apply text-lg font-semibold text-slate-900 dark:text-white;
 }
 .pc-field-prefix {
-  @apply flex items-center justify-center px-3 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-r-0 rounded-l-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none z-10;
+  @apply flex items-center justify-center px-3 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-r-0 rounded-l-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-hidden z-10;
 }
 .pc-field-suffix {
-  @apply flex items-center justify-center px-3 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-l-0 rounded-r-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none z-10;
+  @apply flex items-center justify-center px-3 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-l-0 rounded-r-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-hidden z-10;
 }
 .pc-field-badge {
-  @apply flex items-center justify-center px-3 py-1 gap-2 border border-slate-300 border-l-0 rounded-r-lg shadow-m2 dark:border-slate-600 disabled:cursor-not-allowed focus:outline-none z-10 whitespace-nowrap;
+  @apply flex items-center justify-center px-3 py-1 gap-2 border border-slate-300 border-l-0 rounded-r-lg shadow-m2 dark:border-slate-600 disabled:cursor-not-allowed focus:outline-hidden z-10 whitespace-nowrap;
 }
 .pc-field-badge__padding {
   @apply pe-24;
@@ -1024,10 +1024,10 @@ input[type="color" i]::-moz-color-swatch {
   @apply w-64;
 }
 .pc-dropdown__menu-item {
-  @apply flex items-center self-start justify-start w-full gap-2 px-3 py-2 text-sm text-left font-semibold leading-tight text-slate-700 transition duration-150 ease-in-out dark:hover:bg-slate-700 dark:active:bg-slate-600 dark:text-slate-300 dark:bg-slate-900 hover:bg-slate-100 active:bg-slate-200 rounded;
+  @apply flex items-center self-start justify-start w-full gap-2 px-3 py-2 text-sm text-left font-semibold leading-tight text-slate-700 transition duration-150 ease-in-out dark:hover:bg-slate-700 dark:active:bg-slate-600 dark:text-slate-300 dark:bg-slate-900 hover:bg-slate-100 active:bg-slate-200 rounded-sm;
 }
 .pc-dropdown__trigger-button--no-label {
-  @apply flex items-center text-slate-400 rounded-full hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 focus:ring-primary-500;
+  @apply flex items-center text-slate-400 rounded-full hover:text-slate-600 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 focus:ring-primary-500;
 }
 .pc-dropdown__trigger-button--with-label--sm-solid {
   @apply inline-flex justify-center items-center w-full text-base font-normal leading-tight text-slate-900 dark:text-white select-none;
@@ -1127,7 +1127,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply items-center justify-end flex-1 gap-4 px-8 hidden xl:flex;
 }
 .pc-sidebar__aside {
-  @apply z-40 flex flex-col flex-shrink-0 h-screen border-r border-slate-200 dark:border-slate-700 overflow-y-auto no-scrollbar;
+  @apply z-40 flex flex-col shrink-0 h-screen border-r border-slate-200 dark:border-slate-700 overflow-y-auto no-scrollbar;
   @apply bg-slate-900 w-64 xl:w-72;
   @apply relative;
 }
@@ -1139,7 +1139,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply text-base font-medium leading-normal px-4 py-3 transition duration-150 rounded-xl select-none;
 }
 .pc-sidebar__menu-item--active {
-  @apply bg-primary-100 text-primary-700 dark:bg-slate-800 dark:text-white dark:hover:text-white relative;
+  @apply bg-primary-50 text-primary-700 dark:bg-slate-800 dark:text-white dark:hover:text-white relative;
 }
 .pc-sidebar__menu-item-icon--active {
   @apply text-primary-700 group-hover:text-primary-700 dark:text-white dark:group-hover:text-white;
@@ -1237,7 +1237,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply rounded-full;
 }
 .pc-avatar--rounded {
-  @apply rounded shadow-m2;
+  @apply rounded-sm shadow-m2;
 }
 
 /* Avatars - sizes */
@@ -1369,7 +1369,7 @@ input[type="color" i]::-moz-color-swatch {
 /* Progress - sizes */
 
 .pc-progress--xs {
-  @apply h-1 rounded-sm;
+  @apply h-1 rounded-xs;
 }
 .pc-progress--sm {
   @apply h-[7px] rounded-md;
@@ -1501,10 +1501,10 @@ input[type="color" i]::-moz-color-swatch {
 /* Tabs */
 
 .pc-tabs--basic {
-  @apply inline-flex p-1 rounded items-center bg-white dark:bg-slate-800 shadow-0 dark:bg-slate-700/50;
+  @apply inline-flex p-1 rounded-sm items-center bg-white dark:bg-slate-800 shadow-0 dark:bg-slate-700/50;
 }
 .pc-tabs--native {
-  @apply flex p-1 rounded items-center bg-slate-100 dark:bg-slate-900;
+  @apply flex p-1 rounded-sm items-center bg-slate-100 dark:bg-slate-900;
 }
 .pc-tabs--contrast {
   @apply inline-flex items-center gap-2;
@@ -1516,7 +1516,7 @@ input[type="color" i]::-moz-color-swatch {
 /* Tabs - Pill */
 
 .pc-tab__pill--basic {
-  @apply flex items-center justify-center grow basis-0 h-10 p-2.5 text-sm font-semibold leading-tight rounded whitespace-nowrap select-none gap-2.5;
+  @apply flex items-center justify-center grow basis-0 h-10 p-2.5 text-sm font-semibold leading-tight rounded-sm whitespace-nowrap select-none gap-2.5;
 }
 .pc-tab__pill--is-active--basic {
   @apply bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white;
@@ -1528,7 +1528,7 @@ input[type="color" i]::-moz-color-swatch {
 /* Tabs - Native */
 
 .pc-tab__pill--native {
-  @apply flex grow items-center justify-center basis-0 h-10 p-2.5 text-sm font-semibold leading-tight rounded whitespace-nowrap select-none;
+  @apply flex grow items-center justify-center basis-0 h-10 p-2.5 text-sm font-semibold leading-tight rounded-sm whitespace-nowrap select-none;
 }
 .pc-tab__pill--is-active--native {
   @apply bg-white dark:bg-slate-700 text-slate-900 dark:text-white;
@@ -1620,10 +1620,10 @@ input[type="color" i]::-moz-color-swatch {
 /* Cards - with media */
 
 .pc-card__image {
-  @apply flex-shrink-0 object-cover w-full;
+  @apply shrink-0 object-cover w-full;
 }
 .pc-card__image-placeholder {
-  @apply flex-shrink-0 w-full bg-slate-300 dark:bg-slate-700;
+  @apply shrink-0 w-full bg-slate-300 dark:bg-slate-700;
 }
 
 /* Cards - footer */
@@ -1724,7 +1724,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply text-lg font-semibold text-slate-900 dark:text-white;
 }
 .pc-accordion-item__chevron {
-  @apply flex-shrink-0 w-6 h-6 ml-3 text-slate-600 dark:text-slate-300 duration-300 fill-current dark:group-hover:text-slate-300 group-hover:text-slate-500;
+  @apply shrink-0 w-6 h-6 ml-3 text-slate-600 dark:text-slate-300 duration-300 fill-current dark:group-hover:text-slate-300 group-hover:text-slate-500;
 }
 .pc-accordion-item__content-container {
   @apply px-6 py-4;
@@ -1737,7 +1737,7 @@ input[type="color" i]::-moz-color-swatch {
   @apply relative z-50;
 }
 .pc-modal__overlay {
-  @apply fixed inset-0 z-50 transition-opacity bg-black dark:bg-white bg-opacity-30 dark:bg-opacity-10;
+  @apply fixed inset-0 z-50 transition-opacity bg-black/30 dark:bg-white/10;
 }
 .pc-modal__wrapper {
   @apply fixed inset-0 z-50 flex items-center justify-center my-4 overflow-hidden transform;
@@ -1827,7 +1827,7 @@ input[type="color" i]::-moz-color-swatch {
 /* Slideover */
 
 .pc-slideover__overlay {
-  @apply fixed inset-0 z-50 transition-opacity bg-black dark:bg-white bg-opacity-30 dark:bg-opacity-10;
+  @apply fixed inset-0 z-50 transition-opacity bg-black/30 dark:bg-white/10;
 }
 .pc-slideover__wrapper {
   @apply fixed inset-0 z-50 flex overflow-hidden;
@@ -1911,37 +1911,38 @@ input[type="color" i]::-moz-color-swatch {
   @apply w-6 h-6;
 }
 .pc-editor-field {
-  @apply max-w-[300px] xl:min-w-[500px] ps-3 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:outline-none;
+  @apply max-w-[300px] xl:min-w-[500px] ps-3 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:outline-hidden;
 }
 .pc-editor-field-icon__padding {
-  @apply max-w-[300px] xl:min-w-[500px] ps-12 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:outline-none;
+  @apply max-w-[300px] xl:min-w-[500px] ps-12 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:outline-hidden;
 }
 .pc-editor-field-emoji {
   @apply w-6 h-6 text-slate-500 dark:text-slate-300 absolute start-0 flex items-center pe-3 pointer-events-none;
 }
 .pc-editor-select-field {
-  @apply py-0 max-w-[400px] ps-3 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:outline-none;
+  @apply py-0 max-w-[400px] ps-3 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:outline-hidden;
 }
 
 /* Other */
 
 /* This is for selects inside of a group of selects. Phoenix doesn't provide a way to add a class to these. */
+
 .select-wrapper select {
-  @apply text-sm border-slate-300 rounded-md shadow-m2 cursor-pointer disabled:bg-slate-100 disabled:cursor-not-allowed focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 dark:bg-slate-800 dark:text-slate-300 focus:outline-none;
+  @apply text-sm border-slate-300 rounded-md shadow-m2 cursor-pointer disabled:bg-slate-100 disabled:cursor-not-allowed focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 dark:bg-slate-800 dark:text-slate-300 focus:outline-hidden;
 }
 
 label.has-error:not(.phx-no-feedback) {
-  @apply !text-danger-900 dark:!text-danger-200;
+  @apply text-danger-900! dark:text-danger-200!;
 }
 
 textarea.has-error:not(.phx-no-feedback),
 input.has-error:not(.phx-no-feedback):not(:checked),
 select.has-error:not(.phx-no-feedback) {
-  @apply !border-danger-500 focus:!border-danger-500 !text-danger-900 !placeholder-danger-700 !bg-danger-50 dark:!text-danger-100 dark:!placeholder-danger-300 dark:!bg-danger-900 focus:!ring-danger-500;
+  @apply border-danger-500! focus:border-danger-500! text-danger-900! placeholder-danger-700! bg-danger-50! dark:text-danger-100! dark:placeholder-danger-300! dark:bg-danger-900! focus:ring-danger-500!;
 }
 
 input[type="file_input"].has-error:not(.phx-no-feedback) {
-  @apply !border-danger-500 !rounded-md focus:!border-danger-500 !text-danger-900 !placeholder-danger-700 !bg-danger-50 file:!border-none dark:!border-none dark:!bg-slate-950 dark:text-danger-400;
+  @apply border-danger-500! rounded-md! focus:border-danger-500! text-danger-900! placeholder-danger-700! bg-danger-50! file:border-none! dark:border-none! dark:bg-slate-950! dark:text-danger-400;
 }
 
 /* If in tailwind.config.json, darkMode: 'class', use this: */

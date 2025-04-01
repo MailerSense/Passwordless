@@ -1,9 +1,3 @@
-const colors = require("tailwindcss/colors");
-const plugin = require("tailwindcss/plugin");
-const defaultTheme = require("tailwindcss/defaultTheme");
-const fs = require("fs");
-const path = require("path");
-
 const scienceBlue = {
   50: "#EFF8FF",
   100: "#D1E9FF",
@@ -105,7 +99,6 @@ module.exports = {
         blob: "blob 10s infinite",
       },
       colors: {
-        ...colors,
         primary: scienceBlue,
         blue: scienceBlue,
         info: scienceBlue,
@@ -115,11 +108,10 @@ module.exports = {
         streetlight: streetlight,
       },
       fontFamily: {
-        sans: ["Inter var", ...defaultTheme.fontFamily.sans],
-        mono: ["JetBrains Mono", ...defaultTheme.fontFamily.mono],
-        display: ["Sora", ...defaultTheme.fontFamily.sans],
+        sans: ["Inter var"],
+        mono: ["JetBrains Mono"],
+        display: ["Sora"],
       },
     },
   },
-  plugins: [],
 };

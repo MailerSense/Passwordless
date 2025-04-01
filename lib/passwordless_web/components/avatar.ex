@@ -28,7 +28,7 @@ defmodule PasswordlessWeb.Components.Avatar do
       "sky"
     ]
 
-  attr :variant, :string, default: "circular", values: ["circular", "rounded"]
+  attr :variant, :string, default: "circular", values: ["circular", "rounded-sm"]
   attr :name, :string, default: nil, doc: "name for placeholder initials"
 
   attr :random_color, :boolean,

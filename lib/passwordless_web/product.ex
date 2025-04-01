@@ -64,7 +64,7 @@ defmodule PasswordlessWeb.Product do
         title: gettext("Historical data"),
         description: gettext("We'll help you track performance, security and regressions of your website over time."),
         image_path: ~p"/images/landing_page/feature-4.webp",
-        image_class: "rounded-lg shadow-1 md:scale-[2] xl:scale-[1.15] origin-top-right",
+        image_class: "rounded-lg shadow-1 md:scale-2 xl:scale-[1.15] origin-top-right",
         reverse: true,
         class: "xl:col-span-2"
       },

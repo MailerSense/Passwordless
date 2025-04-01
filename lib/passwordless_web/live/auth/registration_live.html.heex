@@ -24,7 +24,7 @@
       field={@form[:name]}
       autocomplete="given-name family-name"
       placeholder={gettext("Your name")}
-      phx-debounce="blur"
+      phx-debounce="blur-sm"
       required
       required_asterix={false}
     />
@@ -33,13 +33,13 @@
       field={@form[:email]}
       placeholder={gettext("eg. you@example.com")}
       autocomplete="email"
-      phx-debounce="blur"
+      phx-debounce="blur-sm"
       required
       required_asterix={false}
     />
     <.field
       type="password"
-      phx-debounce="blur"
+      phx-debounce="blur-sm"
       placeholder={gettext("••••••••••••")}
       value={@form[:password].value}
       field={@form[:password]}

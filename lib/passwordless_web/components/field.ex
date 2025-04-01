@@ -653,7 +653,7 @@ defmodule PasswordlessWeb.Components.Field do
             class={[
               @class,
               "pc-copyable-field-input",
-              if(Util.present?(@prefix), do: "!rounded-l-none")
+              if(Util.present?(@prefix), do: "rounded-l-none!")
             ]}
             readonly
             disabled={@disabled}
@@ -788,8 +788,8 @@ defmodule PasswordlessWeb.Components.Field do
                 id={@id}
                 value={Phoenix.HTML.Form.normalize_value(@type, @value)}
                 class={[
-                  if(Util.present?(@prefix), do: "!rounded-l-none"),
-                  if(Util.present?(@suffix) or Util.present?(@badge), do: "!rounded-r-none"),
+                  if(Util.present?(@prefix), do: "rounded-l-none!"),
+                  if(Util.present?(@suffix) or Util.present?(@badge), do: "rounded-r-none!"),
                   @class
                 ]}
                 required={@required}
