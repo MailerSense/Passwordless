@@ -166,10 +166,9 @@ config :passwordless,
        {PasswordlessWeb.CoreComponents, :translate_error}
 
 config :tailwind,
-  version: "3.4.17",
+  version: "4.0.0",
   default: [
     args: ~w(
-    --config=tailwind.config.js
     --input=css/app.css
     --output=../priv/static/assets/app.css
   ),

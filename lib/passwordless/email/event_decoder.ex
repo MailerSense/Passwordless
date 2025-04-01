@@ -15,7 +15,6 @@ defmodule Passwordless.Email.EventDecoder do
         with {:ok, app, message} <- get_message_by_external_id(parsed_message),
              {:ok, message} <- update_message(app, message, parsed_message),
              {:ok, event} <- create_message_event(app, message, parsed_event),
-             {:ok, _suppression} <- Guardian.check(app, event, message),
              do: {:ok, message}
       end)
     end
