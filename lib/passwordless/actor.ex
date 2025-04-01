@@ -267,7 +267,7 @@ defmodule Passwordless.Actor do
   defp validate_name(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 512)
+    |> validate_length(:name, min: 1, max: 1024)
   end
 
   defp validate_active(changeset) do

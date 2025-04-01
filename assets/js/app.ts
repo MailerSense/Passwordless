@@ -126,7 +126,7 @@ const csrfToken = document
   .querySelector("meta[name='csrf-token']")!
   .getAttribute("content");
 
-const socketOptions: SocketOptions = {
+const socketOptions: Partial<SocketOptions> = {
   hooks,
   uploaders,
   dom: {
@@ -147,9 +147,8 @@ const socketOptions: SocketOptions = {
     },
   },
   params: { _csrf_token: csrfToken },
+  reconnectAfterMs: defaultReconnectAfterMs,
 };
-
-(socketOptions as any)["reconnectAfterMs"] = defaultReconnectAfterMs;
 
 const liveSocket = new LiveSocket("/live", Socket, socketOptions);
 

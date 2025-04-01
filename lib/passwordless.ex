@@ -288,6 +288,31 @@ defmodule Passwordless do
     |> Actor.put_text_properties()
   end
 
+  def lookup_actor(%App{} = app, key) when is_binary(key) do
+    query =
+      if String.starts_with?(key, Actor.prefix()) do
+        [id: key]
+      else
+        [user_id: key]
+      end
+
+    actor =
+      Actor
+      |> Repo.get_by(query, prefix: Tenant.to_prefix(app))
+      |> Repo.preload([:email, :phone])
+
+    case actor do
+      %Actor{} = actor ->
+        {:ok,
+         actor
+         |> Actor.put_active()
+         |> Actor.put_text_properties()}
+
+      nil ->
+        {:error, :not_found}
+    end
+  end
+
   def create_actor(%App{} = app, attrs \\ %{}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
