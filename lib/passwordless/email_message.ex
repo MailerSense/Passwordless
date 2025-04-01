@@ -19,7 +19,6 @@ defmodule Passwordless.EmailMessage do
   alias Phoenix.Token
 
   @states ~w(
-    created
     submitted
     sent
     not_sent
@@ -37,7 +36,7 @@ defmodule Passwordless.EmailMessage do
     filterable: [:id], sortable: [:id], custom_fields: []
   }
   schema "email_messages" do
-    field :state, Ecto.Enum, values: @states, default: :created
+    field :state, Ecto.Enum, values: @states, default: :submitted
     field :sender, :string
     field :sender_name, :string
     field :recipient, :string

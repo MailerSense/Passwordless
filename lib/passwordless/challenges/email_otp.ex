@@ -39,9 +39,9 @@ defmodule Passwordless.Challenges.EmailOTP do
     otp_code = OTP.generate_code()
 
     with {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email),
-         {:ok, email_template} <- get_email_template(authenticator),
-         {:ok, email_template_version} <- get_latest_template_version(actor, email_template),
          {:ok, domain} <- get_sending_domain(authenticator),
+         {:ok, email_template} <- get_email_template(authenticator),
+         {:ok, email_template_version} <- get_email_template_version(actor, email_template),
          :ok <- update_existing_messages(app, action),
          {:ok, email_message} <-
            create_email_message(
@@ -56,7 +56,7 @@ defmodule Passwordless.Challenges.EmailOTP do
            ),
          {:ok, otp} <- create_otp(authenticator, email_message, otp_code),
          {:ok, challenge} <- update_challenge_state(app, challenge, :otp_sent),
-         :ok <- enqueue_email_message(email_message, domain, otp_code),
+         :ok <- enqueue_email_message(email_message),
          do:
            {:ok,
             %Action{
@@ -99,7 +99,7 @@ defmodule Passwordless.Challenges.EmailOTP do
     Repo.preload(authenticator, :email_template).email_template
   end
 
-  defp get_latest_template_version(%Actor{} = actor, %EmailTemplate{} = template) do
+  defp get_email_template_version(%Actor{} = actor, %EmailTemplate{} = template) do
     case template
          |> Ecto.assoc(:versions)
          |> where([v], v.language == ^actor.language)
@@ -192,7 +192,7 @@ defmodule Passwordless.Challenges.EmailOTP do
     end
   end
 
-  defp enqueue_email_message(%EmailMessage{} = email_message, %Domain{} = domain, otp_code) do
+  defp enqueue_email_message(%EmailMessage{domain: %Domain{} = domain} = email_message) do
     swoosh_email =
       SwooshEmail.new()
       |> SwooshEmail.from({email_message.sender_name, email_message.sender})
@@ -201,14 +201,9 @@ defmodule Passwordless.Challenges.EmailOTP do
       |> SwooshEmail.html_body(email_message.html_content)
       |> SwooshEmail.text_body(email_message.text_content)
 
-    with {:ok, _job} <-
-           %{email: Mailer.to_map(swoosh_email), domain_id: domain.id}
-           |> MailerExecutor.new()
-           |> Oban.insert() do
-      email_message
-      |> EmailMessage.changeset(%{state: :submitted})
-      |> Repo.update()
-    end
+    %{email: Mailer.to_map(swoosh_email), domain_id: domain.id}
+    |> MailerExecutor.new()
+    |> Oban.insert()
   end
 
   defp render_email_content(content, otp_code) do
