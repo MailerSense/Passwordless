@@ -88,7 +88,7 @@ defmodule Passwordless.Challenges.EmailOTP do
           {:error, :otp_invalid}
         end
 
-      nil ->
+      _ ->
         {:error, :otp_not_found}
     end
   end
@@ -149,7 +149,6 @@ defmodule Passwordless.Challenges.EmailOTP do
       email_template_id: template.id
     }
 
-    # Create the email message
     challenge
     |> Ecto.build_assoc(:email_messages)
     |> EmailMessage.changeset(attrs)
@@ -184,7 +183,7 @@ defmodule Passwordless.Challenges.EmailOTP do
       %Authenticators.Email{domain: %Domain{} = domain} ->
         {:ok, domain}
 
-      nil ->
+      _ ->
         case Repo.get_by(Domain, name: EmailWeb.challenge_email_domain()) do
           %Domain{} = domain -> {:ok, domain}
           _ -> {:error, :default_domain_not_found}
@@ -207,8 +206,6 @@ defmodule Passwordless.Challenges.EmailOTP do
   end
 
   defp render_email_content(content, otp_code) do
-    # Replace placeholders with actual values
-    # This is a simple implementation, you might want to use a proper template engine
     String.replace(content, "{{otp_code}}", otp_code)
   end
 

@@ -55,11 +55,15 @@ defmodule Passwordless.Challenge do
     magic_link: [
       started: [:magic_link_sent],
       magic_link_sent: [:magic_link_sent, :magic_link_validated]
+    ],
+    password: [
+      started: [:password_validated]
     ]
   ]
   @end_states [
     :otp_validated,
-    :magic_link_validated
+    :magic_link_validated,
+    :password_validated
   ]
 
   @types Keyword.keys(@state_machines)

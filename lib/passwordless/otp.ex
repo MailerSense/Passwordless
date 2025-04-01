@@ -60,7 +60,7 @@ defmodule Passwordless.OTP do
     |> validate_number(:attempts, greater_than: 0, less_than_or_equal_to: @attempts)
     |> assoc_constraint(:email_message)
     |> unique_constraint(:email_message_id)
-    |> unsafe_validate_unique(:email_message_id, Passwordless.Repo)
+    |> unsafe_validate_unique(:email_message_id, Passwordless.Repo, opts)
   end
 
   def generate_code, do: Util.random_numeric_string(@size)

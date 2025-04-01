@@ -46,7 +46,7 @@ defmodule Passwordless.MagicLink do
     |> validate_length(:token, is: @size, count: :bytes)
     |> assoc_constraint(:email_message)
     |> unique_constraint(:email_message_id)
-    |> unsafe_validate_unique(:email_message_id, Passwordless.Repo)
+    |> unsafe_validate_unique(:email_message_id, Passwordless.Repo, opts)
   end
 
   # Private

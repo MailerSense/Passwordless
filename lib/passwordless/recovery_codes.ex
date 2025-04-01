@@ -65,7 +65,7 @@ defmodule Passwordless.RecoveryCodes do
     |> ensure_codes()
     |> assoc_constraint(:actor)
     |> unique_constraint(:actor_id)
-    |> unsafe_validate_unique(:actor_id, Passwordless.Repo, prefix: Keyword.get(opts, :prefix))
+    |> unsafe_validate_unique(:actor_id, Passwordless.Repo, opts)
   end
 
   def ensure_codes(changeset) do

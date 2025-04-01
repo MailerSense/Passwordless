@@ -284,7 +284,7 @@ defmodule Passwordless.Actor do
     |> ChangesetExt.ensure_trimmed(:user_id)
     |> validate_length(:user_id, max: 1024)
     |> unique_constraint(:user_id)
-    |> unsafe_validate_unique(:user_id, Passwordless.Repo, prefix: Keyword.get(opts, :prefix))
+    |> unsafe_validate_unique(:user_id, Passwordless.Repo, opts)
   end
 
   defp validate_properties(changeset) do
