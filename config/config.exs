@@ -386,6 +386,8 @@ config :passwordless, :billing_plans, [
   }
 ]
 
+config :backpex, :pubsub_server, Passwordless.PubSub
+
 config :passwordless, :browser,
   on_demand: false,
   no_sandbox: true,

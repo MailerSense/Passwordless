@@ -105,7 +105,7 @@ defmodule Passwordless.MixProject do
 
       # Observability
       {:sentry, "~> 10.8"},
-      {:backpex, "~> 0.11.0"},
+      {:backpex, "~> 0.12.0"},
       {:ecto_psql_extras, "~> 0.8.7"},
 
       # Media
