@@ -3,7 +3,6 @@ defmodule Passwordless.Email.EventDecoder do
 
   alias Database.Tenant
   alias Passwordless.App
-  alias Passwordless.Email.Guardian
   alias Passwordless.Email.SESParser
   alias Passwordless.EmailEvent
   alias Passwordless.EmailMessage

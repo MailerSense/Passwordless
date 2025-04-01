@@ -10,7 +10,6 @@ defmodule Passwordless do
   import Ecto.Query
   import Util.Crud
 
-  alias Cldr.LanguageTag.U
   alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.ActionEvent
