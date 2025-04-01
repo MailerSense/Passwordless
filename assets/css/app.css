@@ -1,6 +1,4 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
 @import "./petal_components.css";
 @import "tippy.js/dist/tippy.css";
 @import "highlight.js/styles/monokai.css";

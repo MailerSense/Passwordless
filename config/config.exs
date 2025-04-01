@@ -169,17 +169,17 @@ config :tailwind,
   version: "4.1.0",
   default: [
     args: ~w(
-      --input=css/app.css
-      --output=../priv/static/assets/app.css
+      --input=assets/css/app.css
+      --output=priv/static/assets/app.css
     ),
-    cd: Path.expand("../assets", __DIR__)
+    cd: Path.expand("..", __DIR__)
   ],
   backpex: [
     args: ~w(
       --config=assets/tailwind.backpex.config.js
-      --output=../priv/static/assets/backpex.css
+      --output=priv/static/assets/backpex.css
     ),
-    cd: Path.expand("../assets", __DIR__)
+    cd: Path.expand("..", __DIR__)
   ]
 
 # Specify which languages you support
