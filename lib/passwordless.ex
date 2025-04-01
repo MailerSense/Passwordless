@@ -10,6 +10,7 @@ defmodule Passwordless do
   import Ecto.Query
   import Util.Crud
 
+  alias Cldr.LanguageTag.U
   alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.ActionEvent
@@ -255,6 +256,31 @@ defmodule Passwordless do
     end)
   end
 
+  def list_authenticators(%App{} = app) do
+    names = Keyword.keys(@authenticators)
+
+    order =
+      @authenticators
+      |> Enum.with_index()
+      |> Map.new(fn {{k, _mod}, idx} -> {k, idx} end)
+
+    app
+    |> Repo.preload(Keyword.keys(@authenticators))
+    |> Map.from_struct()
+    |> Map.take(names)
+    |> Map.reject(fn {_key, mod} -> Util.blank?(mod) end)
+    |> Enum.sort_by(&Map.get(order, &1))
+  end
+
+  def fetch_authenticator(%App{} = app, key) do
+    with {:ok, mod} <- Keyword.fetch(@authenticators, key) do
+      case app |> Repo.preload(key) |> get_in([Access.key(key)]) do
+        %^mod{} = authenticator -> {:ok, authenticator}
+        _ -> {:error, :not_found}
+      end
+    end
+  end
+
   crud(:magic_link, :magic_link, Passwordless.Authenticators.MagicLink)
   crud(:email, :email, Passwordless.Authenticators.Email)
   crud(:sms, :sms, Passwordless.Authenticators.SMS)
@@ -263,20 +289,6 @@ defmodule Passwordless do
   crud(:security_key, :security_key, Passwordless.Authenticators.SecurityKey)
   crud(:passkey, :passkey, Passwordless.Authenticators.Passkey)
   crud(:recovery_codes, :recovery_codes, Passwordless.Authenticators.RecoveryCodes)
-
-  def list_authenticators(%App{} = app) do
-    @authenticators
-    |> Enum.map(fn {key, _mod} -> {key, Repo.one(Ecto.assoc(app, key))} end)
-    |> Enum.reject(fn {_, mod} -> is_nil(mod) end)
-    |> Enum.map(fn {key, authenticator} ->
-      params =
-        PasswordlessWeb.Helpers.authenticator_menu_items()
-        |> Enum.find(&(&1[:name] == key))
-        |> Map.take([:label, :icon, :path])
-
-      Map.merge(%{id: key, enabled: authenticator.enabled}, params)
-    end)
-  end
 
   # Actor
 

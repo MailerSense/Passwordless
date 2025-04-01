@@ -1,4 +1,4 @@
-defmodule Passwordless.Email.LogParser do
+defmodule Passwordless.Email.SESParser do
   @moduledoc """
   Parses an event from Amazon SQS/SNS into email logs.
   """

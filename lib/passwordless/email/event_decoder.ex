@@ -3,14 +3,14 @@ defmodule Passwordless.Email.EventDecoder do
 
   alias Passwordless.App
   alias Passwordless.Email.Guardian
-  alias Passwordless.Email.LogParser
+  alias Passwordless.Email.SESParser
   alias Passwordless.EmailEvent
   alias Passwordless.EmailMessage
   alias Passwordless.EmailMessageMapping
   alias Passwordless.Repo
 
   def create_message_from_event(raw_message) when is_map(raw_message) do
-    with {:ok, parsed_message, parsed_event} <- LogParser.parse(raw_message) do
+    with {:ok, parsed_message, parsed_event} <- SESParser.parse(raw_message) do
       Repo.transact(fn ->
         with {:ok, app, message} <- get_message_by_external_id(parsed_message),
              {:ok, message} <- update_message(app, message, parsed_message),

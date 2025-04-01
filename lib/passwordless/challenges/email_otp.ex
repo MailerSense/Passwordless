@@ -32,12 +32,13 @@ defmodule Passwordless.Challenges.EmailOTP do
         %Actor{} = actor,
         %Action{challenge: %Challenge{type: @challenge, state: state} = challenge} = action,
         event: :send_otp,
-        attrs: %{email: %Email{} = email, authenticator: %Authenticators.Email{} = authenticator}
+        attrs: %{email: %Email{} = email}
       )
       when state in [:started, :otp_sent] do
     otp_code = OTP.generate_code()
 
-    with {:ok, email_template} <- get_email_template(authenticator),
+    with {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email),
+         {:ok, email_template} <- get_email_template(authenticator),
          {:ok, email_template_version} <- get_latest_template_version(actor, email_template),
          {:ok, domain} <- get_sending_domain(authenticator),
          :ok <- update_existing_messages(app, action),

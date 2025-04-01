@@ -58,7 +58,17 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
         }
       end)
 
-    authenticators = Passwordless.list_authenticators(app)
+    authenticators =
+      app
+      |> Passwordless.list_authenticators()
+      |> Enum.map(fn {key, authenticator} ->
+        params =
+          PasswordlessWeb.Helpers.authenticator_menu_items()
+          |> Enum.find(&(&1[:name] == key))
+          |> Map.take([:label, :icon, :path])
+
+        Map.merge(%{id: key, enabled: authenticator.enabled}, params)
+      end)
 
     {:noreply,
      socket
