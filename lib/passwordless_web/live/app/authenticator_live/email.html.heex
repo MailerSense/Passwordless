@@ -31,6 +31,16 @@
         wrapper_class="mb-0!"
       />
     </div>
+    <.alert :if={Util.blank?(@domain)} color="info" class="mb-6" with_icon>
+      Do you want to use a custom domain to send emails?
+      <.a
+        to={~p"/app/domain"}
+        label={gettext("Set up custom domain")}
+        styled
+        class="inline"
+        link_type="live_redirect"
+      />
+    </.alert>
     <.email_preview
       to={~p"/app/emails/#{@email_template}/en/edit?return_to=#{~p"/app/authenticators/email"}"}
       name={gettext("Edit email template")}
@@ -58,7 +68,7 @@
     <.field
       field={@form[:expires]}
       type="number"
-      prefix={gettext("After")}
+      label={gettext("Expiration time")}
       suffix={gettext("minutes")}
       disabled={not @enabled}
       required

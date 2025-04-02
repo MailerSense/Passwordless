@@ -1,5 +1,7 @@
 defmodule Passwordless.Email.EventDecoder do
-  @moduledoc false
+  @moduledoc """
+  Decodes email events from SES.
+  """
 
   alias Database.Tenant
   alias Passwordless.App

@@ -198,7 +198,7 @@ defmodule Passwordless.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      c: ["format_code", "compile"],
+      c: ["format_code", "compile", "remove_unused"],
       setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "ecto.seed"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],

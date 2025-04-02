@@ -59,7 +59,7 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
                 <% end %>
               </div>
             </div>
-            <.icon name="remix-arrow-down-s-line" class="w-6 h-6" />
+            <.icon name="remix-arrow-down-s-line" class="w-6 h-6 text-slate-900 dark:text-white" />
           </div>
         </:trigger_element>
         <%= for child_item <- @user_menu_items do %>

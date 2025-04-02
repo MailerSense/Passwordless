@@ -274,7 +274,7 @@
       <.p class="text-slate-600 dark:text-slate-300">
         Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
       </.p>
-      <.data_table id="actions" meta={@meta} title={gettext("Previous actions")} items={@actions}>
+      <.data_table id="actions" meta={@meta} title={gettext("Actions")} items={@actions}>
         <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
         <:col :let={action} label={gettext("Action")} field={:name}>
           {Phoenix.Naming.humanize(Macro.underscore(action.name))}

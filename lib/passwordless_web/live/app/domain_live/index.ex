@@ -152,7 +152,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   defp domain_state_badge(_),
     do: %{
       size: "md",
-      label: gettext("Pending DNS configuration"),
+      label: gettext("Pending DNS verification"),
       color: "warning",
       variant: "rectangle",
       with_icon: true,

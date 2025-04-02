@@ -8,8 +8,10 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
 
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
-    email = Repo.preload(app, :email).email
-    domain = Repo.preload(app, :domain).domain
+    app = Repo.preload(app, [:email, :domain])
+
+    email = app.email
+    domain = app.domain
     changeset = Passwordless.change_email(email)
 
     email_template = Repo.preload(email, :email_template).email_template

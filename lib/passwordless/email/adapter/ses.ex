@@ -3,6 +3,7 @@ defmodule Passwordless.Email.Adapter.SES do
   Sends emails via Amazon SES, with each request authenticated using
   temporary or long-term credentials of the organization provider.
   """
+
   use Swoosh.Adapter, required_config: []
 
   alias Passwordless.Domain
