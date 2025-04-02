@@ -4,7 +4,6 @@ defmodule PasswordlessWeb.CoreComponents do
   use PasswordlessWeb, :verified_routes
   use PasswordlessWeb.Components
   use Gettext, backend: PasswordlessWeb.Gettext
-  use Memoize
 
   import PasswordlessWeb.Helpers
 

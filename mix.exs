@@ -72,7 +72,6 @@ defmodule Passwordless.MixProject do
       {:email_checker, "~> 0.2.4"},
       {:rustler, "~> 0.36.1"},
       {:floki, "~> 0.37.0"},
-      {:memoize, "~> 1.4"},
 
       # Emails
       {:phoenix_swoosh, "~> 1.2"},

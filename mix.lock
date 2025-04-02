@@ -77,7 +77,6 @@
   "jumper": {:hex, :jumper, "1.0.2", "68cdcd84472a00ac596b4e6459a41b3062d4427cbd4f1e8c8793c5b54f1406a7", [:mix], [], "hexpm", "9b7782409021e01ab3c08270e26f36eb62976a38c1aa64b2eaf6348422f165e1"},
   "libcluster": {:hex, :libcluster, "3.5.0", "5ee4cfde4bdf32b2fef271e33ce3241e89509f4344f6c6a8d4069937484866ba", [:mix], [{:jason, "~> 1.1", [hex: :jason, repo: "hexpm", optional: false]}, {:telemetry, "~> 1.3", [hex: :telemetry, repo: "hexpm", optional: false]}], "hexpm", "ebf6561fcedd765a4cd43b4b8c04b1c87f4177b5fb3cbdfe40a780499d72f743"},
   "meck": {:hex, :meck, "1.0.0", "24676cb6ee6951530093a93edcd410cfe4cb59fe89444b875d35c9d3909a15d0", [:rebar3], [], "hexpm", "680a9bcfe52764350beb9fb0335fb75fee8e7329821416cee0a19fec35433882"},
-  "memoize": {:hex, :memoize, "1.4.3", "ead4ba248291acbaecbfe7e68ed762d329dd9c29c727020c7393dda4060c4471", [:mix], [], "hexpm", "a75176b84b9ce92faaf567c82fcbc584ef95727e0827cb38606b0a197f7e47ef"},
   "metrics": {:hex, :metrics, "1.0.1", "25f094dea2cda98213cecc3aeff09e940299d950904393b2a29d191c346a8486", [:rebar3], [], "hexpm", "69b09adddc4f74a40716ae54d140f93beb0fb8978d8636eaded0c31b6f099f16"},
   "mime": {:hex, :mime, "2.0.6", "8f18486773d9b15f95f4f4f1e39b710045fa1de891fada4516559967276e4dc2", [:mix], [], "hexpm", "c9945363a6b26d747389aac3643f8e0e09d30499a138ad64fe8fd1d13d9b153e"},
   "mimerl": {:hex, :mimerl, "1.3.0", "d0cd9fc04b9061f82490f6581e0128379830e78535e017f7780f37fea7545726", [:rebar3], [], "hexpm", "a1e15a50d1887217de95f0b9b0793e32853f7c258a5cd227650889b38839fe9d"},
