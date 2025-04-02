@@ -54,7 +54,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   def handle_params(params, _url, socket) do
     {:noreply,
      socket
-     |> apply_action(socket.assigns.live_action, params)
+     |> apply_action(socket.assigns.live_action, Map.take(socket.assigns, [:membership, :invitation]))
      |> assign_filters(params)
      |> assign_memberships(params)
      |> assign_invitations()}

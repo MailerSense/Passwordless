@@ -70,7 +70,6 @@ defmodule Passwordless.MixProject do
       {:libcluster, "~> 3.5", only: [:dev, :prod]},
       {:flop, "~> 0.26.1"},
       {:email_checker, "~> 0.2.4"},
-      {:live_toast, "~> 0.7.0"},
       {:rustler, "~> 0.36.1"},
       {:floki, "~> 0.37.0"},
       {:memoize, "~> 1.4"},

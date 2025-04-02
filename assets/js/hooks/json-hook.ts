@@ -1,4 +1,4 @@
-import { Hook, makeHook } from "phoenix_typed_hook";
+import { Hook, makeHook } from "./typed-hook";
 
 import { create, expand, render } from "../lib/json";
 

@@ -23,7 +23,7 @@
     "apexcharts": "^4.5.0",
     "codemirror": "^6.0.1",
     "highlight.js": "^11.11.1",
-    "phoenix_typed_hook": "^0.18.2",
+    "motion": "^12.6.3",
     "tippy.js": "^6.3.7",
     "topbar": "^3.0.0"
   },

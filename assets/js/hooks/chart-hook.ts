@@ -1,5 +1,5 @@
 import ApexCharts from "apexcharts";
-import { Hook, makeHook } from "phoenix_typed_hook";
+import { Hook, makeHook } from "./typed-hook";
 
 class ChartHook extends Hook {
   public mounted() {

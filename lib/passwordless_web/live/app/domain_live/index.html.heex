@@ -1,5 +1,7 @@
 <.tabbed_settings_layout current_page={:domain} current_user={@current_user}>
   <div class="flex flex-col gap-6">
+    <.tab_menu variant="native" menu_items={domain_menu_items()} current_tab={:sending} />
+
     <%= case @mode do %>
       <% :new -> %>
         <.form id="new-domain-form" for={@form} phx-submit="save" phx-change="validate">
@@ -41,7 +43,6 @@
 
           <.button
             to={~p"/app/domain/change"}
-            size="md"
             icon="remix-add-circle-line"
             color="primary"
             label={gettext("Change domain")}

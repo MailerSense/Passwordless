@@ -1,5 +1,5 @@
 import hljs from "highlight.js/lib/core";
-import { Hook, makeHook } from "phoenix_typed_hook";
+import { Hook, makeHook } from "./typed-hook";
 
 class HighlightHook extends Hook {
   public mounted() {

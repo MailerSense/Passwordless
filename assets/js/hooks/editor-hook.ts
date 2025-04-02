@@ -4,7 +4,7 @@ import { EditorState, Prec } from "@codemirror/state";
 import { keymap } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
 import { basicSetup, EditorView } from "codemirror";
-import { Hook, makeHook } from "phoenix_typed_hook";
+import { Hook, makeHook } from "./typed-hook";
 
 import {
   formatCode,

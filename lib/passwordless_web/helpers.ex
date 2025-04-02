@@ -188,13 +188,13 @@ defmodule PasswordlessWeb.Helpers do
     [
       %{
         name: :sending,
-        label: gettext("Email sending"),
+        label: gettext("Email"),
         path: ~p"/app/domain/send",
         link_type: "live_patch"
       },
       %{
         name: :branding,
-        label: gettext("Link branding"),
+        label: gettext("Tracking"),
         path: ~p"/app/domain/track",
         link_type: "live_patch"
       }
