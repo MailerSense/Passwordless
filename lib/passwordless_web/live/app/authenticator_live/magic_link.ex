@@ -63,5 +63,6 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
     socket
     |> assign(form: to_form(changeset))
     |> assign(enabled: Ecto.Changeset.fetch_field!(changeset, :enabled))
+    |> assign(email_tracking: Ecto.Changeset.fetch_field!(changeset, :email_tracking))
   end
 end

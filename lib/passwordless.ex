@@ -487,7 +487,13 @@ defmodule Passwordless do
   # Action
 
   def get_action!(%App{} = app, id) do
-    Repo.get!(Action, id, prefix: Tenant.to_prefix(app))
+    Action
+    |> Repo.get!(id, prefix: Tenant.to_prefix(app))
+    |> Repo.preload([
+      :action_events,
+      {:challenge, [:email_message]},
+      actor: [:email, :phone]
+    ])
   end
 
   def create_action(%App{} = app, %Actor{} = actor, attrs \\ %{}) do

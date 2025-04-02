@@ -13,12 +13,7 @@
         )}
       </.p>
       <div class="flex items-center gap-3">
-        <.a
-          to={~p"/app/reports"}
-          label={gettext("Manage my plan")}
-          styled
-          link_type="live_redirect"
-        />
+        <.a to={~p"/app/reports"} label={gettext("Manage plan")} styled link_type="live_redirect" />
         <.a
           to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
           label={gettext("Contact support")}
@@ -49,7 +44,7 @@
         }
       ]}
       count={2}
-      title={gettext("Billed services")}
+      title={gettext("Billing items")}
     >
       <:if_empty>
         {gettext("No %{models} found", models: gettext("billing items"))}

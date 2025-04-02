@@ -23,7 +23,6 @@ defmodule Passwordless.Action do
              :name,
              :state,
              :challenge,
-             :challenges,
              :action_events,
              :inserted_at,
              :updated_at

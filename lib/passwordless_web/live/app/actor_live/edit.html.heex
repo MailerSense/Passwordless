@@ -34,7 +34,7 @@
 
     <div class="flex flex-col gap-6">
       <.box padded>
-        <.field type="radio-group" field={@form[:state]} options={@states} />
+        <.field type="checkbox" field={@form[:active]} />
         <.field field={@form[:user_id]} label={gettext("User ID")} disabled={not @user_active} />
         <.field
           field={@form[:language]}
@@ -56,7 +56,7 @@
             rows="6"
           />
           <.a
-            label={gettext("Stop editing")}
+            label={gettext("Finish editing properties")}
             styled
             link_type="a"
             phx-click="toggle_property_editor"
@@ -78,7 +78,6 @@
         <% end %>
       </.box>
       <.form_separator no_margin />
-      <.form_header title={gettext("Credentials")} no_margin />
       <.p class="text-slate-600 dark:text-slate-300">
         Email and phone numbers are used to send notifications and authenticate users. You can add multiple emails and phone numbers to a user account.
       </.p>
@@ -189,7 +188,6 @@
         </:header_actions>
       </.simple_table>
       <.form_separator no_margin />
-      <.form_header title={gettext("Security devices")} no_margin />
       <.p class="text-slate-600 dark:text-slate-300">
         Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
       </.p>
@@ -241,11 +239,6 @@
           />
         </:actions>
       </.simple_table>
-      <.form_separator no_margin />
-      <.form_header title={gettext("Mobile applications")} no_margin />
-      <.p class="text-slate-600 dark:text-slate-300">
-        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
-      </.p>
       <.simple_table items={@totps} count={Enum.count([])} title={gettext("Time-based OTPs")}>
         <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
         <:col field={:name} body_class="w-full" />
@@ -270,7 +263,6 @@
         </:actions>
       </.simple_table>
       <.form_separator no_margin />
-      <.form_header title={gettext("User history")} no_margin />
       <.p class="text-slate-600 dark:text-slate-300">
         Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
       </.p>

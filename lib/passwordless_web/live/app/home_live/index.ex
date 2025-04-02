@@ -72,7 +72,12 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
     {:noreply,
      socket
-     |> assign(top_actions: top_actions, action: action, count: estimate_count(app), authenticators: authenticators)
+     |> assign(
+       top_actions: top_actions,
+       action: action,
+       count: estimate_count(app),
+       authenticators: authenticators
+     )
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}
   end
@@ -110,7 +115,8 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   @impl true
   def handle_info(%{event: _event, payload: %Action{} = action}, socket) do
-    socket = if(has_filters?(socket), do: socket, else: stream_insert(socket, :actions, action, at: 0))
+    socket =
+      if(has_filters?(socket), do: socket, else: stream_insert(socket, :actions, action, at: 0))
 
     socket =
       socket
@@ -149,7 +155,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   defp apply_action(socket, :view) do
     assign(socket,
-      page_title: gettext("View action"),
+      page_title: gettext("Action details"),
       page_subtitle: gettext("Review the action details and the events that led to it")
     )
   end
