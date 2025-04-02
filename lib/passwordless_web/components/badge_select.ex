@@ -99,7 +99,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
       </Field.field_label>
       <button
         type="button"
-        class="custom-select relative block w-full h-[46px] px-3 py-2 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-400 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-950 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-none"
+        class="custom-select relative block w-full h-[46px] px-3 py-2 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-400 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-950 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-hidden"
         x-ref="button"
         disabled={@disabled}
         @click="open = !open"
@@ -143,7 +143,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
           role="option"
           class={[
             if(@selected_idx == nil, do: "bg-slate-100 dark:bg-slate-800"),
-            "rounded",
+            "rounded-sm",
             "relative py-2 pl-3 text-slate-900 dark:text-white cursor-pointer select-none pr-9 hover:bg-slate-50 dark:hover:bg-slate-700"
           ]}
           {li_assigns(nil)}
@@ -156,7 +156,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
           :for={{option, idx} <- Enum.with_index(@options)}
           role="option"
           class={[
-            "rounded",
+            "rounded-sm",
             "relative py-2 px-2.5 text-slate-900 dark:text-white cursor-pointer select-none hover:bg-slate-50 dark:hover:bg-slate-700"
           ]}
           {li_assigns(idx)}

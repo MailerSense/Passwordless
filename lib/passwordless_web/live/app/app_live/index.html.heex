@@ -38,14 +38,14 @@
         type="color"
         required
         required_asterix={false}
-        wrapper_class="!mb-0"
+        wrapper_class="mb-0!"
       />
       <.field
         field={@form[:secondary_button_color]}
         type="color"
         required
         required_asterix={false}
-        wrapper_class="!mb-0"
+        wrapper_class="mb-0!"
       />
     </div>
     <div class="flex items-center justify-between">
@@ -53,7 +53,7 @@
         <.a
           to={~p"/app/app/new"}
           label={gettext("Create new app")}
-          class="text-sm underline text-slate-700 dark:text-slate-200"
+          styled
           link_type="live_redirect"
         />
       </div>

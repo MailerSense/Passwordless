@@ -8,11 +8,6 @@ defmodule PasswordlessWeb.Admin.TokenLive do
       update_changeset: &Passwordless.Accounts.Token.edit_changeset/3,
       create_changeset: &Passwordless.Accounts.Token.edit_changeset/3
     ],
-    pubsub: [
-      name: Passwordless.PubSub,
-      topic: "tokens",
-      event_prefix: "token_"
-    ],
     fluid?: true
 
   import Ecto.Query

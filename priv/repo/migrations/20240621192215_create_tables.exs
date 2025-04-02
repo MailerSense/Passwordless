@@ -256,10 +256,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create table(:email_template_versions, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :language, :string, null: false
-
       add :subject, :string, null: false
-      add :preheader, :string
+      add :language, :string, null: false
+      add :preheader, :string, null: false
 
       add :text_body, :text
       add :html_body, :text
@@ -393,12 +392,40 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create unique_index(:recovery_codes_authenticators, [:app_id])
 
+    ## Message mapping
+
+    create table(:email_message_mappings, primary_key: false) do
+      add :external_id, :string, primary_key: true
+      add :email_message_id, :uuid, null: false
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps(updated_at: false)
+    end
+
+    create index(:email_message_mappings, [:app_id])
+    create unique_index(:email_message_mappings, [:email_message_id])
+
+    ## Magic Link mapping
+
+    create table(:magic_link_mappings, primary_key: false) do
+      add :token, :binary, primary_key: true
+      add :magic_link_id, :uuid, null: false
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps(updated_at: false)
+    end
+
+    create index(:magic_link_mappings, [:app_id])
+    create unique_index(:magic_link_mappings, [:magic_link_id])
+
     ## Activity Log
 
     create table(:activity_logs, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :action, :string, null: false
-      add :domain, :string, null: false
+      add :category, :string, null: false
       add :metadata, :map
       add :happened_at, :utc_datetime_usec, null: false
 
@@ -418,18 +445,22 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :billing_subscription_id,
           references(:billing_subscriptions, type: :uuid, on_delete: :nilify_all)
 
+      # Email
+      add :domain_id, references(:domains, type: :uuid, on_delete: :nilify_all)
+
       timestamps(updated_at: false)
     end
 
     create index(:activity_logs, [:org_id])
     create index(:activity_logs, [:org_id, :action])
-    create index(:activity_logs, [:org_id, :domain])
+    create index(:activity_logs, [:org_id, :category])
     create index(:activity_logs, [:user_id])
     create index(:activity_logs, [:auth_token_id])
     create index(:activity_logs, [:target_user_id])
     create index(:activity_logs, [:app_id])
     create index(:activity_logs, [:billing_customer_id])
     create index(:activity_logs, [:billing_subscription_id])
+    create index(:activity_logs, [:domain_id])
 
     execute "create index activity_logs_happened_at_idx on activity_logs ((happened_at::date));"
   end

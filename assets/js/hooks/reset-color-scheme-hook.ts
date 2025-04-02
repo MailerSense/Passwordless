@@ -1,4 +1,4 @@
-import { Hook, makeHook } from "phoenix_typed_hook";
+import { Hook, makeHook } from "./typed-hook";
 
 class ResetColorSchemeHook extends Hook {
   public mounted() {

@@ -498,7 +498,7 @@ defmodule PasswordlessWeb.Components.DataTable do
               class="md:min-w-[400px] lg:min-w-[500px]"
               label=""
               phx-debounce="100"
-              wrapper_class="!mb-0"
+              wrapper_class="mb-0!"
               placeholder="Search"
             />
 

@@ -3,7 +3,7 @@ defmodule Passwordless.TOTP do
   Defines two factor strategies for actors
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "totp"
 
   alias Passwordless.Actor
 
@@ -12,7 +12,7 @@ defmodule Passwordless.TOTP do
     field :secret, :binary, redact: true
     field :code, :string, virtual: true
 
-    belongs_to :actor, Actor, type: :binary_id
+    belongs_to :actor, Actor
 
     timestamps()
   end

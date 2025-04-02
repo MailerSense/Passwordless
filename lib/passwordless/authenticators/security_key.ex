@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.SecurityKey do
   An security key authenticator.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "auskey"
 
   alias Database.ChangesetExt
   alias Passwordless.App
@@ -17,10 +17,12 @@ defmodule Passwordless.Authenticators.SecurityKey do
     field :relying_party_id, :string
 
     embeds_many :expected_origins, ExpectedOrigin, on_replace: :delete do
+      @derive Jason.Encoder
+
       field :url, :string
     end
 
-    belongs_to :app, App, type: :binary_id
+    belongs_to :app, App
 
     timestamps()
   end

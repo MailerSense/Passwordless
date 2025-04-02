@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.Email do
   An Email authenticator.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "auemail"
 
   import Ecto.Query
 
@@ -24,9 +24,9 @@ defmodule Passwordless.Authenticators.Email do
     field :sender_name, :string
     field :email_tracking, :boolean, default: true
 
-    belongs_to :app, App, type: :binary_id
-    belongs_to :domain, Domain, type: :binary_id
-    belongs_to :email_template, EmailTemplate, type: :binary_id
+    belongs_to :app, App
+    belongs_to :domain, Domain
+    belongs_to :email_template, EmailTemplate
 
     timestamps()
   end

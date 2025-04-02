@@ -3,11 +3,20 @@ defmodule Passwordless.EmailTemplate do
   An email template to be dynamically sent.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "emtpl"
 
   alias Passwordless.App
   alias Passwordless.EmailTemplateVersion
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :name,
+             :versions,
+             :inserted_at,
+             :updated_at,
+             :deleted_at
+           ]}
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -15,9 +24,9 @@ defmodule Passwordless.EmailTemplate do
   schema "email_templates" do
     field :name, :string
 
-    has_many :versions, EmailTemplateVersion
+    has_many :versions, EmailTemplateVersion, preload_order: [asc: :inserted_at]
 
-    belongs_to :app, App, type: :binary_id
+    belongs_to :app, App
 
     timestamps()
     soft_delete_timestamp()

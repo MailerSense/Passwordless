@@ -11,7 +11,7 @@ defmodule PasswordlessWeb.Toast do
       # override styles per severity
       assigns[:kind] == :info && "bg-white text-black dark:bg-slate-600 dark:text-white",
       assigns[:kind] == :error &&
-        "!text-red-700 !bg-red-100 dark:!bg-red-700 dark:!text-white"
+        "text-red-700! bg-red-100! dark:bg-red-700! dark:text-white!"
     ]
   end
 end

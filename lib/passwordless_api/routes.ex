@@ -20,6 +20,8 @@ defmodule PasswordlessApi.Routes do
           when_nil: :raise,
           on_deny: &PasswordlessApi.Auth.handle_rate_limit_exceeded/2,
           by: {:conn, &PasswordlessApi.Auth.get_current_org_id/1}
+
+        plug OneAndDone.Plug, cache: Cache
       end
 
       scope "/api" do

@@ -7,11 +7,6 @@ defmodule PasswordlessWeb.Admin.UserLive do
       repo: Passwordless.Repo,
       update_changeset: &Passwordless.Accounts.User.changeset/3,
       create_changeset: &Passwordless.Accounts.User.create_changeset/3
-    ],
-    pubsub: [
-      name: Passwordless.PubSub,
-      topic: "users",
-      event_prefix: "user_"
     ]
 
   import Ecto.Query

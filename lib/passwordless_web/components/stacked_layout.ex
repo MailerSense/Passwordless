@@ -104,7 +104,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
             <div class="pt-4 pb-3 border-t border-slate-200 dark:border-slate-700">
               <div class="flex items-center justify-between px-4">
                 <div class="flex items-center">
-                  <div class="flex-shrink-0">
+                  <div class="shrink-0">
                     <.avatar name={user_name(@current_user)} color="primary" />
                   </div>
                   <div class="ml-3">
@@ -154,7 +154,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
           <div class="flex items-center -mr-2 lg:hidden">
             <button
               type="button"
-              class="inline-flex items-center justify-center p-2 text-slate-400 rounded-md dark:text-slate-500 hover:text-slate-500 hover:bg-slate-100 dark:hover:text-slate-400 dark:hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+              class="inline-flex items-center justify-center p-2 text-slate-400 rounded-md dark:text-slate-500 hover:text-slate-500 hover:bg-slate-100 dark:hover:text-slate-400 dark:hover:bg-slate-900 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-primary-500"
               aria-controls="mobile-menu"
               @click="mobileMenuOpen = !mobileMenuOpen"
               x-bind:aria-expanded="mobileMenuOpen.toString()"
@@ -211,7 +211,7 @@ defmodule PasswordlessWeb.Components.StackedLayout do
     <div :if={@menu_item[:menu_items]} class={["relative", main_menu_item_class(@active?)]}>
       <.dropdown placement="right">
         <:trigger_element>
-          <div class="inline-flex items-center justify-center w-full focus:outline-none">
+          <div class="inline-flex items-center justify-center w-full focus:outline-hidden">
             {@menu_item.label}
             <.icon
               name="remix-arrow-down-s-line"

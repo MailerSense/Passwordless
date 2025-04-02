@@ -8,11 +8,6 @@ defmodule PasswordlessWeb.Admin.TOTPLive do
       update_changeset: &Passwordless.Accounts.TOTP.changeset/3,
       create_changeset: &Passwordless.Accounts.TOTP.changeset/3
     ],
-    pubsub: [
-      name: Passwordless.PubSub,
-      topic: "totps",
-      event_prefix: "totp_"
-    ],
     fluid?: true
 
   import Ecto.Query

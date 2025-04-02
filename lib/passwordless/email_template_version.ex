@@ -3,13 +3,27 @@ defmodule Passwordless.EmailTemplateVersion do
   An email template to be dynamically sent.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "emtplver"
 
   alias Passwordless.EmailTemplate
 
   @styles ~w(clean card)a
   @languages ~w(en de fr)a
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :language,
+             :subject,
+             :preheader,
+             :text_body,
+             :html_body,
+             :json_body,
+             :mjml_body,
+             :inserted_at,
+             :updated_at,
+             :deleted_at
+           ]}
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -27,7 +41,7 @@ defmodule Passwordless.EmailTemplateVersion do
     field :json_body, :map
     field :mjml_body, :string
 
-    belongs_to :email_template, EmailTemplate, type: :binary_id
+    belongs_to :email_template, EmailTemplate
 
     timestamps()
     soft_delete_timestamp()
@@ -56,6 +70,7 @@ defmodule Passwordless.EmailTemplateVersion do
   @required_fields ~w(
     language
     subject
+    preheader
     email_template_id
   )a
 

@@ -8,11 +8,6 @@ defmodule PasswordlessWeb.Admin.MembershipLive do
       update_changeset: &Passwordless.Organizations.Membership.changeset/3,
       create_changeset: &Passwordless.Organizations.Membership.changeset/3
     ],
-    pubsub: [
-      name: Passwordless.PubSub,
-      topic: "memberships",
-      event_prefix: "membership_"
-    ],
     fluid?: true
 
   import Ecto.Query

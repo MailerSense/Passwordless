@@ -1,5 +1,5 @@
-import { Hook, makeHook } from "phoenix_typed_hook";
 import tippy, { Instance, Props } from "tippy.js";
+import { Hook, makeHook } from "./typed-hook";
 
 class TippyHook extends Hook {
   public mounted() {

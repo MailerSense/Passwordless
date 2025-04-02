@@ -54,7 +54,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   def handle_params(params, _url, socket) do
     {:noreply,
      socket
-     |> apply_action(socket.assigns.live_action, params)
+     |> apply_action(socket.assigns.live_action, Map.take(socket.assigns, [:membership, :invitation]))
      |> assign_filters(params)
      |> assign_memberships(params)
      |> assign_invitations()}
@@ -278,8 +278,6 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   attr :rest, :global, doc: "Any additional HTML attributes to add to the floating container."
 
   defp role_badge(assigns) do
-    IO.inspect(assigns.role)
-
     details =
       Enum.find_value(Roles.org_role_descriptions(), fn {role, {description, color}} ->
         if role == assigns.role do

@@ -3,7 +3,7 @@ defmodule Passwordless.Activity.Log do
   The log of activity on key entities in the system.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "actlog"
 
   import Ecto.Query
 
@@ -11,11 +11,12 @@ defmodule Passwordless.Activity.Log do
   alias Passwordless.Accounts.User
   alias Passwordless.Activity.Filter, as: ActivityFilter
   alias Passwordless.App
+  alias Passwordless.Domain
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Org
 
-  @domains ~w(org user)a
-  @domain_actions [
+  @caregories ~w(org user)a
+  @category_actions [
     org: ~w(
       org.update_profile
       org.update_member
@@ -58,7 +59,7 @@ defmodule Passwordless.Activity.Log do
       subscription_item.deleted
     )a
   ]
-  @actions @domain_actions |> Keyword.values() |> Enum.flat_map(& &1)
+  @actions @category_actions |> Keyword.values() |> Enum.flat_map(& &1)
 
   @derive {
     Flop.Schema,
@@ -73,27 +74,28 @@ defmodule Passwordless.Activity.Log do
   }
   schema "activity_logs" do
     field :action, Ecto.Enum, values: @actions
-    field :domain, Ecto.Enum, values: @domains
+    field :category, Ecto.Enum, values: @caregories
     field :metadata, :map
     field :happened_at, :utc_datetime_usec
 
     # Org
-    belongs_to :org, Passwordless.Organizations.Org, type: :binary_id
-    belongs_to :user, Passwordless.Accounts.User, type: :binary_id
-    belongs_to :auth_token, Passwordless.AuthToken, type: :binary_id
-    belongs_to :target_user, Passwordless.Accounts.User, type: :binary_id
+    belongs_to :org, Passwordless.Organizations.Org
+    belongs_to :user, Passwordless.Accounts.User
+    belongs_to :auth_token, Passwordless.AuthToken
+    belongs_to :target_user, Passwordless.Accounts.User
 
     # App
-    belongs_to :app, Passwordless.App, type: :binary_id
+    belongs_to :app, Passwordless.App
+
+    # Email
+    belongs_to :domain, Domain, type: :binary_id
 
     # Billing
-    belongs_to :billing_customer, Passwordless.Billing.Customer, type: :binary_id
-    belongs_to :billing_subscription, Passwordless.Billing.Subscription, type: :binary_id
+    belongs_to :billing_customer, Passwordless.Billing.Customer
+    belongs_to :billing_subscription, Passwordless.Billing.Subscription
 
     timestamps(updated_at: false)
   end
-
-  def domain_action, do: @domain_actions
 
   def full_recipient_parts(%__MODULE__{user: %User{name: name, email: email}}), do: {:user, name, email}
 
@@ -194,7 +196,7 @@ defmodule Passwordless.Activity.Log do
 
   @fields ~w(
     action
-    domain
+    category
     metadata
     happened_at
     org_id
@@ -204,11 +206,14 @@ defmodule Passwordless.Activity.Log do
     app_id
     billing_customer_id
     billing_subscription_id
+    email_event_id
+    email_message_id
+    domain_id
   )a
 
   @required_fields ~w(
     action
-    domain
+    category
     happened_at
   )a
 
@@ -225,6 +230,9 @@ defmodule Passwordless.Activity.Log do
     |> assoc_constraint(:auth_token)
     |> assoc_constraint(:target_user)
     |> assoc_constraint(:app)
+    |> assoc_constraint(:email_event)
+    |> assoc_constraint(:email_message)
+    |> assoc_constraint(:domain)
   end
 
   @doc """
@@ -242,7 +250,8 @@ defmodule Passwordless.Activity.Log do
             %{actions: [_ | _] = actions, required: [_ | _] = required}, acc ->
               {if(action in actions, do: required, else: []), acc}
 
-            %{action_matcher: action_matcher, required: [_ | _] = required}, acc when is_function(action_matcher, 1) ->
+            %{action_matcher: action_matcher, required: [_ | _] = required}, acc
+            when is_function(action_matcher, 1) ->
               {if(action_matcher.(action), do: required, else: []), acc}
 
             _, acc ->

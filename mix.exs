@@ -70,10 +70,8 @@ defmodule Passwordless.MixProject do
       {:libcluster, "~> 3.5", only: [:dev, :prod]},
       {:flop, "~> 0.26.1"},
       {:email_checker, "~> 0.2.4"},
-      {:live_toast, "~> 0.7.0"},
       {:rustler, "~> 0.36.1"},
       {:floki, "~> 0.37.0"},
-      {:memoize, "~> 1.4"},
 
       # Emails
       {:phoenix_swoosh, "~> 1.2"},
@@ -99,13 +97,13 @@ defmodule Passwordless.MixProject do
       {:eqrcode, "~> 0.2.1"},
 
       # Assets
-      {:tailwind, "~> 0.2.4", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.3.1", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons", tag: "v2.2.0", sparse: "optimized", app: false, compile: false, depth: 1},
 
       # Observability
       {:sentry, "~> 10.8"},
-      {:backpex, "~> 0.11.0"},
+      {:backpex, "~> 0.12.0"},
       {:ecto_psql_extras, "~> 0.8.7"},
 
       # Media
@@ -113,8 +111,9 @@ defmodule Passwordless.MixProject do
       {:nimble_csv, "~> 1.2"},
 
       # Utils
-      {:uuidv7, "~> 1.0.0"},
+      {:uniq, "~> 0.6.1"},
       {:blankable, "~> 1.0.0"},
+      {:one_and_done, "~> 0.1.6"},
       {:currency_formatter, "~> 0.8"},
       {:timex, "~> 3.7"},
       {:slugify, "~> 1.3"},
@@ -129,7 +128,8 @@ defmodule Passwordless.MixProject do
       {:domainatrex, "~> 3.0"},
       {:sizeable, "~> 1.0"},
       {:crontab, "~> 1.1"},
-      {:typed_struct, "~> 0.3.0"},
+      {:cloak_ecto, "~> 1.3"},
+      {:typedstruct, "~> 0.5.3"},
 
       # Markdown
       {:earmark, "~> 1.4"},

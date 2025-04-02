@@ -11,7 +11,13 @@ defmodule Passwordless.Email.Adapter.SES do
 
   @impl true
   def deliver(%Email{} = email, config \\ []) do
-    AWS.SES.send_raw_email(AWS.Session.get_client!(), build_request(email, config))
+    case AWS.SES.send_raw_email(AWS.Session.get_client!(), build_request(email, config)) do
+      {:ok, %{"MessageId" => message_id}, _raw} ->
+        {:ok, %{id: message_id}}
+
+      {:error, error} ->
+        {:error, error}
+    end
   end
 
   # Private

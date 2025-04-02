@@ -8,11 +8,6 @@ defmodule PasswordlessWeb.Admin.OrgLive do
       update_changeset: &Passwordless.Organizations.Org.changeset/3,
       create_changeset: &Passwordless.Organizations.Org.changeset/3
     ],
-    pubsub: [
-      name: Passwordless.PubSub,
-      topic: "orgs",
-      event_prefix: "org_"
-    ],
     fluid?: true
 
   import Database.QueryExt, only: [array_length: 1]

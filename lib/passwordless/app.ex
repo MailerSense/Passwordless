@@ -3,7 +3,7 @@ defmodule Passwordless.App do
   An app contains passwordless resources.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "app"
 
   import Ecto.Query
 
@@ -11,11 +11,27 @@ defmodule Passwordless.App do
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
   alias Passwordless.Domain
+  alias Passwordless.EmailMessageMapping
   alias Passwordless.EmailTemplate
+  alias Passwordless.MagicLinkMapping
   alias Passwordless.Organizations.Org
 
   @states ~w(active)a
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :name,
+             :logo,
+             :state,
+             :website,
+             :display_name,
+             :primary_button_color,
+             :secondary_button_color,
+             :inserted_at,
+             :updated_at,
+             :deleted_at
+           ]}
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -41,9 +57,11 @@ defmodule Passwordless.App do
     has_one :passkey, Authenticators.Passkey
     has_one :recovery_codes, Authenticators.RecoveryCodes
 
-    has_many :email_templates, EmailTemplate
+    has_many :email_templates, EmailTemplate, preload_order: [asc: :inserted_at]
+    has_many :email_message_mappings, EmailMessageMapping, preload_order: [asc: :inserted_at]
+    has_many :magic_link_mappings, MagicLinkMapping, preload_order: [asc: :inserted_at]
 
-    belongs_to :org, Org, type: :binary_id
+    belongs_to :org, Org
 
     timestamps()
     soft_delete_timestamp()

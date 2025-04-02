@@ -1,17 +1,30 @@
 defmodule Passwordless.RecoveryCodes do
   @moduledoc false
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "reccodes"
 
   alias Passwordless.Actor
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :inserted_at,
+             :updated_at,
+             :deleted_at
+           ]}
+  @derive {
+    Flop.Schema,
+    filterable: [:id], sortable: [:id]
+  }
   schema "recovery_codes" do
     embeds_many :codes, Code, on_replace: :delete do
+      @derive {Jason.Encoder, only: [:used_at]}
+
       field :code, :string, redact: true
       field :used_at, :utc_datetime_usec
     end
 
-    belongs_to :actor, Actor, type: :binary_id
+    belongs_to :actor, Actor
 
     timestamps()
     soft_delete_timestamp()
@@ -52,7 +65,7 @@ defmodule Passwordless.RecoveryCodes do
     |> ensure_codes()
     |> assoc_constraint(:actor)
     |> unique_constraint(:actor_id)
-    |> unsafe_validate_unique(:actor_id, Passwordless.Repo, prefix: Keyword.get(opts, :prefix))
+    |> unsafe_validate_unique(:actor_id, Passwordless.Repo, opts)
   end
 
   def ensure_codes(changeset) do

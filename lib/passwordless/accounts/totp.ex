@@ -3,7 +3,7 @@ defmodule Passwordless.Accounts.TOTP do
   Defines two factor strategies for accounts
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "acctotp"
 
   import Ecto.Query, warn: false
 
@@ -14,11 +14,13 @@ defmodule Passwordless.Accounts.TOTP do
     field :code, :string, virtual: true
 
     embeds_many :backup_codes, BackupCode, on_replace: :delete do
+      @derive {Jason.Encoder, only: [:used_at]}
+
       field :code, :string
       field :used_at, :utc_datetime_usec
     end
 
-    belongs_to :user, User, type: :binary_id
+    belongs_to :user, User
 
     timestamps()
   end

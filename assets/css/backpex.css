@@ -1,0 +1,4 @@
+@import "tailwindcss" source("../..");
+@plugin "daisyui";
+@source "../../deps/backpex/**/*.*ex";
+@source '../../deps/backpex/assets/js/**/*.*js';

@@ -3,7 +3,7 @@ defmodule Passwordless.Phone do
   A phone.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "phone"
 
   import Ecto.Query
 
@@ -19,7 +19,12 @@ defmodule Passwordless.Phone do
              :region,
              :canonical,
              :primary,
-             :verified
+             :verified,
+             :channels,
+             :opted_out_at,
+             :inserted_at,
+             :updated_at,
+             :deleted_at
            ]}
   @derive {
     Flop.Schema,
@@ -35,7 +40,7 @@ defmodule Passwordless.Phone do
     field :opted_out, :boolean, virtual: true
     field :opted_out_at, :utc_datetime_usec
 
-    belongs_to :actor, Actor, type: :binary_id
+    belongs_to :actor, Actor
 
     timestamps()
     soft_delete_timestamp()

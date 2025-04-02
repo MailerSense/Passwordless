@@ -1,27 +1,39 @@
-defmodule Passwordless.Event do
+defmodule Passwordless.ActionEvent do
   @moduledoc """
-  An actor avent.
+  An action avent.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "aevnt"
 
   alias Database.ChangesetExt
   alias Passwordless.Action
-  alias Passwordless.EmailMessage
 
-  @kinds ~w(created verified failed exhausted timed_out)a
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :event,
+             :metadata,
+             :inserted_at
+           ]}
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "events" do
-    field :kind, Ecto.Enum, values: @kinds, default: :created
+  schema "action_events" do
+    field :event, :string
+
+    embeds_one :metadata, Metadata, on_replace: :delete do
+      @derive Jason.Encoder
+
+      field :before, :map, default: %{}
+      field :after, :map, default: %{}
+      field :attrs, :map, default: %{}
+    end
+
     field :user_agent, :string
     field :ip_address, :string
     field :country, :string
     field :city, :string
-
-    has_one :email_message, EmailMessage
 
     belongs_to :action, Action
 
@@ -29,7 +41,11 @@ defmodule Passwordless.Event do
   end
 
   @fields ~w(
-    kind
+    flow
+    event
+    from_state
+    to_state
+    metadata
     user_agent
     ip_address
     country
@@ -37,7 +53,11 @@ defmodule Passwordless.Event do
     action_id
   )a
   @required_fields ~w(
-    kind
+    flow
+    event
+    from_state
+    to_state
+    metadata
     action_id
   )a
 
@@ -53,6 +73,7 @@ defmodule Passwordless.Event do
     |> validate_string(:country)
     |> validate_string(:city)
     |> assoc_constraint(:action)
+    |> assoc_constraint(:email_message)
   end
 
   # Private

@@ -113,15 +113,26 @@ config :passwordless, :emails,
   support: [
     name: "Passwordless",
     email: "noreply@support.passwordlesstools.com",
+    domain: "support.passwordlesstools.com",
     reply_to: "hello@passwordless.tools",
     reply_to_name: "Passwordless Support"
   ],
   alerts: [
     name: "Passwordless Alert",
     email: "noreply@alerts.passwordlesstools.com",
+    domain: "alerts.passwordlesstools.com",
+    reply_to: "hello@passwordless.tools",
+    reply_to_name: "Passwordless Support"
+  ],
+  challenge: [
+    name: "Passwordless Tools",
+    email: "verify@auth.passwordlesstools.com",
+    domain: "auth.passwordlesstools.com",
     reply_to: "hello@passwordless.tools",
     reply_to_name: "Passwordless Support"
   ]
+
+config :passwordless, :queues, email_notifications: %{sqs_queue_url: ""}
 
 # Configure esbuild (the version is required)
 config :esbuild,
@@ -155,21 +166,20 @@ config :passwordless,
        {PasswordlessWeb.CoreComponents, :translate_error}
 
 config :tailwind,
-  version: "3.4.17",
+  version: "4.1.0",
   default: [
     args: ~w(
-    --config=tailwind.config.js
-    --input=css/app.css
-    --output=../priv/static/assets/app.css
-  ),
-    cd: Path.expand("../assets", __DIR__)
+      --input=assets/css/app.css
+      --output=priv/static/assets/app.css
+    ),
+    cd: Path.expand("..", __DIR__)
   ],
   backpex: [
     args: ~w(
-    --config=tailwind.backpex.config.js
-    --output=../priv/static/assets/backpex.css
-  ),
-    cd: Path.expand("../assets", __DIR__)
+      --input=assets/css/backpex.css
+      --output=priv/static/assets/backpex.css
+    ),
+    cd: Path.expand("..", __DIR__)
   ]
 
 # Specify which languages you support
@@ -375,6 +385,8 @@ config :passwordless, :billing_plans, [
     ]
   }
 ]
+
+config :backpex, :pubsub_server, Passwordless.PubSub
 
 config :passwordless, :browser,
   on_demand: false,

@@ -4,7 +4,6 @@ defmodule PasswordlessWeb.CoreComponents do
   use PasswordlessWeb, :verified_routes
   use PasswordlessWeb.Components
   use Gettext, backend: PasswordlessWeb.Gettext
-  use Memoize
 
   import PasswordlessWeb.Helpers
 
@@ -25,7 +24,7 @@ defmodule PasswordlessWeb.CoreComponents do
       <nav class="pc-sidebar__nav">
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </nav>
-      <div class={["flex-grow overflow-y-auto", @inner_class]}>
+      <div class={["grow overflow-y-auto", @inner_class]}>
         {render_slot(@inner_block)}
       </div>
     </div>
@@ -572,7 +571,7 @@ defmodule PasswordlessWeb.CoreComponents do
 
   defp topbar_dropdown(%{dropdown_type: :global} = assigns) do
     ~H"""
-    <span class="pc-dropdown__trigger-button--with-label--md-solid h-[42px] select-none cursor-not-allowed">
+    <span class="pc-dropdown__trigger-button--with-label--md-solid select-none cursor-not-allowed">
       <.icon name="remix-global-line" class="pc-dropdown__icon" />
       <span>{gettext("Global")}</span>
     </span>

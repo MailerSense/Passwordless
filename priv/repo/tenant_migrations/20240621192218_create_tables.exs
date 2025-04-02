@@ -30,6 +30,49 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     execute "create index actors_properties_gin_trgm_idx on #{prefix()}.actors using gin ((properties::text) gin_trgm_ops) where deleted_at is null;"
 
+    ## Action Behavior
+
+    create table(:rules, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :condition, :map, null: false, default: %{}
+      add :effects, :map, null: false, default: %{}
+
+      timestamps()
+    end
+
+    ## Action
+
+    create table(:actions, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :name, :string, null: false
+      add :state, :string, null: false
+      add :completed_at, :utc_datetime_usec
+
+      add :rule_id, references(:rules, type: :uuid, on_delete: :delete_all), null: false
+      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create index(:actions, [:name])
+    create index(:actions, [:rule_id])
+    create index(:actions, [:actor_id])
+
+    ## Challenge
+
+    create table(:challenges, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :type, :string, null: false
+      add :state, :string, null: false
+      add :current, :boolean, null: false, default: false
+
+      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:challenges, [:action_id], where: "\"current\"")
+
     ## Emails
 
     create table(:emails, primary_key: false) do
@@ -50,6 +93,106 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create unique_index(:emails, [:actor_id, :address], where: "deleted_at is null")
 
     execute "create index emails_email_gin_trgm_idx on #{prefix()}.emails using gin (address gin_trgm_ops);"
+
+    ## Email messages
+
+    create table(:email_messages, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :state, :string, null: false
+      add :sender, :citext, null: false
+      add :sender_name, :string
+      add :recipient, :citext, null: false
+      add :recipient_name, :string
+      add :reply_to, :citext, null: false
+      add :reply_to_name, :string
+      add :subject, :string, null: false
+      add :preheader, :string
+      add :text_content, :text, null: false
+      add :html_content, :text, null: false
+      add :current, :boolean, null: false, default: false
+
+      add :metadata, :map
+
+      add :email_id, references(:emails, type: :uuid, on_delete: :delete_all), null: false
+
+      add :domain_id, references(:domains, type: :uuid, on_delete: :delete_all, prefix: "public"),
+        null: false
+
+      add :challenge_id, references(:challenges, type: :uuid, on_delete: :delete_all), null: false
+
+      add :email_template_id,
+          references(:email_templates, type: :uuid, on_delete: :delete_all, prefix: "public"),
+          null: false
+
+      timestamps()
+    end
+
+    create index(:email_messages, [:email_id])
+    create index(:email_messages, [:domain_id])
+    create index(:email_messages, [:email_template_id])
+    create unique_index(:email_messages, [:challenge_id], where: "\"current\"")
+
+    ## Email events
+
+    create table(:email_events, primary_key: false) do
+      add :id, :uuid, primary_key: true
+
+      # Kind
+      add :kind, :string, null: false
+
+      # Open
+      add :open_ip_address, :string
+      add :open_user_agent, :string
+
+      # Click
+      add :click_url, :string
+      add :click_url_tags, {:array, :string}
+      add :click_ip_address, :string
+      add :click_user_agent, :string
+
+      # Bounce
+      add :bounce_type, :string
+      add :bounce_subtype, :string
+      add :bounced_recipients, :map
+
+      # Complaint
+      add :complaint_type, :string
+      add :complaint_subtype, :string
+      add :complaint_user_agent, :string
+      add :complained_recipients, :map
+
+      # Delivery
+      add :delivery_smtp_response, :string
+      add :delivery_reporting_mta, :string
+      add :delivery_processing_time_millis, :integer
+
+      # Reject
+      add :reject_reason, :string
+
+      # Delay
+      add :delay_reason, :string
+      add :delay_reporting_mta, :string
+      add :delay_expiration_time, :utc_datetime_usec
+      add :delayed_recipients, :map
+
+      # Subscription
+      add :subscription_source, :string
+      add :subscription_contact_list, :string
+
+      # Rendering failure
+      add :rendering_error_message, :string
+      add :rendering_teplate_name, :string
+
+      # Suspend
+      add :suspend_reason, :string
+
+      add :email_message_id, references(:email_messages, type: :uuid, on_delete: :delete_all),
+        null: false
+
+      timestamps(updated_at: false)
+    end
+
+    create index(:email_events, [:email_message_id])
 
     ## Phones
 
@@ -74,6 +217,23 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create unique_index(:phones, [:actor_id, :canonical], where: "deleted_at is null")
 
     execute "create index phones_canonical_gin_trgm_idx on #{prefix()}.phones using gin (canonical gin_trgm_ops);"
+
+    ## Phone messages
+
+    create table(:phone_messages, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :recipient, :citext, null: false
+      add :recipient_name, :string
+      add :text_content, :text, null: false
+
+      add :phone_id, references(:phones, type: :uuid, on_delete: :delete_all), null: false
+      add :challenge_id, references(:challenges, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create index(:phone_messages, [:phone_id])
+    create index(:phone_messages, [:challenge_id])
 
     ## TOTPS
 
@@ -135,32 +295,45 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       soft_delete_column()
     end
 
-    ## Action
+    ## Action details
 
-    create table(:actions, primary_key: false) do
+    create table(:otps, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :name, :string, null: false
-      add :state, :string, null: false
-      add :token, :binary
-      add :authenticator, :string
+      add :code, :binary, null: false
       add :attempts, :integer, null: false, default: 0
-      add :expires_at, :utc_datetime_usec
-      add :completed_at, :utc_datetime_usec
+      add :expires_at, :utc_datetime_usec, null: false
+      add :accepted_at, :utc_datetime_usec
 
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+      add :email_message_id, references(:email_messages, type: :uuid, on_delete: :nilify_all)
+      add :phone_message_id, references(:phone_messages, type: :uuid, on_delete: :nilify_all)
 
       timestamps()
     end
 
-    create index(:actions, [:actor_id])
-    create index(:actions, [:state])
+    create unique_index(:otps, [:email_message_id])
+    create unique_index(:otps, [:phone_message_id])
 
-    ## Events
-
-    create table(:events, primary_key: false) do
+    create table(:magic_links, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :kind, :string, null: false
-      add :user_agent, :text
+      add :token, :binary, null: false
+      add :expires_at, :utc_datetime_usec, null: false
+      add :accepted_at, :utc_datetime_usec
+
+      add :email_message_id, references(:email_messages, type: :uuid, on_delete: :delete_all),
+        null: false
+
+      timestamps()
+    end
+
+    create unique_index(:magic_links, [:email_message_id])
+
+    ## Action events
+
+    create table(:action_events, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :event, :string, null: false
+      add :metadata, :map, null: false, default: %{}
+      add :user_agent, :string
       add :ip_address, :string
       add :country, :string
       add :city, :string
@@ -170,40 +343,6 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       timestamps(updated_at: false)
     end
 
-    create index(:events, [:action_id])
-
-    ## Messages
-
-    create table(:email_messages, primary_key: false) do
-      add :id, :uuid, primary_key: true
-      add :state, :string, null: false
-      add :sender, :citext, null: false
-      add :sender_name, :string
-      add :recipient, :citext, null: false
-      add :recipient_name, :string
-      add :reply_to, :citext, null: false
-      add :reply_to_name, :string
-      add :subject, :string, null: false
-      add :preheader, :string
-      add :external_id, :string
-      add :text_content, :text, null: false
-      add :html_content, :text, null: false
-
-      add :metadata, :map
-
-      add :event_id, references(:events, type: :uuid, on_delete: :delete_all), null: false
-      add :email_id, references(:emails, type: :uuid, on_delete: :delete_all), null: false
-
-      add :email_template_id,
-          references(:email_templates, type: :uuid, on_delete: :delete_all, prefix: "public"),
-          null: false
-
-      timestamps()
-    end
-
-    create index(:email_messages, [:email_id])
-    create index(:email_messages, [:email_template_id])
-    create unique_index(:email_messages, [:event_id])
-    create unique_index(:email_messages, [:external_id])
+    create index(:action_events, [:action_id])
   end
 end

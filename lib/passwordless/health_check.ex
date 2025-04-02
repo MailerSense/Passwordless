@@ -14,7 +14,13 @@ defmodule Passwordless.HealthCheck do
     Internal state
     """
 
-    defstruct ready: [], live: [], results: {:ok, :ok}
+    use TypedStruct
+
+    typedstruct do
+      field :ready, list((-> :ok | {:error, any()})), enforce: true
+      field :live, list((-> :ok | {:error, any()})), enforce: true
+      field :results, {atom() | atom()}, default: {:ok, :ok}
+    end
   end
 
   def start_link({_ready, _live} = state) do

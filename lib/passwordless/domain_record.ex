@@ -3,13 +3,24 @@ defmodule Passwordless.DomainRecord do
   Email domain records are used to verify domain ownership & ensure high quality sendouts.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "dnsrec"
 
   import Ecto.Query
 
   alias Database.ChangesetExt
   alias Passwordless.Domain
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :kind,
+             :name,
+             :value,
+             :priority,
+             :verified,
+             :inserted_at,
+             :updated_at
+           ]}
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id, :name, :kind, :value, :verified]
@@ -21,7 +32,7 @@ defmodule Passwordless.DomainRecord do
     field :priority, :integer, default: 0
     field :verified, :boolean, default: false
 
-    belongs_to :domain, Domain, type: :binary_id
+    belongs_to :domain, Domain
 
     timestamps()
   end

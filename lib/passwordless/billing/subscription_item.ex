@@ -3,7 +3,7 @@ defmodule Passwordless.Billing.SubscriptionItem do
   Represents a billable item belonging to a subscription.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "blsitem"
 
   alias Passwordless.Billing.Subscription
 

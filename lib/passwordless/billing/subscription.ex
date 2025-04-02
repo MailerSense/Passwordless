@@ -3,7 +3,7 @@ defmodule Passwordless.Billing.Subscription do
   Represents a subscription to a billing plan.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "blsub"
 
   import Ecto.Query
 
@@ -43,7 +43,7 @@ defmodule Passwordless.Billing.Subscription do
 
     belongs_to :customer, Customer
 
-    has_many :items, SubscriptionItem
+    has_many :items, SubscriptionItem, preload_order: [asc: :inserted_at]
 
     timestamps()
     soft_delete_timestamp()

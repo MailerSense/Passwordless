@@ -3,19 +3,22 @@ defmodule Passwordless.EmailMessage do
   An email message.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "emmsg"
 
   import Ecto.Query
 
   alias Database.ChangesetExt
+  alias Passwordless.Challenge
+  alias Passwordless.Domain
   alias Passwordless.Email
+  alias Passwordless.EmailEvent
   alias Passwordless.EmailTemplate
-  alias Passwordless.Event
+  alias Passwordless.MagicLink
+  alias Passwordless.OTP
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
 
   @states ~w(
-    created
     submitted
     sent
     not_sent
@@ -33,7 +36,7 @@ defmodule Passwordless.EmailMessage do
     filterable: [:id], sortable: [:id], custom_fields: []
   }
   schema "email_messages" do
-    field :state, Ecto.Enum, values: @states, default: :created
+    field :state, Ecto.Enum, values: @states, default: :submitted
     field :sender, :string
     field :sender_name, :string
     field :recipient, :string
@@ -42,43 +45,48 @@ defmodule Passwordless.EmailMessage do
     field :reply_to_name, :string
     field :subject, :string
     field :preheader, :string
-    field :external_id, :string
     field :text_content, :string
     field :html_content, :string
+    field :current, :boolean, default: false
 
     embeds_one :metadata, Metadata, on_replace: :delete do
+      @derive Jason.Encoder
+
       field :source, :string
       field :source_arn, :string
       field :sending_account_id, :string
       field :headers_truncated, :boolean
 
       embeds_many :tags, Tag, on_replace: :delete do
+        @derive Jason.Encoder
+
         field :name, :string
         field :value, {:array, :string}
       end
 
       embeds_many :headers, Header, on_replace: :delete do
+        @derive Jason.Encoder
+
         field :name, :string
         field :value, :string
       end
     end
 
-    belongs_to :event, Event, type: :binary_id
-    belongs_to :email, Email, type: :binary_id
-    belongs_to :email_template, EmailTemplate, type: :binary_id
+    has_one :otp, OTP
+    has_one :magic_link, MagicLink
+
+    has_many :email_events, EmailEvent, preload_order: [asc: :inserted_at]
+
+    belongs_to :email, Email
+    belongs_to :domain, Domain
+    belongs_to :challenge, Challenge
+    belongs_to :email_template, EmailTemplate
 
     timestamps()
   end
 
   def states, do: @states
   def failed_states, do: ~w(rejected bounced supressed complaint_received)a
-
-  @doc """
-  Get the message with the given external ID.
-  """
-  def get_by_external_id(query \\ __MODULE__, external_id) when is_binary(external_id) do
-    from q in query, where: q.external_id == ^external_id
-  end
 
   @fields ~w(
     state
@@ -90,11 +98,12 @@ defmodule Passwordless.EmailMessage do
     reply_to_name
     subject
     preheader
-    external_id
     text_content
     html_content
-    event_id
+    current
     email_id
+    domain_id
+    challenge_id
     email_template_id
   )a
 
@@ -105,15 +114,17 @@ defmodule Passwordless.EmailMessage do
     subject
     text_content
     html_content
-    event_id
+    current
     email_id
+    domain_id
+    challenge_id
     email_template_id
   )a
 
   @doc """
   A message changeset.
   """
-  def changeset(%__MODULE__{} = message, attrs \\ %{}) do
+  def changeset(%__MODULE__{} = message, attrs \\ %{}, opts \\ []) do
     message
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
@@ -126,15 +137,20 @@ defmodule Passwordless.EmailMessage do
     |> validate_subject()
     |> validate_preheader()
     |> validate_content()
-    |> validate_external_id()
-    |> assoc_constraint(:event)
     |> assoc_constraint(:email)
+    |> assoc_constraint(:domain)
+    |> assoc_constraint(:challenge)
     |> assoc_constraint(:email_template)
+    |> unique_constraint([:action_id, :current], error_key: :current)
+    |> unsafe_validate_unique([:action_id, :current], Passwordless.Repo,
+      query: from(e in __MODULE__, where: e.current),
+      prefix: Keyword.get(opts, :prefix),
+      error_key: :current
+    )
     |> cast_embed(:metadata, with: &metadata_changeset/2)
   end
 
   @external_fields ~w(
-    external_id
     sender
     sender_name
     recipient
@@ -151,8 +167,6 @@ defmodule Passwordless.EmailMessage do
     |> ChangesetExt.validate_email_format(:recipient)
     |> validate_text(:sender_name)
     |> validate_text(:recipient_name)
-    |> validate_required([:external_id])
-    |> validate_external_id()
   end
 
   def sign_token(%__MODULE__{id: id}) when is_binary(id) do
@@ -193,12 +207,6 @@ defmodule Passwordless.EmailMessage do
     |> validate_required([:text_content, :html_content])
     |> update_change(:text_content, &HtmlSanitizeEx.strip_tags/1)
     |> update_change(:html_content, &HtmlSanitizeEx.html5/1)
-  end
-
-  defp validate_external_id(changeset) do
-    changeset
-    |> ChangesetExt.ensure_trimmed(:external_id)
-    |> unique_constraint(:external_id)
   end
 
   @metadata_fields ~w(

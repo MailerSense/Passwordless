@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.SMS do
   An SMS authenticator.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "ausms"
 
   alias Passwordless.App
 
@@ -18,7 +18,7 @@ defmodule Passwordless.Authenticators.SMS do
     field :expires, :integer, default: 5
     field :language, Ecto.Enum, values: @languages, default: :en, virtual: true
 
-    belongs_to :app, App, type: :binary_id
+    belongs_to :app, App
 
     timestamps()
   end

@@ -3,7 +3,7 @@ defmodule Passwordless.Accounts.User do
   A user is a person or service who can log in and interact with the system.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "accuser"
 
   alias Database.ChangesetExt
   alias Passwordless.Accounts.Credential
@@ -39,10 +39,10 @@ defmodule Passwordless.Accounts.User do
 
     has_one :totp, TOTP
 
-    has_many :tokens, Token
-    has_many :credentials, Credential
-    has_many :invitations, Invitation
-    has_many :memberships, Membership
+    has_many :tokens, Token, preload_order: [asc: :inserted_at]
+    has_many :credentials, Credential, preload_order: [asc: :inserted_at]
+    has_many :invitations, Invitation, preload_order: [asc: :inserted_at]
+    has_many :memberships, Membership, preload_order: [asc: :inserted_at]
 
     many_to_many :orgs, Org, join_through: Membership, unique: true
 
@@ -271,6 +271,7 @@ defmodule Passwordless.Accounts.User do
   Does the user have a password?
   """
   def has_password?(%__MODULE__{password_hash: password_hash}) when is_binary(password_hash), do: true
+
   def has_password?(%__MODULE__{}), do: false
 
   # Private

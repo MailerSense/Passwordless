@@ -3,6 +3,35 @@ defmodule Util do
   A set of utility functions for use all over the project.
   """
 
+  @redacted "***"
+  @redacted_keys ~w(
+    _csrf_token
+    _method
+    back
+    raw
+    raw_editable
+    code
+    token
+    value
+    password
+    password_confirmation
+    ciphertext
+    plaintext
+    invoices
+    certificate
+    old_certificate
+    external_id
+    opts
+    data
+    account_owner
+    iban
+    bic_swift
+    tax_id
+    new
+    body
+  )a
+  @redacted_keys_s Enum.map(@redacted_keys, &Atom.to_string/1)
+
   @doc """
   Useful for printing maps onto the page during development. Or passing a map to a hook
   """
@@ -384,6 +413,44 @@ defmodule Util do
     |> Enum.reject(fn s -> Enum.any?(@excluded_time_unites, &String.ends_with?(s, &1)) end)
     |> Enum.join(" ")
   end
+
+  # Sanitizer
+
+  def sanitize(payload) when is_struct(payload), do: sanitize(Map.from_struct(payload))
+
+  def sanitize(payload) when is_map(payload) do
+    Map.new(payload, fn {k, v} ->
+      if sensitive?(k) do
+        {k, @redacted}
+      else
+        {k, sanitize(v)}
+      end
+    end)
+  end
+
+  def sanitize(payload) when is_list(payload) do
+    Enum.map(payload, &sanitize/1)
+  end
+
+  def sanitize(payload) when is_function(payload) do
+    "<function>"
+  end
+
+  def sanitize({k, v}) do
+    if sensitive?(k) do
+      {k, @redacted}
+    else
+      {k, sanitize(v)}
+    end
+  end
+
+  def sanitize(payload), do: payload
+
+  def sensitive?(key) when is_atom(key) and key in @redacted_keys, do: true
+
+  def sensitive?(key) when is_binary(key) and key in @redacted_keys_s, do: true
+
+  def sensitive?(_key), do: false
 
   # Private
 

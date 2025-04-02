@@ -53,6 +53,7 @@
           type="submit"
           form="member-update-form"
           label={gettext("Save")}
+          disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
         />
       <% else %>
         <div

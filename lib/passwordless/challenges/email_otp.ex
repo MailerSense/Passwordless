@@ -1,0 +1,227 @@
+defmodule Passwordless.Challenges.EmailOTP do
+  @moduledoc """
+  Email OTP flow.
+  """
+
+  @behaviour Passwordless.Challenge
+
+  import Ecto.Query
+
+  alias Database.Tenant
+  alias Passwordless.Action
+  alias Passwordless.Actor
+  alias Passwordless.App
+  alias Passwordless.Authenticators
+  alias Passwordless.Challenge
+  alias Passwordless.Domain
+  alias Passwordless.Email
+  alias Passwordless.EmailMessage
+  alias Passwordless.EmailTemplate
+  alias Passwordless.EmailTemplateVersion
+  alias Passwordless.Mailer
+  alias Passwordless.MailerExecutor
+  alias Passwordless.OTP
+  alias Passwordless.Repo
+  alias PasswordlessWeb.Email, as: EmailWeb
+  alias Swoosh.Email, as: SwooshEmail
+
+  @challenge :email_otp
+
+  @impl true
+  def handle(
+        %App{} = app,
+        %Actor{} = actor,
+        %Action{challenge: %Challenge{type: @challenge, state: state} = challenge} = action,
+        event: :send_otp,
+        attrs: %{email: %Email{} = email}
+      )
+      when state in [:started, :otp_sent] do
+    otp_code = OTP.generate_code()
+
+    with {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email),
+         {:ok, domain} <- get_sending_domain(authenticator),
+         {:ok, email_template} <- get_email_template(authenticator),
+         {:ok, email_template_version} <- get_email_template_version(actor, email_template),
+         :ok <- update_existing_messages(app, action),
+         {:ok, email_message} <-
+           create_email_message(
+             actor,
+             action,
+             domain,
+             email,
+             email_template,
+             email_template_version,
+             authenticator,
+             otp_code
+           ),
+         {:ok, otp} <- create_otp(authenticator, email_message, otp_code),
+         {:ok, challenge} <- update_challenge_state(app, challenge, :otp_sent),
+         :ok <- enqueue_email_message(email_message),
+         do:
+           {:ok,
+            %Action{
+              action
+              | challenge: %Challenge{
+                  challenge
+                  | email_message: %EmailMessage{email_message | otp: otp},
+                    email_messages: Repo.preload(challenge, :email_messages).email_messages
+                }
+            }}
+  end
+
+  @impl true
+  def handle(
+        %App{} = app,
+        %Actor{} = _actor,
+        %Action{challenge: %Challenge{type: @type, state: state} = challenge} = action,
+        event: :validate_otp,
+        attrs: %{code: code}
+      )
+      when state in [:otp_sent] and is_binary(code) do
+    case challenge |> Ecto.assoc(:email_message) |> Repo.one() |> Repo.preload(:otp) do
+      %EmailMessage{otp: %OTP{} = otp} ->
+        if OTP.valid?(otp, code) do
+          with {:ok, challenge} <- update_challenge_state(app, challenge, :otp_validated) do
+            {:ok, %Action{action | challenge: challenge}}
+          end
+        else
+          {:error, :otp_invalid}
+        end
+
+      _ ->
+        {:error, :otp_not_found}
+    end
+  end
+
+  # Private
+
+  defp get_email_template(%Authenticators.Email{} = authenticator) do
+    Repo.preload(authenticator, :email_template).email_template
+  end
+
+  defp get_email_template_version(%Actor{} = actor, %EmailTemplate{} = template) do
+    case template
+         |> Ecto.assoc(:versions)
+         |> where([v], v.language == ^actor.language)
+         |> Repo.one() do
+      %EmailTemplateVersion{} = version ->
+        {:ok, version}
+
+      _ ->
+        case template
+             |> Ecto.assoc(:versions)
+             |> where([v], v.language == :en)
+             |> Repo.one() do
+          %EmailTemplateVersion{} = version -> {:ok, version}
+          _ -> {:error, :template_not_found}
+        end
+    end
+  end
+
+  defp create_email_message(
+         %Actor{} = actor,
+         %Action{challenge: %Challenge{} = challenge} = action,
+         %Domain{} = domain,
+         %Email{} = email,
+         %EmailTemplate{} = template,
+         %EmailTemplateVersion{} = version,
+         %Authenticators.Email{} = authenticator,
+         otp_code
+       ) do
+    # Render the email content with the OTP code
+    html_content = render_email_content(version.html_body || "", otp_code)
+    text_content = render_email_content(version.text_body || "", otp_code)
+
+    attrs = %{
+      state: :created,
+      sender: authenticator.sender,
+      sender_name: authenticator.sender_name,
+      recipient: email.address,
+      recipient_name: Actor.handle(actor),
+      subject: version.subject,
+      preheader: version.preheader,
+      text_content: text_content,
+      html_content: html_content,
+      current: true,
+      email_id: email.id,
+      domain_id: domain.id,
+      challenge_id: challenge.id,
+      email_template_id: template.id
+    }
+
+    challenge
+    |> Ecto.build_assoc(:email_messages)
+    |> EmailMessage.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  defp update_existing_messages(%App{} = app, %Action{challenge: %Challenge{} = challenge}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    challenge
+    |> Ecto.assoc(:email_messages)
+    |> where([m], m.current == true)
+    |> Repo.update_all([set: [current: false]], opts)
+    |> case do
+      {count, _} when count in [0, 1] -> :ok
+      _ -> :error
+    end
+  end
+
+  defp create_otp(%Authenticators.Email{} = authenticator, %EmailMessage{} = email_message, otp_code)
+       when is_binary(otp_code) do
+    expires_at = DateTime.add(DateTime.utc_now(), authenticator.expires, :minute)
+
+    email_message
+    |> Ecto.build_assoc(:otp)
+    |> OTP.changeset(%{code: otp_code, expires_at: expires_at})
+    |> Repo.insert()
+  end
+
+  defp get_sending_domain(%Authenticators.Email{} = authenticator) do
+    case Repo.preload(authenticator, :domain) do
+      %Authenticators.Email{domain: %Domain{} = domain} ->
+        {:ok, domain}
+
+      _ ->
+        case Repo.get_by(Domain, name: EmailWeb.challenge_email_domain()) do
+          %Domain{} = domain -> {:ok, domain}
+          _ -> {:error, :default_domain_not_found}
+        end
+    end
+  end
+
+  defp enqueue_email_message(%EmailMessage{domain: %Domain{} = domain} = email_message) do
+    swoosh_email =
+      SwooshEmail.new()
+      |> SwooshEmail.from({email_message.sender_name, email_message.sender})
+      |> SwooshEmail.to({email_message.recipient_name, email_message.recipient})
+      |> SwooshEmail.subject(email_message.subject)
+      |> SwooshEmail.html_body(email_message.html_content)
+      |> SwooshEmail.text_body(email_message.text_content)
+
+    %{email: Mailer.to_map(swoosh_email), domain_id: domain.id}
+    |> MailerExecutor.new()
+    |> Oban.insert()
+  end
+
+  defp render_email_content(content, otp_code) do
+    String.replace(content, "{{otp_code}}", otp_code)
+  end
+
+  defp update_challenge_state(%App{} = app, %Challenge{} = challenge, state) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    challenge
+    |> Challenge.state_changeset(%{state: state})
+    |> Repo.update(opts)
+  end
+
+  defp update_action_state(%App{} = app, %Action{} = action, state) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    action
+    |> Action.state_changeset(%{state: state})
+    |> Repo.update(opts)
+  end
+end

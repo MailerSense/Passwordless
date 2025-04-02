@@ -434,8 +434,8 @@ defmodule PasswordlessWeb.LandingPageComponents do
       />
       <div class={[
         "relative flex pb-4",
-        "before:bg-gradient-to-r before:z-10 before:absolute before:w-32 md:before:w-64 xl:before:w-[300px] before:top-0 before:bottom-0 before:pointer-events-none",
-        "after:bg-gradient-to-l after:z-10 after:absolute after:w-32 md:after:w-64 xl:after:w-[300px] after:top-0 after:bottom-0 after:right-0 after:pointer-events-none",
+        "before:bg-linear-to-r before:z-10 before:absolute before:w-32 md:before:w-64 xl:before:w-[300px] before:top-0 before:bottom-0 before:pointer-events-none",
+        "after:bg-linear-to-l after:z-10 after:absolute after:w-32 md:after:w-64 xl:after:w-[300px] after:top-0 after:bottom-0 after:right-0 after:pointer-events-none",
         "from-white to-transparent"
       ]}>
         <div
@@ -480,7 +480,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
         <p class="self-stretch text-slate-900 text-lg line-clamp-4">{@content}</p>
       </div>
       <div class="flex items-center gap-2">
-        <div class="inline-flex flex-shrink-0 rounded-full">
+        <div class="inline-flex shrink-0 rounded-full">
           <img
             class="w-10 h-10 rounded-full"
             src={@image_src}
@@ -550,7 +550,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
     ~H"""
     <.a to={@to} title={@title} class={@class} link_type={@link_type}>
       <article class={[
-        "h-[380px] 2xl:h-[400px] w-full p-8 bg-slate-50 rounded-3xl shadow border border-slate-200 justify-between inline-flex overflow-hidden",
+        "h-[380px] 2xl:h-[400px] w-full p-8 bg-slate-50 rounded-3xl shadow-sm border border-slate-200 justify-between inline-flex overflow-hidden",
         "select-none transition duration-150 ease-in-out hover:shadow-2 focus:shadow-3 focus:bg-slate-100 active:bg-slate-100 active:shadow-3",
         if(@reverse, do: "flex-col-reverse", else: "flex-col")
       ]}>
@@ -605,7 +605,7 @@ defmodule PasswordlessWeb.LandingPageComponents do
               >
               </div>
               <div class="absolute bottom-7 right-7 flex items-center gap-2 bg-slate-950 p-2 rounded-lg">
-                <.icon :for={l <- [:js, :ts]} name={"remix-#{l}"} class="w-6 h-6 rounded" />
+                <.icon :for={l <- [:js, :ts]} name={"remix-#{l}"} class="w-6 h-6 rounded-sm" />
               </div>
             </div>
           </div>

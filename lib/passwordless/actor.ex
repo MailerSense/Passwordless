@@ -3,11 +3,12 @@ defmodule Passwordless.Actor do
   An actor.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "user"
 
   import Ecto.Query
 
   alias Database.ChangesetExt
+  alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.App
   alias Passwordless.Email
@@ -27,7 +28,11 @@ defmodule Passwordless.Actor do
              :language,
              :totps,
              :emails,
-             :phones
+             :phones,
+             :properties,
+             :inserted_at,
+             :updated_at,
+             :deleted_at
            ]}
   @derive {
     Flop.Schema,
@@ -69,10 +74,10 @@ defmodule Passwordless.Actor do
 
     has_one :recovery_codes, RecoveryCodes
 
-    has_many :totps, TOTP
-    has_many :emails, Email
-    has_many :phones, Phone
-    has_many :actions, Action
+    has_many :totps, TOTP, preload_order: [asc: :inserted_at]
+    has_many :emails, Email, preload_order: [asc: :inserted_at]
+    has_many :phones, Phone, preload_order: [asc: :inserted_at]
+    has_many :actions, Action, preload_order: [asc: :inserted_at]
 
     timestamps()
     soft_delete_timestamp()
@@ -87,7 +92,9 @@ defmodule Passwordless.Actor do
   """
   def handle(%__MODULE__{name: name}) when is_binary(name), do: name
   def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
+
   def handle(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical), do: canonical
+
   def handle(%__MODULE__{user_id: user_id}) when is_binary(user_id), do: user_id
   def handle(%__MODULE__{id: id}) when is_binary(id), do: id
   def handle(%__MODULE__{}), do: nil
@@ -99,20 +106,21 @@ defmodule Passwordless.Actor do
   def phone(%__MODULE__{}), do: nil
 
   def phone_region(%__MODULE__{phone: %Phone{region: region}}) when is_binary(region), do: String.downcase(region)
+
   def phone_region(%__MODULE__{}), do: nil
 
   @doc """
   Get none.
   """
   def get_none(query \\ __MODULE__, %App{} = app) do
-    from q in query, prefix: ^Database.Tenant.to_prefix(app), where: false
+    from q in query, prefix: ^Tenant.to_prefix(app), where: false
   end
 
   @doc """
   Get by app.
   """
   def get_by_app(query \\ __MODULE__, %App{} = app) do
-    from q in query, prefix: ^Database.Tenant.to_prefix(app)
+    from q in query, prefix: ^Tenant.to_prefix(app)
   end
 
   @doc """
@@ -260,7 +268,7 @@ defmodule Passwordless.Actor do
   defp validate_name(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 512)
+    |> validate_length(:name, min: 1, max: 1024)
   end
 
   defp validate_active(changeset) do
@@ -276,7 +284,7 @@ defmodule Passwordless.Actor do
     |> ChangesetExt.ensure_trimmed(:user_id)
     |> validate_length(:user_id, max: 1024)
     |> unique_constraint(:user_id)
-    |> unsafe_validate_unique(:user_id, Passwordless.Repo, prefix: Keyword.get(opts, :prefix))
+    |> unsafe_validate_unique(:user_id, Passwordless.Repo, opts)
   end
 
   defp validate_properties(changeset) do

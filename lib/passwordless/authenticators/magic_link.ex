@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.MagicLink do
   A magic link authenticator.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "aumlink"
 
   import Ecto.Query
 
@@ -25,9 +25,9 @@ defmodule Passwordless.Authenticators.MagicLink do
     field :email_tracking, :boolean, default: true
     field :fingerprint_device, :boolean, default: false
 
-    belongs_to :app, App, type: :binary_id
-    belongs_to :domain, Domain, type: :binary_id
-    belongs_to :email_template, EmailTemplate, type: :binary_id
+    belongs_to :app, App
+    belongs_to :domain, Domain
+    belongs_to :email_template, EmailTemplate
 
     timestamps()
   end

@@ -85,7 +85,7 @@ defmodule PasswordlessWeb.Components.Button do
 
   attr :variant, :string,
     default: "solid",
-    values: ["solid", "outline", "rounded"],
+    values: ["solid", "outline", "rounded-sm"],
     doc: "button variant"
 
   attr :to, :string, default: nil, doc: "link path"

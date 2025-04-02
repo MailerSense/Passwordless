@@ -8,6 +8,7 @@ defmodule PasswordlessWeb.EmailMacros do
            [
              name: name,
              email: email,
+             domain: domain,
              reply_to: reply_to,
              reply_to_name: reply_to_name
            ]} <- @emails do
@@ -22,6 +23,8 @@ defmodule PasswordlessWeb.EmailMacros do
           end
 
           def unquote(:"#{kind}_email_address")(), do: unquote(email)
+
+          def unquote(:"#{kind}_email_domain")(), do: unquote(domain)
         end
       end
 

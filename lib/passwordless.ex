@@ -12,6 +12,7 @@ defmodule Passwordless do
 
   alias Database.Tenant
   alias Passwordless.Action
+  alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Authenticators
@@ -22,17 +23,18 @@ defmodule Passwordless do
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateVersion
-  alias Passwordless.Event
+  alias Passwordless.Mailer
+  alias Passwordless.MailerExecutor
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
 
   @authenticators [
-    magic_link: Authenticators.MagicLink,
     email: Authenticators.Email,
     sms: Authenticators.SMS,
     whatsapp: Authenticators.WhatsApp,
+    magic_link: Authenticators.MagicLink,
     totp: Authenticators.TOTP,
     security_key: Authenticators.SecurityKey,
     passkey: Authenticators.Passkey,
@@ -175,6 +177,13 @@ defmodule Passwordless do
     Repo.one!(Ecto.assoc(app, :domain))
   end
 
+  def get_domain(domain_id) when is_binary(domain_id) do
+    case Repo.get(Domain, domain_id) do
+      %Domain{} = domain -> {:ok, domain}
+      _ -> {:error, :not_found}
+    end
+  end
+
   def list_domain_record(%Domain{} = domain) do
     DomainRecord.order(Repo.preload(domain, :records).records)
   end
@@ -246,6 +255,31 @@ defmodule Passwordless do
     end)
   end
 
+  def list_authenticators(%App{} = app) do
+    names = Keyword.keys(@authenticators)
+
+    order =
+      @authenticators
+      |> Enum.with_index()
+      |> Map.new(fn {{k, _mod}, idx} -> {k, idx} end)
+
+    app
+    |> Repo.preload(Keyword.keys(@authenticators))
+    |> Map.from_struct()
+    |> Map.take(names)
+    |> Map.reject(fn {_key, mod} -> Util.blank?(mod) end)
+    |> Enum.sort_by(&Map.get(order, &1))
+  end
+
+  def fetch_authenticator(%App{} = app, key) do
+    with {:ok, mod} <- Keyword.fetch(@authenticators, key) do
+      case app |> Repo.preload(key) |> get_in([Access.key(key)]) do
+        %^mod{} = authenticator -> {:ok, authenticator}
+        _ -> {:error, :not_found}
+      end
+    end
+  end
+
   crud(:magic_link, :magic_link, Passwordless.Authenticators.MagicLink)
   crud(:email, :email, Passwordless.Authenticators.Email)
   crud(:sms, :sms, Passwordless.Authenticators.SMS)
@@ -255,20 +289,6 @@ defmodule Passwordless do
   crud(:passkey, :passkey, Passwordless.Authenticators.Passkey)
   crud(:recovery_codes, :recovery_codes, Passwordless.Authenticators.RecoveryCodes)
 
-  def list_authenticators(%App{} = app) do
-    @authenticators
-    |> Enum.map(fn {key, _mod} -> {key, Repo.one(Ecto.assoc(app, key))} end)
-    |> Enum.reject(fn {_, mod} -> is_nil(mod) end)
-    |> Enum.map(fn {key, authenticator} ->
-      params =
-        PasswordlessWeb.Helpers.authenticator_menu_items()
-        |> Enum.find(&(&1[:name] == key))
-        |> Map.take([:label, :icon, :path])
-
-      Map.merge(%{id: key, enabled: authenticator.enabled}, params)
-    end)
-  end
-
   # Actor
 
   def get_actor!(%App{} = app, id) when is_binary(id) do
@@ -277,6 +297,31 @@ defmodule Passwordless do
     |> Repo.preload([:email, :phone])
     |> Actor.put_active()
     |> Actor.put_text_properties()
+  end
+
+  def lookup_actor(%App{} = app, key) when is_binary(key) do
+    query =
+      if String.starts_with?(key, Actor.prefix()) do
+        [id: key]
+      else
+        [user_id: key]
+      end
+
+    actor =
+      Actor
+      |> Repo.get_by(query, prefix: Tenant.to_prefix(app))
+      |> Repo.preload([:email, :phone])
+
+    case actor do
+      %Actor{} = actor ->
+        {:ok,
+         actor
+         |> Actor.put_active()
+         |> Actor.put_text_properties()}
+
+      nil ->
+        {:error, :not_found}
+    end
   end
 
   def create_actor(%App{} = app, attrs \\ %{}) do
@@ -425,6 +470,20 @@ defmodule Passwordless do
 
   # Action
 
+  def continue(%App{} = app, %{action_id: id, event: event, payload: payload}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    # Repo.transact(fn ->
+    #   with %Action{flow_data: %mod{} = data} = action <- Repo.get(Action, id, opts),
+    #        {:ok, new_data} <- apply(mod, :trigger, [data, event, payload]),
+    #        {:ok, new_action} <- action |> Action.changeset(%{data: new_data}) |> Repo.update(opts),
+    #        {:ok, event} <- insert_action_event(app, action, new_action, %{event: event}),
+    #        do: {:ok, new_action, event}
+    # end)
+  end
+
+  # Action
+
   def get_action!(%App{} = app, id) do
     Repo.get!(Action, id, prefix: Tenant.to_prefix(app))
   end
@@ -436,12 +495,18 @@ defmodule Passwordless do
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
+  def update_action_in_flow(%App{} = app, %Action{} = action, attrs \\ %{}) do
+    action
+    |> Action.changeset(attrs)
+    |> Repo.update(prefix: Tenant.to_prefix(app))
+  end
+
   # Event
 
   def create_event(%App{} = app, %Action{} = action, attrs \\ %{}) do
     action
     |> Ecto.build_assoc(:events)
-    |> Event.changeset(attrs)
+    |> ActionEvent.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
@@ -616,5 +681,26 @@ defmodule Passwordless do
       fn -> get_app_mau_count(app, date) end,
       ttl: :timer.hours(1)
     )
+  end
+
+  @doc """
+  Deliver a pin code to sign in without a password.
+  """
+  def deliver_email_otp(%App{} = app, %Actor{} = actor, %Action{} = action, %Email{} = email, attrs \\ %{}) do
+    nil
+  end
+
+  # Private
+
+  defp deliver(%Swoosh.Email{} = email) do
+    with {:ok, _job} <- enqueue_worker(Mailer.to_map(email)) do
+      {:ok, email}
+    end
+  end
+
+  defp enqueue_worker(email) do
+    %{email: email}
+    |> MailerExecutor.new()
+    |> Oban.insert()
   end
 end

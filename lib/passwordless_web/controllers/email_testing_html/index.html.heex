@@ -6,7 +6,7 @@
 >
   <.tabbed_layout current_page={@email_name} menu_items={@email_options}>
     <div class="flex flex-col bg-slate-50 dark:bg-slate-900">
-      <main class="relative z-0 flex-1 overflow-y-auto focus:outline-none">
+      <main class="relative z-0 flex-1 overflow-y-auto focus:outline-hidden">
         <div class="p-6">
           <%= if Application.fetch_env!(:passwordless, Passwordless.Mailer) |> Keyword.get(:adapter) ==
                    Swoosh.Adapters.Local do %>

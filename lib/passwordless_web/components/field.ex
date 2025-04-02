@@ -124,6 +124,8 @@ defmodule PasswordlessWeb.Components.Field do
     pattern placeholder readonly required size step value name multiple prompt default year month day hour minute second builder options layout cols rows wrap checked accept),
     doc: "All other props go on the input"
 
+  slot :action, required: false
+
   def field(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     assigns
     |> assign(field: nil, id: assigns.id || field.id)
@@ -651,7 +653,7 @@ defmodule PasswordlessWeb.Components.Field do
             class={[
               @class,
               "pc-copyable-field-input",
-              if(Util.present?(@prefix), do: "!rounded-l-none")
+              if(Util.present?(@prefix), do: "rounded-l-none!")
             ]}
             readonly
             disabled={@disabled}
@@ -756,62 +758,66 @@ defmodule PasswordlessWeb.Components.Field do
         {@label}
       </.field_label>
 
-      <%= cond do %>
-        <% Util.present?(@icon) -> %>
-          <div class="relative">
-            <div class="pc-field-icon">
-              <Icon.icon name={@icon} class={@icon_class} />
+      <.div_wrapper class="flex items-center" wrap={Util.present?(@action)}>
+        <%= cond do %>
+          <% Util.present?(@icon) -> %>
+            <div class="relative">
+              <div class="pc-field-icon">
+                <Icon.icon name={@icon} class={@icon_class} />
+              </div>
+              <input
+                type={@type}
+                name={@name}
+                id={@id}
+                value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+                class={["pc-field-icon__padding", @class]}
+                required={@required}
+                disabled={@disabled}
+                {input_parameters(@type)}
+                {@rest}
+              />
             </div>
+          <% Util.present?(@prefix) or Util.present?(@suffix) or Util.present?(@badge) -> %>
+            <.div_wrapper class="flex" wrap={true}>
+              <span :if={Util.present?(@prefix)} class="pc-field-prefix">
+                {@prefix}
+              </span>
+              <input
+                type={@type}
+                name={@name}
+                id={@id}
+                value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+                class={[
+                  if(Util.present?(@prefix), do: "rounded-l-none!"),
+                  if(Util.present?(@suffix) or Util.present?(@badge), do: "rounded-r-none!"),
+                  @class
+                ]}
+                required={@required}
+                disabled={@disabled}
+                {input_parameters(@type)}
+                {@rest}
+              />
+              <Alert.alert :if={Util.present?(@badge)} {@badge} />
+              <span :if={Util.present?(@suffix)} class="pc-field-suffix">
+                {@suffix}
+              </span>
+            </.div_wrapper>
+          <% true -> %>
             <input
               type={@type}
               name={@name}
               id={@id}
               value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-              class={["pc-field-icon__padding", @class]}
+              class={@class}
               required={@required}
               disabled={@disabled}
               {input_parameters(@type)}
               {@rest}
             />
-          </div>
-        <% Util.present?(@prefix) or Util.present?(@suffix) or Util.present?(@badge) -> %>
-          <.div_wrapper class="flex" wrap={true}>
-            <span :if={Util.present?(@prefix)} class="pc-field-prefix">
-              {@prefix}
-            </span>
-            <input
-              type={@type}
-              name={@name}
-              id={@id}
-              value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-              class={[
-                if(Util.present?(@prefix), do: "!rounded-l-none"),
-                if(Util.present?(@suffix) or Util.present?(@badge), do: "!rounded-r-none"),
-                @class
-              ]}
-              required={@required}
-              disabled={@disabled}
-              {input_parameters(@type)}
-              {@rest}
-            />
-            <Alert.alert :if={Util.present?(@badge)} {@badge} />
-            <span :if={Util.present?(@suffix)} class="pc-field-suffix">
-              {@suffix}
-            </span>
-          </.div_wrapper>
-        <% true -> %>
-          <input
-            type={@type}
-            name={@name}
-            id={@id}
-            value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-            class={@class}
-            required={@required}
-            disabled={@disabled}
-            {input_parameters(@type)}
-            {@rest}
-          />
-      <% end %>
+        <% end %>
+
+        {render_slot(@action)}
+      </.div_wrapper>
 
       <.field_error :for={msg <- @errors}>{msg}</.field_error>
       <.field_success :for={msg <- @successes}>{msg}</.field_success>

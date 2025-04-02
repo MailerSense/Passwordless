@@ -3,62 +3,76 @@ defmodule Passwordless.Action do
   An actor avent.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "action"
 
   import Ecto.Query
 
+  alias Database.ChangesetExt
+  alias Database.Tenant
+  alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
-  alias Passwordless.Event
+  alias Passwordless.Challenge
+  alias Passwordless.Rule
 
-  @states ~w(allow timeout block challenge_required)a
-  @authenticators ~w(email sms whatsapp magic_link totp security_key passkey recovery_codes)a
+  @states ~w(allow timeout block pending)a
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :name,
+             :state,
+             :challenge,
+             :challenges,
+             :action_events,
+             :inserted_at,
+             :updated_at
+           ]}
   @derive {
     Flop.Schema,
-    filterable: [:id], sortable: [:id, :state, :inserted_at]
+    filterable: [:id], sortable: [:id]
   }
   schema "actions" do
     field :name, :string
-    field :state, Ecto.Enum, values: @states, default: :challenge_required
-    field :token, :binary, redact: true
-    field :authenticator, Ecto.Enum, values: @authenticators
-    field :attempts, :integer, default: 0
-    field :expires_at, :utc_datetime_usec
-    field :completed_at, :utc_datetime_usec
+    field :state, Ecto.Enum, values: @states
 
-    has_many :events, Event
+    has_one :challenge, Challenge, where: [current: true]
 
-    belongs_to :actor, Actor, type: :binary_id
+    has_many :challenges, Challenge, preload_order: [asc: :inserted_at]
+    has_many :action_events, ActionEvent, preload_order: [asc: :inserted_at]
+
+    belongs_to :rule, Rule
+    belongs_to :actor, Actor
 
     timestamps()
   end
 
   def states, do: @states
-  def authenticators, do: @authenticators
 
-  def topic_for(%App{} = app), do: "actions:#{app.id}"
+  def topic_for(%App{} = app), do: "#{prefix()}:#{app.id}"
 
-  def first_event(%__MODULE__{events: [_ | _] = events}) do
+  def first_event(%__MODULE__{action_events: [_ | _] = events}) do
     events
     |> Enum.sort_by(& &1.inserted_at, :asc)
-    |> Enum.find(fn %Event{city: city, country: country} ->
+    |> Enum.find(fn %ActionEvent{city: city, country: country} ->
       is_binary(city) and is_binary(country)
     end)
   end
+
+  def first_event(%__MODULE__{}), do: nil
 
   @doc """
   Get by app.
   """
   def get_by_app(query \\ __MODULE__, %App{} = app) do
-    from q in query, prefix: ^Database.Tenant.to_prefix(app)
+    from q in query, prefix: ^Tenant.to_prefix(app)
   end
 
   @doc """
   Get by actor.
   """
   def get_by_actor(query \\ __MODULE__, %App{} = app, %Actor{} = actor) do
-    from q in query, prefix: ^Database.Tenant.to_prefix(app), where: q.actor_id == ^actor.id
+    from q in query, prefix: ^Tenant.to_prefix(app), where: q.actor_id == ^actor.id
   end
 
   @doc """
@@ -77,20 +91,11 @@ defmodule Passwordless.Action do
 
   @fields ~w(
     name
+    flow
     state
-    token
-    authenticator
-    attempts
-    expires_at
-    completed_at
     actor_id
   )a
-  @required_fields ~w(
-    name
-    state
-    attempts
-    actor_id
-  )a
+  @required_fields @fields
 
   @doc """
   A changeset.
@@ -99,6 +104,30 @@ defmodule Passwordless.Action do
     action
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> validate_name()
+    |> validate_state()
     |> assoc_constraint(:actor)
+  end
+
+  @doc """
+  A state changeset.
+  """
+  def state_changeset(%__MODULE__{} = action, attrs \\ %{}) do
+    action
+    |> cast(attrs, [:state])
+    |> validate_required([:state])
+    |> validate_state()
+  end
+
+  # Private
+
+  defp validate_name(changeset) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(:name)
+    |> validate_length(:name, min: 1, max: 255)
+  end
+
+  defp validate_state(changeset) do
+    ChangesetExt.validate_state(changeset, pending: [:allow, :timeout, :block])
   end
 end

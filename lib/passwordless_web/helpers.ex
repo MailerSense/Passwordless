@@ -11,6 +11,7 @@ defmodule PasswordlessWeb.Helpers do
   alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.AuthToken
+  alias Passwordless.Challenge
   alias Passwordless.EmailTemplate
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Membership
@@ -105,7 +106,7 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :totp,
         label: "Time-based OTP",
-        icon: "remix-smartphone-line",
+        icon: "remix-qr-code-line",
         path: ~p"/app/authenticators/totp",
         link_type: "live_patch"
       },
@@ -133,10 +134,20 @@ defmodule PasswordlessWeb.Helpers do
     ]
   end
 
-  def authenticator_details(%Action{authenticator: authenticator}) do
-    authenticator_menu_items()
-    |> Enum.find(&(&1[:name] == authenticator))
-    |> Map.take([:label, :icon])
+  def flow_details(%Action{challenge: %Challenge{type: type}}) do
+    Keyword.get(
+      [
+        email_otp: %{label: gettext("Email OTP"), icon: "remix-mail-open-line"},
+        sms_otp: %{label: gettext("SMS OTP"), icon: "remix-message-2-line"},
+        whatsapp_otp: %{label: gettext("WhatsApp OTP"), icon: "remix-whatsapp-line"},
+        magic_link: %{label: gettext("Magic link"), icon: "remix-link"},
+        totp: %{label: gettext("Time-based OTP"), icon: "remix-qr-code-line"},
+        security_key: %{label: gettext("Security key"), icon: "remix-usb-line"},
+        passkey: %{label: gettext("Passkey"), icon: "remix-fingerprint-line"},
+        recovery_codes: %{label: gettext("Recovery codes"), icon: "remix-file-list-line"}
+      ],
+      type
+    )
   end
 
   def actor_menu_items(%Actor{} = actor) do
@@ -177,13 +188,13 @@ defmodule PasswordlessWeb.Helpers do
     [
       %{
         name: :sending,
-        label: gettext("Email sending"),
+        label: gettext("Email"),
         path: ~p"/app/domain/send",
         link_type: "live_patch"
       },
       %{
         name: :branding,
-        label: gettext("Link branding"),
+        label: gettext("Tracking"),
         path: ~p"/app/domain/track",
         link_type: "live_patch"
       }

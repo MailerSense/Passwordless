@@ -8,11 +8,6 @@ defmodule PasswordlessWeb.Admin.CredentialLive do
       update_changeset: &Passwordless.Accounts.Credential.changeset/3,
       create_changeset: &Passwordless.Accounts.Credential.changeset/3
     ],
-    pubsub: [
-      name: Passwordless.PubSub,
-      topic: "credentials",
-      event_prefix: "credential_"
-    ],
     fluid?: true
 
   import Ecto.Query

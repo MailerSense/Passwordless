@@ -4,7 +4,6 @@ defmodule PasswordlessWeb.Org.TeamLive.FormComponent do
 
   alias Passwordless.Accounts
   alias Passwordless.Accounts.User
-  alias Passwordless.Activity
   alias Passwordless.Organizations
   alias Passwordless.Security.Guard
   alias Passwordless.Security.Policy.Accounts, as: AccountsPolicy
@@ -40,13 +39,6 @@ defmodule PasswordlessWeb.Org.TeamLive.FormComponent do
   def handle_event("save", %{"membership" => params}, %{assigns: %{membership: membership}} = socket) do
     case Organizations.update_membership(membership, params) do
       {:ok, membership} ->
-        Activity.log(:org, :"org.update_member", %{
-          org: socket.assigns.current_org,
-          user: socket.assigns.current_user,
-          role: membership.role,
-          target_user_id: membership.user_id
-        })
-
         {:noreply,
          socket
          |> put_toast(:info, gettext("Member has been updated."), title: gettext("Success"))

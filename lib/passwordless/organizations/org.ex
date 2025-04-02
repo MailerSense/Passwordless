@@ -3,7 +3,7 @@ defmodule Passwordless.Organizations.Org do
   An organization is a group of users that can collaborate on resources.
   """
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "org"
 
   alias Database.ChangesetExt
   alias Passwordless.Accounts.User
@@ -29,10 +29,10 @@ defmodule Passwordless.Organizations.Org do
 
     has_one :billing_customer, Billing.Customer
 
-    has_many :apps, App
-    has_many :logs, Log
-    has_many :memberships, Membership
-    has_many :invitations, Invitation
+    has_many :apps, App, preload_order: [asc: :inserted_at]
+    has_many :logs, Log, preload_order: [asc: :inserted_at]
+    has_many :memberships, Membership, preload_order: [asc: :inserted_at]
+    has_many :invitations, Invitation, preload_order: [asc: :inserted_at]
 
     many_to_many :users, User, join_through: Membership, unique: true
 

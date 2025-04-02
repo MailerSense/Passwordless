@@ -64,18 +64,22 @@
               field={expected_origin[:url]}
               required
               disabled={not @enabled}
-              wrapper_class="!mb-0 w-full grow"
-            />
-            <.icon_form_button
-              size="sm"
-              name="passkey[expected_origins_drop][]"
-              type="button"
-              icon="custom-trash"
-              title={gettext("Remove")}
-              value={expected_origin.index}
-              event={JS.dispatch("change")}
-              disabled={not @enabled}
-            />
+              wrapper_class="mb-0! w-full grow"
+            >
+              <:action>
+                <.icon_form_button
+                  size="sm"
+                  name="passkey[expected_origins_drop][]"
+                  type="button"
+                  icon="custom-trash"
+                  color="light"
+                  title={gettext("Remove")}
+                  value={expected_origin.index}
+                  event={JS.dispatch("change")}
+                  disabled={not @enabled}
+                />
+              </:action>
+            </.field>
           </div>
         </.inputs_for>
       </div>

@@ -1,11 +1,12 @@
 defmodule Passwordless.Domain do
   @moduledoc false
 
-  use Passwordless.Schema
+  use Passwordless.Schema, prefix: "domain"
 
   import Ecto.Query
 
   alias Database.ChangesetExt
+  alias Passwordless.App
   alias Passwordless.DomainRecord
 
   @kinds ~w(root_domain sub_domain)a
@@ -22,6 +23,18 @@ defmodule Passwordless.Domain do
   )a
   @states @aws_states ++ @dns_states
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :name,
+             :kind,
+             :state,
+             :verified,
+             :records,
+             :inserted_at,
+             :updated_at,
+             :deleted_at
+           ]}
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -32,9 +45,9 @@ defmodule Passwordless.Domain do
     field :state, Ecto.Enum, values: @states, default: :aws_not_started
     field :verified, :boolean, default: false
 
-    has_many :records, DomainRecord
+    has_many :records, DomainRecord, preload_order: [asc: :inserted_at]
 
-    belongs_to :app, App, type: :binary_id
+    belongs_to :app, App
 
     timestamps()
     soft_delete_timestamp()
@@ -136,15 +149,12 @@ defmodule Passwordless.Domain do
   defp validate_state(changeset) do
     ChangesetExt.validate_state(
       changeset,
-      [
-        aws_not_started: [:aws_pending, :aws_success],
-        aws_pending: [:aws_success, :aws_failed, :aws_temporary_failure],
-        aws_temporary_failure: [:aws_pending, :aws_success, :aws_failed, :aws_temporary_failure],
-        aws_success: [:all_records_verified, :some_records_missing],
-        all_records_verified: [:some_records_missing],
-        some_records_missing: [:all_records_verified]
-      ],
-      :state
+      aws_not_started: [:aws_pending, :aws_success],
+      aws_pending: [:aws_success, :aws_failed, :aws_temporary_failure],
+      aws_temporary_failure: [:aws_pending, :aws_success, :aws_failed, :aws_temporary_failure],
+      aws_success: [:all_records_verified, :some_records_missing],
+      all_records_verified: [:some_records_missing],
+      some_records_missing: [:all_records_verified]
     )
   end
 end
