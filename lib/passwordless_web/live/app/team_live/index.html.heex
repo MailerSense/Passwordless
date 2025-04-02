@@ -1,6 +1,4 @@
 <.tabbed_settings_layout current_user={@current_user} current_page={:team}>
-  <:action></:action>
-
   <div class="flex flex-col gap-6">
     <.data_table meta={@meta} items={@memberships} title={gettext("Team")}>
       <:if_empty>{gettext("No %{models} found", models: gettext("members"))}</:if_empty>
