@@ -1,4 +1,5 @@
 import ApexCharts from "apexcharts";
+
 import { Hook, makeHook } from "./typed-hook";
 
 class ChartHook extends Hook {

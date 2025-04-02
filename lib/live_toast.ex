@@ -113,7 +113,8 @@ defmodule LiveToast do
     Phoenix.Controller.put_flash(conn, kind, msg)
   end
 
-  @spec put_toast(LiveView.Socket.t(), atom(), String.Chars.t(), [option()]) :: LiveView.Socket.t()
+  @spec put_toast(LiveView.Socket.t(), atom(), String.Chars.t(), [option()]) ::
+          LiveView.Socket.t()
   def put_toast(%LiveView.Socket{} = socket, kind, msg, options) do
     options = Keyword.put(options, :sync, true)
 
@@ -202,12 +203,15 @@ defmodule LiveToast do
       # base classes
       "fixed z-50 max-h-screen w-full p-4 md:max-w-[420px] pointer-events-none grid origin-center",
       # classes to set container positioning
-      assigns[:corner] == :bottom_left && "items-end bottom-0 left-0 flex-col-reverse sm:top-auto",
+      assigns[:corner] == :bottom_left &&
+        "items-end bottom-0 left-0 flex-col-reverse sm:top-auto",
       assigns[:corner] == :bottom_center &&
         "items-end bottom-0 left-1/2 transform -translate-x-1/2 flex-col-reverse sm:top-auto",
-      assigns[:corner] == :bottom_right && "items-end bottom-0 right-0 flex-col-reverse sm:top-auto",
+      assigns[:corner] == :bottom_right &&
+        "items-end bottom-0 right-0 flex-col-reverse sm:top-auto",
       assigns[:corner] == :top_left && "items-start top-0 left-0 flex-col sm:bottom-auto",
-      assigns[:corner] == :top_center && "items-start top-0 left-1/2 transform -translate-x-1/2 flex-col sm:bottom-auto",
+      assigns[:corner] == :top_center &&
+        "items-start top-0 left-1/2 transform -translate-x-1/2 flex-col sm:bottom-auto",
       assigns[:corner] == :top_right && "items-start top-0 right-0 flex-col sm:bottom-auto"
     ]
   end
@@ -233,11 +237,17 @@ defmodule LiveToast do
     doc: "function to override the toast classes"
   )
 
-  attr :toasts_sync, :list, required: true, doc: "toasts that get synchronized when calling `put_toast`"
+  attr :toasts_sync, :list,
+    required: true,
+    doc: "toasts that get synchronized when calling `put_toast`"
 
-  attr :flash_duration, :integer, default: 0, doc: "if provided clears flash after provided milliseconds"
+  attr :flash_duration, :integer,
+    default: 0,
+    doc: "if provided clears flash after provided milliseconds"
 
-  attr :client_error_delay, :integer, default: 3000, doc: "adds a delay before the disconnected client error is shown"
+  attr :client_error_delay, :integer,
+    default: 3000,
+    doc: "adds a delay before the disconnected client error is shown"
 
   @doc """
   Renders a group of toasts and flashes.

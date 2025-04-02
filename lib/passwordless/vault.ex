@@ -5,6 +5,8 @@ defmodule Passwordless.Vault do
 
   use Cloak.Vault, otp_app: :passwordless
 
+  alias Passwordless.SecretVault
+
   @impl GenServer
   def init(config) do
     config =
@@ -15,7 +17,7 @@ defmodule Passwordless.Vault do
 
   defp decode_env!(var) do
     var
-    |> System.get_env()
+    |> SecretVault.get()
     |> Base.decode64!()
   end
 end

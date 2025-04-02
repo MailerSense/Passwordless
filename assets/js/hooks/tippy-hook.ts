@@ -1,4 +1,5 @@
 import tippy, { Instance, Props } from "tippy.js";
+
 import { Hook, makeHook } from "./typed-hook";
 
 class TippyHook extends Hook {

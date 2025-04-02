@@ -6,6 +6,7 @@ defmodule Passwordless.EmailTemplateVersion do
   use Passwordless.Schema, prefix: "emtplver"
 
   alias Passwordless.EmailTemplate
+  alias Passwordless.Templating.MJML
 
   @styles ~w(clean card)a
   @languages ~w(en de fr)a
@@ -91,7 +92,7 @@ defmodule Passwordless.EmailTemplateVersion do
 
   defp update_html_body(changeset) do
     with {_, mjml_body} when is_binary(mjml_body) <- fetch_field(changeset, :mjml_body),
-         {:ok, html_body} <- Passwordless.MJML.convert(mjml_body) do
+         {:ok, html_body} <- MJML.convert(mjml_body) do
       put_change(changeset, :html_body, html_body)
     else
       _ -> changeset

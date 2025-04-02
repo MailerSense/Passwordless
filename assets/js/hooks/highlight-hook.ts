@@ -1,4 +1,5 @@
 import hljs from "highlight.js/lib/core";
+
 import { Hook, makeHook } from "./typed-hook";
 
 class HighlightHook extends Hook {

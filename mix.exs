@@ -135,6 +135,9 @@ defmodule Passwordless.MixProject do
       {:earmark, "~> 1.4"},
       {:html_sanitize_ex, "~> 1.4"},
 
+      # Liquid
+      {:solid, "~> 0.18.0"},
+
       # HTTP client
       {:tesla, "~> 1.9"},
       {:finch, "~> 0.18.0"},

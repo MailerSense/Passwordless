@@ -31,16 +31,11 @@ defmodule Passwordless.SecretVault do
       write_concurrency: false
     ])
 
-    {:ok, secret_name, {:continue, :load_secret}}
-  end
-
-  @impl true
-  def handle_continue(:load_secret, secret_name) do
     refresh_secret(secret_name)
 
     tick()
 
-    {:noreply, secret_name}
+    {:ok, secret_name}
   end
 
   @impl true

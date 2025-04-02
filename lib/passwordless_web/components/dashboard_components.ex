@@ -349,7 +349,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       @class
     ]}>
       {Phoenix.HTML.raw(
-        Passwordless.MarkdownRenderer.to_html(@content, %Earmark.Options{
+        Passwordless.Templating.Markdown.to_html(@content, %Earmark.Options{
           code_class_prefix: "language-",
           escape: false
         })

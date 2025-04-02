@@ -1,0 +1,2 @@
+defprotocol Passwordless.Templating.VariableProvider do
+end
