@@ -431,7 +431,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
     ~H"""
     <header class={[
-      "p-6 flex flex-col xl:flex-row items-center justify-between gap-4"
+      "p-6 flex items-center justify-between gap-4"
     ]}>
       <.div_wrapper class="flex items-center gap-2" wrap={Util.present?(@badge)}>
         <h3 class="text-lg font-semibold text-slate-900 dark:text-white">

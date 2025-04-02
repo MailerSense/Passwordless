@@ -27,11 +27,9 @@ defmodule PasswordlessWeb.User.SecurityLive do
     ~H"""
     <div class="mb-10">
       <%= if @secret_display == :as_text do %>
-        <div class="prose prose-gray dark:prose-invert">
-          <p>
-            To {if @current_totp, do: "change", else: "enable"} two-factor authentication, enter the secret below into your two-factor authentication app in your phone.
-          </p>
-        </div>
+        <.p>
+          To {if @current_totp, do: "change", else: "enable"} two-factor authentication, enter the secret below into your two-factor authentication app in your phone.
+        </.p>
 
         <div class="flex items-center justify-start px-4 py-8 sm:px-0">
           <div class="p-5 border-4 border-slate-300 border-dashed rounded-lg dark:border-slate-700">
@@ -48,13 +46,11 @@ defmodule PasswordlessWeb.User.SecurityLive do
           </p>
         </div>
       <% else %>
-        <div class="prose prose-gray dark:prose-invert">
-          <p>
-            To {if @current_totp, do: "change", else: "enable"} two-factor authentication, scan the image below with the two-factor authentication app in your phone and then enter the  authentication code at the bottom. If you can't use QR Code,
-            <a href="#" class="underline" phx-click="display_secret_as_text">enter your secret</a>
-            manually.
-          </p>
-        </div>
+        <.p>
+          To {if @current_totp, do: "change", else: "enable"} two-factor authentication, scan the image below with the two-factor authentication app in your phone and then enter the  authentication code at the bottom. If you can't use QR Code,
+          <a href="#" class="underline" phx-click="display_secret_as_text">enter your secret</a>
+          manually.
+        </.p>
 
         <div class="mt-10 text-center">
           <div class="inline-block">
@@ -131,7 +127,14 @@ defmodule PasswordlessWeb.User.SecurityLive do
           required
         />
 
-        <div class="flex justify-end">
+        <div class="flex items-center justify-between">
+          <.a
+            to={~p"/app/password/change"}
+            type="button"
+            link_type="live_patch"
+            styled
+            label={gettext("Learn about 2FA")}
+          />
           <.button
             icon="remix-lock-line"
             label={if @current_totp, do: gettext("Update 2FA"), else: gettext("Enable 2FA")}

@@ -807,7 +807,7 @@
     @apply border-danger-500 focus:border-danger-500 text-danger-900 placeholder-danger-700 bg-danger-50 dark:text-danger-100 dark:placeholder-danger-300 dark:bg-danger-900 focus:ring-danger-500;
   }
   .pc-form-field-wrapper--error input[type="checkbox"] {
-    @apply bg-danger-200 dark:bg-danger-700 border-danger-500;
+    @apply bg-danger-500 dark:bg-danger-600 border-danger-500 dark:border-danger-600;
   }
   .pc-form-field-wrapper--error .pc-switch .pc-switch__fake-input {
     @apply bg-danger-200 border-danger-500 dark:bg-danger-600 dark:border-danger-800;
@@ -2126,7 +2126,7 @@
     @apply w-6 h-6;
   }
   .pc-editor-field {
-    @apply max-w-[300px] xl:min-w-[500px] ps-3 pe-10 text-3xl font-semibold h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-primary-500 focus:ring-1 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:outline-hidden;
+    @apply max-w-[300px] xl:min-w-[500px] ps-3 pe-10 text-3xl font-semibold h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:outline-hidden;
   }
   .pc-editor-field-icon__padding {
     @apply max-w-[300px] xl:min-w-[500px] ps-12 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 z-20 focus:outline-hidden;

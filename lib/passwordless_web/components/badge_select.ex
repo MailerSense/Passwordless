@@ -99,7 +99,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
       </Field.field_label>
       <button
         type="button"
-        class="custom-select relative block w-full h-[46px] px-3 py-2 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-400 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-950 dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-hidden"
+        class="custom-select relative block w-full h-[46px] px-3 py-2 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:focus:ring-primary-400 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-hidden"
         x-ref="button"
         disabled={@disabled}
         @click="open = !open"

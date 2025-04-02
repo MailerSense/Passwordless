@@ -85,7 +85,7 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :sms,
         label: "SMS",
-        icon: "remix-message-2-line",
+        icon: "remix-message-line",
         path: ~p"/app/authenticators/sms",
         link_type: "live_patch"
       },
@@ -140,7 +140,7 @@ defmodule PasswordlessWeb.Helpers do
     Keyword.get(
       [
         email_otp: %{label: gettext("Email OTP"), icon: "remix-mail-open-line"},
-        sms_otp: %{label: gettext("SMS OTP"), icon: "remix-message-2-line"},
+        sms_otp: %{label: gettext("SMS OTP"), icon: "remix-message-line"},
         whatsapp_otp: %{label: gettext("WhatsApp OTP"), icon: "remix-whatsapp-line"},
         magic_link: %{label: gettext("Magic link"), icon: "remix-link"},
         totp: %{label: gettext("Time-based OTP"), icon: "remix-qr-code-line"},
