@@ -6,6 +6,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
   alias Database.Tenant
   alias Passwordless.Accounts.User
   alias Passwordless.Action
+  alias Passwordless.Challenge
   alias Passwordless.Organizations
 
   require Logger
@@ -118,23 +119,46 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
       {:ok, _recovery_codes} = Passwordless.create_actor_recovery_codes(app, actor)
 
+      {:ok, rule} =
+        Passwordless.create_rule(app, %{
+          conditions: %{},
+          effects: %{}
+        })
+
       for _ <- 1..10 do
         {:ok, action} =
           Passwordless.create_action(app, actor, %{
             name: Enum.random(~w(signIn withdraw placeOrder)),
-            state: Enum.random(Action.states())
+            state: Enum.random(Action.states()),
+            rule_id: rule.id
+          })
+
+        {:ok, _challenge} =
+          Passwordless.create_challenge(app, action, %{
+            type: Enum.random(Challenge.types()),
+            state: :started,
+            current: true
           })
 
         {:ok, _event} =
           Passwordless.create_event(app, action, %{
-            flow: "email_otp",
             event: "send_otp",
-            from_state: "started",
-            to_state: "otp_sent",
             metadata: %{
-              code: "123456",
-              state: :started,
-              attempts: 0
+              before: %{
+                code: "123456",
+                state: :started,
+                attempts: 0
+              },
+              after: %{
+                code: "123456",
+                state: :started,
+                attempts: 0
+              },
+              attrs: %{
+                code: "123456",
+                state: :started,
+                attempts: 0
+              }
             },
             user_agent: Faker.Internet.UserAgent.desktop_user_agent(),
             ip_address: Faker.Internet.ip_v4_address(),

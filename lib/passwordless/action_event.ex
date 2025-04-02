@@ -41,11 +41,7 @@ defmodule Passwordless.ActionEvent do
   end
 
   @fields ~w(
-    flow
     event
-    from_state
-    to_state
-    metadata
     user_agent
     ip_address
     country
@@ -53,11 +49,7 @@ defmodule Passwordless.ActionEvent do
     action_id
   )a
   @required_fields ~w(
-    flow
     event
-    from_state
-    to_state
-    metadata
     action_id
   )a
 
@@ -73,7 +65,7 @@ defmodule Passwordless.ActionEvent do
     |> validate_string(:country)
     |> validate_string(:city)
     |> assoc_constraint(:action)
-    |> assoc_constraint(:email_message)
+    |> cast_embed(:metadata, with: &metadata_changeset/2)
   end
 
   # Private
@@ -114,4 +106,18 @@ defmodule Passwordless.ActionEvent do
   end
 
   defp is_public_ip(_ip_address), do: true
+
+  @metadata_fields ~w(
+    before
+    after
+    attrs
+  )a
+
+  defp metadata_changeset(%__MODULE__.Metadata{} = metadata, attrs) do
+    metadata
+    |> cast(attrs, @metadata_fields)
+    |> ChangesetExt.ensure_property_map(:before)
+    |> ChangesetExt.ensure_property_map(:after)
+    |> ChangesetExt.ensure_property_map(:attrs)
+  end
 end

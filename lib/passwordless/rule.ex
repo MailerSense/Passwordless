@@ -27,4 +27,19 @@ defmodule Passwordless.Rule do
 
     timestamps()
   end
+
+  @fields ~w(
+    condition
+    effects
+  )a
+  @required_fields @fields
+
+  @doc """
+  A changeset.
+  """
+  def changeset(%__MODULE__{} = action, attrs \\ %{}) do
+    action
+    |> cast(attrs, @fields)
+    |> validate_required(@required_fields)
+  end
 end

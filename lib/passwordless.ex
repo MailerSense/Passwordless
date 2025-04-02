@@ -17,6 +17,7 @@ defmodule Passwordless do
   alias Passwordless.App
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
+  alias Passwordless.Challenge
   alias Passwordless.Domain
   alias Passwordless.DomainRecord
   alias Passwordless.Email
@@ -29,6 +30,7 @@ defmodule Passwordless do
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
+  alias Passwordless.Rule
 
   @authenticators [
     email: Authenticators.Email,
@@ -501,12 +503,43 @@ defmodule Passwordless do
     |> Repo.update(prefix: Tenant.to_prefix(app))
   end
 
+  # Challenge
+
+  def get_challenge!(%App{} = app, id) do
+    Repo.get!(Action, id, prefix: Tenant.to_prefix(app))
+  end
+
+  def get_challenge(%App{} = app, id) do
+    Repo.get(Action, id, prefix: Tenant.to_prefix(app))
+  end
+
+  def create_challenge(%App{} = app, %Action{} = action, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    action
+    |> Ecto.build_assoc(:challenges)
+    |> Challenge.changeset(attrs, opts)
+    |> Repo.insert(opts)
+  end
+
   # Event
 
   def create_event(%App{} = app, %Action{} = action, attrs \\ %{}) do
     action
-    |> Ecto.build_assoc(:events)
+    |> Ecto.build_assoc(:action_events)
     |> ActionEvent.changeset(attrs)
+    |> Repo.insert(prefix: Tenant.to_prefix(app))
+  end
+
+  # Rules
+
+  def get_rule!(%App{} = app, id) do
+    Repo.get!(Action, id, prefix: Tenant.to_prefix(app))
+  end
+
+  def create_rule(%App{} = app, attrs \\ %{}) do
+    %Rule{}
+    |> Rule.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 

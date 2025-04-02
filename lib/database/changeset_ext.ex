@@ -205,6 +205,15 @@ defmodule Database.ChangesetExt do
     end)
   end
 
+  @doc """
+  Ensures that the property map is valid and casts it to the correct format.
+  """
+  def ensure_property_map(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
+    changeset
+    |> update_change(field, &Util.cast_property_map/1)
+    |> validate_property_map(field)
+  end
+
   def validate_semver(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
     validate_change(changeset, field, fn ^field, version ->
       is_semver? =

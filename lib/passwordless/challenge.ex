@@ -34,7 +34,10 @@ defmodule Passwordless.Challenge do
   @doc """
   Handle the authentication challenge.
   """
-  @callback handle(app :: Passwordless.App.t(), actor :: Passwordless.Actor.t(), action :: Passwordless.Action.t(),
+  @callback handle(
+              app :: Passwordless.App.t(),
+              actor :: Passwordless.Actor.t(),
+              action :: Passwordless.Action.t(),
               event: atom(),
               attrs: handle_attrs()
             ) :: {:ok, Passwordless.Action.t()} | {:error, atom()}
