@@ -4,7 +4,6 @@ defmodule PasswordlessWeb.Org.TeamLive.FormComponent do
 
   alias Passwordless.Accounts
   alias Passwordless.Accounts.User
-  alias Passwordless.Activity
   alias Passwordless.Organizations
   alias Passwordless.Security.Guard
   alias Passwordless.Security.Policy.Accounts, as: AccountsPolicy

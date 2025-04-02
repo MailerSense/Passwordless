@@ -23,6 +23,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
          socket
          |> assign(mode: :edit, domain: domain, records: records)
          |> assign_form(changeset)
+         |> assign_new(:domain_menu_items, fn -> domain_menu_items() end)
          |> apply_action(socket.assigns.live_action)}
 
       _ ->
@@ -33,6 +34,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
          socket
          |> assign(mode: :new, domain: domain)
          |> assign_form(changeset)
+         |> assign_new(:domain_menu_items, fn -> domain_menu_items() end)
          |> apply_action(socket.assigns.live_action)}
     end
   end
