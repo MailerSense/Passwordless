@@ -1,14 +1,5 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
-  <.data_table
-    meta={@meta}
-    items={@actors}
-    title={gettext("All users")}
-    switch_items={
-      [
-        %{name: :all, label: gettext("All"), clear: true}
-      ] ++ Enum.map(Actor.states(), &%{name: &1, label: Phoenix.Naming.humanize(&1)})
-    }
-  >
+  <.data_table meta={@meta} items={@actors} title={gettext("All users")}>
     <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
     <:col field={:search} searchable filterable={[:==]} />
     <:col :let={actor} field={:name} sortable>
@@ -28,7 +19,7 @@
         <.icon name={"flag-#{Actor.phone_region(actor)}"} class="pc-flag-icon" /> {phone}
       </div>
     </:col>
-    <:col :let={actor} field={:state} sortable switchable filterable={[:==]}>
+    <:col :let={actor} field={:state} sortable>
       <% {badge_label, badge_color} = actor_state_badge(actor) %>
       <.badge with_dot size="sm" label={badge_label} color={badge_color} />
     </:col>
@@ -58,7 +49,6 @@
       <div class="flex gap-3">
         <.button
           to={apply_filters(@filters, @meta, ~p"/app/users/import")}
-          size="xs"
           color="light"
           label={gettext("Import")}
           icon="remix-download-line"
@@ -66,7 +56,6 @@
         />
         <.button
           to={apply_filters(@filters, @meta, ~p"/app/users/new")}
-          size="xs"
           color="primary"
           label={gettext("Create")}
           icon="remix-add-circle-line"

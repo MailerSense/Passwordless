@@ -562,7 +562,7 @@ defmodule Passwordless do
     end)
   end
 
-  def get_email_template_version(%EmailTemplate{} = email_template, language) do
+  def get_email_template_version(%EmailTemplate{} = email_template, language \\ :en) do
     email_template
     |> Ecto.assoc(:versions)
     |> where(language: ^language)

@@ -7,12 +7,11 @@ defmodule PasswordlessWeb.Components.DataTable do
   use Gettext, backend: PasswordlessWeb.Gettext
 
   import PasswordlessWeb.Components.Badge
+  import PasswordlessWeb.Components.Button
   import PasswordlessWeb.Components.Field
-  import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Pagination
   import PasswordlessWeb.Components.Table
   import PasswordlessWeb.Components.Tabs
-  import PasswordlessWeb.Components.Typography
 
   alias PasswordlessWeb.Components.DataTable.Cell
   alias PasswordlessWeb.Components.DataTable.Filter
@@ -104,25 +103,18 @@ defmodule PasswordlessWeb.Components.DataTable do
       phx-submit="update_filters"
       {form_assigns(@form_target)}
     >
+      <.table_search_bar
+        :if={@search_field || @switch_field}
+        meta={@meta}
+        form={filter_form}
+        switch_field={@switch_field}
+        search_field={@search_field}
+        switch_items={@switch_items}
+        actions={@header_actions}
+      />
+
       <section class={[@wrapper_class, @class]}>
-        <.table_search_bar
-          :if={@search_field || @switch_field}
-          meta={@meta}
-          form={filter_form}
-          switch_field={@switch_field}
-          search_field={@search_field}
-          switch_items={@switch_items}
-        />
-        <.table_header
-          :if={Util.present?(@title) or Util.present?(@title_func)}
-          meta={@meta}
-          title={@title}
-          title_func={@title_func}
-          meta={@meta}
-          form={filter_form}
-          search_field={@search_field}
-          actions={@header_actions}
-        />
+        <.table_header :if={Util.present?(@title)} meta={@meta} title={@title} />
         <div class="pc-data-table">
           <.table>
             <thead class="pc-table__thead-striped">
@@ -417,11 +409,6 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :subtitle, :string, default: nil
 
-  attr :form, :map, default: nil
-  attr :search_field, :atom, default: nil
-
-  slot :actions, required: false
-
   defp table_header(assigns) do
     assigns =
       cond do
@@ -444,21 +431,14 @@ defmodule PasswordlessWeb.Components.DataTable do
 
     ~H"""
     <header class={[
-      "px-6 py-6 flex items-center justify-between gap-4"
+      "p-6 flex flex-col xl:flex-row items-center justify-between gap-4"
     ]}>
-      <.div_wrapper class="flex flex-col gap-6" wrap={Util.present?(@subtitle)}>
-        <.div_wrapper class="flex items-center gap-2" wrap={Util.present?(@badge)}>
-          <h3 class="text-lg font-semibold text-slate-900 dark:text-white">
-            {@title}
-          </h3>
-          <.badge :if={Util.present?(@badge)} size="sm" color="primary" label={@badge} />
-        </.div_wrapper>
-        <.p :if={Util.present?(@subtitle)}>
-          {@subtitle}
-        </.p>
+      <.div_wrapper class="flex items-center gap-2" wrap={Util.present?(@badge)}>
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">
+          {@title}
+        </h3>
+        <.badge :if={Util.present?(@badge)} size="sm" color="primary" label={@badge} />
       </.div_wrapper>
-
-      {render_slot(@actions)}
     </header>
     """
   end
@@ -470,12 +450,13 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :search_field, :atom, default: nil
   attr :switch_items, :list, default: []
 
+  slot :actions, required: false
+
   defp table_search_bar(assigns) do
     ~H"""
     <div class={[
-      "flex items-center justify-between gap-3",
-      "border-b border-slate-200 dark:border-slate-700",
-      "p-6"
+      "mb-6",
+      "flex items-center justify-between gap-3"
     ]}>
       <.inputs_for :let={f2} field={@form[:filters]}>
         <%= if Phoenix.HTML.Form.input_value(f2, :field) == @switch_field do %>
@@ -495,32 +476,24 @@ defmodule PasswordlessWeb.Components.DataTable do
             <.field
               icon="custom-search"
               field={f2[:value]}
-              class="md:min-w-[400px] lg:min-w-[500px]"
+              class="md:min-w-[400px] h-12"
               label=""
-              phx-debounce="100"
               wrapper_class="mb-0!"
               placeholder="Search"
             />
 
-            <button
-              class={[
-                "h-[46px]",
-                "bg-white dark:bg-transparent select-none",
-                "text-sm font-semibold text-slate-700 dark:text-slate-200",
-                "flex items-center rounded-lg px-4 py-2.5 bg-white",
-                "border border-slate-300 dark:border-slate-600 gap-2 shadow-m2",
-                "transition duration-150 ease-in-out",
-                "hover:text-slate-900 hover:bg-slate-50 focus:bg-slate-100 focus:text-slate-900 active:bg-slate-200 dark:bg-background-900 dark:text-white dark:hover:bg-background-800 dark:active:bg-background-900"
-              ]}
-              type="button"
+            <.button
+              color="light"
+              label={gettext("Clear")}
+              icon="remix-filter-3-line"
+              link_type="live_patch"
               phx-click="clear_filters"
-            >
-              <.icon name="remix-filter-3-line" class="w-5 h-5" />
-              {gettext("Clear")}
-            </button>
+            />
           </div>
         <% end %>
       </.inputs_for>
+
+      {render_slot(@actions)}
     </div>
     """
   end

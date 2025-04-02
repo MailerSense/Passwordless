@@ -15,14 +15,14 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
     changeset = Passwordless.change_magic_link(magic_link)
 
     email_template = Repo.preload(magic_link, :email_template).email_template
-    email_version = Passwordless.get_email_template_version(email_template, :en)
+    email_version = Passwordless.get_email_template_version(email_template)
 
     {:ok,
      socket
      |> assign(assigns)
      |> assign(
-       magic_link: magic_link,
        domain: domain,
+       magic_link: magic_link,
        email_template: email_template,
        email_version: email_version
      )

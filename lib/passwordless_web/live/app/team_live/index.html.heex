@@ -43,19 +43,10 @@
           to={apply_filters(@filters, @meta, ~p"/app/team/#{membership}/edit")}
         />
       </:actions>
-      <:header_actions>
-        <.button
-          size="xs"
-          link_type="live_redirect"
-          to={~p"/app/team/invite"}
-          icon="remix-add-circle-line"
-          label={gettext("Invite")}
-          color="light"
-        />
-      </:header_actions>
     </.data_table>
 
     <.simple_table
+      :if={not Enum.empty?(@invitations)}
       items={@invitations}
       count={Enum.count(@invitations)}
       title={gettext("Invitations")}
@@ -85,6 +76,15 @@
         />
       </:actions>
     </.simple_table>
+
+    <div class="flex items-center gap-3">
+      <.a
+        to={~p"/app/team/invite"}
+        label={gettext("Invite teammate")}
+        styled
+        link_type="live_redirect"
+      />
+    </div>
   </div>
 </.tabbed_settings_layout>
 

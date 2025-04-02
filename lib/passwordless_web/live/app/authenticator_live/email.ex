@@ -15,7 +15,7 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
     changeset = Passwordless.change_email(email)
 
     email_template = Repo.preload(email, :email_template).email_template
-    email_version = Passwordless.get_email_template_version(email_template, :en)
+    email_version = Passwordless.get_email_template_version(email_template)
 
     {:ok,
      socket
