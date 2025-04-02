@@ -60,7 +60,7 @@ defmodule Passwordless.MixProject do
       {:phoenix_live_dashboard, "~> 0.8"},
       {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_seo, "~> 0.1.10"},
-      {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
+      {:esbuild, "~> 0.9.0", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.16"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
