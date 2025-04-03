@@ -4,7 +4,6 @@ defmodule AWS.Tools do
   """
 
   alias AWS.Policy
-  alias Passwordless.Domain
 
   @aws Application.compile_env!(:passwordless, :aws)
 
@@ -12,14 +11,6 @@ defmodule AWS.Tools do
   @default_region Keyword.fetch!(@aws, :region)
   @default_account Keyword.fetch!(@aws, :account)
   @arn_regex ~r/^arn:aws:[A-Za-z0-9_\.-]+:(#{Enum.join(@regions, "|")})?:(\d{12})?:[A-Za-z0-9_\/\.\-\*]+$/
-
-  def arn(_resource, region \\ @default_region, account \\ @default_account)
-
-  def arn(%Domain{name: name}, region, account) do
-    "arn:aws:ses:#{region}:#{account}:identity/#{name}"
-  end
-
-  def arn(_, _, _), do: nil
 
   @doc """
   Parses an AWS IAM JSON policy.

@@ -60,6 +60,15 @@ defmodule Passwordless.Domain do
   def email_suffix(%__MODULE__{name: name}), do: "@#{name}"
 
   @doc """
+  Produce the AWS ARN for the domain.
+  """
+  def arn(%__MODULE__{name: name}, region, account) do
+    "arn:aws:ses:#{region}:#{account}:identity/#{name}"
+  end
+
+  def arn(_, _, _), do: nil
+
+  @doc """
   Map the AWS domain verification states to our internal reprentation.
   """
   def aws_verification_states,
