@@ -2,7 +2,7 @@
   <.data_table meta={@meta} items={@actors} title={gettext("All users")}>
     <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
     <:col field={:search} searchable filterable={[:==]} />
-    <:col :let={actor} field={:name} sortable>
+    <:col :let={actor} field={:name}>
       <.a
         to={~p"/app/users/#{actor}/edit"}
         label={Actor.handle(actor)}

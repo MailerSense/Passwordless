@@ -12,11 +12,6 @@ defmodule PasswordlessWeb.FileUploadComponents do
   Designed for 1 image uploads.
   """
 
-  @doc """
-  A file upload input. Shows the current image, a preview of the incoming image and a delete button.
-  Designed for 1 image uploads.
-  """
-
   attr :upload, :map, required: true
   attr :current_image_src, :string, default: nil
   attr :current_image_class, :string, default: "h-16 w-16 rounded-md"

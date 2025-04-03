@@ -4,7 +4,14 @@ defmodule PasswordlessWeb.App.ActorLive.ImportComponent do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, assign(socket, assigns)}
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> allow_upload(:actors,
+       accept: ~w(.csv .xlsx .xls),
+       max_entries: 1,
+       max_file_size: 5_242_880 * 2
+     )}
   end
 
   @impl true

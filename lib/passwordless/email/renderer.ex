@@ -22,7 +22,7 @@ defmodule Passwordless.Email.Renderer do
       |> Map.take(@variable_providers)
       |> Enum.reject(&Util.blank?/1)
       |> Enum.reduce(%{}, fn {_key, mod}, acc ->
-        Map.merge(acc, VariableProvider.provide(mod))
+        Map.put(acc, VariableProvider.name(mod), VariableProvider.variables(mod))
       end)
 
     variables = Map.merge(variables, provider_variables)

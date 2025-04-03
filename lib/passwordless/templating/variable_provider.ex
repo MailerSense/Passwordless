@@ -3,8 +3,11 @@ defprotocol Passwordless.Templating.VariableProvider do
   A protocol for providing variables to templates.
   """
 
-  @spec provide(t) :: map()
-  def provide(value)
+  @spec name(t) :: binary()
+  def name(value)
+
+  @spec variables(t) :: map()
+  def variables(value)
 end
 
 defimpl Passwordless.Templating.VariableProvider, for: Passwordless.App do
@@ -19,10 +22,12 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.App do
     secondary_button_color
   )a
 
+  def name(_), do: "app"
+
   @doc """
   Provide the app variables.
   """
-  def provide(%App{} = app) do
+  def variables(%App{} = app) do
     app
     |> Map.from_struct()
     |> Map.take(@keys)
@@ -41,10 +46,12 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Actor do
     language
   )a
 
+  def name(_), do: "user"
+
   @doc """
   Provide the actor variables.
   """
-  def provide(%Actor{} = actor) do
+  def variables(%Actor{} = actor) do
     actor = Repo.preload(actor, [:email, :phone])
 
     variables =
@@ -61,31 +68,33 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Actor do
   # Private
 
   defp add_email(%Actor{email: %Email{} = email} = actor) do
-    %{user_email: email.address}
+    %{email: email.address}
   end
 
   defp add_email(%Actor{}), do: %{}
 
   defp add_phone(%Actor{phone: %Phone{} = phone} = actor) do
-    %{user_phone: phone.canonical}
+    %{phone: phone.canonical}
   end
 
   defp add_phone(%Actor{}), do: %{}
 
   defp add_properties(%Actor{properties: properties} = actor) when is_map(properties) do
-    properties
+    %{properties: properties}
   end
 
-  defp add_properties(%Actor{}), do: %{}
+  defp add_properties(%Actor{}), do: %{properties: %{}}
 end
 
 defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Action do
   alias Passwordless.Action
 
+  def name(_), do: "action"
+
   @doc """
   Provide the action variables.
   """
-  def provide(%Action{name: name}) do
+  def variables(%Action{name: name}) do
     %{name: name}
   end
 end

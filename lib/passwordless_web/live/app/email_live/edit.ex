@@ -148,7 +148,10 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   end
 
   defp assign_version_form(socket, %Ecto.Changeset{} = changeset) do
-    assign(socket, version_form: to_form(changeset), preview: Ecto.Changeset.get_field(changeset, :html_body))
+    assign(socket,
+      version_form: to_form(changeset),
+      preview: Ecto.Changeset.get_field(changeset, :html_body)
+    )
   end
 
   defp apply_action(socket, _action, %{"delete" => _}) do
@@ -163,7 +166,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
       page_title: gettext("Variables"),
       page_subtitle:
         gettext(
-          "Email templates can be personalized using dynamic variables, such as the user's name. Section below lists all available variables, their contexts and usage patterns."
+          "Email templates can be personalized using dynamic variables, such as the user's name. Section below lists all available variables, their contexts and usage patterns. For nested objects, use dot notation, e.g. {{ user.name }} or {{ user.properties.key1 }}."
         )
     )
   end
@@ -176,7 +179,11 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   end
 
   defp has_unsaved_changes?(socket) do
-    case get_in(socket.assigns, [Access.key(:version_form), Access.key(:source), Access.key(:changes)]) do
+    case get_in(socket.assigns, [
+           Access.key(:version_form),
+           Access.key(:source),
+           Access.key(:changes)
+         ]) do
       changes when is_map(changes) and map_size(changes) > 0 -> true
       _ -> false
     end
