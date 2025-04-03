@@ -68,6 +68,11 @@
             disabled={not @form.source.valid?}
           />
         <% else %>
+          <.field
+            type="hidden"
+            field={@form[:properties_text]}
+            value={Jason.encode!(@user_properties)}
+          />
           <.json_block
             label={gettext("Properties")}
             code={@user_properties}
