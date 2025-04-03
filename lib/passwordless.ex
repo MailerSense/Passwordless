@@ -1,10 +1,6 @@
 defmodule Passwordless do
   @moduledoc """
-  Passwordless keeps the contexts that define your domain
-  and business logic.
-
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
+  Passwordless authentication made easy.
   """
 
   import Ecto.Query
@@ -24,8 +20,6 @@ defmodule Passwordless do
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateVersion
-  alias Passwordless.Mailer
-  alias Passwordless.MailerExecutor
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
@@ -45,13 +39,6 @@ defmodule Passwordless do
 
   @doc """
   Looks up `Application` config or raises if keyspace is not configured.
-  ## Examples
-      config :passwordless, :files, [
-        uploads_dir: Path.expand("../priv/uploads", __DIR__),
-        host: [scheme: "http", host: "localhost", port: 4000],
-      ]
-      iex> Passwordless.config([:files, :uploads_dir])
-      iex> Passwordless.config([:files, :host, :port])
   """
   def config([main_key | rest] = keyspace) when is_list(keyspace) do
     main = Application.fetch_env!(:passwordless, main_key)
@@ -353,9 +340,11 @@ defmodule Passwordless do
   end
 
   def update_actor_properties(%App{} = app, %Actor{} = actor, attrs) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     actor
-    |> Actor.properties_changeset(attrs)
-    |> Repo.update(prefix: Tenant.to_prefix(app))
+    |> Actor.properties_changeset(attrs, opts)
+    |> Repo.update(opts)
   end
 
   def delete_actor(%App{} = app, %Actor{} = actor) do
@@ -491,11 +480,7 @@ defmodule Passwordless do
   def get_action!(%App{} = app, id) do
     Action
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
-    |> Repo.preload([
-      :action_events,
-      {:challenge, [:email_message]},
-      actor: [:email, :phone]
-    ])
+    |> Repo.preload(actor: [:email, :phone])
   end
 
   def create_action(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
@@ -722,26 +707,5 @@ defmodule Passwordless do
       fn -> get_app_mau_count(app, date) end,
       ttl: :timer.hours(1)
     )
-  end
-
-  @doc """
-  Deliver a pin code to sign in without a password.
-  """
-  def deliver_email_otp(%App{} = app, %Actor{} = actor, %Action{} = action, %Email{} = email, attrs \\ %{}) do
-    nil
-  end
-
-  # Private
-
-  defp deliver(%Swoosh.Email{} = email) do
-    with {:ok, _job} <- enqueue_worker(Mailer.to_map(email)) do
-      {:ok, email}
-    end
-  end
-
-  defp enqueue_worker(email) do
-    %{email: email}
-    |> MailerExecutor.new()
-    |> Oban.insert()
   end
 end

@@ -41,6 +41,9 @@ defmodule Util do
     Jason.encode!(obj, pretty: true)
   end
 
+  @doc """
+  Convert a number to a string with locale formatting.
+  """
   def number!(value) when is_number(value) do
     Passwordless.Locale.Number.to_string!(value)
   end
@@ -321,7 +324,9 @@ defmodule Util do
 
   def is_simple_type(v) when is_integer(v) or is_float(v) or is_boolean(v), do: true
   def is_simple_type(v) when is_binary(v), do: String.length(v) <= @max_string_length
+
   def is_simple_type(v) when is_list(v), do: Enum.filter(v, fn v -> not is_list(v) and is_simple_type(v) end)
+
   def is_simple_type(_), do: false
 
   @doc """
@@ -332,7 +337,11 @@ defmodule Util do
       Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
         Enum.reduce(opts, msg, fn
           {key, {:parameterized, Ecto.Enum, %{mappings: mappings}}}, acc ->
-            String.replace(acc, "%{#{key}}", "Must be one of #{Enum.join(Keyword.values(mappings), ", ")}")
+            String.replace(
+              acc,
+              "%{#{key}}",
+              "Must be one of #{Enum.join(Keyword.values(mappings), ", ")}"
+            )
 
           {key, value}, acc ->
             String.replace(acc, "%{#{key}}", to_string(value))
@@ -348,8 +357,11 @@ defmodule Util do
 
   def duplicate_name(name) when is_binary(name) do
     case Regex.named_captures(@duplicate_regex, name) do
-      %{"name" => name, "index" => index} -> String.trim(name) <> " (#{String.to_integer(index) + 1})"
-      _ -> String.trim(name) <> " (1)"
+      %{"name" => name, "index" => index} ->
+        String.trim(name) <> " (#{String.to_integer(index) + 1})"
+
+      _ ->
+        String.trim(name) <> " (1)"
     end
   end
 
