@@ -2,6 +2,7 @@ defmodule Passwordless.Native do
   @moduledoc """
   Native bindings.
   """
+
   use Rustler,
     crate: "passwordless_native",
     otp_app: :passwordless,

@@ -1,5 +1,7 @@
 defmodule Passwordless.SecretVault do
-  @moduledoc false
+  @moduledoc """
+  A central store of secrets fetched from a JSON secret in SecretManager.
+  """
 
   use GenServer
 

@@ -1,5 +1,7 @@
 defmodule Passwordless.EmailTemplates do
-  @moduledoc false
+  @moduledoc """
+  Email templates for Passwordless.
+  """
 
   use Gettext, backend: PasswordlessWeb.Gettext
 

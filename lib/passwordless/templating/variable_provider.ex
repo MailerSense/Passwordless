@@ -1,4 +1,8 @@
 defprotocol Passwordless.Templating.VariableProvider do
+  @moduledoc """
+  A protocol for providing variables to templates.
+  """
+
   @spec provide(t) :: map()
   def provide(value)
 end

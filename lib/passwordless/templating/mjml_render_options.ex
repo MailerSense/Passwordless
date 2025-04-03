@@ -2,6 +2,7 @@ defmodule Passwordless.Templating.MJMLRenderOptions do
   @moduledoc """
   Render options for MJML.
   """
+
   use TypedStruct
 
   typedstruct do

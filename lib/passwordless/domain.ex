@@ -1,5 +1,7 @@
 defmodule Passwordless.Domain do
-  @moduledoc false
+  @moduledoc """
+  A web domain used for sending emails and tracking email opens and clicks.
+  """
 
   use Passwordless.Schema, prefix: "domain"
 

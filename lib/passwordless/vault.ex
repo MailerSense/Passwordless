@@ -1,6 +1,6 @@
 defmodule Passwordless.Vault do
   @moduledoc """
-  A vault.
+  A vault for the Cloak library.
   """
 
   use Cloak.Vault, otp_app: :passwordless

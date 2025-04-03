@@ -2,6 +2,7 @@ defmodule PasswordlessWeb.Helpers do
   @moduledoc """
   A set of helpers used in web related views and templates. These functions can be called anywhere in a heex template.
   """
+
   use PasswordlessWeb, :verified_routes
   use Gettext, backend: PasswordlessWeb.Gettext
 

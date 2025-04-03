@@ -9,6 +9,7 @@ defmodule Passwordless.Templating.Liquid do
   Solid can sometimes raise exceptions when rendering invalid templates, this
   module catches these exceptions and transforms them into an error tuple.
   """
+
   def render(input, assigns, opts \\ [])
 
   def render(input, assigns, opts) when is_binary(input) and is_map(assigns) do

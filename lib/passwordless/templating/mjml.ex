@@ -1,5 +1,7 @@
 defmodule Passwordless.Templating.MJML do
-  @moduledoc false
+  @moduledoc """
+  Renders MJML as HTML. Uses the `mjml` library to convert MJML to HTML.
+  """
 
   def convert(mjml) do
     Passwordless.Native.mjml_to_html(mjml, %Passwordless.Templating.MJMLRenderOptions{})
