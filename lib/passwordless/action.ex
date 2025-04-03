@@ -17,16 +17,18 @@ defmodule Passwordless.Action do
 
   @states ~w(allow timeout block pending)a
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :name,
-             :state,
-             :challenge,
-             :action_events,
-             :inserted_at,
-             :updated_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :name,
+      :state,
+      :challenge,
+      :action_events,
+      :inserted_at,
+      :updated_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]

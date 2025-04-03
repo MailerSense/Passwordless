@@ -11,12 +11,14 @@ defmodule Passwordless.MagicLink do
 
   @size 12
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :expires_at,
-             :accepted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :expires_at,
+      :accepted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]

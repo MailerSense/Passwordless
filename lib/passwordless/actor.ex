@@ -20,20 +20,22 @@ defmodule Passwordless.Actor do
   @states ~w(active locked)a
   @languages ~w(en de fr)a
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :name,
-             :state,
-             :language,
-             :totps,
-             :emails,
-             :phones,
-             :properties,
-             :inserted_at,
-             :updated_at,
-             :deleted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :name,
+      :state,
+      :language,
+      :totps,
+      :emails,
+      :phones,
+      :properties,
+      :inserted_at,
+      :updated_at,
+      :deleted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id, :search, :state],

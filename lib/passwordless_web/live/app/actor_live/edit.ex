@@ -44,6 +44,8 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
       code -> "flag-#{code}"
     end
 
+    return_to = Map.get(params, "return_to", ~p"/app/users")
+
     socket =
       socket
       |> assign(
@@ -51,7 +53,8 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
         states: states,
         languages: languages,
         flag_mapping: flag_mapping,
-        property_editor: false
+        property_editor: false,
+        return_to: return_to
       )
       |> assign_form(changeset)
       |> assign_emails(actor)

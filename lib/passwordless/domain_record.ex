@@ -10,17 +10,19 @@ defmodule Passwordless.DomainRecord do
   alias Database.ChangesetExt
   alias Passwordless.Domain
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :kind,
-             :name,
-             :value,
-             :priority,
-             :verified,
-             :inserted_at,
-             :updated_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :kind,
+      :name,
+      :value,
+      :priority,
+      :verified,
+      :inserted_at,
+      :updated_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id, :name, :kind, :value, :verified]

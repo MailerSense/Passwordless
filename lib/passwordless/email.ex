@@ -11,17 +11,19 @@ defmodule Passwordless.Email do
   alias Passwordless.Actor
   alias Passwordless.EmailMessage
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :address,
-             :primary,
-             :verified,
-             :opted_out_at,
-             :inserted_at,
-             :updated_at,
-             :deleted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :address,
+      :primary,
+      :verified,
+      :opted_out_at,
+      :inserted_at,
+      :updated_at,
+      :deleted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]

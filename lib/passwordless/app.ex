@@ -18,20 +18,22 @@ defmodule Passwordless.App do
 
   @states ~w(active)a
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :name,
-             :logo,
-             :state,
-             :website,
-             :display_name,
-             :primary_button_color,
-             :secondary_button_color,
-             :inserted_at,
-             :updated_at,
-             :deleted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :name,
+      :logo,
+      :state,
+      :website,
+      :display_name,
+      :primary_button_color,
+      :secondary_button_color,
+      :inserted_at,
+      :updated_at,
+      :deleted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]

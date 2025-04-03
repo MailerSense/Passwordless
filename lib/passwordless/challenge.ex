@@ -75,16 +75,18 @@ defmodule Passwordless.Challenge do
           |> Enum.flat_map(&Enum.flat_map(&1, fn {s, f} -> [s | f] end))
           |> Enum.uniq()
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :type,
-             :state,
-             :current,
-             :email_message,
-             :inserted_at,
-             :updated_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :type,
+      :state,
+      :current,
+      :email_message,
+      :inserted_at,
+      :updated_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]

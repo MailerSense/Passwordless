@@ -33,18 +33,20 @@ defmodule Passwordless.Domain do
   @purposes ~w(email tracking)a
   @tags ~w(system default)a
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :name,
-             :kind,
-             :state,
-             :verified,
-             :records,
-             :inserted_at,
-             :updated_at,
-             :deleted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :name,
+      :kind,
+      :state,
+      :verified,
+      :records,
+      :inserted_at,
+      :updated_at,
+      :deleted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]

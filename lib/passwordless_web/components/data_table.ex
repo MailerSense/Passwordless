@@ -103,16 +103,19 @@ defmodule PasswordlessWeb.Components.DataTable do
       phx-submit="update_filters"
       {form_assigns(@form_target)}
     >
-      <.table_search_bar
-        :if={@search_field || @switch_field}
-        meta={@meta}
-        form={filter_form}
-        switch_field={@switch_field}
-        search_field={@search_field}
-        switch_items={@switch_items}
-        actions={@header_actions}
-      />
+      <div class="flex items-center justify-between gap-3 mb-6">
+        <.table_search_bar
+          :if={@search_field || @switch_field}
+          meta={@meta}
+          form={filter_form}
+          switch_field={@switch_field}
+          search_field={@search_field}
+          switch_items={@switch_items}
+          actions={@header_actions}
+        />
 
+        {render_slot(@header_actions)}
+      </div>
       <section class={[@wrapper_class, @class]}>
         <.table_header :if={Util.present?(@title)} meta={@meta} title={@title} />
         <div class="pc-data-table">
@@ -450,14 +453,9 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :search_field, :atom, default: nil
   attr :switch_items, :list, default: []
 
-  slot :actions, required: false
-
   defp table_search_bar(assigns) do
     ~H"""
-    <div class={[
-      "mb-6",
-      "flex items-center justify-between gap-3"
-    ]}>
+    <div class="flex items-center justify-between gap-3">
       <.inputs_for :let={f2} field={@form[:filters]}>
         <%= if Phoenix.HTML.Form.input_value(f2, :field) == @switch_field do %>
           <.tab_menu
@@ -492,8 +490,6 @@ defmodule PasswordlessWeb.Components.DataTable do
           </div>
         <% end %>
       </.inputs_for>
-
-      {render_slot(@actions)}
     </div>
     """
   end

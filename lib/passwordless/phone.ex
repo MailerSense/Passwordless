@@ -12,20 +12,22 @@ defmodule Passwordless.Phone do
 
   @channels ~w(sms whatsapp)a
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :number,
-             :region,
-             :canonical,
-             :primary,
-             :verified,
-             :channels,
-             :opted_out_at,
-             :inserted_at,
-             :updated_at,
-             :deleted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :number,
+      :region,
+      :canonical,
+      :primary,
+      :verified,
+      :channels,
+      :opted_out_at,
+      :inserted_at,
+      :updated_at,
+      :deleted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]

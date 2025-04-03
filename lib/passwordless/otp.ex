@@ -10,13 +10,15 @@ defmodule Passwordless.OTP do
   @size 6
   @attempts 3
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :attempts,
-             :expires_at,
-             :accepted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :attempts,
+      :expires_at,
+      :accepted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -37,7 +39,8 @@ defmodule Passwordless.OTP do
   def valid?(%__MODULE__{attempts: attempts}, _candidate) when attempts >= @attempts, do: false
 
   def valid?(%__MODULE__{code: code, expires_at: expires_at}, candidate) when is_binary(code) and is_binary(candidate) do
-    DateTime.after?(expires_at, DateTime.utc_now()) and Plug.Crypto.secure_compare(code, candidate)
+    DateTime.after?(expires_at, DateTime.utc_now()) and
+      Plug.Crypto.secure_compare(code, candidate)
   end
 
   def valid?(%__MODULE__{}, _candidate), do: false
