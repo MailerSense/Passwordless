@@ -7,7 +7,7 @@ defmodule PasswordlessWeb.Toast do
       # start hidden if javascript is enabled
       "[@media(scripting:enabled)]:opacity-0 [@media(scripting:enabled){[data-phx-main]_&}]:opacity-100",
       # used to hide the disconnected flashes
-      if(assigns[:rest][:hidden] == true, do: "hidden", else: "flex"),
+      if(assigns[:rest][:hidden], do: "hidden", else: "flex"),
       # override styles per severity
       assigns[:kind] == :info && "bg-white text-black dark:bg-slate-600 dark:text-white",
       assigns[:kind] == :error &&

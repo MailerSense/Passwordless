@@ -134,7 +134,10 @@ defmodule Passwordless.Phone do
          true <- ExPhoneNumber.is_possible_number?(phone_number) do
       changeset
       |> put_change(:number, to_string(phone_number.national_number))
-      |> put_change(:region, ExPhoneNumber.Metadata.get_region_code_for_country_code(phone_number.country_code))
+      |> put_change(
+        :region,
+        ExPhoneNumber.Metadata.get_region_code_for_country_code(phone_number.country_code)
+      )
     else
       {:error, message} -> add_error(changeset, :canonical, message)
       _ -> add_error(changeset, :canonical, "is invalid")
@@ -150,7 +153,7 @@ defmodule Passwordless.Phone do
     |> unique_constraint([:actor_id, :canonical], error_key: :canonical)
     |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo,
       prefix: Keyword.get(opts, :prefix),
-      query: from(p in __MODULE__, where: p.primary == true),
+      query: from(p in __MODULE__, where: p.primary),
       error_key: :primary
     )
     |> unsafe_validate_unique([:actor_id, :canonical], Passwordless.Repo,

@@ -140,6 +140,9 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       # Kind
       add :kind, :string, null: false
 
+      # Timestamp
+      add :happened_at, :utc_datetime_usec, null: false
+
       # Open
       add :open_ip_address, :string
       add :open_user_agent, :string

@@ -410,21 +410,10 @@ defmodule Passwordless.Email.Adapter.SESParser do
   defp parse_object(_kind, _payload), do: {:error, :invalid_payload}
 
   defp parse_mail(
-         %{
-           "messageId" => message_id,
-           "destination" => destination,
-           "source" => source,
-           "sourceArn" => source_arn,
-           "timestamp" => timestamp
-         } = payload
+         %{"messageId" => message_id, "destination" => destination, "source" => source, "sourceArn" => source_arn} =
+           payload
        )
-       when is_binary(message_id) and is_binary(source) and is_binary(source_arn) and is_binary(timestamp) do
-    timestamp =
-      case Timex.parse(String.replace(timestamp, " ", ""), "{ISO:Extended}") do
-        {:ok, %DateTime{} = ts} -> ts
-        _ -> DateTime.utc_now()
-      end
-
+       when is_binary(message_id) and is_binary(source) and is_binary(source_arn) do
     sending_account_id =
       case payload["sendingAccountId"] do
         sai when is_binary(sai) -> sai

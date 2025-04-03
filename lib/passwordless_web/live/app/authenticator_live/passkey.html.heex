@@ -26,14 +26,6 @@
         )
       }
     />
-    <.field
-      type="select"
-      field={@form[:uplift_prompt_interval]}
-      options={@intervals}
-      required
-      disabled={not @enabled}
-      help_text={gettext("Specifies how frequently users will be asked to add a passkey.")}
-    />
     <.form_separator />
     <.form_header title="Advanced" />
     <.field
@@ -45,6 +37,14 @@
         )
       }
       disabled={not @enabled}
+    />
+    <.field
+      type="select"
+      field={@form[:uplift_prompt_interval]}
+      options={@intervals}
+      required
+      disabled={not @enabled}
+      help_text={gettext("Specifies how frequently users will be asked to add a passkey.")}
     />
     <div class="pc-form-field-wrapper">
       <.form_label>{gettext("Expected origins")}</.form_label>

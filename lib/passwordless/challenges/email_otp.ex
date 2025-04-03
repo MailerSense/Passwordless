@@ -159,7 +159,7 @@ defmodule Passwordless.Challenges.EmailOTP do
 
     challenge
     |> Ecto.assoc(:email_messages)
-    |> where([m], m.current == true)
+    |> where([m], m.current)
     |> Repo.update_all([set: [current: false]], opts)
     |> case do
       {count, _} when count in [0, 1] -> :ok

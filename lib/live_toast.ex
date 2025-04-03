@@ -138,7 +138,7 @@ defmodule LiveToast do
             # start hidden if javascript is enabled
             "[@media(scripting:enabled)]:opacity-0 [@media(scripting:enabled){[data-phx-main]_&}]:opacity-100",
             # used to hide the disconnected flashes
-            if(assigns[:rest][:hidden] == true, do: "hidden", else: "flex"),
+            if(assigns[:rest][:hidden], do: "hidden", else: "flex"),
             # override styles per severity
             assigns[:kind] == :info && "bg-white text-black",
             assigns[:kind] == :error && "!text-red-700 !bg-red-100 border-red-200"
@@ -160,7 +160,7 @@ defmodule LiveToast do
       # start hidden if javascript is enabled
       "[@media(scripting:enabled)]:opacity-0 [@media(scripting:enabled){[data-phx-main]_&}]:opacity-100",
       # used to hide the disconnected flashes
-      if(assigns[:rest][:hidden] == true, do: "hidden", else: "flex"),
+      if(assigns[:rest][:hidden], do: "hidden", else: "flex"),
       # override styles per severity
       assigns[:kind] == :info &&
         "text-slate-900 dark:text-white bg-white dark:bg-slate-600 border border-slate-200 dark:border-slate-700",

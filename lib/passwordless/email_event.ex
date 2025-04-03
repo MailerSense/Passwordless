@@ -77,6 +77,9 @@ defmodule Passwordless.EmailEvent do
     # Kind
     field :kind, Ecto.Enum, values: @kinds
 
+    # Timestamp
+    field :happened_at, :utc_datetime_usec
+
     # Feedback
     field :feedback_id, :string
 
@@ -156,6 +159,7 @@ defmodule Passwordless.EmailEvent do
 
   @fields ~w(
     kind
+    happened_at
     feedback_id
     open_ip_address
     open_user_agent
