@@ -135,8 +135,6 @@ defmodule PasswordlessWeb.Helpers do
   end
 
   def flow_details(%Action{challenge: %Challenge{type: type}}) do
-    IO.inspect(type)
-
     Keyword.get(
       [
         email_otp: %{label: gettext("Email OTP"), icon: "remix-mail-open-line"},
@@ -303,7 +301,7 @@ defmodule PasswordlessWeb.Helpers do
     start_date = Timex.beginning_of_month(month)
     end_date = Timex.end_of_month(month)
 
-    "#{format_date(start_date, "%-d")} - #{format_date(end_date, "%-d %B %Y")}"
+    "#{format_date(start_date, "%-d %b")} - #{format_date(end_date, "%-d %b %Y")}"
   end
 
   def current_month?(%Date{} = month) do

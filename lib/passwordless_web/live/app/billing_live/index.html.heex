@@ -20,6 +20,8 @@
           styled
           link_type="a"
         />
+
+        <.a label={gettext("Download billing data")} styled download link_type="a" />
       </div>
     </.box>
     <.simple_table
@@ -44,7 +46,7 @@
         }
       ]}
       count={2}
-      title={gettext("Billing items")}
+      title={gettext("Cost breakdown")}
     >
       <:if_empty>
         {gettext("No %{models} found", models: gettext("billing items"))}

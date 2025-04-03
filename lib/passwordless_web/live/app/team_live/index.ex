@@ -5,7 +5,6 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   import PasswordlessWeb.SettingsLayoutComponent
 
   alias Passwordless.Accounts
-  alias Passwordless.Activity
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
@@ -54,7 +53,10 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   def handle_params(params, _url, socket) do
     {:noreply,
      socket
-     |> apply_action(socket.assigns.live_action, Map.take(socket.assigns, [:membership, :invitation]))
+     |> apply_action(
+       socket.assigns.live_action,
+       Map.take(socket.assigns, [:membership, :invitation])
+     )
      |> assign_filters(params)
      |> assign_memberships(params)
      |> assign_invitations()}
@@ -88,12 +90,6 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
             else: url(~p"/auth/sign-up")
 
         Accounts.Notifier.deliver_org_invitation(org, invitation, to)
-
-        Activity.log(:org, :"org.create_invitation", %{
-          user: socket.assigns.current_user,
-          org_id: org.id,
-          email: invitation.email
-        })
 
         {:noreply,
          socket

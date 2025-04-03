@@ -35,7 +35,12 @@
     <div class="flex flex-col gap-6">
       <.box padded>
         <.field type="checkbox" field={@form[:active]} />
-        <.field field={@form[:user_id]} label={gettext("User ID")} disabled={not @user_active} />
+        <.field
+          field={@form[:user_id]}
+          label={gettext("User ID")}
+          disabled={not @user_active}
+          copyable
+        />
         <.field
           field={@form[:language]}
           type="select"
