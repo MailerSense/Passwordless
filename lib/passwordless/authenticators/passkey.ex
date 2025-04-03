@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.Passkey do
   An passkey authenticator.
   """
 
-  use Passwordless.Schema, prefix: "aupkey"
+  use Passwordless.Schema, prefix: "passkey"
 
   alias Database.ChangesetExt
   alias Passwordless.App
@@ -51,7 +51,7 @@ defmodule Passwordless.Authenticators.Passkey do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
+  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
     actor_email
     |> cast(attrs, @fields)
     |> cast_embed(:expected_origins,

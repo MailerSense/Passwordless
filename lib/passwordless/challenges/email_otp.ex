@@ -22,7 +22,6 @@ defmodule Passwordless.Challenges.EmailOTP do
   alias Passwordless.MailerExecutor
   alias Passwordless.OTP
   alias Passwordless.Repo
-  alias PasswordlessWeb.Email, as: EmailWeb
   alias Swoosh.Email, as: SwooshEmail
 
   @challenge :email_otp
@@ -38,8 +37,8 @@ defmodule Passwordless.Challenges.EmailOTP do
       when state in [:started, :otp_sent] do
     otp_code = OTP.generate_code()
 
-    with {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email),
-         {:ok, domain} <- get_sending_domain(authenticator),
+    with {:ok, domain} <- Passwordless.get_app_email_domain(app),
+         {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email),
          {:ok, email_template} <- get_email_template(authenticator),
          {:ok, email_template_version} <- get_email_template_version(actor, email_template),
          :ok <- update_existing_messages(app, action),
@@ -134,7 +133,7 @@ defmodule Passwordless.Challenges.EmailOTP do
 
     attrs = %{
       state: :created,
-      sender: authenticator.sender,
+      sender: Authenticators.Email.sender_email(authenticator, domain),
       sender_name: authenticator.sender_name,
       recipient: email.address,
       recipient_name: Actor.handle(actor),
@@ -176,19 +175,6 @@ defmodule Passwordless.Challenges.EmailOTP do
     |> Ecto.build_assoc(:otp)
     |> OTP.changeset(%{code: otp_code, expires_at: expires_at})
     |> Repo.insert()
-  end
-
-  defp get_sending_domain(%Authenticators.Email{} = authenticator) do
-    case Repo.preload(authenticator, :domain) do
-      %Authenticators.Email{domain: %Domain{} = domain} ->
-        {:ok, domain}
-
-      _ ->
-        case Repo.get_by(Domain, name: EmailWeb.challenge_email_domain()) do
-          %Domain{} = domain -> {:ok, domain}
-          _ -> {:error, :default_domain_not_found}
-        end
-    end
   end
 
   defp enqueue_email_message(%EmailMessage{domain: %Domain{} = domain} = email_message) do

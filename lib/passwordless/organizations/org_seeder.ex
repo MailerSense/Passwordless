@@ -50,7 +50,8 @@ defmodule Passwordless.Organizations.OrgSeeder do
     {:ok, domain} =
       Passwordless.create_domain(app, %{
         name: "auth.passwordlesstools.com",
-        kind: :sub_domain
+        kind: :sub_domain,
+        tags: [:system]
       })
 
     {:ok, magic_link_template} = Passwordless.seed_email_template(app, :magic_link_sign_in, :en)

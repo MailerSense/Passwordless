@@ -25,6 +25,7 @@ defmodule Passwordless do
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
   alias Passwordless.Rule
+  alias PasswordlessWeb.Email, as: EmailWeb
 
   @authenticators [
     email: Authenticators.Email,
@@ -269,6 +270,29 @@ defmodule Passwordless do
     end
   end
 
+  def get_app_email_domain(%App{} = app) do
+    case Repo.preload(app, :email_domain) do
+      %App{email_domain: %Domain{purpose: :email} = domain} ->
+        {:ok, domain}
+
+      _ ->
+        case Repo.get_by(Domain, name: EmailWeb.challenge_email_domain()) do
+          %Domain{purpose: :email} = domain ->
+            if Domain.is_system?(domain),
+              do: {:ok, domain},
+              else: {:error, :system_domain_not_found}
+
+          _ ->
+            {:error, :default_domain_not_found}
+        end
+    end
+  end
+
+  def get_app_email_domain!(%App{} = app) do
+    {:ok, domain} = get_app_email_domain(app)
+    domain
+  end
+
   crud(:magic_link, :magic_link, Passwordless.Authenticators.MagicLink)
   crud(:email, :email, Passwordless.Authenticators.Email)
   crud(:sms, :sms, Passwordless.Authenticators.SMS)
@@ -336,14 +360,6 @@ defmodule Passwordless do
 
     actor
     |> Actor.changeset(attrs, opts)
-    |> Repo.update(opts)
-  end
-
-  def update_actor_properties(%App{} = app, %Actor{} = actor, attrs) do
-    opts = [prefix: Tenant.to_prefix(app)]
-
-    actor
-    |> Actor.properties_changeset(attrs, opts)
     |> Repo.update(opts)
   end
 

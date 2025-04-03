@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.SecurityKey do
   An security key authenticator.
   """
 
-  use Passwordless.Schema, prefix: "auskey"
+  use Passwordless.Schema, prefix: "seckey"
 
   alias Database.ChangesetExt
   alias Passwordless.App
@@ -37,7 +37,7 @@ defmodule Passwordless.Authenticators.SecurityKey do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
+  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
     actor_email
     |> cast(attrs, @fields)
     |> cast_embed(:expected_origins,

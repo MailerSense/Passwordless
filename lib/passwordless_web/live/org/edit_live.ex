@@ -17,7 +17,6 @@ defmodule PasswordlessWeb.Org.EditLive do
   @impl true
   def handle_params(_params, _url, socket) do
     current_org = socket.assigns.current_org
-    current_user = socket.assigns.current_user
     changeset = Organizations.change_org(current_org)
 
     {:noreply,
@@ -50,7 +49,10 @@ defmodule PasswordlessWeb.Org.EditLive do
   def handle_event("save", %{"org" => org_params}, socket) do
     case Organizations.update_org(socket.assigns.current_org, org_params) do
       {:ok, org} ->
-        Activity.log_async(:org, :"org.update_profile", %{user: socket.assigns.current_user, org: org})
+        Activity.log_async(:org, :"org.update_profile", %{
+          user: socket.assigns.current_user,
+          org: org
+        })
 
         current_user = assign_current_org(socket.assigns.current_user, org)
 

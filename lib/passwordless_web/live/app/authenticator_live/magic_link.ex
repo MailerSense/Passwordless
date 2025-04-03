@@ -4,14 +4,15 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.App
+  alias Passwordless.Domain
   alias Passwordless.Repo
 
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
-    app = Repo.preload(app, [:magic_link, :domain])
+    app = Repo.preload(app, [:magic_link])
 
     magic_link = app.magic_link
-    domain = app.domain
+    domain = Passwordless.get_app_email_domain!(app)
     changeset = Passwordless.change_magic_link(magic_link)
 
     email_template = Repo.preload(magic_link, :email_template).email_template
@@ -42,7 +43,9 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
   # Private
 
   defp save_magic_link(socket, params) do
-    case Passwordless.update_magic_link(socket.assigns.magic_link, params) do
+    opts = [domain: socket.assigns[:domain]]
+
+    case Passwordless.update_magic_link(socket.assigns.magic_link, params, opts) do
       {:ok, magic_link} ->
         changeset =
           magic_link

@@ -213,7 +213,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :name, :citext, null: false
       add :kind, :string, null: false
       add :state, :string, null: false
+      add :purpose, :string, null: false
       add :verified, :boolean, null: false
+      add :tags, {:array, :string}, null: false, default: []
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 
@@ -221,7 +223,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create index(:domains, [:app_id], where: "deleted_at is null")
+    create unique_index(:domains, [:app_id, :purpose], where: "deleted_at is null")
     create unique_index(:domains, [:name], where: "verified AND deleted_at is null")
 
     create table(:domain_records, primary_key: false) do
@@ -281,20 +283,18 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :expires, :integer, null: false, default: 15
-      add :sender, :string, null: false
+      add :sender, :citext, null: false
       add :sender_name, :string, null: false
       add :email_tracking, :boolean, null: false, default: false
       add :fingerprint_device, :boolean, null: false, default: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
-      add :domain_id, references(:domains, type: :uuid, on_delete: :nilify_all)
       add :email_template_id, references(:email_templates, type: :uuid, on_delete: :nilify_all)
 
       timestamps()
     end
 
     create unique_index(:magic_link_authenticators, [:app_id])
-    create unique_index(:magic_link_authenticators, [:domain_id])
 
     create table(:sms_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
@@ -324,19 +324,17 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :expires, :integer, null: false, default: 15
-      add :sender, :string, null: false
+      add :sender, :citext, null: false
       add :sender_name, :string, null: false
       add :email_tracking, :boolean, null: false, default: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
-      add :domain_id, references(:domains, type: :uuid, on_delete: :nilify_all)
       add :email_template_id, references(:email_templates, type: :uuid, on_delete: :nilify_all)
 
       timestamps()
     end
 
     create unique_index(:email_authenticators, [:app_id])
-    create unique_index(:email_authenticators, [:domain_id])
 
     create table(:totp_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true

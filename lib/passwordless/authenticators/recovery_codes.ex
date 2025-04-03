@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.RecoveryCodes do
   An recovery codes authenticator.
   """
 
-  use Passwordless.Schema, prefix: "aurcodes"
+  use Passwordless.Schema, prefix: "reccodes"
 
   alias Passwordless.App
 
@@ -32,7 +32,7 @@ defmodule Passwordless.Authenticators.RecoveryCodes do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
+  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
     actor_email
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)

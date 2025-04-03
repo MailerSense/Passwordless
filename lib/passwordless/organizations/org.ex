@@ -77,6 +77,6 @@ defmodule Passwordless.Organizations.Org do
   end
 
   defp validate_tags(changeset) do
-    update_change(changeset, :tags, &Enum.uniq/1)
+    ChangesetExt.clean_array(changeset, :tags)
   end
 end

@@ -4,14 +4,15 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.App
+  alias Passwordless.Domain
   alias Passwordless.Repo
 
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
-    app = Repo.preload(app, [:email, :domain])
+    app = Repo.preload(app, [:email])
 
     email = app.email
-    domain = app.domain
+    domain = Passwordless.get_app_email_domain!(app)
     changeset = Passwordless.change_email(email)
 
     email_template = Repo.preload(email, :email_template).email_template
@@ -42,7 +43,9 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
   # Private
 
   defp save_email(socket, params) do
-    case Passwordless.update_email(socket.assigns.email, params) do
+    opts = [domain: socket.assigns[:domain]]
+
+    case Passwordless.update_email(socket.assigns.email, params, opts) do
       {:ok, email} ->
         changeset =
           email
