@@ -5,6 +5,7 @@ defmodule Passwordless.Domain do
 
   use Passwordless.Schema, prefix: "domain"
 
+  import Database.QueryExt
   import Ecto.Query
 
   alias Database.ChangesetExt
@@ -30,7 +31,7 @@ defmodule Passwordless.Domain do
   @states @aws_states ++ @dns_states ++ @other_states
 
   @purposes ~w(email tracking)a
-  @tags ~w(system)a
+  @tags ~w(system default)a
 
   @derive {Jason.Encoder,
            only: [
@@ -78,6 +79,14 @@ defmodule Passwordless.Domain do
   """
   def is_system?(%__MODULE__{tags: tags}) do
     Enum.member?(tags, :system)
+  end
+
+  @doc """
+  Get the domain by tags.
+  """
+  def get_by_tags(query \\ __MODULE__, tags) when is_list(tags) do
+    tags = Enum.map(tags, &Atom.to_string/1)
+    from q in query, where: contains(q.tags, ^tags)
   end
 
   @doc """

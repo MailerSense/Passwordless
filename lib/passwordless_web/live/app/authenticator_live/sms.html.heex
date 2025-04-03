@@ -20,7 +20,14 @@
       icon_mapping={@flag_mapping}
       disabled={not @enabled}
       required
-      required_asterix={false}
+    />
+    <.field
+      field={@form[:expires]}
+      type="number"
+      label={gettext("Expires")}
+      suffix={gettext("minutes")}
+      disabled={not @enabled}
+      required
     />
     <.sms_preview preview={@preview} />
     <.a
@@ -28,17 +35,6 @@
       label={gettext("Learn about SMS OTP")}
       styled
       link_type="live_redirect"
-    />
-    <.form_separator />
-    <.form_header title="Advanced" />
-    <.field
-      field={@form[:expires]}
-      type="number"
-      label={gettext("Expires after")}
-      suffix={gettext("minutes")}
-      disabled={not @enabled}
-      required
-      required_asterix={false}
     />
     <.form_separator />
     <.form_header title="API - Send SMS OTP" />

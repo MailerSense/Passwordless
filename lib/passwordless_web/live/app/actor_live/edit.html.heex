@@ -35,6 +35,18 @@
     <div class="flex flex-col gap-6">
       <.box padded>
         <.field type="checkbox" field={@form[:active]} />
+        <.p>
+          <%= if @user_active do %>
+            {gettext("User is active and can authenticate with the %{app}.",
+              app: user_app_name(@current_user)
+            )}
+          <% else %>
+            {gettext("User is locked and cannot authenticate with the %{app}.",
+              app: user_app_name(@current_user)
+            )}
+          <% end %>
+        </.p>
+        <.form_separator />
         <.field
           field={@form[:user_id]}
           label={gettext("User ID")}
@@ -78,7 +90,7 @@
             code={@user_properties}
             disabled={not @user_active}
           />
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3 flex-wrap">
             <.a
               label={gettext("Edit properties")}
               styled

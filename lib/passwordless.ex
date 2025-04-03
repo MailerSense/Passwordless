@@ -25,7 +25,6 @@ defmodule Passwordless do
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
   alias Passwordless.Rule
-  alias PasswordlessWeb.Email, as: EmailWeb
 
   @authenticators [
     email: Authenticators.Email,
@@ -178,9 +177,9 @@ defmodule Passwordless do
     DomainRecord.order(Repo.preload(domain, :records).records)
   end
 
-  def create_domain(%App{} = app, attrs \\ %{}) do
+  def create_email_domain(%App{} = app, attrs \\ %{}) do
     app
-    |> Ecto.build_assoc(:domain)
+    |> Ecto.build_assoc(:email_domain)
     |> Domain.changeset(attrs)
     |> Repo.insert()
   end
@@ -213,7 +212,7 @@ defmodule Passwordless do
   def replace_domain(%App{} = app, %Domain{} = current_domain, attrs, records) do
     Repo.transact(fn ->
       with {:ok, _deleted} <- delete_domain(current_domain),
-           {:ok, domain} <- create_domain(app, attrs),
+           {:ok, domain} <- create_email_domain(app, attrs),
            {:ok, records} <-
              Enum.reduce(records, {:ok, []}, fn record, {:ok, acc} ->
                case create_domain_record(domain, record) do
@@ -270,13 +269,13 @@ defmodule Passwordless do
     end
   end
 
-  def get_app_email_domain(%App{} = app) do
+  def get_email_domain(%App{} = app) do
     case Repo.preload(app, :email_domain) do
       %App{email_domain: %Domain{purpose: :email} = domain} ->
         {:ok, domain}
 
       _ ->
-        case Repo.get_by(Domain, name: EmailWeb.challenge_email_domain()) do
+        case Repo.one(Domain.get_by_tags([:system, :default])) do
           %Domain{purpose: :email} = domain ->
             if Domain.is_system?(domain),
               do: {:ok, domain},
@@ -288,8 +287,8 @@ defmodule Passwordless do
     end
   end
 
-  def get_app_email_domain!(%App{} = app) do
-    {:ok, domain} = get_app_email_domain(app)
+  def get_email_domain!(%App{} = app) do
+    {:ok, domain} = get_email_domain(app)
     domain
   end
 

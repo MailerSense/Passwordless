@@ -66,7 +66,7 @@ defmodule Passwordless.Authenticators.Email do
   defp validate_string(changeset, field) do
     changeset
     |> ChangesetExt.ensure_trimmed(field)
-    |> validate_length(field, min: 1, max: 255)
+    |> validate_length(field, min: 1, max: 100)
   end
 
   defp validate_sender(changeset, opts \\ []) do

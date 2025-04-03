@@ -48,10 +48,10 @@ defmodule Passwordless.Organizations.OrgSeeder do
     Logger.warning(auth_token)
 
     {:ok, domain} =
-      Passwordless.create_domain(app, %{
+      Passwordless.create_email_domain(app, %{
         name: "auth.passwordlesstools.com",
         kind: :sub_domain,
-        tags: [:system]
+        tags: [:system, :default]
       })
 
     {:ok, magic_link_template} = Passwordless.seed_email_template(app, :magic_link_sign_in, :en)
@@ -62,14 +62,12 @@ defmodule Passwordless.Organizations.OrgSeeder do
         magic_link: %{
           sender: "verify",
           sender_name: app.name,
-          domain_id: domain.id,
           email_template_id: magic_link_template.id,
           redirect_urls: [%{url: app.website}]
         },
         email: %{
           sender: "verify",
           sender_name: app.name,
-          domain_id: domain.id,
           email_template_id: email_otp_template.id
         },
         totp: %{

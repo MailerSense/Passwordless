@@ -68,6 +68,13 @@ defmodule Passwordless.Action do
   end
 
   @doc """
+  Get where actor is present.
+  """
+  def where_actor_is_present(query \\ __MODULE__) do
+    from q in query, where: not is_nil(q.actor_id)
+  end
+
+  @doc """
   Get by actor.
   """
   def get_by_actor(query \\ __MODULE__, %App{} = app, %Actor{} = actor) do
@@ -85,7 +92,7 @@ defmodule Passwordless.Action do
   Preload associations.
   """
   def preload_actor(query \\ __MODULE__) do
-    from q in query, preload: [:action_events, :challenge, actor: [:email, :phone]]
+    from q in query, preload: [:challenge, actor: [:email, :phone]]
   end
 
   @fields ~w(

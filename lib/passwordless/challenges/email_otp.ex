@@ -37,7 +37,7 @@ defmodule Passwordless.Challenges.EmailOTP do
       when state in [:started, :otp_sent] do
     otp_code = OTP.generate_code()
 
-    with {:ok, domain} <- Passwordless.get_app_email_domain(app),
+    with {:ok, domain} <- Passwordless.get_email_domain(app),
          {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email),
          {:ok, email_template} <- get_email_template(authenticator),
          {:ok, email_template_version} <- get_email_template_version(actor, email_template),

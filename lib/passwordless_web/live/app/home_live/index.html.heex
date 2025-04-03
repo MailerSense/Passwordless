@@ -85,6 +85,7 @@
 
       <:col :let={action} label={gettext("User")} field={:user}>
         <.a
+          :if={Util.present?(action.actor)}
           to={~p"/app/users/#{action.actor}/edit"}
           label={Actor.handle(action.actor)}
           styled

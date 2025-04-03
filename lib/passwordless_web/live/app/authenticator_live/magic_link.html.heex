@@ -19,7 +19,6 @@
         label={gettext("Sender")}
         disabled={not @enabled}
         required
-        required_asterix={false}
         wrapper_class="mb-0!"
       />
       <.field
@@ -28,7 +27,6 @@
         suffix={Domain.email_suffix(@domain)}
         disabled={not @enabled}
         required
-        required_asterix={false}
         wrapper_class="mb-0!"
       />
     </div>
@@ -70,16 +68,6 @@
       }
       disabled={not @enabled}
     />
-    <.alert :if={@email_tracking} color="info" class="mb-6" with_icon>
-      Email tracking works best with a custom domain.
-      <.a
-        to={~p"/app/domain"}
-        label={gettext("Set up tracking domain")}
-        styled
-        class="inline"
-        link_type="live_redirect"
-      />
-    </.alert>
     <.field
       type="checkbox"
       field={@form[:fingerprint_device]}
@@ -93,11 +81,10 @@
     <.field
       field={@form[:expires]}
       type="number"
-      label={gettext("Expires after")}
+      label={gettext("Expires")}
       suffix={gettext("minutes")}
       disabled={not @enabled}
       required
-      required_asterix={false}
     />
     <.form_separator />
     <.form_header title="API - Send magic link" />

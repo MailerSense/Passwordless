@@ -12,7 +12,7 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
     app = Repo.preload(app, [:email])
 
     email = app.email
-    domain = Passwordless.get_app_email_domain!(app)
+    domain = Passwordless.get_email_domain!(app)
     changeset = Passwordless.change_email(email)
 
     email_template = Repo.preload(email, :email_template).email_template

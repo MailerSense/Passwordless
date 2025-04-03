@@ -285,6 +285,24 @@ defmodule Database.QueryExt do
   end
 
   @doc """
+  PostgreSQL's `contains` operator
+  Use `contains/2` to check if the first argument contains the second
+  argument. This is useful for checking if a JSONB column contains a
+  specific key or value.
+
+  ```
+  from(posts in "posts",
+  where: contains(posts.data, ^"key"))
+  ```
+
+  """
+  defmacro contains(left, right) do
+    quote do
+      fragment("? @> ?", unquote(left), unquote(right))
+    end
+  end
+
+  @doc """
   PostgreSQL's `between` predicate
 
   Use `between/3` to perform a range test for the first argument against the
