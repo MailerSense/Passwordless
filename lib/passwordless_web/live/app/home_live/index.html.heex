@@ -37,37 +37,49 @@
       </div>
     </.box>
     <.box card>
-      <.form_header title={gettext("API keys")} no_margin />
+      <.form_header title={gettext("Installation")} no_margin />
+      <.alert color="info" with_icon>
+        The following code sample contains your App ID and App Secret.
+      </.alert>
+      <.code_block
+        language={:typescript}
+        code={
+          ~s"""
+          import { Passwordless } from '@passwordless/tools';
+
+          Passwordless.init({
+            appId: '#{@current_app.id}',
+            appSecret: '**********', // ⚠️ Never expose this in frontend code!
+            defaultRules: [
+              {
+                if: { last_authenticated_within: '15m' },
+                allow: true
+              },
+              {
+                challenge: ['email_otp', 'magic_link']
+              }
+            ]
+          });
+          """
+        }
+      />
       <.p>
-        {gettext(
-          "Embed Passwordless in your frontend and use the API to manage users and actions."
-        )}
+        Use the App ID to embed the login & authentication guards in your frontend. Never publish the App Secret, use it only when calling the API from your backend. If your secret is compromised, you can regenerate it at any time.
       </.p>
-      <div>
-        <.field
-          name="test"
-          value={@current_app.id}
-          label="App ID"
-          readonly
-          copyable={true}
-          class="font-mono"
+      <div class="flex items-center gap-3 flex-wrap">
+        <.a
+          label={gettext("Read documentation")}
+          to={~p"/app/embed/install"}
+          styled
+          link_type="live_redirect"
         />
-        <.field
-          name="test2"
-          value="lololololo"
-          label="App Secret"
-          type="password"
-          readonly
-          viewable={true}
-          class="font-mono"
+        <.a
+          label={gettext("Reveal App Secret")}
+          to={~p"/app/embed/install"}
+          styled
+          link_type="live_redirect"
         />
       </div>
-      <.a
-        label={gettext("Integrate our API")}
-        to={~p"/app/embed/install"}
-        styled
-        link_type="live_redirect"
-      />
     </.box>
 
     <.stream_table

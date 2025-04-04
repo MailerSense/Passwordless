@@ -279,47 +279,50 @@
           />
         </:actions>
       </.simple_table>
-      <.form_separator no_margin />
-      <.p class="text-slate-600 dark:text-slate-300">
-        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
-      </.p>
-      <.data_table id="actions" meta={@meta} title={gettext("Actions")} items={@actions}>
-        <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-        <:col :let={action} label={gettext("Action")} field={:name}>
-          {Phoenix.Naming.humanize(Macro.underscore(action.name))}
-        </:col>
-        <:col :let={action} label={gettext("Region")} field={:location}>
-          <div class="flex items-center gap-2">
-            <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
-          </div>
-        </:col>
-        <:col :let={action} label={gettext("Elapsed")} field={:location}>
-          <div class="flex items-center gap-2">
-            <.icon name="remix-timer-2-line" class="w-5 h-5" />
-            {Util.elapsed(action.inserted_at, action.updated_at)}
-          </div>
-        </:col>
-        <:col :let={action} label={gettext("State")} field={:state}>
-          <% {badge_label, badge_color} = action_state_badge(action) %>
-          <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-        </:col>
-        <:col :let={action} label={gettext("When")} field={:inserted_at}>
-          {Timex.from_now(action.inserted_at)}
-        </:col>
-        <:col actions></:col>
-        <:actions :let={action}>
-          <.icon_button
-            to={~p"/app/home/#{action}/view"}
-            size="sm"
-            icon="custom-edit"
-            color="light"
-            title={gettext("Edit")}
-            link_type="live_patch"
-          />
-        </:actions>
-      </.data_table>
     </div>
   </.form>
+
+  <div class="flex flex-col gap-6">
+    <.form_separator no_margin />
+    <.p class="text-slate-600 dark:text-slate-300">
+      Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
+    </.p>
+    <.data_table id="actions" meta={@meta} title={gettext("Actions")} items={@actions}>
+      <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+      <:col :let={action} label={gettext("Action")} field={:name}>
+        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+      </:col>
+      <:col :let={action} label={gettext("Region")} field={:location}>
+        <div class="flex items-center gap-2">
+          <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
+        </div>
+      </:col>
+      <:col :let={action} label={gettext("Elapsed")} field={:location}>
+        <div class="flex items-center gap-2">
+          <.icon name="remix-timer-2-line" class="w-5 h-5" />
+          {Util.elapsed(action.inserted_at, action.updated_at)}
+        </div>
+      </:col>
+      <:col :let={action} label={gettext("State")} field={:state}>
+        <% {badge_label, badge_color} = action_state_badge(action) %>
+        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+      </:col>
+      <:col :let={action} label={gettext("When")} field={:inserted_at}>
+        {Timex.from_now(action.inserted_at)}
+      </:col>
+      <:col actions></:col>
+      <:actions :let={action}>
+        <.icon_button
+          to={~p"/app/home/#{action}/view"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.data_table>
+  </div>
 </.layout>
 
 <%= case @live_action do %>

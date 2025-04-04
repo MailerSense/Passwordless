@@ -86,7 +86,7 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :sms,
         label: "SMS",
-        icon: "remix-message-line",
+        icon: "remix-message-2-line",
         path: ~p"/app/authenticators/sms",
         link_type: "live_patch"
       },
@@ -291,8 +291,6 @@ defmodule PasswordlessWeb.Helpers do
 
   def user_impersonator_name(%User{current_impersonator: %User{} = user}), do: user_name(user)
   def user_impersonator_name(_), do: nil
-
-  def admin?(%User{}), do: false
 
   def format_date_time(date, format \\ "%d %B %Y, %H:%M")
   def format_date_time(nil, _format), do: ""

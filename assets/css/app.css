@@ -1,6 +1,6 @@
 @import "tailwindcss" source("../..");
 @import "tippy.js/dist/tippy.css";
-@import "highlight.js/styles/monokai.css";
+@import "highlight.js/styles/shades-of-purple.css";
 
 @plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/forms";
