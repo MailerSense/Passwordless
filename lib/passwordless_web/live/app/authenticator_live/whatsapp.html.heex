@@ -12,24 +12,28 @@
       WhatsApp OTP is a method that sends a one-time password to the user's phone number via WhatsApp. The user can then use this password to sign in. The password is valid for a limited time and can only be used once.
     </.p>
     <.form_separator />
-    <.field
-      field={@form[:expires]}
-      type="number"
-      label={gettext("Expires")}
-      suffix={gettext("minutes")}
-      disabled={not @enabled}
-      required
-    />
-    <.field
-      field={@form[:language]}
-      type="select"
-      options={@languages}
-      icon_class="pc-select-input__flag"
-      icon_mapping={@flag_mapping}
-      disabled={not @enabled}
-      required
-      required_asterix={false}
-    />
+    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+      <.field
+        field={@form[:language]}
+        type="select"
+        options={@languages}
+        icon_class="pc-select-input__flag"
+        icon_mapping={@flag_mapping}
+        disabled={not @enabled}
+        required
+        required_asterix={false}
+        wrapper_class="mb-0!"
+      />
+      <.field
+        field={@form[:expires]}
+        type="number"
+        label={gettext("Expires")}
+        suffix={gettext("minutes")}
+        disabled={not @enabled}
+        required
+        wrapper_class="mb-0!"
+      />
+    </div>
     <.sms_preview preview={@preview} />
     <div class="flex items-center gap-3 flex-wrap">
       <.a
