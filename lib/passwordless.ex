@@ -277,7 +277,7 @@ defmodule Passwordless do
       _ ->
         case Repo.one(Domain.get_by_tags([:system, :default])) do
           %Domain{purpose: :email} = domain ->
-            if Domain.is_system?(domain),
+            if Domain.system?(domain),
               do: {:ok, domain},
               else: {:error, :system_domain_not_found}
 

@@ -306,7 +306,7 @@ defmodule Util do
 
   def cast_property_map(map) when is_map(map) do
     map
-    |> Enum.filter(fn {k, v} -> is_binary(k) and is_simple_type(v) end)
+    |> Enum.filter(fn {k, v} -> is_binary(k) and simple_type?(v) end)
     |> Map.new(fn {k, v} -> {k, cast_simple_property(v)} end)
   end
 
@@ -317,17 +317,17 @@ defmodule Util do
   def cast_simple_property(value), do: value
 
   def validate_property_map(map) when is_map(map) do
-    Enum.all?(map, fn {k, v} -> (is_binary(k) or is_atom(k)) and is_simple_type(v) end)
+    Enum.all?(map, fn {k, v} -> (is_binary(k) or is_atom(k)) and simple_type?(v) end)
   end
 
   @max_string_length 1024
 
-  def is_simple_type(v) when is_integer(v) or is_float(v) or is_boolean(v), do: true
-  def is_simple_type(v) when is_binary(v), do: String.length(v) <= @max_string_length
+  def simple_type?(v) when is_integer(v) or is_float(v) or is_boolean(v), do: true
+  def simple_type?(v) when is_binary(v), do: String.length(v) <= @max_string_length
 
-  def is_simple_type(v) when is_list(v), do: Enum.filter(v, fn v -> not is_list(v) and is_simple_type(v) end)
+  def simple_type?(v) when is_list(v), do: Enum.filter(v, fn v -> not is_list(v) and simple_type?(v) end)
 
-  def is_simple_type(_), do: false
+  def simple_type?(_), do: false
 
   @doc """
   Use for when you want to combine all form errors into one message (maybe to display in a flash)

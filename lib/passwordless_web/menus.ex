@@ -49,7 +49,7 @@ defmodule PasswordlessWeb.Menus do
   def section_menu_items(%User{} = current_user) do
     sections =
       [:app, :knowledge]
-      |> append_if(:admin, User.is_admin?(current_user))
+      |> append_if(:admin, User.admin?(current_user))
       |> append_if(:dev, Passwordless.config(:env) == :dev)
 
     build_menu(sections, current_user)

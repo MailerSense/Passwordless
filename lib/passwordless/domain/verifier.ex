@@ -133,7 +133,7 @@ defmodule Passwordless.Domain.Verifier do
 
   defp apply_state_transition(%Domain{state: state, records: records} = domain)
        when state in ~w(aws_success all_records_verified some_records_missing)a and is_list(records) do
-    all_verified? = Enum.all?(records, &DomainRecord.is_verified?/1)
+    all_verified? = Enum.all?(records, &DomainRecord.verified?/1)
 
     changes =
       cond do

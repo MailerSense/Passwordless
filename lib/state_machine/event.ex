@@ -39,8 +39,8 @@ defmodule StateMachine.Event do
   of the event return `true`, then it scans transitions for the matching one. Match is determined
   by the source state and passing of all guards as well.
   """
-  @spec is_allowed?(Context.t(model), t(model) | atom) :: boolean when model: var
-  def is_allowed?(ctx, event) do
+  @spec allowed?(Context.t(model), t(model) | atom) :: boolean when model: var
+  def allowed?(ctx, event) do
     !is_nil(find_transition(ctx, event))
   end
 
@@ -78,7 +78,7 @@ defmodule StateMachine.Event do
       state = ctx.definition.state_getter.(ctx)
 
       Enum.find(event.transitions, fn transition ->
-        transition.from == state && Transition.is_allowed?(ctx, transition)
+        transition.from == state && Transition.allowed?(ctx, transition)
       end)
     end
   end

@@ -28,7 +28,7 @@ defmodule Passwordless.AWSClient do
         {:ok, %{status_code: status, body: body, headers: headers}}
 
       {:ok, %Finch.Response{status: status} = resp} = result when status in 400..499 ->
-        if is_retryable?(resp) do
+        if retryable?(resp) do
           do_request(
             method,
             url,
@@ -56,10 +56,10 @@ defmodule Passwordless.AWSClient do
     end
   end
 
-  defp is_retryable?(%Finch.Response{body: body}) do
+  defp retryable?(%Finch.Response{body: body}) do
     case Jason.decode(body) do
       {:ok, %{"__type" => error_type}} when is_binary(error_type) ->
-        is_error_retryable?(error_type)
+        error_retryable?(error_type)
 
       _ ->
         false
@@ -81,7 +81,7 @@ defmodule Passwordless.AWSClient do
     SlowDown
   )
 
-  defp is_error_retryable?(error_type) when is_binary(error_type) do
+  defp error_retryable?(error_type) when is_binary(error_type) do
     error_type
     |> String.split("#")
     |> case do
@@ -91,7 +91,7 @@ defmodule Passwordless.AWSClient do
     end
   end
 
-  defp is_error_retryable?(_), do: false
+  defp error_retryable?(_), do: false
 
   defp attempt_again?(attempt, result) when attempt > 0 do
     if attempt >= @max_attempts do

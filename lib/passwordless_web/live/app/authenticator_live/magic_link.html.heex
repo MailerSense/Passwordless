@@ -30,7 +30,7 @@
         wrapper_class="mb-0!"
       />
     </div>
-    <.alert :if={Domain.is_system?(@domain)} color="info" class="mb-6" with_icon>
+    <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
       Do you want to send emails from your own domain?
       <.a
         to={~p"/app/domain"}

@@ -216,8 +216,8 @@ defmodule PasswordlessWeb.UserAuth do
       {%User{} = user, %Org{} = org, %Membership{} = membership} ->
         if User.active?(user) and
              User.confirmed?(user) and
-             Org.is_admin?(org) and
-             Membership.is_or_higher?(membership, :admin) do
+             Org.admin?(org) and
+             Membership.at_least?(membership, :admin) do
           conn
         else
           conn

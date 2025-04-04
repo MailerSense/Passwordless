@@ -81,7 +81,7 @@ defmodule Passwordless.ActionEvent do
   defp validate_ip_address(%Ecto.Changeset{valid?: true} = changeset) do
     with {_, raw_ip} <- fetch_field(changeset, :ip_address),
          {:ok, ip_address} <- InetCidr.parse_address(raw_ip),
-         true <- is_public_ip(ip_address) do
+         true <- public_ip?(ip_address) do
       put_change(changeset, :ip_address, to_string(:inet.ntoa(ip_address)))
     else
       _ -> delete_change(changeset, :ip_address)
@@ -96,7 +96,7 @@ defmodule Passwordless.ActionEvent do
     |> validate_length(:user_agent, min: 1, max: 1024)
   end
 
-  defp is_public_ip({_, _, _, _} = ip_address) do
+  defp public_ip?({_, _, _, _} = ip_address) do
     case ip_address do
       {10, _, _, _} -> false
       {192, 168, _, _} -> false
@@ -107,7 +107,7 @@ defmodule Passwordless.ActionEvent do
     end
   end
 
-  defp is_public_ip(_ip_address), do: true
+  defp public_ip?(_ip_address), do: true
 
   @metadata_fields ~w(
     before

@@ -95,7 +95,7 @@ defmodule PasswordlessWeb.Plugs.SetLocale do
   defp maybe_extract_locale(request_path) when is_binary(request_path) do
     case String.split(request_path, "/") do
       [_, maybe_locale | _] ->
-        if is_locale?(maybe_locale), do: maybe_locale
+        if locale?(maybe_locale), do: maybe_locale
 
       _ ->
         nil
@@ -104,7 +104,7 @@ defmodule PasswordlessWeb.Plugs.SetLocale do
 
   defp maybe_extract_locale(_), do: nil
 
-  defp is_locale?(maybe_locale), do: Regex.match?(~r/^[a-z]{2}(-[a-z]{2})?$/, maybe_locale)
+  defp locale?(maybe_locale), do: Regex.match?(~r/^[a-z]{2}(-[a-z]{2})?$/, maybe_locale)
 
   defp extract_accept_language(conn) do
     case Plug.Conn.get_req_header(conn, "accept-language") do

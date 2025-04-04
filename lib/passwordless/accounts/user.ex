@@ -52,14 +52,14 @@ defmodule Passwordless.Accounts.User do
 
   def states, do: @states
 
-  def is_admin?(%__MODULE__{current_org: %Org{} = org, current_membership: %Membership{} = membership} = user) do
+  def admin?(%__MODULE__{current_org: %Org{} = org, current_membership: %Membership{} = membership} = user) do
     active?(user) and
       confirmed?(user) and
-      Org.is_admin?(org) and
-      Membership.is_or_higher?(membership, :admin)
+      Org.admin?(org) and
+      Membership.at_least?(membership, :admin)
   end
 
-  def is_admin?(%__MODULE__{}), do: false
+  def admin?(%__MODULE__{}), do: false
 
   @fields ~w(
     name

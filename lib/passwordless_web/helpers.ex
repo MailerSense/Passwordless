@@ -328,8 +328,8 @@ defmodule PasswordlessWeb.Helpers do
 
   def user_added(%Membership{}), do: ""
 
-  def is_admin?(%User{} = user), do: User.is_admin?(user)
-  def is_admin?(_user), do: false
+  def admin?(%User{} = user), do: User.admin?(user)
+  def admin?(_user), do: false
 
   @common_colors ~w(blue indigo purple fuchsia pink cyan teal sky)
 

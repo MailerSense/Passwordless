@@ -111,7 +111,7 @@ defmodule Passwordless.Organizations.Membership do
   def is?(%__MODULE__{role: role}, role) when is_atom(role), do: true
   def is?(%__MODULE__{}, _role), do: false
 
-  def is_or_higher?(%__MODULE__{role: role}, target_role) when is_atom(role) and is_atom(target_role) do
+  def at_least?(%__MODULE__{role: role}, target_role) when is_atom(role) and is_atom(target_role) do
     roles = Enum.with_index(Roles.org_roles())
     precedences = for r <- [role, target_role], do: Enum.find(roles, fn {m, _} -> m == r end)
 
@@ -121,7 +121,7 @@ defmodule Passwordless.Organizations.Membership do
     end
   end
 
-  def is_or_higher?(%__MODULE__{}, _role), do: false
+  def at_least?(%__MODULE__{}, _role), do: false
 
   def access_level(%__MODULE__{role: role}) when is_atom(role) do
     roles = Enum.with_index(Roles.org_roles())

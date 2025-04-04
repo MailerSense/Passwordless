@@ -59,13 +59,13 @@ defmodule Passwordless.DomainRecord do
   @doc """
   Check if an domain record is verified.
   """
-  def is_verified?(%__MODULE__{verified: verified}), do: verified
+  def verified?(%__MODULE__{verified: verified}), do: verified
 
   @doc """
   Check if an identity record is a DMARC record.
   """
-  def is_dmarc?(%__MODULE__{kind: :txt, value: value}), do: String.starts_with?(value, "v=DMARC1")
-  def is_dmarc?(%__MODULE__{}), do: false
+  def dmarc?(%__MODULE__{kind: :txt, value: value}), do: String.starts_with?(value, "v=DMARC1")
+  def dmarc?(%__MODULE__{}), do: false
 
   @doc """
   Get the DNS domain name for an domain record.

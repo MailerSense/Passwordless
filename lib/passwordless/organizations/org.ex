@@ -40,7 +40,7 @@ defmodule Passwordless.Organizations.Org do
     soft_delete_timestamp()
   end
 
-  def is_admin?(%__MODULE__{tags: tags}) do
+  def admin?(%__MODULE__{tags: tags}) do
     Enum.member?(tags, :admin)
   end
 

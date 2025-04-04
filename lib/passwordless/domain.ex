@@ -79,7 +79,7 @@ defmodule Passwordless.Domain do
   @doc """
   Check if the domain is a system domain.
   """
-  def is_system?(%__MODULE__{tags: tags}) do
+  def system?(%__MODULE__{tags: tags}) do
     Enum.member?(tags, :system)
   end
 
