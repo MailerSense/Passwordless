@@ -257,7 +257,7 @@ defmodule Passwordless do
     |> Map.from_struct()
     |> Map.take(names)
     |> Map.reject(fn {_key, mod} -> Util.blank?(mod) end)
-    |> Enum.sort_by(&Map.get(order, &1))
+    |> Enum.sort_by(fn {key, _mod} -> Map.get(order, key) end)
   end
 
   def fetch_authenticator(%App{} = app, key) do

@@ -103,15 +103,13 @@ defmodule PasswordlessWeb.Components.DataTable do
       phx-submit="update_filters"
       {form_assigns(@form_target)}
     >
-      <div class="flex items-center justify-between gap-3 mb-6">
+      <div :if={@search_field || @switch_field} class="flex items-center justify-between gap-3 mb-6">
         <.table_search_bar
-          :if={@search_field || @switch_field}
           meta={@meta}
           form={filter_form}
           switch_field={@switch_field}
           search_field={@search_field}
           switch_items={@switch_items}
-          actions={@header_actions}
         />
 
         {render_slot(@header_actions)}
@@ -246,13 +244,7 @@ defmodule PasswordlessWeb.Components.DataTable do
       @class,
       unless(@finished, do: "pb-[calc(200vh)]")
     ]}>
-      <.table_header
-        :if={@title}
-        badge={@badge}
-        title={@title}
-        subtitle={@subtitle}
-        actions={@header_actions}
-      />
+      <.table_header :if={@title} badge={@badge} title={@title} subtitle={@subtitle} />
       <.table>
         <thead :if={@head} class="pc-table__thead-striped">
           <.tr>
@@ -448,7 +440,6 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   attr :form, :map, default: nil
   attr :meta, Flop.Meta, required: true
-  attr :title, :string, default: nil
   attr :switch_field, :atom, default: nil
   attr :search_field, :atom, default: nil
   attr :switch_items, :list, default: []
