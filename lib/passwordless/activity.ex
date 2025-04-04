@@ -72,7 +72,8 @@ defmodule Passwordless.Activity do
   end
 
   defp topic_name(%Log{org_id: org_id}) when is_binary(org_id), do: "activity:#{org_id}"
-  defp event_name(%Log{action: action}), do: action
+  defp topic_name(%Log{}), do: "activity"
+  defp event_name(%Log{action: action}), do: Atom.to_string(action)
 
   @field_mapping [
     {Org, :org, :org_id},
