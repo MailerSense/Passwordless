@@ -90,9 +90,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
             data-tippy-content={gettext("Toggle Sidebar")}
             data-tippy-placement="right"
             @click.stop="sidebarOpen = !sidebarOpen"
-            aria-label={gettext("Collapse Sidebar")}
             aria-controls="sidebar"
-            x-bind:aria-expanded="sidebarOpen"
           >
             <.icon
               name="custom-board-document"

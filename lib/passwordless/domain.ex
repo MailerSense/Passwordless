@@ -29,7 +29,6 @@ defmodule Passwordless.Domain do
     under_review
   )a
   @states @aws_states ++ @dns_states ++ @other_states
-
   @purposes ~w(email tracking)a
   @tags ~w(system default)a
 

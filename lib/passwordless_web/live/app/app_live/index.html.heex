@@ -1,6 +1,4 @@
 <.tabbed_settings_layout current_user={@current_user} current_page={:app_settings}>
-  <:action></:action>
-
   <.form id="edit-app-form" for={@form} phx-submit="save" phx-change="validate">
     <.image_input
       upload={@uploads.logo}

@@ -780,9 +780,9 @@ defmodule PasswordlessWeb.Components.Form do
 
   def form_header(assigns) do
     ~H"""
-    <h3 class={["pc-form-header", unless(@no_margin, do: "mb-6"), @class]} {@rest}>
+    <h1 class={["pc-form-header", unless(@no_margin, do: "mb-6"), @class]} {@rest}>
       {@title}
-    </h3>
+    </h1>
     """
   end
 

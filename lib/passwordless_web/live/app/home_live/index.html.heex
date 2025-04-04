@@ -64,7 +64,7 @@
         }
       />
       <.p>
-        Use the App ID to embed the login & authentication guards in your frontend. Never publish the App Secret, use it only when calling the API from your backend. If your secret is compromised, you can regenerate it at any time.
+        Get Passwordless NodeJS client library and start authenticating users in your app today. The code sample above shows a basic setup, you can customize it to fit your needs. Read our documentation to learn how to guard user actions and apply powerful workflow rules.
       </.p>
       <div class="flex items-center gap-3 flex-wrap">
         <.a
@@ -110,11 +110,10 @@
         <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
 
-      <:col :let={action} field={:flow}>
-        <% %{label: label, icon: icon} = flow_details(action) %>
+      <:col :let={action} label={gettext("Elapsed")} field={:elapsed}>
         <div class="flex items-center gap-2">
-          <.icon name={icon} class="w-4 h-4" />
-          {label}
+          <.icon name="remix-timer-2-line" class="w-5 h-5" />
+          {Util.elapsed(action.inserted_at, action.updated_at)}
         </div>
       </:col>
 

@@ -13,15 +13,6 @@
     </.p>
     <.form_separator />
     <.field
-      field={@form[:language]}
-      type="select"
-      options={@languages}
-      icon_class="pc-select-input__flag"
-      icon_mapping={@flag_mapping}
-      disabled={not @enabled}
-      required
-    />
-    <.field
       field={@form[:expires]}
       type="number"
       label={gettext("Expires")}
@@ -29,13 +20,31 @@
       disabled={not @enabled}
       required
     />
-    <.sms_preview preview={@preview} />
-    <.a
-      to={~p"/app/authenticators/whatsapp?whatsapp_learn=true"}
-      label={gettext("Learn about WhatsApp OTP")}
-      styled
-      link_type="live_redirect"
+    <.field
+      field={@form[:language]}
+      type="select"
+      options={@languages}
+      icon_class="pc-select-input__flag"
+      icon_mapping={@flag_mapping}
+      disabled={not @enabled}
+      required
+      required_asterix={false}
     />
+    <.sms_preview preview={@preview} />
+    <div class="flex items-center gap-3 flex-wrap">
+      <.a
+        to={~p"/app/authenticators/sms?sms_learn=true"}
+        label={gettext("Review pricing")}
+        styled
+        link_type="live_redirect"
+      />
+      <.a
+        to={~p"/app/authenticators/sms?sms_learn=true"}
+        label={gettext("Read documentation")}
+        styled
+        link_type="live_redirect"
+      />
+    </div>
     <.form_separator />
     <.form_header title="API - Send whatsapp OTP" />
     <.code_block
