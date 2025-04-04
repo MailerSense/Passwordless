@@ -38,7 +38,7 @@ defmodule PasswordlessWeb.Auth.ResetPasswordLive do
   def handle_event("reset_password", %{"user" => user_params}, socket) do
     case Accounts.reset_user_password(socket.assigns.user, user_params) do
       {:ok, user} ->
-        Activity.log_async(:user, :"user.reset_password", %{user: user})
+        Activity.log_async(:"user.reset_password", %{user: user})
 
         {:noreply,
          socket

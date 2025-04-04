@@ -18,7 +18,7 @@ defmodule PasswordlessWeb.UserConfirmationController do
   def update(conn, %{"token" => token}) do
     case Accounts.confirm_user_by_token(token) do
       {:ok, user} ->
-        Activity.log_async(:user, :"user.confirm", %{user: user})
+        Activity.log_async(:"user.confirm", %{user: user})
 
         Organizations.sync_user_invitations(user)
 

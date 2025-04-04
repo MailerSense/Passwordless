@@ -62,7 +62,7 @@ defmodule Passwordless.Billing.Providers.Stripe.WebhookHandler do
     Repo.transact(fn ->
       with %Subscription{} = subscription <- Billing.get_subscription_by_provider_id(object.id),
            {:ok, _log} <-
-             Activity.log(:billing, :"subscription.updated", Map.put(payload, :billing_subscription, subscription)),
+             Activity.log(:"subscription.updated", Map.put(payload, :billing_subscription, subscription)),
            do: {:ok, subscription}
     end)
   end

@@ -34,7 +34,7 @@ defmodule PasswordlessWeb.UserSettingsController do
   def confirm_email(conn, %{"token" => token}, %User{} = user) do
     case Accounts.update_user_email(user, token) do
       {:ok, user} ->
-        Activity.log_async(:user, :"user.confirm_email", %{user: user})
+        Activity.log_async(:"user.confirm_email", %{user: user})
 
         Organizations.sync_user_invitations(user)
 

@@ -39,6 +39,13 @@ defmodule PasswordlessWeb.Org.TeamLive.FormComponent do
   def handle_event("save", %{"membership" => params}, %{assigns: %{membership: membership}} = socket) do
     case Organizations.update_membership(membership, params) do
       {:ok, membership} ->
+        Passwordless.Activity.log(:"org.update_member", %{
+          org: socket.assigns.current_org,
+          user: socket.assigns.current_user,
+          role: membership.role,
+          target_user_id: membership.user_id
+        })
+
         {:noreply,
          socket
          |> put_toast(:info, gettext("Member has been updated."), title: gettext("Success"))

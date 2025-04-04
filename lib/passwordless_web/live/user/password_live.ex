@@ -67,7 +67,7 @@ defmodule PasswordlessWeb.User.PasswordLive do
 
     Accounts.deliver_user_reset_password_instructions(user, &url(~p"/auth/reset-password/#{&1}"))
 
-    Activity.log_async(:user, :"user.request_password_reset", %{user: user, email: user.email})
+    Activity.log_async(:"user.request_password_reset", %{user: user, email: user.email})
 
     {:noreply,
      socket

@@ -20,7 +20,7 @@ defmodule PasswordlessWeb.User.InvitationsLive do
   def handle_event("accept_invitation", %{"id" => id}, socket) do
     membership = Organizations.accept_invitation!(socket.assigns.current_user, id)
 
-    Activity.log(:org, :"org.accept_invitation", %{
+    Activity.log(:"org.accept_invitation", %{
       user: socket.assigns.current_user,
       org_id: membership.org_id,
       membership_id: membership.id
@@ -36,7 +36,7 @@ defmodule PasswordlessWeb.User.InvitationsLive do
   def handle_event("reject_invitation", %{"id" => id}, socket) do
     invitation = Organizations.reject_invitation!(socket.assigns.current_user, id)
 
-    Activity.log(:org, :"org.reject_invitation", %{
+    Activity.log(:"org.reject_invitation", %{
       user: socket.assigns.current_user,
       org_id: invitation.org_id
     })

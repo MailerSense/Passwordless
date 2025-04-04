@@ -423,7 +423,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:activity_logs, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :action, :string, null: false
-      add :category, :string, null: false
       add :metadata, :map
       add :happened_at, :utc_datetime_usec, null: false
 
@@ -451,7 +450,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create index(:activity_logs, [:org_id])
     create index(:activity_logs, [:org_id, :action])
-    create index(:activity_logs, [:org_id, :category])
     create index(:activity_logs, [:user_id])
     create index(:activity_logs, [:auth_token_id])
     create index(:activity_logs, [:target_user_id])

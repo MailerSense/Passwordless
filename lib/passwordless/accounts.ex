@@ -229,7 +229,7 @@ defmodule Passwordless.Accounts do
       |> User.state_changeset(%{state: :active})
       |> Repo.update!()
 
-    Activity.log_async(:user, :"user.activate", %{user: user})
+    Activity.log_async(:"user.activate", %{user: user})
 
     user
   end
@@ -242,7 +242,7 @@ defmodule Passwordless.Accounts do
       |> User.state_changeset(%{state: :active})
       |> Repo.update()
 
-    Activity.log_async(:user, :"user.unlock", %{user: user})
+    Activity.log_async(:"user.unlock", %{user: user})
 
     user
   end
@@ -253,7 +253,7 @@ defmodule Passwordless.Accounts do
       |> User.state_changeset(%{state: :locked})
       |> Repo.update()
 
-    Activity.log_async(:user, :"user.lock", %{user: user})
+    Activity.log_async(:"user.lock", %{user: user})
 
     user
   end
