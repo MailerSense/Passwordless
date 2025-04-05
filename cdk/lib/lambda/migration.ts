@@ -88,16 +88,6 @@ export class Migration extends Construct {
 
     this.lambda.addToRolePolicy(
       new PolicyStatement({
-        actions: [
-          "secretsmanager:GetSecretValue",
-          "secretsmanager:DescribeSecret",
-        ],
-        resources: [generalSecret.secretArn],
-      }),
-    );
-
-    this.lambda.addToRolePolicy(
-      new PolicyStatement({
         actions: ["cloudformation:DescribeStacks"],
         resources: ["*"],
       }),
