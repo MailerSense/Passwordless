@@ -5,7 +5,13 @@ import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 
-import { Cluster } from "aws-cdk-lib/aws-ecs";
+import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
+import {
+  AmiHardwareType,
+  AsgCapacityProvider,
+  Cluster,
+  EcsOptimizedImage,
+} from "aws-cdk-lib/aws-ecs";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
@@ -103,20 +109,19 @@ export class PasswordlessTools extends cdk.Stack {
       containerInsights: true,
     });
 
-    /* 
     const capacityProviders = {
-      "t4g-micro-asg-capacity-provider": new AsgCapacityProvider(
+      "t4g-nano-asg-capacity-provider": new AsgCapacityProvider(
         this,
-        "t4g-micro-asg-capacity-provider",
+        "t4g-nano-asg-capacity-provider",
         {
           autoScalingGroup: new AutoScalingGroup(
             this,
-            "t4g-micro-autoscaling-group",
+            "t4g-nano-autoscaling-group",
             {
               vpc: vpc.vpc,
               instanceType: InstanceType.of(
                 InstanceClass.T4G,
-                InstanceSize.MICRO,
+                InstanceSize.NANO,
               ),
               machineImage: EcsOptimizedImage.amazonLinux2023(
                 AmiHardwareType.ARM,
@@ -135,6 +140,7 @@ export class PasswordlessTools extends cdk.Stack {
       cluster.addAsgCapacityProvider(capacityProvider);
     }
 
+    /* 
     const ioZone = PublicHostedZone.fromHostedZoneAttributes(
       this,
       "main-public-zone",
