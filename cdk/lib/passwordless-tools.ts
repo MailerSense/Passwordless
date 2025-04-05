@@ -47,8 +47,9 @@ export class PasswordlessTools extends cdk.Stack {
     const appName = "passwordless-tools";
     const clusterNamespaceRoot = "passwordless.tools.internal";
 
-    const vpc = new VPC(this, "main-vpc", {
-      name: "main-vpc",
+    const vpcName = `${env}-vpc`;
+    const vpc = new VPC(this, vpcName, {
+      name: vpcName,
       cidr: envLookup.cidr,
       cidrMask: 18,
       publicSubnet: "public",
