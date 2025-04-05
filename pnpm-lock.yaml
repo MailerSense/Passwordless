@@ -110,7 +110,7 @@ importers:
         version: 2.186.0(constructs@10.4.2)
       cdk-nag:
         specifier: ^2.35.59
-        version: 2.35.59(aws-cdk-lib@2.186.0(constructs@10.4.2))(constructs@10.4.2)
+        version: 2.35.64(aws-cdk-lib@2.186.0(constructs@10.4.2))(constructs@10.4.2)
       constructs:
         specifier: ^10.4.2
         version: 10.4.2
@@ -1065,8 +1065,8 @@ packages:
   caniuse-lite@1.0.30001707:
     resolution: {integrity: sha512-3qtRjw/HQSMlDWf+X79N206fepf4SOOU6SQLMaq/0KkZLmSjPxAkBOQQ+FxbHKfHmYLZFfdWsO3KA90ceHPSnw==}
 
-  cdk-nag@2.35.59:
-    resolution: {integrity: sha512-CtCvSSW3GzVoe/tliRCz2HgMANWEuIhA96UoKGU3TaxQv40jSVJdCsz0h9Bai92yEfjawWy7gw9I9JH5JPIqHQ==}
+  cdk-nag@2.35.64:
+    resolution: {integrity: sha512-loeoGL+3e3YMchG+YSvQ3v5ZexIzwIdFdgEow/r+K0uzs1Vw2ggcjHf3GDQYFoleosnDMUPTnnlJrZTT7n+GeA==}
     peerDependencies:
       aws-cdk-lib: ^2.156.0
       constructs: ^10.0.5
@@ -4228,7 +4228,7 @@ snapshots:
 
   caniuse-lite@1.0.30001707: {}
 
-  cdk-nag@2.35.59(aws-cdk-lib@2.186.0(constructs@10.4.2))(constructs@10.4.2):
+  cdk-nag@2.35.64(aws-cdk-lib@2.186.0(constructs@10.4.2))(constructs@10.4.2):
     dependencies:
       aws-cdk-lib: 2.186.0(constructs@10.4.2)
       constructs: 10.4.2
