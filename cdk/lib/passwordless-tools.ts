@@ -5,6 +5,7 @@ import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 
+import { Cluster } from "aws-cdk-lib/aws-ecs";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
@@ -96,13 +97,13 @@ export class PasswordlessTools extends cdk.Stack {
       removalPolicy,
     });
 
-    /* 
-    const cluster = new Cluster(this, "main-cluster", {
+    const cluster = new Cluster(this, `${env}-cluster`, {
       vpc: vpc.vpc,
       clusterName: `${appName}-cluster`,
       containerInsights: true,
     });
 
+    /* 
     const capacityProviders = {
       "t4g-micro-asg-capacity-provider": new AsgCapacityProvider(
         this,
