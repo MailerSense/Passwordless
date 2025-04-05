@@ -1,17 +1,18 @@
 import * as cdk from "aws-cdk-lib";
 import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
-import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
-import { RetentionDays } from "aws-cdk-lib/aws-logs";
-import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
-import { Construct } from "constructs";
-
 import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
+import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
 import {
   AmiHardwareType,
   AsgCapacityProvider,
   Cluster,
   EcsOptimizedImage,
 } from "aws-cdk-lib/aws-ecs";
+import { RetentionDays } from "aws-cdk-lib/aws-logs";
+import { PublicHostedZone } from "aws-cdk-lib/aws-route53";
+import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
+import { Construct } from "constructs";
+
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
@@ -140,25 +141,26 @@ export class PasswordlessTools extends cdk.Stack {
       cluster.addAsgCapacityProvider(capacityProvider);
     }
 
-    /* 
-    const ioZone = PublicHostedZone.fromHostedZoneAttributes(
+    const zone = PublicHostedZone.fromHostedZoneAttributes(
       this,
-      "main-public-zone",
+      `${env}-app-zone`,
       {
-        zoneName: envLookup.hostedZoneIo.domains.primary,
-        hostedZoneId: envLookup.hostedZoneIo.hostedZoneId,
+        zoneName: envLookup.hostedZone.domains.primary,
+        hostedZoneId: envLookup.hostedZone.hostedZoneId,
       },
     );
 
     const comZone = PublicHostedZone.fromHostedZoneAttributes(
       this,
-      "com-public-zone",
+      `${env}-app-come-zone`,
       {
         zoneName: envLookup.hostedZoneCom.domains.primary,
         hostedZoneId: envLookup.hostedZoneCom.hostedZoneId,
       },
     );
 
+    /* 
+     
     const generalSecret = sm.Secret.fromSecretCompleteArn(
       this,
       "general-secrets",
