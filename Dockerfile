@@ -115,10 +115,14 @@ RUN mix release
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE}
 
+RUN apt-get update -y && \
+    apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates imagemagick \
+    && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
 # set the locale
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
-ENV LC_ALL=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8 
 
 RUN export LANG=en_US.UTF-8 \
     && echo $LANG UTF-8 > /etc/locale.gen \
@@ -127,9 +131,6 @@ RUN export LANG=en_US.UTF-8 \
 
 WORKDIR /app
 RUN chown nobody /app
-RUN mkdir -p /app/lib/tzdata-1.1.2/priv/*
-RUN chown nobody /app/lib/tzdata-1.1.2/priv/*
-RUN chmod ugo+rw /app/lib/tzdata-1.1.2/priv/*
 
 # set runner ENV
 ENV MIX_ENV="prod"
@@ -137,7 +138,7 @@ ENV MIX_ENV="prod"
 # only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/passwordless ./
 
-USER nobody
+USER nobody 
 
 EXPOSE 8000
 
