@@ -29,7 +29,7 @@ defmodule PasswordlessWeb.Components.Icon do
     ~H"""
     <span
       style={"background-image: url(#{@data_url}); background-size: contain; background-repeat: no-repeat;"}
-      class={[@name, "shrink-0", @class]}
+      class={["shrink-0", @class]}
       role="img"
       {@rest}
     />

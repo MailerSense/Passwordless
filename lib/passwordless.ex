@@ -313,11 +313,9 @@ defmodule Passwordless do
 
   def lookup_actor(%App{} = app, key) when is_binary(key) do
     query =
-      if String.starts_with?(key, Actor.prefix()) do
-        [id: key]
-      else
-        [user_id: key]
-      end
+      if String.starts_with?(key, Actor.prefix()),
+        do: [id: key],
+        else: [user_id: key]
 
     actor =
       Actor
