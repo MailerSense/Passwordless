@@ -18,6 +18,7 @@ import { Construct } from "constructs";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
+import { Certificate } from "./network/certificate";
 import { VPC } from "./network/vpc";
 import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
@@ -172,6 +173,12 @@ export class PasswordlessTools extends cdk.Stack {
       throw new Error("OBAN_PRO_AUTH_KEY is required");
     }
 
+    const certificate = new Certificate(this, `${env}-app-certificate`, {
+      name: `${appName}-certificate`,
+      zone,
+      domain: envLookup.hostedZone.domains.primary,
+    });
+
     /* 
     const imageName = "passwordless-tools-image";
     const cachedImage = new CachedImage(this, imageName, {
@@ -185,12 +192,7 @@ export class PasswordlessTools extends cdk.Stack {
       platform: Platform.LINUX_ARM64,
     });
 
-    const ioCertificate = new Certificate(this, "main-certificate", {
-      name: `${appName}-certificate`,
-      zone: ioZone,
-      domain: envLookup.hostedZoneIo.domains.primary,
-    });
-
+ 
     const comCertificate = new Certificate(this, "com-certificate", {
       name: `${appName}-com-certificate`,
       zone: comZone,
