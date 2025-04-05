@@ -2,10 +2,8 @@
 @import "tippy.js/dist/tippy.css";
 @import "highlight.js/styles/shades-of-purple.css";
 
-@plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/forms";
 @plugin "../custom.tailwind.plugin.js";
-@plugin "../flag.tailwind.plugin.js";
 @plugin "../heroicon.tailwind.plugin.js";
 @plugin "../remix.tailwind.plugin.js";
 
@@ -52,7 +50,6 @@
 @theme {
   --font-sans: "Inter var", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
-  --font-display: "Sora", sans-serif;
 
   --shadow-m2: 0 1px 2px 0 rgb(16 24 40 / 0.05);
   --shadow-m3: 0 1px 2px 0 rgb(16 24 40 / 0.05);
@@ -470,7 +467,7 @@
   /* Typography */
 
   .pc-h1 {
-    @apply font-display text-5xl font-bold;
+    @apply text-5xl font-bold;
   }
   .pc-h2 {
     @apply text-3xl font-bold md:text-4xl lg:text-5xl lg:leading-[56px];
@@ -1301,7 +1298,7 @@
   }
 
   .pc-page-header--text {
-    @apply font-display text-4xl md:text-5xl font-bold text-slate-950 dark:text-white tracking-tight;
+    @apply text-4xl md:text-5xl font-bold text-slate-950 dark:text-white tracking-tight;
   }
 
   /* Separator */
@@ -2009,7 +2006,7 @@
     @apply text-lg font-semibold leading-7 text-slate-900 dark:text-white;
   }
   .pc-modal__header__text-main {
-    @apply text-3xl font-semibold font-display text-center text-slate-900 dark:text-white;
+    @apply text-3xl font-semibold text-center text-slate-900 dark:text-white;
   }
   .pc-modal__header__text-delete {
     @apply text-2xl font-semibold text-slate-900 dark:text-white;

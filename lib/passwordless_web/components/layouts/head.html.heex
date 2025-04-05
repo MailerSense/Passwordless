@@ -58,8 +58,8 @@
     associated_abstract={
       get_in(@conn.assigns, [Access.key(:page_description, Passwordless.config(:seo_description))])
     }
-    associated_related_link={url(@conn, ~p"/product")}
-    associated_significant_links={[url(@conn, ~p"/"), url(@conn, ~p"/product")]}
+    associated_related_link="https://passwordless.tools"
+    associated_significant_links={["https://passwordless.tools"]}
     associated_keywords={Passwordless.config(:keywords)}
   />
   <PasswordlessWeb.SchemaMarkup.organization
@@ -78,14 +78,6 @@
     contact_type={gettext("Customer Support")}
     contact_email={Passwordless.config(:support_email)}
   />
-  <!-- Start of Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Sora:wght@100..800&display=swap"
-    rel="stylesheet"
-  />
-  <!-- End of Google Fonts -->
   <!-- Start of Inter -->
   <link rel="preconnect" href="https://rsms.me/" />
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />

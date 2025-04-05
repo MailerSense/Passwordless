@@ -2,6 +2,8 @@ defmodule PasswordlessWeb.Components.Icon do
   @moduledoc false
   use Phoenix.Component
 
+  alias PasswordlessWeb.Components.Flags
+
   attr :name, :string, required: true
   attr :class, :any, default: nil
   attr :rest, :global
@@ -21,9 +23,16 @@ defmodule PasswordlessWeb.Components.Icon do
     """
   end
 
-  def icon(%{name: "flag-" <> _} = assigns) do
+  def icon(%{name: "flag-" <> code} = assigns) do
+    assigns = assign(assigns, data_url: Flags.data_url(code))
+
     ~H"""
-    <span class={[@name, "shrink-0", @class]} role="img" {@rest} />
+    <span
+      style={"background-image: url(#{@data_url}); background-size: contain; background-repeat: no-repeat;"}
+      class={[@name, "shrink-0", @class]}
+      role="img"
+      {@rest}
+    />
     """
   end
 
