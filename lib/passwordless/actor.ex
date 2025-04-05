@@ -20,20 +20,22 @@ defmodule Passwordless.Actor do
   @states ~w(active locked)a
   @languages ~w(en de fr)a
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :name,
-             :state,
-             :language,
-             :totps,
-             :emails,
-             :phones,
-             :properties,
-             :inserted_at,
-             :updated_at,
-             :deleted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :name,
+      :state,
+      :language,
+      :totps,
+      :emails,
+      :phones,
+      :properties,
+      :inserted_at,
+      :updated_at,
+      :deleted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id, :search, :state],
@@ -99,12 +101,21 @@ defmodule Passwordless.Actor do
   def handle(%__MODULE__{id: id}) when is_binary(id), do: id
   def handle(%__MODULE__{}), do: nil
 
+  @doc """
+  Get the primary email of the actor.
+  """
   def email(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
   def email(%__MODULE__{}), do: nil
 
+  @doc """
+  Get the primary phone of the actor.
+  """
   def phone(%__MODULE__{phone: %Phone{} = phone}), do: Phone.format(phone)
   def phone(%__MODULE__{}), do: nil
 
+  @doc """
+  Get the region of the primary phone of the actor.
+  """
   def phone_region(%__MODULE__{phone: %Phone{region: region}}) when is_binary(region), do: String.downcase(region)
 
   def phone_region(%__MODULE__{}), do: nil
@@ -221,17 +232,6 @@ defmodule Passwordless.Actor do
     |> validate_name()
     |> validate_active()
     |> validate_user_id(opts)
-    |> validate_text_properties()
-    |> validate_properties()
-  end
-
-  @doc """
-  A properties changeset.
-  """
-  def properties_changeset(%__MODULE__{} = contact, attrs \\ %{}, opts \\ []) do
-    contact
-    |> cast(attrs, [:properties_text])
-    |> validate_required([:properties_text])
     |> validate_text_properties()
     |> validate_properties()
   end

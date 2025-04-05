@@ -11,12 +11,14 @@ defmodule Passwordless.MagicLink do
 
   @size 12
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :expires_at,
-             :accepted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :expires_at,
+      :accepted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -49,13 +51,13 @@ defmodule Passwordless.MagicLink do
     |> unsafe_validate_unique(:email_message_id, Passwordless.Repo, opts)
   end
 
-  # Private
-
-  defp generate_key do
+  def generate_key do
     raw = :crypto.strong_rand_bytes(@size)
     signed = Token.sign(Endpoint, key_salt(), raw)
     {raw, signed}
   end
+
+  # Private
 
   defp verify_key(token) when is_binary(token) do
     Token.verify(Endpoint, key_salt(), token)

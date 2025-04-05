@@ -32,7 +32,7 @@ defmodule Passwordless.Billing.Providers.Stripe.Synchronizer do
       Repo.transact(fn ->
         with {:ok, subscription} <- StripeProvider.sync_subscription(stripe_subscription),
              {:ok, subscription} <- maybe_delete_subscription(log_type, subscription),
-             {:ok, _log} <- Activity.log(:billing, log_type, %{billing_subscription: subscription}),
+             {:ok, _log} <- Activity.log(log_type, %{billing_subscription: subscription}),
              do: {:ok, subscription}
       end)
     end

@@ -98,7 +98,7 @@ config :passwordless, :storage, adapter: Storage.Local
 # Configures the secret manager
 config :passwordless, :secret_manager,
   adapter: SecretManager.Local,
-  secret_name: "passwordless"
+  secret_name: "SM_LOCAL"
 
 # Configures the media uploader to local
 config :passwordless, :media_upload, adapter: Passwordless.Media.Upload.Local

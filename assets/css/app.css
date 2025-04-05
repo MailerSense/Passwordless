@@ -1,11 +1,9 @@
 @import "tailwindcss" source("../..");
 @import "tippy.js/dist/tippy.css";
-@import "highlight.js/styles/monokai.css";
+@import "highlight.js/styles/shades-of-purple.css";
 
-@plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/forms";
 @plugin "../custom.tailwind.plugin.js";
-@plugin "../flag.tailwind.plugin.js";
 @plugin "../heroicon.tailwind.plugin.js";
 @plugin "../remix.tailwind.plugin.js";
 
@@ -52,18 +50,17 @@
 @theme {
   --font-sans: "Inter var", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
-  --font-display: "Sora", sans-serif;
 
   --shadow-m2: 0 1px 2px 0 rgb(16 24 40 / 0.05);
   --shadow-m3: 0 1px 2px 0 rgb(16 24 40 / 0.05);
-  --shadow-0: 0 1px 3px 0 rgb(16 24 40 / 0.1),
-    0 1px 2px 0px rgb(16 24 40 / 0.06);
-  --shadow-1: 0 4px 8px -2px rgb(16 24 40 / 0.1),
-    0 2px 4px -2px rgb(16 24 40 / 0.06);
-  --shadow-2: 0 12px 16px -4px rgb(16 24 40 / 0.08),
-    0 4px 6px -2px rgb(16 24 40 / 0.03);
-  --shadow-3: 0 20px 24px -4px rgb(16 24 40 / 0.08),
-    0 8px 8px -4px rgb(16 24 40 / 0.03);
+  --shadow-0:
+    0 1px 3px 0 rgb(16 24 40 / 0.1), 0 1px 2px 0px rgb(16 24 40 / 0.06);
+  --shadow-1:
+    0 4px 8px -2px rgb(16 24 40 / 0.1), 0 2px 4px -2px rgb(16 24 40 / 0.06);
+  --shadow-2:
+    0 12px 16px -4px rgb(16 24 40 / 0.08), 0 4px 6px -2px rgb(16 24 40 / 0.03);
+  --shadow-3:
+    0 20px 24px -4px rgb(16 24 40 / 0.08), 0 8px 8px -4px rgb(16 24 40 / 0.03);
   --shadow-4: 0 24px 48px -12px rgb(16 24 40 / 0.18);
 
   --color-primary-50: #eff8ff;
@@ -286,7 +283,7 @@
   /* Buttons - sizes */
 
   .pc-button--xs {
-    @apply text-xs leading-4 px-2.5 py-[5px];
+    @apply text-xs leading-4 px-2.5 py-1.5;
   }
   .pc-button--sm {
     @apply px-3.5 py-2 h-[42px] text-sm font-semibold leading-tight;
@@ -470,7 +467,7 @@
   /* Typography */
 
   .pc-h1 {
-    @apply font-display text-5xl font-bold;
+    @apply text-5xl font-bold;
   }
   .pc-h2 {
     @apply text-3xl font-bold md:text-4xl lg:text-5xl lg:leading-[56px];
@@ -799,7 +796,7 @@
     @apply [&:not(:last-child)]:mb-6;
   }
   .pc-form-field-wrapper--no-margin {
-    @apply mb-0;
+    @apply mb-0!;
   }
   .pc-form-field-wrapper--error input,
   .pc-form-field-wrapper--error select,
@@ -807,7 +804,7 @@
     @apply border-danger-500 focus:border-danger-500 text-danger-900 placeholder-danger-700 bg-danger-50 dark:text-danger-100 dark:placeholder-danger-300 dark:bg-danger-900 focus:ring-danger-500;
   }
   .pc-form-field-wrapper--error input[type="checkbox"] {
-    @apply bg-danger-200 dark:bg-danger-700;
+    @apply bg-danger-500 dark:bg-danger-600 border-danger-500 dark:border-danger-600;
   }
   .pc-form-field-wrapper--error .pc-switch .pc-switch__fake-input {
     @apply bg-danger-200 border-danger-500 dark:bg-danger-600 dark:border-danger-800;
@@ -833,7 +830,7 @@
   }
   .pc-label--required:after {
     color: #e32;
-    content: " *";
+    content: "*";
     display: inline;
   }
   .pc-form-field-error {
@@ -876,7 +873,7 @@
     @apply block w-full px-3 py-2.5 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
   }
   .pc-text-input--sm {
-    @apply block min-w-16 px-2.5 py-[5px] font-medium border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-xs disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
+    @apply block min-w-16 px-2.5 py-2 font-medium border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-xs disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
   }
 
   /* Password Input */
@@ -1250,7 +1247,7 @@
     @apply inline-flex justify-center items-center w-full text-base font-normal leading-tight text-slate-900 dark:text-white select-none;
   }
   .pc-dropdown__trigger-button--with-label--md-solid {
-    @apply h-[42px] inline-flex justify-center items-center w-full gap-2 px-4 py-2 text-sm font-medium leading-tight text-slate-700 dark:text-slate-200 bg-slate-50 border border-slate-300 dark:border-slate-600 rounded-lg shadow-m2 dark:bg-slate-800 dark:focus:bg-slate-800 hover:bg-slate-50 select-none;
+    @apply h-[42px] inline-flex justify-center items-center w-full gap-2 px-4 py-2 text-sm font-medium leading-tight text-slate-700 dark:text-slate-200 bg-slate-50 border border-slate-300 dark:border-slate-600 rounded-lg shadow-m2 dark:bg-slate-800 dark:focus:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 select-none;
   }
   .pc-dropdown__trigger-button--with-label--lg-solid {
     @apply inline-flex justify-between items-center min-w-full lg:min-w-64 gap-2 px-4 py-2 h-12 text-base font-normal text-slate-700 dark:text-slate-200 bg-white border border-slate-300 dark:border-slate-600 rounded-lg shadow-m2 bg-slate-50 dark:bg-slate-700/50 dark:hover:bg-slate-800 dark:focus:bg-slate-800 hover:bg-slate-50 select-none;
@@ -1301,7 +1298,7 @@
   }
 
   .pc-page-header--text {
-    @apply font-display text-4xl md:text-5xl font-bold text-slate-950 dark:text-white tracking-tight;
+    @apply text-4xl md:text-5xl font-bold text-slate-950 dark:text-white tracking-tight;
   }
 
   /* Separator */
@@ -1895,11 +1892,11 @@
     @apply hover:bg-slate-50 dark:hover:bg-slate-800;
   }
   .pc-table__td {
-    @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-3 text-sm font-normal text-slate-600 dark:text-slate-300 whitespace-nowrap;
+    @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-4 text-sm font-normal text-slate-600 dark:text-slate-300 whitespace-nowrap;
     /*  @apply [&:not(:last-child)]:border-r border-slate-200 dark:border-slate-700; */
   }
   .pc-table__td--only {
-    @apply px-6 py-4 text-sm font-normal text-slate-600 dark:text-slate-300;
+    @apply p-6 text-sm font-normal text-slate-600 dark:text-slate-300;
   }
   .pc-table__td--first-col {
     @apply font-semibold;
@@ -2009,7 +2006,7 @@
     @apply text-lg font-semibold leading-7 text-slate-900 dark:text-white;
   }
   .pc-modal__header__text-main {
-    @apply text-3xl font-semibold font-display text-center text-slate-900 dark:text-white;
+    @apply text-3xl font-semibold text-center text-slate-900 dark:text-white;
   }
   .pc-modal__header__text-delete {
     @apply text-2xl font-semibold text-slate-900 dark:text-white;
@@ -2126,7 +2123,7 @@
     @apply w-6 h-6;
   }
   .pc-editor-field {
-    @apply max-w-[300px] xl:min-w-[500px] ps-3 pe-10 text-3xl font-semibold h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
+    @apply h-12 block w-full max-w-[300px] xl:min-w-[500px] ps-3 pe-10 text-3xl font-semibold text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:ring-primary-500 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 focus:ring-2 focus:border-transparent focus:outline-none;
   }
   .pc-editor-field-icon__padding {
     @apply max-w-[300px] xl:min-w-[500px] ps-12 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 z-20 focus:outline-hidden;

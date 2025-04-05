@@ -25,7 +25,7 @@ mod atoms {
 }
 
 #[derive(Clone, Debug, NifStruct)]
-#[module = "Passwordless.MJML.RenderOptions"]
+#[module = "Passwordless.Templating.MJMLRenderOptions"]
 pub struct RenderOptions<'a> {
     pub keep_comments: bool,
     pub social_icon_path: Option<String>,

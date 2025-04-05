@@ -1,8 +1,11 @@
 defmodule Passwordless.Domain do
-  @moduledoc false
+  @moduledoc """
+  A web domain used for sending emails and tracking email opens and clicks.
+  """
 
   use Passwordless.Schema, prefix: "domain"
 
+  import Database.QueryExt
   import Ecto.Query
 
   alias Database.ChangesetExt
@@ -21,20 +24,28 @@ defmodule Passwordless.Domain do
     all_records_verified
     some_records_missing
   )a
-  @states @aws_states ++ @dns_states
+  @other_states ~w(
+    unhealthy
+    under_review
+  )a
+  @states @aws_states ++ @dns_states ++ @other_states
+  @purposes ~w(email tracking)a
+  @tags ~w(system default)a
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :name,
-             :kind,
-             :state,
-             :verified,
-             :records,
-             :inserted_at,
-             :updated_at,
-             :deleted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :name,
+      :kind,
+      :state,
+      :verified,
+      :records,
+      :inserted_at,
+      :updated_at,
+      :deleted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -43,7 +54,9 @@ defmodule Passwordless.Domain do
     field :name, :string
     field :kind, Ecto.Enum, values: @kinds, default: :sub_domain
     field :state, Ecto.Enum, values: @states, default: :aws_not_started
+    field :purpose, Ecto.Enum, values: @purposes, default: :email
     field :verified, :boolean, default: false
+    field :tags, {:array, Ecto.Enum}, values: @tags, default: []
 
     has_many :records, DomainRecord, preload_order: [asc: :inserted_at]
 
@@ -55,7 +68,36 @@ defmodule Passwordless.Domain do
 
   def kinds, do: @kinds
   def states, do: @states
+  def purposes, do: @purposes
+
+  @doc """
+  Get the domain name.
+  """
   def email_suffix(%__MODULE__{name: name}), do: "@#{name}"
+
+  @doc """
+  Check if the domain is a system domain.
+  """
+  def system?(%__MODULE__{tags: tags}) do
+    Enum.member?(tags, :system)
+  end
+
+  @doc """
+  Get the domain by tags.
+  """
+  def get_by_tags(query \\ __MODULE__, tags) when is_list(tags) do
+    tags = Enum.map(tags, &Atom.to_string/1)
+    from q in query, where: contains(q.tags, ^tags)
+  end
+
+  @doc """
+  Produce the AWS ARN for the domain.
+  """
+  def arn(%__MODULE__{name: name}, region, account) do
+    "arn:aws:ses:#{region}:#{account}:identity/#{name}"
+  end
+
+  def arn(_, _, _), do: nil
 
   @doc """
   Map the AWS domain verification states to our internal reprentation.
@@ -105,7 +147,9 @@ defmodule Passwordless.Domain do
     name
     kind
     state
+    purpose
     verified
+    tags
     app_id
   )a
   @required_fields @fields
@@ -119,6 +163,9 @@ defmodule Passwordless.Domain do
     |> validate_required(@required_fields)
     |> validate_name()
     |> validate_state()
+    |> validate_tags()
+    |> unique_constraint([:app_id, :purpose], error_key: :purpose)
+    |> unsafe_validate_unique([:app_id, :purpose], Passwordless.Repo, error_key: :purpose)
     |> unique_constraint(:name)
     |> unsafe_validate_unique(:name, Passwordless.Repo,
       query: from(d in __MODULE__, where: d.verified and is_nil(d.deleted_at))
@@ -154,7 +201,14 @@ defmodule Passwordless.Domain do
       aws_temporary_failure: [:aws_pending, :aws_success, :aws_failed, :aws_temporary_failure],
       aws_success: [:all_records_verified, :some_records_missing],
       all_records_verified: [:some_records_missing],
-      some_records_missing: [:all_records_verified]
+      some_records_missing: [:all_records_verified],
+      all_records_verified: [:aws_success, :some_records_missing, :unhealthy, :under_review],
+      unhealthy: [:aws_success, :some_records_missing, :unhealthy, :under_review],
+      under_review: [:aws_success, :some_records_missing, :unhealthy, :under_review]
     )
+  end
+
+  defp validate_tags(changeset) do
+    ChangesetExt.clean_array(changeset, :tags)
   end
 end

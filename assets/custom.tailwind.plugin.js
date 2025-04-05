@@ -23,7 +23,7 @@ module.exports = function ({ matchComponents, theme }) {
           .replace(/\r?\n|\r/g, "");
 
         return {
-          [`--custom-${name}`]: `url('data:image/svg+xml;base64,${btoa(
+          [`--custom-${name}`]: `url('data:image/svg+xml;utf8,${encodeURIComponent(
             content,
           )}')`,
           "-webkit-mask": `var(--custom-${name})`,

@@ -8,18 +8,8 @@ defmodule PasswordlessWeb.SiteMap do
   def generate do
     static_routes = [
       ~p"/",
-      ~p"/blog",
-      ~p"/book-demo",
-      ~p"/pricing",
-      ~p"/contact",
-      ~p"/product",
       ~p"/auth/sign-in",
-      ~p"/auth/sign-up",
-      ~p"/docs",
-      ~p"/guides",
-      ~p"/terms",
-      ~p"/privacy",
-      ~p"/active-development"
+      ~p"/auth/sign-up"
     ]
 
     Enum.map(static_routes, fn route ->

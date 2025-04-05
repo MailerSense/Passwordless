@@ -33,8 +33,8 @@ defmodule StateMachine.Transition do
   @doc """
   Checks if the transition is allowed in the current context. Returns boolean.
   """
-  @spec is_allowed?(Context.t(model), t(model)) :: boolean when model: var
-  def is_allowed?(ctx, transition) do
+  @spec allowed?(Context.t(model), t(model)) :: boolean when model: var
+  def allowed?(ctx, transition) do
     Guard.check(ctx, transition)
   end
 

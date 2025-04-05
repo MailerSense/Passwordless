@@ -15,52 +15,54 @@ defmodule Passwordless.Activity.Log do
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Org
 
-  @caregories ~w(org user)a
-  @category_actions [
-    org: ~w(
-      org.update_profile
-      org.update_member
-      org.delete_member
-      org.create_auth_token
-      org.update_auth_token
-      org.revoke_auth_token
-      org.create_invitation
-      org.delete_invitation
-      org.accept_invitation
-      org.reject_invitation
-    )a,
-    user: ~w(
-      user.register
-      user.activate
-      user.lock
-      user.unlock
-      user.confirm
-      user.sign_in
-      user.sign_out
-      user.impersonate
-      user.end_impersonation
-      user.update_profile
-      user.confirm_email
-      user.request_email_change
-      user.request_magic_link
-      user.request_password_reset
-      user.reset_password
-    )a,
-    billing: ~w(
-      subscription.created
-      subscription.updated
-      subscription.deleted
-      subscription.paused
-      subscription.resumed
-      subscription.cancelled
-      subscription.trial_will_be_ended
-      subscription_item.created
-      subscription_item.updated
-      subscription_item.deleted
-    )a
-  ]
-  @actions @category_actions |> Keyword.values() |> Enum.flat_map(& &1)
+  @actions ~w(
+    org.update_profile
+    org.update_member
+    org.delete_member
+    org.create_auth_token
+    org.update_auth_token
+    org.revoke_auth_token
+    org.create_invitation
+    org.delete_invitation
+    org.accept_invitation
+    org.reject_invitation
+    user.register
+    user.activate
+    user.lock
+    user.unlock
+    user.confirm
+    user.sign_in
+    user.sign_out
+    user.impersonate
+    user.end_impersonation
+    user.update_profile
+    user.confirm_email
+    user.request_email_change
+    user.request_magic_link
+    user.request_password_reset
+    user.reset_password
+    subscription.created
+    subscription.updated
+    subscription.deleted
+    subscription.paused
+    subscription.resumed
+    subscription.cancelled
+    subscription.trial_will_be_ended
+    subscription_item.created
+    subscription_item.updated
+    subscription_item.deleted
+  )a
 
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :action,
+      :metadata,
+      :happened_at,
+      :inserted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:search],
@@ -74,7 +76,6 @@ defmodule Passwordless.Activity.Log do
   }
   schema "activity_logs" do
     field :action, Ecto.Enum, values: @actions
-    field :category, Ecto.Enum, values: @caregories
     field :metadata, :map
     field :happened_at, :utc_datetime_usec
 
@@ -98,7 +99,6 @@ defmodule Passwordless.Activity.Log do
   end
 
   def full_recipient_parts(%__MODULE__{user: %User{name: name, email: email}}), do: {:user, name, email}
-
   def full_recipient_parts(%__MODULE__{}), do: {nil, nil, nil}
 
   @doc """
@@ -196,7 +196,6 @@ defmodule Passwordless.Activity.Log do
 
   @fields ~w(
     action
-    category
     metadata
     happened_at
     org_id
@@ -206,14 +205,11 @@ defmodule Passwordless.Activity.Log do
     app_id
     billing_customer_id
     billing_subscription_id
-    email_event_id
-    email_message_id
     domain_id
   )a
 
   @required_fields ~w(
     action
-    category
     happened_at
   )a
 
@@ -230,8 +226,6 @@ defmodule Passwordless.Activity.Log do
     |> assoc_constraint(:auth_token)
     |> assoc_constraint(:target_user)
     |> assoc_constraint(:app)
-    |> assoc_constraint(:email_event)
-    |> assoc_constraint(:email_message)
     |> assoc_constraint(:domain)
   end
 

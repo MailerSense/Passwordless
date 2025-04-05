@@ -8,15 +8,17 @@ defmodule Passwordless.EmailTemplate do
   alias Passwordless.App
   alias Passwordless.EmailTemplateVersion
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :name,
-             :versions,
-             :inserted_at,
-             :updated_at,
-             :deleted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :name,
+      :versions,
+      :inserted_at,
+      :updated_at,
+      :deleted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]

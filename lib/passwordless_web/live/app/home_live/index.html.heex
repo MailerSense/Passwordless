@@ -37,37 +37,48 @@
       </div>
     </.box>
     <.box card>
-      <.form_header title={gettext("API keys")} no_margin />
+      <.form_header title={gettext("Installation")} no_margin />
+      <.alert color="info" with_icon>
+        The following code sample contains your App ID and App Secret.
+      </.alert>
+      <.code_block
+        language={:typescript}
+        code={
+          ~s"""
+          import { Passwordless } from '@passwordless/tools';
+
+          Passwordless.init({
+            appId: '#{@current_app.id}',
+            appSecret: '**********', // ⚠️ Never expose this in frontend code!
+            defaultRules: [
+              {
+                condition: { type: "constant", value: true },
+                effects: [
+                  { type: "challenge", with: Passwordless.ALL_ENABLED_AUTHENTICATORS },
+                ],
+              },
+            ]
+          });
+          """
+        }
+      />
       <.p>
-        {gettext(
-          "Embed Passwordless in your frontend and use the API to manage users and actions."
-        )}
+        Get Passwordless NodeJS client library and start authenticating users in your app today. The code sample above shows a basic setup, you can customize it to fit your needs. Read our documentation to learn how to guard user actions and apply powerful workflow rules.
       </.p>
-      <div>
-        <.field
-          name="test"
-          value={@current_app.id}
-          label="App ID"
-          readonly
-          copyable={true}
-          class="font-mono"
+      <div class="flex items-center gap-3 flex-wrap">
+        <.a
+          label={gettext("Read documentation")}
+          to={~p"/app/embed/install"}
+          styled
+          link_type="live_redirect"
         />
-        <.field
-          name="test2"
-          value="lololololo"
-          label="App Secret"
-          type="password"
-          readonly
-          viewable={true}
-          class="font-mono"
+        <.a
+          label={gettext("Reveal App Secret")}
+          to={~p"/app/embed/install"}
+          styled
+          link_type="live_redirect"
         />
       </div>
-      <.a
-        label={gettext("Secure your app now")}
-        to={~p"/app/embed/install"}
-        styled
-        link_type="live_redirect"
-      />
     </.box>
 
     <.stream_table
@@ -85,6 +96,7 @@
 
       <:col :let={action} label={gettext("User")} field={:user}>
         <.a
+          :if={Util.present?(action.actor)}
           to={~p"/app/users/#{action.actor}/edit"}
           label={Actor.handle(action.actor)}
           styled
@@ -97,11 +109,10 @@
         <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
 
-      <:col :let={action} field={:flow}>
-        <% %{label: label, icon: icon} = flow_details(action) %>
+      <:col :let={action} label={gettext("Elapsed")} field={:elapsed}>
         <div class="flex items-center gap-2">
-          <.icon name={icon} class="w-4 h-4" />
-          {label}
+          <.icon name="remix-timer-2-line" class="w-5 h-5" />
+          {Util.elapsed(action.inserted_at, action.updated_at)}
         </div>
       </:col>
 

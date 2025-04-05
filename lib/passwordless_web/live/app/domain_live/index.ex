@@ -4,6 +4,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
   import PasswordlessWeb.SettingsLayoutComponent
 
+  alias Passwordless.App
   alias Passwordless.Domain
   alias Passwordless.Repo
 
@@ -14,8 +15,8 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
   @impl true
   def handle_params(_params, _url, socket) do
-    case Repo.preload(socket.assigns.current_app, :domain).domain do
-      %Domain{} = domain ->
+    case Repo.preload(socket.assigns.current_app, :email_domain) do
+      %App{email_domain: %Domain{purpose: :email} = domain} ->
         records = Passwordless.list_domain_record(domain)
         changeset = Passwordless.change_domain(domain)
 
@@ -23,18 +24,16 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
          socket
          |> assign(mode: :edit, domain: domain, records: records)
          |> assign_form(changeset)
-         |> assign_new(:domain_menu_items, fn -> domain_menu_items() end)
          |> apply_action(socket.assigns.live_action)}
 
       _ ->
-        domain = Ecto.build_assoc(socket.assigns.current_app, :domain)
+        domain = Ecto.build_assoc(socket.assigns.current_app, :email_domain)
         changeset = Passwordless.change_domain(domain)
 
         {:noreply,
          socket
          |> assign(mode: :new, domain: domain)
          |> assign_form(changeset)
-         |> assign_new(:domain_menu_items, fn -> domain_menu_items() end)
          |> apply_action(socket.assigns.live_action)}
     end
   end
@@ -152,7 +151,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   defp domain_state_badge(_),
     do: %{
       size: "md",
-      label: gettext("Pending DNS configuration"),
+      label: gettext("Pending DNS verification"),
       color: "warning",
       variant: "rectangle",
       with_icon: true,

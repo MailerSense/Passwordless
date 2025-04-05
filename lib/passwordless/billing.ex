@@ -145,6 +145,6 @@ defmodule Passwordless.Billing do
       |> Map.take(SubscriptionItem.__schema__(:fields))
       |> Map.put(:billing_subscription, subscription)
 
-    Activity.log(:billing, log_action, log_params)
+    Activity.log(log_action, log_params)
   end
 end

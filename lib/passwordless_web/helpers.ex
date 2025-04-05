@@ -2,6 +2,7 @@ defmodule PasswordlessWeb.Helpers do
   @moduledoc """
   A set of helpers used in web related views and templates. These functions can be called anywhere in a heex template.
   """
+
   use PasswordlessWeb, :verified_routes
   use Gettext, backend: PasswordlessWeb.Gettext
 
@@ -138,16 +139,21 @@ defmodule PasswordlessWeb.Helpers do
     Keyword.get(
       [
         email_otp: %{label: gettext("Email OTP"), icon: "remix-mail-open-line"},
-        sms_otp: %{label: gettext("SMS OTP"), icon: "remix-message-2-line"},
+        sms_otp: %{label: gettext("SMS OTP"), icon: "remix-message-line"},
         whatsapp_otp: %{label: gettext("WhatsApp OTP"), icon: "remix-whatsapp-line"},
         magic_link: %{label: gettext("Magic link"), icon: "remix-link"},
         totp: %{label: gettext("Time-based OTP"), icon: "remix-qr-code-line"},
         security_key: %{label: gettext("Security key"), icon: "remix-usb-line"},
         passkey: %{label: gettext("Passkey"), icon: "remix-fingerprint-line"},
+        password: %{label: gettext("Password"), icon: "remix-key-line"},
         recovery_codes: %{label: gettext("Recovery codes"), icon: "remix-file-list-line"}
       ],
       type
     )
+  end
+
+  def flow_details(%Action{}) do
+    %{label: gettext("None"), icon: "remix-fingerprint-line"}
   end
 
   def actor_menu_items(%Actor{} = actor) do
@@ -286,8 +292,6 @@ defmodule PasswordlessWeb.Helpers do
   def user_impersonator_name(%User{current_impersonator: %User{} = user}), do: user_name(user)
   def user_impersonator_name(_), do: nil
 
-  def admin?(%User{}), do: false
-
   def format_date_time(date, format \\ "%d %B %Y, %H:%M")
   def format_date_time(nil, _format), do: ""
   def format_date_time(date, format), do: Timex.format!(date, format, :strftime)
@@ -300,7 +304,7 @@ defmodule PasswordlessWeb.Helpers do
     start_date = Timex.beginning_of_month(month)
     end_date = Timex.end_of_month(month)
 
-    "#{format_date(start_date, "%-d")} - #{format_date(end_date, "%-d %B %Y")}"
+    "#{format_date(start_date, "%-d %b")} - #{format_date(end_date, "%-d %b %Y")}"
   end
 
   def current_month?(%Date{} = month) do
@@ -322,8 +326,8 @@ defmodule PasswordlessWeb.Helpers do
 
   def user_added(%Membership{}), do: ""
 
-  def is_admin?(%User{} = user), do: User.is_admin?(user)
-  def is_admin?(_user), do: false
+  def admin?(%User{} = user), do: User.admin?(user)
+  def admin?(_user), do: false
 
   @common_colors ~w(blue indigo purple fuchsia pink cyan teal sky)
 

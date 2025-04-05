@@ -25,6 +25,7 @@ defmodule Passwordless.Application do
         ]
       else
         [
+          {Passwordless.SecretVault, @secret_name},
           Passwordless.Vault,
           Passwordless.Repo,
           PasswordlessWeb.Telemetry,
@@ -39,7 +40,6 @@ defmodule Passwordless.Application do
         |> Kernel.++([
           {Phoenix.PubSub, name: Passwordless.PubSub},
           {Task.Supervisor, name: Passwordless.BackgroundTask},
-          {Passwordless.SecretVault, @secret_name},
           Cache,
           Passwordless.EventQueue.Manager,
           {Oban, Application.fetch_env!(:passwordless, Oban)},

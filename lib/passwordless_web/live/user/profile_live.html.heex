@@ -6,7 +6,6 @@
       placeholder={gettext("eg. John Smith")}
       autocomplete="given-name family-name"
       required
-      required_asterix={false}
     />
 
     <div class="flex items-center justify-between">
@@ -18,7 +17,7 @@
       />
       <.button
         icon="remix-save-line"
-        label={gettext("Save changes")}
+        label={gettext("Save")}
         disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
       />
     </div>

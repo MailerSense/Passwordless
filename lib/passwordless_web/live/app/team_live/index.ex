@@ -5,7 +5,6 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   import PasswordlessWeb.SettingsLayoutComponent
 
   alias Passwordless.Accounts
-  alias Passwordless.Activity
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
@@ -54,7 +53,10 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   def handle_params(params, _url, socket) do
     {:noreply,
      socket
-     |> apply_action(socket.assigns.live_action, Map.take(socket.assigns, [:membership, :invitation]))
+     |> apply_action(
+       socket.assigns.live_action,
+       Map.take(socket.assigns, [:membership, :invitation])
+     )
      |> assign_filters(params)
      |> assign_memberships(params)
      |> assign_invitations()}
@@ -89,8 +91,9 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
 
         Accounts.Notifier.deliver_org_invitation(org, invitation, to)
 
-        Activity.log(:org, :"org.create_invitation", %{
+        Passwordless.Activity.log(:"org.create_invitation", %{
           user: socket.assigns.current_user,
+          target_user_id: nil,
           org_id: org.id,
           email: invitation.email
         })
@@ -110,7 +113,13 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
     invitation = Organizations.get_invitation_by_org!(socket.assigns.current_org, id)
 
     case Organizations.delete_invitation(invitation) do
-      {:ok, _invitation} ->
+      {:ok, invitation} ->
+        Passwordless.Activity.log(:"org.delete_invitation", %{
+          org: socket.assigns.current_org,
+          user: socket.assigns.current_user,
+          email: invitation.email
+        })
+
         {:noreply,
          socket
          |> put_toast(:info, gettext("Invitation has been deleted."), title: gettext("Success"))

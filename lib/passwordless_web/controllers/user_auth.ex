@@ -28,7 +28,7 @@ defmodule PasswordlessWeb.UserAuth do
     via = Keyword.get(opts || [], :via, :password)
     conn = put_user_into_session(conn, user)
 
-    Activity.log_async(:user, :"user.sign_in", %{user: user, via: via})
+    Activity.log_async(:"user.sign_in", %{user: user, via: via})
 
     if Accounts.two_factor_auth_enabled?(user) do
       conn
@@ -104,7 +104,7 @@ defmodule PasswordlessWeb.UserAuth do
     end
 
     with %User{} = user <- conn.assigns[:current_user] do
-      Activity.log_async(:user, :"user.sign_out", %{user: user})
+      Activity.log_async(:"user.sign_out", %{user: user})
     end
 
     conn
@@ -216,8 +216,8 @@ defmodule PasswordlessWeb.UserAuth do
       {%User{} = user, %Org{} = org, %Membership{} = membership} ->
         if User.active?(user) and
              User.confirmed?(user) and
-             Org.is_admin?(org) and
-             Membership.is_or_higher?(membership, :admin) do
+             Org.admin?(org) and
+             Membership.at_least?(membership, :admin) do
           conn
         else
           conn

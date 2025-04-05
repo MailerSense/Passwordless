@@ -33,7 +33,7 @@ defmodule StateMachine.Introspection do
   def allowed_events(ctx) do
     ctx.definition.events
     |> Map.values()
-    |> Enum.filter(&Event.is_allowed?(ctx, &1))
+    |> Enum.filter(&Event.allowed?(ctx, &1))
     |> Enum.map(& &1.name)
   end
 end

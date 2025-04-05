@@ -12,19 +12,16 @@
           reset_date: format_date(Date.utc_today())
         )}
       </.p>
-      <div class="flex items-center gap-3">
-        <.a
-          to={~p"/app/reports"}
-          label={gettext("Manage my plan")}
-          styled
-          link_type="live_redirect"
-        />
+      <div class="flex items-center gap-3 flex-wrap">
+        <.a to={~p"/app/reports"} label={gettext("Manage plan")} styled link_type="live_redirect" />
         <.a
           to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
           label={gettext("Contact support")}
           styled
           link_type="a"
         />
+
+        <.a label={gettext("Download billing data")} styled download link_type="a" />
       </div>
     </.box>
     <.simple_table
@@ -49,7 +46,7 @@
         }
       ]}
       count={2}
-      title={gettext("Billed services")}
+      title={gettext("Cost breakdown")}
     >
       <:if_empty>
         {gettext("No %{models} found", models: gettext("billing items"))}
@@ -123,17 +120,6 @@
           link_type="live_patch"
         />
       </:actions>
-
-      <:header_actions>
-        <.button
-          to={~p"/app/domain/dns/download"}
-          size="xs"
-          color="light"
-          icon="remix-download-line"
-          label={gettext("Download")}
-          download
-        />
-      </:header_actions>
     </.simple_table>
   </div>
 </.layout>

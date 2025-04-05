@@ -88,7 +88,7 @@ defmodule PasswordlessWeb.Org.Hooks do
 
   defp require_minimal_org_role(socket, role) when is_atom(role) do
     with %Membership{} = membership <- socket.assigns[:current_membership],
-         true <- Membership.is_or_higher?(membership, role) do
+         true <- Membership.at_least?(membership, role) do
       {:cont, socket}
     else
       _ ->

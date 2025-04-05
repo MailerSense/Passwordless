@@ -4,16 +4,19 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.App
+  alias Passwordless.Domain
   alias Passwordless.Repo
 
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
-    email = Repo.preload(app, :email).email
-    domain = Repo.preload(app, :domain).domain
+    app = Repo.preload(app, [:email])
+
+    email = app.email
+    domain = Passwordless.get_email_domain!(app)
     changeset = Passwordless.change_email(email)
 
     email_template = Repo.preload(email, :email_template).email_template
-    email_version = Passwordless.get_email_template_version(email_template, :en)
+    email_version = Passwordless.get_email_template_version(email_template)
 
     {:ok,
      socket
@@ -40,7 +43,9 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
   # Private
 
   defp save_email(socket, params) do
-    case Passwordless.update_email(socket.assigns.email, params) do
+    opts = [domain: socket.assigns[:domain]]
+
+    case Passwordless.update_email(socket.assigns.email, params, opts) do
       {:ok, email} ->
         changeset =
           email
@@ -61,5 +66,6 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
     socket
     |> assign(form: to_form(changeset))
     |> assign(enabled: Ecto.Changeset.fetch_field!(changeset, :enabled))
+    |> assign(email_tracking: Ecto.Changeset.fetch_field!(changeset, :email_tracking))
   end
 end

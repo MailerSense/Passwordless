@@ -26,7 +26,6 @@
       placeholder={gettext("Your name")}
       phx-debounce="blur"
       required
-      required_asterix={false}
     />
     <.field
       type="email"
@@ -35,7 +34,6 @@
       autocomplete="email"
       phx-debounce="blur"
       required
-      required_asterix={false}
     />
     <.field
       type="password"
@@ -45,7 +43,6 @@
       field={@form[:password]}
       autocomplete="new-password"
       required
-      required_asterix={false}
     />
     <div class="flex mt-6">
       <.button label={gettext("Create account")} class="flex flex-1" />

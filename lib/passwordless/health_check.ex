@@ -3,6 +3,7 @@ defmodule Passwordless.HealthCheck do
   Responsible for doing the health checks
   and returning the result to the caller
   """
+
   use GenServer
 
   import SqlFmt.Helpers

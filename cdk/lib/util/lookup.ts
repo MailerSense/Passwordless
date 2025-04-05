@@ -24,8 +24,6 @@ export interface HostedZoneConfig<D extends string> {
 export interface BaseEnvConfig<D extends string> {
   cidr: string;
   appConfig: Record<string, string>;
-  metabaseDomain: string;
-  metabaseVersion: string;
   generalSecretArn: string;
   hostedZoneIo: HostedZoneConfig<D>;
   hostedZoneCom: HostedZoneConfig<D>;
@@ -45,8 +43,6 @@ export const lookupMap: EnvConfigMap = {
       PHX_HOST: "dev.passwordless.tools",
       POOL_SIZE: "10",
     },
-    metabaseDomain: "metabase.dev.passwordless.tools",
-    metabaseVersion: "v0.50.23",
     generalSecretArn: "",
     hostedZoneIo: {
       hostedZoneId: "",
@@ -69,11 +65,9 @@ export const lookupMap: EnvConfigMap = {
     cidr: "10.1.0.0/16",
     appConfig: {
       PORT: "8000",
-      PHX_HOST: "passwordless.tools",
+      PHX_HOST: "eu.passwordless.tools",
       POOL_SIZE: "20",
     },
-    metabaseDomain: "metabase.passwordless.tools",
-    metabaseVersion: "v0.50.23",
     generalSecretArn:
       "arn:aws:secretsmanager:eu-west-1:699475934458:secret:general-application-config-lZ3xbr",
     hostedZoneIo: {

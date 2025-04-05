@@ -655,7 +655,6 @@ defmodule PasswordlessWeb.Components.Field do
               "pc-copyable-field-input",
               if(Util.present?(@prefix), do: "rounded-l-none!")
             ]}
-            readonly
             disabled={@disabled}
             {@rest}
           />

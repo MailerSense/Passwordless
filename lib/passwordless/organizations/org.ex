@@ -40,7 +40,7 @@ defmodule Passwordless.Organizations.Org do
     soft_delete_timestamp()
   end
 
-  def is_admin?(%__MODULE__{tags: tags}) do
+  def admin?(%__MODULE__{tags: tags}) do
     Enum.member?(tags, :admin)
   end
 
@@ -77,6 +77,6 @@ defmodule Passwordless.Organizations.Org do
   end
 
   defp validate_tags(changeset) do
-    update_change(changeset, :tags, &Enum.uniq/1)
+    ChangesetExt.clean_array(changeset, :tags)
   end
 end

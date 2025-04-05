@@ -1,5 +1,4 @@
 import { Hook, makeHook } from "./typed-hook";
-
 import { create, expand, render } from "../lib/json";
 
 class JSONHook extends Hook {

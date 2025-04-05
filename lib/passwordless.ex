@@ -1,10 +1,6 @@
 defmodule Passwordless do
   @moduledoc """
-  Passwordless keeps the contexts that define your domain
-  and business logic.
-
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
+  Passwordless authentication made easy.
   """
 
   import Ecto.Query
@@ -17,18 +13,18 @@ defmodule Passwordless do
   alias Passwordless.App
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
+  alias Passwordless.Challenge
   alias Passwordless.Domain
   alias Passwordless.DomainRecord
   alias Passwordless.Email
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateVersion
-  alias Passwordless.Mailer
-  alias Passwordless.MailerExecutor
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
+  alias Passwordless.Rule
 
   @authenticators [
     email: Authenticators.Email,
@@ -43,13 +39,6 @@ defmodule Passwordless do
 
   @doc """
   Looks up `Application` config or raises if keyspace is not configured.
-  ## Examples
-      config :passwordless, :files, [
-        uploads_dir: Path.expand("../priv/uploads", __DIR__),
-        host: [scheme: "http", host: "localhost", port: 4000],
-      ]
-      iex> Passwordless.config([:files, :uploads_dir])
-      iex> Passwordless.config([:files, :host, :port])
   """
   def config([main_key | rest] = keyspace) when is_list(keyspace) do
     main = Application.fetch_env!(:passwordless, main_key)
@@ -188,9 +177,9 @@ defmodule Passwordless do
     DomainRecord.order(Repo.preload(domain, :records).records)
   end
 
-  def create_domain(%App{} = app, attrs \\ %{}) do
+  def create_email_domain(%App{} = app, attrs \\ %{}) do
     app
-    |> Ecto.build_assoc(:domain)
+    |> Ecto.build_assoc(:email_domain)
     |> Domain.changeset(attrs)
     |> Repo.insert()
   end
@@ -223,7 +212,7 @@ defmodule Passwordless do
   def replace_domain(%App{} = app, %Domain{} = current_domain, attrs, records) do
     Repo.transact(fn ->
       with {:ok, _deleted} <- delete_domain(current_domain),
-           {:ok, domain} <- create_domain(app, attrs),
+           {:ok, domain} <- create_email_domain(app, attrs),
            {:ok, records} <-
              Enum.reduce(records, {:ok, []}, fn record, {:ok, acc} ->
                case create_domain_record(domain, record) do
@@ -268,7 +257,7 @@ defmodule Passwordless do
     |> Map.from_struct()
     |> Map.take(names)
     |> Map.reject(fn {_key, mod} -> Util.blank?(mod) end)
-    |> Enum.sort_by(&Map.get(order, &1))
+    |> Enum.sort_by(fn {key, _mod} -> Map.get(order, key) end)
   end
 
   def fetch_authenticator(%App{} = app, key) do
@@ -278,6 +267,29 @@ defmodule Passwordless do
         _ -> {:error, :not_found}
       end
     end
+  end
+
+  def get_email_domain(%App{} = app) do
+    case Repo.preload(app, :email_domain) do
+      %App{email_domain: %Domain{purpose: :email} = domain} ->
+        {:ok, domain}
+
+      _ ->
+        case Repo.one(Domain.get_by_tags([:system, :default])) do
+          %Domain{purpose: :email} = domain ->
+            if Domain.system?(domain),
+              do: {:ok, domain},
+              else: {:error, :system_domain_not_found}
+
+          _ ->
+            {:error, :default_domain_not_found}
+        end
+    end
+  end
+
+  def get_email_domain!(%App{} = app) do
+    {:ok, domain} = get_email_domain(app)
+    domain
   end
 
   crud(:magic_link, :magic_link, Passwordless.Authenticators.MagicLink)
@@ -343,15 +355,11 @@ defmodule Passwordless do
   end
 
   def update_actor(%App{} = app, %Actor{} = actor, attrs) do
-    actor
-    |> Actor.changeset(attrs)
-    |> Repo.update(prefix: Tenant.to_prefix(app))
-  end
+    opts = [prefix: Tenant.to_prefix(app)]
 
-  def update_actor_properties(%App{} = app, %Actor{} = actor, attrs) do
     actor
-    |> Actor.properties_changeset(attrs)
-    |> Repo.update(prefix: Tenant.to_prefix(app))
+    |> Actor.changeset(attrs, opts)
+    |> Repo.update(opts)
   end
 
   def delete_actor(%App{} = app, %Actor{} = actor) do
@@ -485,7 +493,9 @@ defmodule Passwordless do
   # Action
 
   def get_action!(%App{} = app, id) do
-    Repo.get!(Action, id, prefix: Tenant.to_prefix(app))
+    Action
+    |> Repo.get!(id, prefix: Tenant.to_prefix(app))
+    |> Repo.preload(actor: [:email, :phone])
   end
 
   def create_action(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
@@ -501,12 +511,43 @@ defmodule Passwordless do
     |> Repo.update(prefix: Tenant.to_prefix(app))
   end
 
+  # Challenge
+
+  def get_challenge!(%App{} = app, id) do
+    Repo.get!(Action, id, prefix: Tenant.to_prefix(app))
+  end
+
+  def get_challenge(%App{} = app, id) do
+    Repo.get(Action, id, prefix: Tenant.to_prefix(app))
+  end
+
+  def create_challenge(%App{} = app, %Action{} = action, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    action
+    |> Ecto.build_assoc(:challenges)
+    |> Challenge.changeset(attrs, opts)
+    |> Repo.insert(opts)
+  end
+
   # Event
 
   def create_event(%App{} = app, %Action{} = action, attrs \\ %{}) do
     action
-    |> Ecto.build_assoc(:events)
+    |> Ecto.build_assoc(:action_events)
     |> ActionEvent.changeset(attrs)
+    |> Repo.insert(prefix: Tenant.to_prefix(app))
+  end
+
+  # Rules
+
+  def get_rule!(%App{} = app, id) do
+    Repo.get!(Action, id, prefix: Tenant.to_prefix(app))
+  end
+
+  def create_rule(%App{} = app, attrs \\ %{}) do
+    %Rule{}
+    |> Rule.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
@@ -523,7 +564,7 @@ defmodule Passwordless do
     end)
   end
 
-  def get_email_template_version(%EmailTemplate{} = email_template, language) do
+  def get_email_template_version(%EmailTemplate{} = email_template, language \\ :en) do
     email_template
     |> Ecto.assoc(:versions)
     |> where(language: ^language)
@@ -681,26 +722,5 @@ defmodule Passwordless do
       fn -> get_app_mau_count(app, date) end,
       ttl: :timer.hours(1)
     )
-  end
-
-  @doc """
-  Deliver a pin code to sign in without a password.
-  """
-  def deliver_email_otp(%App{} = app, %Actor{} = actor, %Action{} = action, %Email{} = email, attrs \\ %{}) do
-    nil
-  end
-
-  # Private
-
-  defp deliver(%Swoosh.Email{} = email) do
-    with {:ok, _job} <- enqueue_worker(Mailer.to_map(email)) do
-      {:ok, email}
-    end
-  end
-
-  defp enqueue_worker(email) do
-    %{email: email}
-    |> MailerExecutor.new()
-    |> Oban.insert()
   end
 end

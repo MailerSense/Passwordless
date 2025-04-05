@@ -20,21 +20,11 @@
       label={gettext("Relying Party ID")}
       disabled={not @enabled}
       required
-      required_asterix={false}
       help_text={
         gettext(
           "The relying party ID is a unique identifier for your application. It is used to generate the passkey and must be the same across all devices."
         )
       }
-    />
-    <.field
-      type="select"
-      field={@form[:uplift_prompt_interval]}
-      options={@intervals}
-      required
-      required_asterix={false}
-      disabled={not @enabled}
-      help_text={gettext("Specifies how frequently users will be asked to add a passkey.")}
     />
     <.form_separator />
     <.form_header title="Advanced" />
@@ -47,6 +37,14 @@
         )
       }
       disabled={not @enabled}
+    />
+    <.field
+      type="select"
+      field={@form[:uplift_prompt_interval]}
+      options={@intervals}
+      required
+      disabled={not @enabled}
+      help_text={gettext("Specifies how frequently users will be asked to add a passkey.")}
     />
     <div class="pc-form-field-wrapper">
       <.form_label>{gettext("Expected origins")}</.form_label>

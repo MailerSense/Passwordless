@@ -1,5 +1,7 @@
 defmodule Passwordless.Formatter do
-  @moduledoc false
+  @moduledoc """
+  Formats code snippets for different languages. Uses the `Passwordless.Native` module to format code.
+  """
 
   def format!(code, language) when language in [:javascript, :typescript, :html] do
     Passwordless.Native.format_code(code, language)

@@ -66,7 +66,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
     to =
       if filtered? do
-        ~p"/app/users?#{DataTable.build_filter_params(socket.assigns.meta, filter_params)}"
+        ~p"/app/users?#{build_filter_params(socket.assigns.meta, filter_params)}"
       else
         ~p"/app/users"
       end
@@ -145,7 +145,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   defp apply_filters(filters, %Flop.Meta{} = meta, path)
        when is_map(filters) and map_size(filters) > 0 and is_binary(path) do
-    path <> "?" <> Plug.Conn.Query.encode(update_filter_params(meta, filters))
+    path <> "?" <> Plug.Conn.Query.encode(DataTable.build_params(meta, filters))
   end
 
   defp apply_filters(_filters, _meta, path) when is_binary(path), do: path

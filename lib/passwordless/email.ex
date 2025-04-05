@@ -11,17 +11,19 @@ defmodule Passwordless.Email do
   alias Passwordless.Actor
   alias Passwordless.EmailMessage
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :address,
-             :primary,
-             :verified,
-             :opted_out_at,
-             :inserted_at,
-             :updated_at,
-             :deleted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :address,
+      :primary,
+      :verified,
+      :opted_out_at,
+      :inserted_at,
+      :updated_at,
+      :deleted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -65,7 +67,7 @@ defmodule Passwordless.Email do
     |> unique_constraint([:actor_id, :primary], error_key: :primary)
     |> unique_constraint([:actor_id, :address], error_key: :address)
     |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo,
-      query: from(e in __MODULE__, where: e.primary == true),
+      query: from(e in __MODULE__, where: e.primary),
       prefix: Keyword.get(opts, :prefix),
       error_key: :primary
     )

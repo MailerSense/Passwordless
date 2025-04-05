@@ -17,17 +17,18 @@ defmodule Passwordless.Action do
 
   @states ~w(allow timeout block pending)a
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :name,
-             :state,
-             :challenge,
-             :challenges,
-             :action_events,
-             :inserted_at,
-             :updated_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :name,
+      :state,
+      :challenge,
+      :action_events,
+      :inserted_at,
+      :updated_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -69,6 +70,13 @@ defmodule Passwordless.Action do
   end
 
   @doc """
+  Get where actor is present.
+  """
+  def where_actor_is_present(query \\ __MODULE__) do
+    from q in query, where: not is_nil(q.actor_id)
+  end
+
+  @doc """
   Get by actor.
   """
   def get_by_actor(query \\ __MODULE__, %App{} = app, %Actor{} = actor) do
@@ -86,13 +94,13 @@ defmodule Passwordless.Action do
   Preload associations.
   """
   def preload_actor(query \\ __MODULE__) do
-    from q in query, preload: [:events, actor: [:email, :phone]]
+    from q in query, preload: [actor: [:email, :phone]]
   end
 
   @fields ~w(
     name
-    flow
     state
+    rule_id
     actor_id
   )a
   @required_fields @fields

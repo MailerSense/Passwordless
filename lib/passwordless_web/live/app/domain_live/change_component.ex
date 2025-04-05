@@ -60,7 +60,7 @@ defmodule PasswordlessWeb.App.DomainLive.ChangeComponent do
   end
 
   @impl true
-  def handle_event(event, _params, socket) do
+  def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
 

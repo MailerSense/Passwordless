@@ -16,7 +16,7 @@ defmodule PasswordlessWeb.Plugs.ParseIP do
   # Private
 
   defp process(%Plug.Conn{} = conn, forwarded_ip) when is_binary(forwarded_ip) do
-    with {:ok, ip_address} <- InetCidr.parse_address(forwarded_ip), true <- is_public_ip(ip_address) do
+    with {:ok, ip_address} <- InetCidr.parse_address(forwarded_ip), true <- public_ip?(ip_address) do
       assign(%Plug.Conn{conn | remote_ip: ip_address}, :current_user_ip, format_ip(ip_address))
     else
       _ -> assign(conn, :current_user_ip, format_ip(conn.remote_ip))
@@ -29,7 +29,7 @@ defmodule PasswordlessWeb.Plugs.ParseIP do
 
   defp format_ip(ip), do: to_string(:inet.ntoa(ip))
 
-  defp is_public_ip({_, _, _, _} = ip_address) do
+  defp public_ip?({_, _, _, _} = ip_address) do
     case ip_address do
       {10, _, _, _} -> false
       {192, 168, _, _} -> false
@@ -40,5 +40,5 @@ defmodule PasswordlessWeb.Plugs.ParseIP do
     end
   end
 
-  defp is_public_ip(_ip_address), do: true
+  defp public_ip?(_ip_address), do: true
 end

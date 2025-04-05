@@ -11,7 +11,7 @@ defmodule Passwordless.Security.Roles do
       admin: {"Has admin access to everything", "fuchsia"},
       manager: {"Has access to most settings", "purple"},
       member: {"Is a regular member", "indigo"},
-      billing: {"Has access to billing settings", "blue"}
+      billing: {"Has access to billing settings", "cyan"}
     ]
 
   def auth_token_scopes, do: [:sync]

@@ -1,6 +1,4 @@
 <.tabbed_settings_layout current_user={@current_user} current_page={:app_settings}>
-  <:action></:action>
-
   <.form id="edit-app-form" for={@form} phx-submit="save" phx-change="validate">
     <.image_input
       upload={@uploads.logo}
@@ -15,7 +13,6 @@
       placeholder={gettext("e.g. YourSite")}
       autocomplete="organization"
       required
-      required_asterix={false}
     />
     <.field
       type="url"
@@ -23,30 +20,16 @@
       placeholder={gettext("e.g. https://gmail.com")}
       autocomplete="url"
       required
-      required_asterix={false}
     />
     <.field
       field={@form[:display_name]}
       placeholder={gettext("e.g. YourApp")}
       autocomplete="organization"
       required
-      required_asterix={false}
     />
     <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
-      <.field
-        field={@form[:primary_button_color]}
-        type="color"
-        required
-        required_asterix={false}
-        wrapper_class="mb-0!"
-      />
-      <.field
-        field={@form[:secondary_button_color]}
-        type="color"
-        required
-        required_asterix={false}
-        wrapper_class="mb-0!"
-      />
+      <.field field={@form[:primary_button_color]} type="color" required wrapper_class="mb-0!" />
+      <.field field={@form[:secondary_button_color]} type="color" required wrapper_class="mb-0!" />
     </div>
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -57,7 +40,7 @@
           link_type="live_redirect"
         />
       </div>
-      <.button icon="remix-save-line" label={gettext("Save changes")} />
+      <.button icon="remix-save-line" label={gettext("Save")} />
     </div>
   </.form>
 </.tabbed_settings_layout>

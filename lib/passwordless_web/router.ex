@@ -66,10 +66,6 @@ defmodule PasswordlessWeb.Router do
 
     # Add public controller routes here
     get "/", PageController, :landing_page
-    get "/docs", PageController, :docs
-    get "/guides", PageController, :guides
-    get "/terms", PageController, :terms
-    get "/privacy", PageController, :privacy
     get "/sitemap.xml", SitemapController, :index
   end
 

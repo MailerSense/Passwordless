@@ -58,7 +58,7 @@ defmodule PasswordlessWeb.User.ProfileLive do
   defp update_profile(socket, user_params) do
     case Accounts.update_user_profile(socket.assigns.current_user, user_params) do
       {:ok, user} ->
-        Activity.log_async(:user, :"user.update_profile", %{user: user})
+        Activity.log_async(:"user.update_profile", %{user: user})
 
         socket =
           socket

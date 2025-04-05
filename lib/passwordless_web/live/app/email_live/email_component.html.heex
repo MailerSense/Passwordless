@@ -5,8 +5,8 @@
     phx-change="validate_version"
     phx-submit="save_version"
   >
-    <.field field={@version_form[:subject]} required required_asterix={false} />
-    <.field field={@version_form[:preheader]} />
+    <.field field={@version_form[:subject]} required />
+    <.field field={@version_form[:preheader]} required />
     <.field
       type="select"
       field={@version_form[:current_language]}
@@ -15,7 +15,6 @@
       icon={@flag_icon}
       icon_class="pc-select-input__flag"
       required
-      required_asterix={false}
     />
     <.a
       to={~p"/app/emails/#{@template}/#{@language}/#{@live_action}?variables=true"}

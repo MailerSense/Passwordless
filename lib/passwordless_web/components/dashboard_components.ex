@@ -349,7 +349,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       @class
     ]}>
       {Phoenix.HTML.raw(
-        Passwordless.MarkdownRenderer.to_html(@content, %Earmark.Options{
+        Passwordless.Templating.Markdown.to_html(@content, %Earmark.Options{
           code_class_prefix: "language-",
           escape: false
         })
@@ -447,7 +447,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       class={[
         "flex flex-col items-center justify-center gap-4 px-6",
         "lg:first:pl-0 lg:last:pr-0",
-        "transition duration-150 ease-in-out hover:bg-gray-50 focus:bg-gray-100 active:bg-gray-100 dark:hover:bg-gray-700 dark:focus:bg-gray-600 dark:active:bg-gray-600",
+        "transition duration-150 ease-in-out hover:bg-slate-50 focus:bg-slate-100 active:bg-slate-100 dark:hover:bg-slate-700 dark:focus:bg-slate-600 dark:active:bg-slate-600",
         @class
       ]}
     >
@@ -455,7 +455,7 @@ defmodule PasswordlessWeb.DashboardComponents do
         <.icon name={@icon} class={["w-8 h-8", "pc-quickadd--#{@color}-text"]} />
       </span>
       <div class="flex flex-col gap-1 items-center">
-        <span class="text-base font-semibold leading-tight text-gray-900 dark:text-white">
+        <span class="text-base font-semibold leading-tight text-slate-900 dark:text-white">
           {@title}
         </span>
         <.badge size="sm" color={@badge_color} label={@badge_label} />

@@ -33,7 +33,9 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
     states = Enum.map(Actor.states(), fn state -> {Phoenix.Naming.humanize(state), state} end)
     changeset = Passwordless.change_actor(app, actor)
-    languages = Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
+
+    languages =
+      Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
 
     flag_mapping = fn
       nil -> "flag-gb"
@@ -42,9 +44,18 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
       code -> "flag-#{code}"
     end
 
+    return_to = Map.get(params, "return_to", ~p"/app/users")
+
     socket =
       socket
-      |> assign(actor: actor, states: states, languages: languages, flag_mapping: flag_mapping, property_editor: false)
+      |> assign(
+        actor: actor,
+        states: states,
+        languages: languages,
+        flag_mapping: flag_mapping,
+        property_editor: false,
+        return_to: return_to
+      )
       |> assign_form(changeset)
       |> assign_emails(actor)
       |> assign_phones(actor)
@@ -125,7 +136,9 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
       {:ok, actor} ->
         {:noreply,
          socket
-         |> put_toast(:info, gettext("User \"%{name}\" has been deleted.", name: actor_name(actor)),
+         |> put_toast(
+           :info,
+           gettext("User \"%{name}\" has been deleted.", name: actor_name(actor)),
            title: gettext("Success")
          )
          |> push_navigate(to: ~p"/app/users")}

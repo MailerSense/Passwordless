@@ -18,17 +18,17 @@ defmodule Passwordless.Security.Policy.Accounts do
 
   @impl true
   def authorize(%User{current_membership: %Membership{} = current}, :"user.impersonate", %User{} = _other) do
-    Membership.is_or_higher?(current, :admin)
+    Membership.at_least?(current, :admin)
   end
 
   @impl true
   def authorize(%User{current_membership: %Membership{} = current}, _action, %Membership{} = other) do
-    Membership.is_or_higher?(current, :manager) and Membership.access_level(current) <= Membership.access_level(other)
+    Membership.at_least?(current, :manager) and Membership.access_level(current) <= Membership.access_level(other)
   end
 
   @impl true
   def authorize(%User{current_membership: %Membership{} = current}, :"org.update_profile", _org) do
-    Membership.is_or_higher?(current, :manager)
+    Membership.at_least?(current, :manager)
   end
 
   @impl true

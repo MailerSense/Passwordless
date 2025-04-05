@@ -8,13 +8,15 @@ defmodule Passwordless.ActionEvent do
   alias Database.ChangesetExt
   alias Passwordless.Action
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :event,
-             :metadata,
-             :inserted_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :event,
+      :metadata,
+      :inserted_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -41,11 +43,7 @@ defmodule Passwordless.ActionEvent do
   end
 
   @fields ~w(
-    flow
     event
-    from_state
-    to_state
-    metadata
     user_agent
     ip_address
     country
@@ -53,11 +51,7 @@ defmodule Passwordless.ActionEvent do
     action_id
   )a
   @required_fields ~w(
-    flow
     event
-    from_state
-    to_state
-    metadata
     action_id
   )a
 
@@ -73,7 +67,7 @@ defmodule Passwordless.ActionEvent do
     |> validate_string(:country)
     |> validate_string(:city)
     |> assoc_constraint(:action)
-    |> assoc_constraint(:email_message)
+    |> cast_embed(:metadata, with: &metadata_changeset/2)
   end
 
   # Private
@@ -87,7 +81,7 @@ defmodule Passwordless.ActionEvent do
   defp validate_ip_address(%Ecto.Changeset{valid?: true} = changeset) do
     with {_, raw_ip} <- fetch_field(changeset, :ip_address),
          {:ok, ip_address} <- InetCidr.parse_address(raw_ip),
-         true <- is_public_ip(ip_address) do
+         true <- public_ip?(ip_address) do
       put_change(changeset, :ip_address, to_string(:inet.ntoa(ip_address)))
     else
       _ -> delete_change(changeset, :ip_address)
@@ -102,7 +96,7 @@ defmodule Passwordless.ActionEvent do
     |> validate_length(:user_agent, min: 1, max: 1024)
   end
 
-  defp is_public_ip({_, _, _, _} = ip_address) do
+  defp public_ip?({_, _, _, _} = ip_address) do
     case ip_address do
       {10, _, _, _} -> false
       {192, 168, _, _} -> false
@@ -113,5 +107,19 @@ defmodule Passwordless.ActionEvent do
     end
   end
 
-  defp is_public_ip(_ip_address), do: true
+  defp public_ip?(_ip_address), do: true
+
+  @metadata_fields ~w(
+    before
+    after
+    attrs
+  )a
+
+  defp metadata_changeset(%__MODULE__.Metadata{} = metadata, attrs) do
+    metadata
+    |> cast(attrs, @metadata_fields)
+    |> ChangesetExt.ensure_property_map(:before)
+    |> ChangesetExt.ensure_property_map(:after)
+    |> ChangesetExt.ensure_property_map(:attrs)
+  end
 end

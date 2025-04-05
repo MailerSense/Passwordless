@@ -344,12 +344,12 @@ defmodule PasswordlessWeb.CoreComponents do
       <div class="pc-form-field-wrapper">
         <.form_label>{@label}</.form_label>
         <pre id={@id} phx-hook="HighlightHook">
-          <code class={[@class, @language_class, "text-sm font-mono rounded-lg"]}>{@code}</code>
+          <code class={[@class, @language_class, "text-base font-mono rounded-lg"]}>{@code}</code>
         </pre>
       </div>
     <% else %>
       <pre id={@id} phx-hook="HighlightHook">
-        <code class={[@class, @language_class, "text-sm font-mono rounded-lg"]}>{@code}</code>
+        <code class={[@class, @language_class, "text-base font-mono rounded-lg"]}>{@code}</code>
       </pre>
     <% end %>
     """

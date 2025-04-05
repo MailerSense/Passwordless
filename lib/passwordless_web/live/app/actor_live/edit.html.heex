@@ -3,7 +3,7 @@
     <.subpage_header field={@form[:name]}>
       <div class="flex gap-3">
         <.button
-          to={~p"/app/users"}
+          to={@return_to}
           size="md"
           type="button"
           color="light"
@@ -34,8 +34,25 @@
 
     <div class="flex flex-col gap-6">
       <.box padded>
-        <.field type="radio-group" field={@form[:state]} options={@states} />
-        <.field field={@form[:user_id]} label={gettext("User ID")} disabled={not @user_active} />
+        <.field type="checkbox" field={@form[:active]} />
+        <.p>
+          <%= if @user_active do %>
+            {gettext("User is active and can authenticate with the %{app}.",
+              app: user_app_name(@current_user)
+            )}
+          <% else %>
+            {gettext("User is locked and cannot authenticate with the %{app}.",
+              app: user_app_name(@current_user)
+            )}
+          <% end %>
+        </.p>
+        <.form_separator />
+        <.field
+          field={@form[:user_id]}
+          label={gettext("User ID")}
+          disabled={not @user_active}
+          copyable
+        />
         <.field
           field={@form[:language]}
           type="select"
@@ -56,29 +73,47 @@
             rows="6"
           />
           <.a
-            label={gettext("Stop editing")}
+            label={gettext("Finish editing properties")}
             styled
             link_type="a"
             phx-click="toggle_property_editor"
             disabled={not @form.source.valid?}
           />
         <% else %>
+          <.field
+            type="hidden"
+            field={@form[:properties_text]}
+            value={Jason.encode!(@user_properties)}
+          />
           <.json_block
             label={gettext("Properties")}
             code={@user_properties}
             disabled={not @user_active}
           />
-          <.a
-            label={gettext("Edit properties")}
-            styled
-            link_type="a"
-            phx-click="toggle_property_editor"
-            disabled={not @user_active}
-          />
+          <div class="flex items-center gap-3 flex-wrap">
+            <.a
+              label={gettext("Edit properties")}
+              styled
+              link_type="a"
+              phx-click="toggle_property_editor"
+              disabled={not @user_active}
+            />
+            <.a
+              label={gettext("Add new email")}
+              styled
+              link_type="live_patch"
+              to={~p"/app/users/#{@actor}/edit/email/new"}
+            />
+            <.a
+              label={gettext("Add new phone")}
+              styled
+              link_type="live_patch"
+              to={~p"/app/users/#{@actor}/edit/phone/new"}
+            />
+          </div>
         <% end %>
       </.box>
       <.form_separator no_margin />
-      <.form_header title={gettext("Credentials")} no_margin />
       <.p class="text-slate-600 dark:text-slate-300">
         Email and phone numbers are used to send notifications and authenticate users. You can add multiple emails and phone numbers to a user account.
       </.p>
@@ -119,16 +154,6 @@
             link_type="live_patch"
           />
         </:actions>
-        <:header_actions>
-          <.button
-            size="xs"
-            link_type="live_patch"
-            to={~p"/app/users/#{@actor}/edit/email/new"}
-            icon="remix-add-circle-line"
-            label={gettext("Add")}
-            color="light"
-          />
-        </:header_actions>
       </.simple_table>
       <.simple_table items={@phones} count={Enum.count(@phones)} title={gettext("Phones")}>
         <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
@@ -177,19 +202,9 @@
             link_type="live_patch"
           />
         </:actions>
-        <:header_actions>
-          <.button
-            size="xs"
-            link_type="live_patch"
-            to={~p"/app/users/#{@actor}/edit/phone/new"}
-            icon="remix-add-circle-line"
-            label={gettext("Add")}
-            color="light"
-          />
-        </:header_actions>
       </.simple_table>
+
       <.form_separator no_margin />
-      <.form_header title={gettext("Security devices")} no_margin />
       <.p class="text-slate-600 dark:text-slate-300">
         Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
       </.p>
@@ -241,11 +256,6 @@
           />
         </:actions>
       </.simple_table>
-      <.form_separator no_margin />
-      <.form_header title={gettext("Mobile applications")} no_margin />
-      <.p class="text-slate-600 dark:text-slate-300">
-        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
-      </.p>
       <.simple_table items={@totps} count={Enum.count([])} title={gettext("Time-based OTPs")}>
         <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
         <:col field={:name} body_class="w-full" />
@@ -269,48 +279,50 @@
           />
         </:actions>
       </.simple_table>
-      <.form_separator no_margin />
-      <.form_header title={gettext("User history")} no_margin />
-      <.p class="text-slate-600 dark:text-slate-300">
-        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
-      </.p>
-      <.data_table id="actions" meta={@meta} title={gettext("Previous actions")} items={@actions}>
-        <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-        <:col :let={action} label={gettext("Action")} field={:name}>
-          {Phoenix.Naming.humanize(Macro.underscore(action.name))}
-        </:col>
-        <:col :let={action} label={gettext("Region")} field={:location}>
-          <div class="flex items-center gap-2">
-            <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
-          </div>
-        </:col>
-        <:col :let={action} label={gettext("Elapsed")} field={:location}>
-          <div class="flex items-center gap-2">
-            <.icon name="remix-timer-2-line" class="w-5 h-5" />
-            {Util.elapsed(action.inserted_at, action.updated_at)}
-          </div>
-        </:col>
-        <:col :let={action} label={gettext("State")} field={:state}>
-          <% {badge_label, badge_color} = action_state_badge(action) %>
-          <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-        </:col>
-        <:col :let={action} label={gettext("When")} field={:inserted_at}>
-          {Timex.from_now(action.inserted_at)}
-        </:col>
-        <:col actions></:col>
-        <:actions :let={action}>
-          <.icon_button
-            to={~p"/app/home/#{action}/view"}
-            size="sm"
-            icon="custom-edit"
-            color="light"
-            title={gettext("Edit")}
-            link_type="live_patch"
-          />
-        </:actions>
-      </.data_table>
     </div>
   </.form>
+
+  <div class="flex flex-col gap-6">
+    <.form_separator no_margin />
+    <.p class="text-slate-600 dark:text-slate-300">
+      Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
+    </.p>
+    <.data_table id="actions" meta={@meta} title={gettext("Actions")} items={@actions}>
+      <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+      <:col :let={action} label={gettext("Action")} field={:name}>
+        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+      </:col>
+      <:col :let={action} label={gettext("Region")} field={:location}>
+        <div class="flex items-center gap-2">
+          <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
+        </div>
+      </:col>
+      <:col :let={action} label={gettext("Elapsed")} field={:location}>
+        <div class="flex items-center gap-2">
+          <.icon name="remix-timer-2-line" class="w-5 h-5" />
+          {Util.elapsed(action.inserted_at, action.updated_at)}
+        </div>
+      </:col>
+      <:col :let={action} label={gettext("State")} field={:state}>
+        <% {badge_label, badge_color} = action_state_badge(action) %>
+        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+      </:col>
+      <:col :let={action} label={gettext("When")} field={:inserted_at}>
+        {Timex.from_now(action.inserted_at)}
+      </:col>
+      <:col actions></:col>
+      <:actions :let={action}>
+        <.icon_button
+          to={~p"/app/home/#{action}/view"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.data_table>
+  </div>
 </.layout>
 
 <%= case @live_action do %>

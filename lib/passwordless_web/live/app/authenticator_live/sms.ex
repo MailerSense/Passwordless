@@ -23,14 +23,10 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.SMS do
       code -> "flag-#{code}"
     end
 
-    preview = """
-    Your #{app.display_name} verification code is 123456. To stop receiving these messages, visit #{app.website}/sms-opt-out?code=#{app.id}.
-    """
-
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(sms: sms, preview: preview, languages: languages, flag_mapping: flag_mapping)
+     |> assign(sms: sms, languages: languages, flag_mapping: flag_mapping)
      |> assign_form(changeset)}
   end
 
@@ -65,8 +61,18 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.SMS do
   end
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    preview =
+      changeset
+      |> Ecto.Changeset.fetch_field!(:language)
+      |> Passwordless.SMS.format_message!(
+        url: socket.assigns.app.website,
+        code: Passwordless.OTP.generate_code(),
+        app_name: socket.assigns.app.name
+      )
+
     socket
     |> assign(form: to_form(changeset))
     |> assign(enabled: Ecto.Changeset.fetch_field!(changeset, :enabled))
+    |> assign(preview: preview)
   end
 end

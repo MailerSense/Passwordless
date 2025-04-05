@@ -1,6 +1,6 @@
 <div>
   <% origin = "right" %>
-  <.slide_over title={@title} subtitle={@subtitle} origin={origin} max_width="sm">
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin} max_width="lg">
     <:actions>
       <.button
         size="wide"
@@ -9,6 +9,14 @@
         label={gettext("Cancel")}
         phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
       />
+      <.button
+        to={~p"/app/action/#{@action}/download"}
+        size="wide"
+        label={gettext("Download")}
+        download
+        link_type="a"
+      />
     </:actions>
+    <.json_block label={gettext("Action details")} code={@action} />
   </.slide_over>
 </div>

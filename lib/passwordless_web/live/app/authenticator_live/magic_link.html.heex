@@ -14,24 +14,26 @@
     <.form_separator />
 
     <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2 mb-6">
-      <.field
-        field={@form[:sender_name]}
-        label={gettext("Sender")}
-        disabled={not @enabled}
-        required
-        required_asterix={false}
-        wrapper_class="mb-0!"
-      />
+      <.field field={@form[:sender_name]} disabled={not @enabled} required wrapper_class="mb-0!" />
       <.field
         field={@form[:sender]}
-        label={gettext("Email")}
-        suffix={Passwordless.Domain.email_suffix(@domain)}
+        label={gettext("Sender email")}
+        suffix={Domain.email_suffix(@domain)}
         disabled={not @enabled}
         required
-        required_asterix={false}
         wrapper_class="mb-0!"
       />
     </div>
+    <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
+      Do you want to send emails from your own domain?
+      <.a
+        to={~p"/app/domain"}
+        label={gettext("Set up custom domain")}
+        styled
+        class="inline"
+        link_type="live_redirect"
+      />
+    </.alert>
     <.email_preview
       to={
         ~p"/app/emails/#{@email_template}/en/edit?return_to=#{~p"/app/authenticators/magic-link"}"
@@ -40,14 +42,22 @@
       preview={@email_version.html_body}
       link_type="live_redirect"
     />
-    <.a
-      to={
-        ~p"/app/emails/#{@email_template}/en/edit?return_to=#{~p"/app/authenticators/magic-link"}"
-      }
-      label={gettext("Edit email template")}
-      styled
-      link_type="live_redirect"
-    />
+    <div class="flex items-center gap-3 flex-wrap">
+      <.a
+        to={~p"/app/authenticators/sms?sms_learn=true"}
+        label={gettext("Review pricing")}
+        styled
+        link_type="live_redirect"
+      />
+      <.a
+        to={
+          ~p"/app/emails/#{@email_template}/en/edit?return_to=#{~p"/app/authenticators/magic-link"}"
+        }
+        label={gettext("Edit email template")}
+        styled
+        link_type="live_redirect"
+      />
+    </div>
     <.form_separator />
     <.form_header title="Advanced" />
     <.field
@@ -73,12 +83,10 @@
     <.field
       field={@form[:expires]}
       type="number"
-      label={gettext("Link expires")}
-      prefix={gettext("After")}
+      label={gettext("Expires")}
       suffix={gettext("minutes")}
       disabled={not @enabled}
       required
-      required_asterix={false}
     />
     <.form_separator />
     <.form_header title="API - Send magic link" />

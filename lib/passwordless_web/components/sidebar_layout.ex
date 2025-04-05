@@ -90,9 +90,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
             data-tippy-content={gettext("Toggle Sidebar")}
             data-tippy-placement="right"
             @click.stop="sidebarOpen = !sidebarOpen"
-            aria-label={gettext("Collapse Sidebar")}
             aria-controls="sidebar"
-            x-bind:aria-expanded="sidebarOpen"
           >
             <.icon
               name="custom-board-document"
@@ -152,7 +150,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
           ]} />
 
           <.user_topbar_menu
-            class="flex items-center gap-3 h-full ml-auto border-l border-gray-200 dark:border-gray-700"
+            class="flex items-center gap-3 h-full ml-auto border-l border-slate-200 dark:border-slate-700"
             current_user={@current_user}
             user_menu_items={@user_menu_items}
           />

@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.WhatsApp do
   A WhatsApp authenticator.
   """
 
-  use Passwordless.Schema, prefix: "auwhtsp"
+  use Passwordless.Schema, prefix: "wtsappotp"
 
   alias Passwordless.App
 
@@ -36,7 +36,7 @@ defmodule Passwordless.Authenticators.WhatsApp do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = whatsapp, attrs \\ %{}) do
+  def changeset(%__MODULE__{} = whatsapp, attrs \\ %{}, opts \\ []) do
     whatsapp
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)

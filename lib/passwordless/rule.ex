@@ -7,14 +7,16 @@ defmodule Passwordless.Rule do
 
   alias Passwordless.Action
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :condition,
-             :effects,
-             :inserted_at,
-             :updated_at
-           ]}
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :condition,
+      :effects,
+      :inserted_at,
+      :updated_at
+    ]
+  }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -26,5 +28,20 @@ defmodule Passwordless.Rule do
     has_many :actions, Action, preload_order: [asc: :inserted_at]
 
     timestamps()
+  end
+
+  @fields ~w(
+    condition
+    effects
+  )a
+  @required_fields @fields
+
+  @doc """
+  A changeset.
+  """
+  def changeset(%__MODULE__{} = action, attrs \\ %{}) do
+    action
+    |> cast(attrs, @fields)
+    |> validate_required(@required_fields)
   end
 end

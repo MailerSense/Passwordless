@@ -4,23 +4,26 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.App
+  alias Passwordless.Domain
   alias Passwordless.Repo
 
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
-    magic_link = Repo.preload(app, :magic_link).magic_link
-    domain = Repo.preload(app, :domain).domain
+    app = Repo.preload(app, [:magic_link])
+
+    magic_link = app.magic_link
+    domain = Passwordless.get_email_domain!(app)
     changeset = Passwordless.change_magic_link(magic_link)
 
     email_template = Repo.preload(magic_link, :email_template).email_template
-    email_version = Passwordless.get_email_template_version(email_template, :en)
+    email_version = Passwordless.get_email_template_version(email_template)
 
     {:ok,
      socket
      |> assign(assigns)
      |> assign(
-       magic_link: magic_link,
        domain: domain,
+       magic_link: magic_link,
        email_template: email_template,
        email_version: email_version
      )
@@ -40,7 +43,9 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
   # Private
 
   defp save_magic_link(socket, params) do
-    case Passwordless.update_magic_link(socket.assigns.magic_link, params) do
+    opts = [domain: socket.assigns[:domain]]
+
+    case Passwordless.update_magic_link(socket.assigns.magic_link, params, opts) do
       {:ok, magic_link} ->
         changeset =
           magic_link
@@ -61,5 +66,6 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
     socket
     |> assign(form: to_form(changeset))
     |> assign(enabled: Ecto.Changeset.fetch_field!(changeset, :enabled))
+    |> assign(email_tracking: Ecto.Changeset.fetch_field!(changeset, :email_tracking))
   end
 end

@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.SMS do
   An SMS authenticator.
   """
 
-  use Passwordless.Schema, prefix: "ausms"
+  use Passwordless.Schema, prefix: "smsotp"
 
   alias Passwordless.App
 
@@ -36,7 +36,7 @@ defmodule Passwordless.Authenticators.SMS do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
+  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
     actor_email
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
