@@ -1,25 +1,37 @@
 import * as cdk from "aws-cdk-lib";
 import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
 import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
-import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
+import {
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  Port,
+} from "aws-cdk-lib/aws-ec2";
+import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
   AmiHardwareType,
   AsgCapacityProvider,
   Cluster,
+  ContainerImage,
   ContainerInsights,
   EcsOptimizedImage,
+  Secret,
 } from "aws-cdk-lib/aws-ecs";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { PublicHostedZone } from "aws-cdk-lib/aws-route53";
 import * as sm from "aws-cdk-lib/aws-secretsmanager";
 import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
+import { join } from "path";
 
+import { AppContainer, PublicEC2App } from "./application/public-ec2-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
+import { Migration } from "./lambda/migration";
 import { Certificate } from "./network/certificate";
 import { VPC } from "./network/vpc";
+import { CachedImage } from "./storage/cached-image";
 import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
 
@@ -179,7 +191,6 @@ export class PasswordlessTools extends cdk.Stack {
       domain: envLookup.hostedZone.domains.primary,
     });
 
-    /* 
     const imageName = "passwordless-tools-image";
     const cachedImage = new CachedImage(this, imageName, {
       exclude: ["node_modules", "deps", "_build", ".git"],
@@ -190,18 +201,6 @@ export class PasswordlessTools extends cdk.Stack {
         OBAN_PRO_AUTH_KEY: obanAuthKey,
       },
       platform: Platform.LINUX_ARM64,
-    });
-
- 
-    const comCertificate = new Certificate(this, "com-certificate", {
-      name: `${appName}-com-certificate`,
-      zone: comZone,
-      domain: envLookup.hostedZoneCom.domains.primary,
-    });
-
-    const publicSharing = new PublicBucket(this, "sharing-bucket", {
-      name: "sharing",
-      removalPolicy,
     });
 
     const appContainer: AppContainer = {
@@ -225,11 +224,6 @@ export class PasswordlessTools extends cdk.Stack {
           generalSecret,
           "SECRET_KEY_BASE",
         ),
-        // Contentful
-        CONTENTFUL_ACCESS_TOKEN: Secret.fromSecretsManager(
-          generalSecret,
-          "CONTENTFUL_ACCESS_TOKEN",
-        ),
         // OpenAI
         OPEN_AI_KEY: Secret.fromSecretsManager(generalSecret, "OPEN_AI_KEY"),
         // Google
@@ -249,7 +243,7 @@ export class PasswordlessTools extends cdk.Stack {
       },
       stopTimeout: Duration.seconds(30),
       containerPort: 8000,
-      memoryReservation: 512,
+      memoryReservation: 256,
     };
 
     const migrationName = "passwordless-tools-migration-lambda";
@@ -265,11 +259,11 @@ export class PasswordlessTools extends cdk.Stack {
 
     const app = new PublicEC2App(this, appName, {
       name: appName,
-      zone: ioZone,
-      domain: envLookup.hostedZoneIo.domains.primary,
+      zone,
+      domain: envLookup.hostedZone.domains.primary,
       cluster,
       desiredCount: 2,
-      certificate: ioCertificate.certificate,
+      certificate: certificate.certificate,
       container: appContainer,
       healthCheckCmd: "/app/bin/health",
       healthCheckPath: "/health/ready",
@@ -277,7 +271,7 @@ export class PasswordlessTools extends cdk.Stack {
       capacityProviderStrategies: [
         {
           capacityProvider:
-            capacityProviders["t4g-micro-asg-capacity-provider"]
+            capacityProviders["t4g-nano-asg-capacity-provider"]
               .capacityProviderName,
           weight: 100,
         },
@@ -302,6 +296,18 @@ export class PasswordlessTools extends cdk.Stack {
       Port.tcp(redis.port),
       `Allow traffic from app to Redis on port ${redis.port}`,
     );
+
+    /* 
+    const comCertificate = new Certificate(this, "com-certificate", {
+      name: `${appName}-com-certificate`,
+      zone: comZone,
+      domain: envLookup.hostedZoneCom.domains.primary,
+    });
+
+    const publicSharing = new PublicBucket(this, "sharing-bucket", {
+      name: "sharing",
+      removalPolicy,
+    });
 
     const _waf = new WAF(this, "main-waf", {
       name: `${appName}-waf`,
