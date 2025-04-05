@@ -6,6 +6,7 @@ import {
   AmiHardwareType,
   AsgCapacityProvider,
   Cluster,
+  ContainerInsights,
   EcsOptimizedImage,
 } from "aws-cdk-lib/aws-ecs";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
@@ -108,6 +109,7 @@ export class PasswordlessTools extends cdk.Stack {
       vpc: vpc.vpc,
       clusterName: `${appName}-cluster`,
       containerInsights: true,
+      containerInsightsV2: ContainerInsights.ENHANCED,
     });
 
     const capacityProviders = {
