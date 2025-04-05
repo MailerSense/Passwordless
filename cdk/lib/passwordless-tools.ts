@@ -39,7 +39,7 @@ export class PasswordlessTools extends cdk.Stack {
 
     const redisInstanceType =
       env == Environment.PROD
-        ? InstanceType.of(InstanceClass.T4G, InstanceSize.NANO)
+        ? InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO)
         : InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO);
 
     const logRetention =
