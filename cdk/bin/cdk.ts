@@ -6,7 +6,6 @@ import { BucketEncryption } from "aws-cdk-lib/aws-s3";
 import { PasswordlessTools } from "../lib/passwordless-tools";
 
 const env = process.env.DEPLOYMENT_ENV;
-
 const app = new cdk.App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: "passwordless-tools",

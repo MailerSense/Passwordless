@@ -1,50 +1,10 @@
 import * as cdk from "aws-cdk-lib";
-import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
-import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
-import {
-  CachePolicy,
-  OriginRequestPolicy,
-  ViewerProtocolPolicy,
-} from "aws-cdk-lib/aws-cloudfront";
-import {
-  LoadBalancerV2Origin,
-  S3BucketOrigin,
-} from "aws-cdk-lib/aws-cloudfront-origins";
-import {
-  InstanceClass,
-  InstanceSize,
-  InstanceType,
-  Port,
-} from "aws-cdk-lib/aws-ec2";
-import { Platform } from "aws-cdk-lib/aws-ecr-assets";
-import {
-  AmiHardwareType,
-  AsgCapacityProvider,
-  Cluster,
-  ContainerImage,
-  EcsOptimizedImage,
-  Secret,
-} from "aws-cdk-lib/aws-ecs";
+import { Duration, RemovalPolicy } from "aws-cdk-lib";
+import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
-import { PublicHostedZone } from "aws-cdk-lib/aws-route53";
-import * as sm from "aws-cdk-lib/aws-secretsmanager";
-import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
-import { join } from "path";
 
-import { AppContainer, PublicEC2App } from "./application/public-ec2-app";
-import { Backup } from "./database/backup";
-import { Postgres } from "./database/postgres";
-import { Redis } from "./database/redis";
-import { SES } from "./email/ses";
-import { Migration } from "./lambda/migration";
-import { CDN } from "./network/cdn";
-import { Certificate } from "./network/certificate";
-import { Redirect } from "./network/redirect";
 import { VPC } from "./network/vpc";
-import { WAF } from "./network/waf";
-import { CachedImage } from "./storage/cached-image";
-import { PublicBucket } from "./storage/public-bucket";
 import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
 
@@ -97,7 +57,7 @@ export class PasswordlessTools extends cdk.Stack {
       removalPolicy,
     });
 
-    const _clusterNamespace = new PrivateDnsNamespace(
+    /*  const _clusterNamespace = new PrivateDnsNamespace(
       this,
       "cluster-namespace",
       {
@@ -437,6 +397,6 @@ export class PasswordlessTools extends cdk.Stack {
         fromDomains: [envLookup.hostedZoneIo.domains.www],
         removalPolicy,
       });
-    }
+    } */
   }
 }

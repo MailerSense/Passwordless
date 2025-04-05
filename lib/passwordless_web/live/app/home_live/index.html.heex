@@ -52,12 +52,11 @@
             appSecret: '**********', // ⚠️ Never expose this in frontend code!
             defaultRules: [
               {
-                if: { last_authenticated_within: '15m' },
-                allow: true
+                condition: { type: "constant", value: true },
+                effects: [
+                  { type: "challenge", with: Passwordless.ALL_ENABLED_AUTHENTICATORS },
+                ],
               },
-              {
-                challenge: ['email_otp', 'magic_link']
-              }
             ]
           });
           """

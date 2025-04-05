@@ -21,6 +21,9 @@ config :passwordless, PasswordlessWeb.Endpoint,
 # In test we don't send emails.
 config :passwordless, Passwordless.Mailer, adapter: Swoosh.Adapters.Test
 
+# Configures the secret manager
+config :passwordless, :secret_manager, adapter: SecretManager.Test
+
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
