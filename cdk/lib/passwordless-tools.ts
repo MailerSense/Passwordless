@@ -55,11 +55,6 @@ export class PasswordlessTools extends cdk.Stack {
         ? InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO)
         : InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO);
 
-    const rdsReplicaType =
-      env == Environment.PROD
-        ? InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO)
-        : InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO);
-
     const redisInstanceType =
       env == Environment.PROD
         ? InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO)
