@@ -2,6 +2,8 @@ alias Passwordless.Accounts.UserSeeder
 alias Passwordless.Organizations
 alias Passwordless.Organizations.OrgSeeder
 
+Enum.each(Tenant.all(), &Tenant.drop_schema/1)
+
 admin = UserSeeder.admin()
 
 normal_user =

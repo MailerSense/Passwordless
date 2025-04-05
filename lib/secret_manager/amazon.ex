@@ -9,6 +9,14 @@ defmodule SecretManager.Amazon do
 
   @impl true
   def get(secret_name, _opts \\ []) when is_binary(secret_name) do
+    IO.inspect(secret_name)
+
+    IO.inspect(
+      secret_name
+      |> SecretsManager.get_secret_value()
+      |> ExAws.request()
+    )
+
     case secret_name
          |> SecretsManager.get_secret_value()
          |> ExAws.request() do
