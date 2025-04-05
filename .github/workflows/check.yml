@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-24-arm64
     strategy:
       matrix:
-        otp: ["27.2"]
+        otp: ["27.3"]
         elixir: ["1.18.3"]
     environment: ${{ (github.event.pull_request.base.ref == 'main' && 'main') || 'dev' }}
     steps:
