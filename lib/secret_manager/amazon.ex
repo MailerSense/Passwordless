@@ -12,7 +12,7 @@ defmodule SecretManager.Amazon do
     case secret_name
          |> SecretsManager.get_secret_value()
          |> ExAws.request() do
-      %{"SecretString" => secret_string} ->
+      {:ok, %{"SecretString" => secret_string}} ->
         {:ok, {:secret, secret_name, secret_string}}
 
       _ ->
