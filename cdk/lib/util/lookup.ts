@@ -1,38 +1,25 @@
 import { Environment } from "./environment";
 
-export type DevDomain =
-  | "cdn.dev.passwordless.tools"
-  | "dev.passwordless.tools"
-  | "dev.passwordlesstools.com"
-  | "www.dev.passwordless.tools";
-export type ProdDomain =
-  | "cdn.passwordless.tools"
-  | "passwordless.tools"
-  | "passwordlesstools.com"
-  | "www.passwordless.tools";
-
-export interface HostedZoneConfig<D extends string> {
+export interface HostedZoneConfig {
   hostedZoneId: string;
   domains: {
-    primary: D;
-    www?: D;
-    cdn?: D;
-    email?: D;
+    primary: string;
+    www?: string;
+    cdn?: string;
+    email?: string;
   };
 }
 
-export interface BaseEnvConfig<D extends string> {
+export interface BaseEnvConfig {
   cidr: string;
   appConfig: Record<string, string>;
   generalSecretArn: string;
-  hostedZoneIo: HostedZoneConfig<D>;
-  hostedZoneCom: HostedZoneConfig<D>;
+  hostedZone: HostedZoneConfig;
+  hostedZoneCom: HostedZoneConfig;
 }
 
 export type EnvConfigMap = {
-  [E in Environment]: BaseEnvConfig<
-    E extends Environment.DEV ? DevDomain : ProdDomain
-  >;
+  [E in Environment]: BaseEnvConfig;
 };
 
 export const lookupMap: EnvConfigMap = {
@@ -40,15 +27,14 @@ export const lookupMap: EnvConfigMap = {
     cidr: "10.0.0.0/16",
     appConfig: {
       PORT: "8000",
-      PHX_HOST: "dev.passwordless.tools",
+      PHX_HOST: "eu.dev.passwordless.tools",
       POOL_SIZE: "10",
     },
     generalSecretArn: "",
-    hostedZoneIo: {
+    hostedZone: {
       hostedZoneId: "",
       domains: {
         primary: "dev.passwordless.tools",
-        email: "dev.passwordless.tools",
         cdn: "cdn.dev.passwordless.tools",
         www: "www.dev.passwordless.tools",
       },
@@ -56,8 +42,8 @@ export const lookupMap: EnvConfigMap = {
     hostedZoneCom: {
       hostedZoneId: "",
       domains: {
-        primary: "dev.passwordlesstools.com",
-        email: "dev.passwordlesstools.com",
+        primary: "dev.eu.passwordlesstools.com",
+        email: "dev.eu.passwordlesstools.com",
       },
     },
   },
@@ -69,21 +55,20 @@ export const lookupMap: EnvConfigMap = {
       POOL_SIZE: "20",
     },
     generalSecretArn:
-      "arn:aws:secretsmanager:eu-west-1:699475934458:secret:general-application-config-lZ3xbr",
-    hostedZoneIo: {
-      hostedZoneId: "Z069101327DIGA805H5Y3",
+      "arn:aws:secretsmanager:eu-west-1:728247919352:secret:general-application-config-uL5n4J",
+    hostedZone: {
+      hostedZoneId: "Z0737569361XQK32FNWPX",
       domains: {
-        primary: "passwordless.tools",
-        email: "passwordless.tools",
-        cdn: "cdn.passwordless.tools",
-        www: "www.passwordless.tools",
+        primary: "eu.passwordless.tools",
+        cdn: "cdn.eu.passwordless.tools",
+        www: "www.eu.passwordless.tools",
       },
     },
     hostedZoneCom: {
-      hostedZoneId: "Z05899811FOGMTHC2HEW3",
+      hostedZoneId: "Z06750861RW0K8GN2HE9G",
       domains: {
-        primary: "passwordlesstools.com",
-        email: "passwordlesstools.com",
+        primary: "eu.passwordlesstools.com",
+        email: "eu.passwordlesstools.com",
       },
     },
   },

@@ -90,10 +90,6 @@
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
 
-      <:col :let={action} label={gettext("Action")} field={:name}>
-        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
-      </:col>
-
       <:col :let={action} label={gettext("User")} field={:user}>
         <.a
           :if={Util.present?(action.actor)}
@@ -102,6 +98,10 @@
           styled
           link_type="live_redirect"
         />
+      </:col>
+
+      <:col :let={action} label={gettext("Action")} field={:name}>
+        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
       </:col>
 
       <:col :let={action} field={:state}>
