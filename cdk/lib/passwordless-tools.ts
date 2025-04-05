@@ -4,6 +4,7 @@ import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
 
+import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { VPC } from "./network/vpc";
 import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
@@ -58,9 +59,9 @@ export class PasswordlessTools extends cdk.Stack {
       removalPolicy,
     });
 
-    /*  const _clusterNamespace = new PrivateDnsNamespace(
+    const _clusterNamespace = new PrivateDnsNamespace(
       this,
-      "cluster-namespace",
+      `${env}-cluster-namespace`,
       {
         name: clusterNamespaceRoot,
         vpc: vpc.vpc,
@@ -68,6 +69,7 @@ export class PasswordlessTools extends cdk.Stack {
       },
     );
 
+    /*
     const postgres = new Postgres(this, "main-postgres", {
       vpc: vpc.vpc,
       name: dbName,
