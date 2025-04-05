@@ -11,6 +11,7 @@ import {
 } from "aws-cdk-lib/aws-ecs";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { PublicHostedZone } from "aws-cdk-lib/aws-route53";
+import * as sm from "aws-cdk-lib/aws-secretsmanager";
 import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 
@@ -108,7 +109,6 @@ export class PasswordlessTools extends cdk.Stack {
     const cluster = new Cluster(this, `${env}-cluster`, {
       vpc: vpc.vpc,
       clusterName: `${appName}-cluster`,
-      containerInsights: true,
       containerInsightsV2: ContainerInsights.ENHANCED,
     });
 
@@ -161,8 +161,6 @@ export class PasswordlessTools extends cdk.Stack {
       },
     );
 
-    /* 
-     
     const generalSecret = sm.Secret.fromSecretCompleteArn(
       this,
       "general-secrets",
@@ -174,6 +172,7 @@ export class PasswordlessTools extends cdk.Stack {
       throw new Error("OBAN_PRO_AUTH_KEY is required");
     }
 
+    /* 
     const imageName = "passwordless-tools-image";
     const cachedImage = new CachedImage(this, imageName, {
       exclude: ["node_modules", "deps", "_build", ".git"],
