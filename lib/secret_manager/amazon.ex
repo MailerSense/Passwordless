@@ -9,7 +9,15 @@ defmodule SecretManager.Amazon do
 
   @impl true
   def get(secret_name, _opts \\ []) when is_binary(secret_name) do
-    {:ok, {:secret, secret_name, secret_name |> SecretsManager.get_secret_value() |> ExAws.request()}}
+    case secret_name
+         |> SecretsManager.get_secret_value()
+         |> ExAws.request() do
+      %{"SecretString" => secret_string} ->
+        {:ok, {:secret, secret_name, secret_string}}
+
+      _ ->
+        {:error, :secret_not_found}
+    end
   end
 
   @impl true
