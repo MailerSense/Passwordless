@@ -2,9 +2,10 @@ import * as cdk from "aws-cdk-lib";
 import { Duration, RemovalPolicy } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
+import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 
-import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
+import { Postgres } from "./database/postgres";
 import { VPC } from "./network/vpc";
 import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
@@ -69,8 +70,7 @@ export class PasswordlessTools extends cdk.Stack {
       },
     );
 
-    /*
-    const postgres = new Postgres(this, "main-postgres", {
+    const postgres = new Postgres(this, `${env}-postgres`, {
       vpc: vpc.vpc,
       name: dbName,
       instanceType: rdsInstanceType,
@@ -79,6 +79,7 @@ export class PasswordlessTools extends cdk.Stack {
       deletionProtection,
     });
 
+    /*
     const _backup = new Backup(this, "main-postgres-backup", {
       backupPlanName: `${appName}-backup`,
       backupRateHour: 6,
