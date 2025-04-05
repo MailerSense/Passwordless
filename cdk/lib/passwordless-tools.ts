@@ -1,10 +1,11 @@
 import * as cdk from "aws-cdk-lib";
-import { Duration, RemovalPolicy } from "aws-cdk-lib";
+import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 
+import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { VPC } from "./network/vpc";
 import { Environment } from "./util/environment";
@@ -79,15 +80,15 @@ export class PasswordlessTools extends cdk.Stack {
       deletionProtection,
     });
 
-    /*
-    const _backup = new Backup(this, "main-postgres-backup", {
+    const _backup = new Backup(this, `${env}-postgres-backup`, {
       backupPlanName: `${appName}-backup`,
       backupRateHour: 6,
-      deleteBackupAfter: Duration.days(60),
+      deleteBackupAfter: Duration.days(30),
       backupCompletionWindow: cdk.Duration.hours(2),
       resources: [bk.BackupResource.fromRdsDatabaseInstance(postgres.db)],
     });
 
+    /*
     const redis = new Redis(this, "main-redis", {
       vpc: vpc.vpc,
       name: `${appName}-redis`,
