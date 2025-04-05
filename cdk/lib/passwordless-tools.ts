@@ -277,7 +277,10 @@ export class PasswordlessTools extends cdk.Stack {
         },
       ],
     });
+
     app.node.addDependency(migration);
+
+    generalSecret.grantRead(app.service.taskDefinition.taskRole);
 
     postgres.db.connections.allowFrom(
       migration.lambda,

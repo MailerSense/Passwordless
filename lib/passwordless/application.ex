@@ -15,23 +15,23 @@ defmodule Passwordless.Application do
     children =
       if System.get_env("DATABASE_MIGRATION") do
         [
-          Passwordless.Vault,
-          Passwordless.Repo,
           {Finch, name: Passwordless.Finch},
           {Finch, name: Passwordless.Finch.AWS},
+          Passwordless.Vault,
+          Passwordless.Repo,
           PasswordlessWeb.Endpoint,
           AWS.Lambda.Monitor.Server,
           AWS.Lambda.Loop
         ]
       else
         [
+          {Finch, name: Passwordless.Finch},
+          {Finch, name: Passwordless.Finch.Swoosh},
+          {Finch, name: Passwordless.Finch.AWS},
           {Passwordless.SecretVault, @secret_name},
           Passwordless.Vault,
           Passwordless.Repo,
-          PasswordlessWeb.Telemetry,
-          {Finch, name: Passwordless.Finch},
-          {Finch, name: Passwordless.Finch.Swoosh},
-          {Finch, name: Passwordless.Finch.AWS}
+          PasswordlessWeb.Telemetry
         ]
         |> append_if(
           {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies)]},

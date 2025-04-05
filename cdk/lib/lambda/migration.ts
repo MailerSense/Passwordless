@@ -84,6 +84,8 @@ export class Migration extends Construct {
       throw new Error("lambda role not defined");
     }
 
+    generalSecret.grantRead(this.lambda);
+
     this.lambda.addToRolePolicy(
       new PolicyStatement({
         actions: ["cloudformation:DescribeStacks"],
