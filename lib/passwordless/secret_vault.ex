@@ -54,8 +54,12 @@ defmodule Passwordless.SecretVault do
   defp tick, do: Process.send_after(self(), :tick, @interval)
 
   defp refresh_secret(secret_name) do
+    IO.inspect(SecretManager.get(secret_name))
+
     with {:ok, {:secret, _name, raw_body}} <- SecretManager.get(secret_name),
          {:ok, json_body} <- Jason.decode(raw_body) do
+      IO.inspect(json_body)
+
       Enum.each(json_body, fn
         {key, value} when is_binary(key) and is_binary(value) ->
           :ets.insert(@table, {{__MODULE__, key}, value})
