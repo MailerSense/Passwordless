@@ -43,7 +43,7 @@ export class Postgres extends Construct {
 
     const port = 5432;
     const engine = DatabaseInstanceEngine.postgres({
-      version: PostgresEngineVersion.VER_16,
+      version: PostgresEngineVersion.VER_17,
     });
 
     const {
