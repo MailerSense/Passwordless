@@ -7,6 +7,7 @@ import { Construct } from "constructs";
 
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
+import { Redis } from "./database/redis";
 import { VPC } from "./network/vpc";
 import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
@@ -38,7 +39,7 @@ export class PasswordlessTools extends cdk.Stack {
 
     const redisInstanceType =
       env == Environment.PROD
-        ? InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO)
+        ? InstanceType.of(InstanceClass.T4G, InstanceSize.NANO)
         : InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO);
 
     const logRetention =
@@ -88,14 +89,14 @@ export class PasswordlessTools extends cdk.Stack {
       resources: [bk.BackupResource.fromRdsDatabaseInstance(postgres.db)],
     });
 
-    /*
-    const redis = new Redis(this, "main-redis", {
+    const redis = new Redis(this, `${env}-redis-cache`, {
       vpc: vpc.vpc,
       name: `${appName}-redis`,
       machine: redisInstanceType,
       removalPolicy,
     });
 
+    /* 
     const cluster = new Cluster(this, "main-cluster", {
       vpc: vpc.vpc,
       clusterName: `${appName}-cluster`,
