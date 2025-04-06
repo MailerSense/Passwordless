@@ -8,7 +8,13 @@
       phx-submit="save"
       phx-change="validate"
     >
-      <.field field={@form[:address]} label={gettext("Email")} autocomplete="email" required />
+      <.field
+        type="email"
+        field={@form[:address]}
+        label={gettext("Email")}
+        autocomplete="email"
+        required
+      />
       <.field
         type="checkbox"
         field={@form[:primary]}
