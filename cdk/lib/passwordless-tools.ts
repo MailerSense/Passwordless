@@ -1,12 +1,7 @@
 import * as cdk from "aws-cdk-lib";
 import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
 import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
-import {
-  InstanceClass,
-  InstanceSize,
-  InstanceType,
-  Port,
-} from "aws-cdk-lib/aws-ec2";
+import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
   AmiHardwareType,
@@ -24,7 +19,7 @@ import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 import { join } from "path";
 
-import { AppContainer, PublicEC2App } from "./application/public-ec2-app";
+import { AppContainer } from "./application/public-ec2-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
@@ -145,30 +140,6 @@ export class PasswordlessTools extends cdk.Stack {
           enableManagedScaling: true,
         },
       ),
-      "t4g-micro-asg-capacity-provider": new AsgCapacityProvider(
-        this,
-        "t4g-micro-asg-capacity-provider",
-        {
-          autoScalingGroup: new AutoScalingGroup(
-            this,
-            "t4g-micro-autoscaling-group",
-            {
-              vpc: vpc.vpc,
-              instanceType: InstanceType.of(
-                InstanceClass.T4G,
-                InstanceSize.MICRO,
-              ),
-              machineImage: EcsOptimizedImage.amazonLinux2023(
-                AmiHardwareType.ARM,
-              ),
-              minCapacity: 2,
-              maxCapacity: 2,
-            },
-          ),
-          enableManagedTerminationProtection: true,
-          enableManagedScaling: true,
-        },
-      ),
     };
 
     for (const [_, capacityProvider] of Object.entries(capacityProviders)) {
@@ -276,7 +247,7 @@ export class PasswordlessTools extends cdk.Stack {
       environment: { ...envLookup.appConfig, POOL_SIZE: "10" },
     });
 
-    const app = new PublicEC2App(this, appName, {
+    /* const app = new PublicEC2App(this, appName, {
       name: appName,
       zone,
       domain: envLookup.hostedZone.domains.primary,
@@ -317,7 +288,7 @@ export class PasswordlessTools extends cdk.Stack {
       app.service.service,
       Port.tcp(redis.port),
       `Allow traffic from app to Redis on port ${redis.port}`,
-    );
+    ); */
 
     /* 
     const comCertificate = new Certificate(this, "com-certificate", {
