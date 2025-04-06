@@ -9,6 +9,7 @@ export interface CertificateProps {
 }
 
 export class Certificate extends Construct {
+  public readonly domain: string;
   public readonly certificate: acm.Certificate;
 
   public constructor(
@@ -20,6 +21,7 @@ export class Certificate extends Construct {
 
     const { name, zone, domain } = props;
 
+    this.domain = domain;
     this.certificate = new acm.Certificate(this, `${name}-domain-certificate`, {
       domainName: domain,
       subjectAlternativeNames: [`*.${domain}`],
