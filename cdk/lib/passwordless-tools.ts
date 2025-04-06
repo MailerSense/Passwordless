@@ -120,7 +120,7 @@ export class PasswordlessTools extends cdk.Stack {
       containerInsightsV2: ContainerInsights.ENHANCED,
     });
 
-    const capacityProviders: Record<string, AsgCapacityProvider> = {
+    const capacityProviders = {
       "t4g-micro-asg-capacity-provider": new AsgCapacityProvider(
         this,
         "t4g-micro-asg-capacity-provider",
@@ -266,7 +266,7 @@ export class PasswordlessTools extends cdk.Stack {
       capacityProviderStrategies: [
         {
           capacityProvider:
-            capacityProviders["t4g-nano-asg-capacity-provider"]
+            capacityProviders["t4g-micro-asg-capacity-provider"]
               .capacityProviderName,
           weight: 100,
         },
