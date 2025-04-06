@@ -31,6 +31,7 @@ import { Redis } from "./database/redis";
 import { Migration } from "./lambda/migration";
 import { Certificate } from "./network/certificate";
 import { VPC } from "./network/vpc";
+import { WAF } from "./network/waf";
 import { CachedImage } from "./storage/cached-image";
 import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
@@ -294,18 +295,6 @@ export class PasswordlessTools extends cdk.Stack {
       `Allow traffic from app to Redis on port ${redis.port}`,
     );
 
-    /* 
-    const comCertificate = new Certificate(this, "com-certificate", {
-      name: `${appName}-com-certificate`,
-      zone: comZone,
-      domain: envLookup.hostedZoneCom.domains.primary,
-    });
-
-    const publicSharing = new PublicBucket(this, "sharing-bucket", {
-      name: "sharing",
-      removalPolicy,
-    });
-
     const _waf = new WAF(this, "main-waf", {
       name: `${appName}-waf`,
       associationArns: [
@@ -316,6 +305,18 @@ export class PasswordlessTools extends cdk.Stack {
       ],
       allowedPathPrefixes: ["/api", "/webhook"],
       blockedPathPrefixes: ["/health"],
+    });
+
+    /* 
+    const comCertificate = new Certificate(this, "com-certificate", {
+      name: `${appName}-com-certificate`,
+      zone: comZone,
+      domain: envLookup.hostedZoneCom.domains.primary,
+    });
+
+    const publicSharing = new PublicBucket(this, "sharing-bucket", {
+      name: "sharing",
+      removalPolicy,
     });
 
     if (envLookup.hostedZoneIo.domains.cdn) {
