@@ -35,7 +35,7 @@ defmodule PasswordlessWeb.User.ChangeEmailComponent do
         Accounts.deliver_user_update_email_instructions(
           applied_user,
           current_user.email,
-          &url(~p"/app/user/settings/confirm-email/#{&1}")
+          &url(~p"/user/settings/confirm-email/#{&1}")
         )
 
         Activity.log_async(:"user.request_email_change", %{user: current_user, new_email: user_params["email"]})

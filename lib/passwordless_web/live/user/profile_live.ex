@@ -40,12 +40,12 @@ defmodule PasswordlessWeb.User.ProfileLive do
 
   @impl true
   def handle_event("close_modal", _, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/profile")}
+    {:noreply, push_patch(socket, to: ~p"/profile")}
   end
 
   @impl true
   def handle_event("close_slide_over", _, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/profile")}
+    {:noreply, push_patch(socket, to: ~p"/profile")}
   end
 
   @impl true

@@ -34,7 +34,7 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/billing")}
+    {:noreply, push_patch(socket, to: ~p"/billing")}
   end
 
   @impl true

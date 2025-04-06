@@ -72,7 +72,7 @@ defmodule PasswordlessWeb.UserConfirmationController do
         else
           Accounts.deliver_user_confirmation_instructions(
             user,
-            &url(~p"/app/user/settings/confirm-email/#{&1}")
+            &url(~p"/user/settings/confirm-email/#{&1}")
           )
 
           conn

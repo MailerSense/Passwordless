@@ -27,7 +27,7 @@
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
       Do you want to send emails from your own domain?
       <.a
-        to={~p"/app/domain"}
+        to={~p"/domain"}
         label={gettext("Set up custom domain")}
         styled
         class="inline"
@@ -35,24 +35,20 @@
       />
     </.alert>
     <.email_preview
-      to={
-        ~p"/app/emails/#{@email_template}/en/edit?return_to=#{~p"/app/authenticators/magic-link"}"
-      }
+      to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/magic-link"}"}
       name={gettext("Edit email template")}
       preview={@email_version.html_body}
       link_type="live_redirect"
     />
     <div class="flex items-center gap-3 flex-wrap">
       <.a
-        to={~p"/app/authenticators/sms?sms_learn=true"}
+        to={~p"/authenticators/sms?sms_learn=true"}
         label={gettext("Review pricing")}
         styled
         link_type="live_redirect"
       />
       <.a
-        to={
-          ~p"/app/emails/#{@email_template}/en/edit?return_to=#{~p"/app/authenticators/magic-link"}"
-        }
+        to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/magic-link"}"}
         label={gettext("Edit email template")}
         styled
         link_type="live_redirect"

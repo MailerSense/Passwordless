@@ -12,11 +12,11 @@
           type="button"
           color="light"
           label={gettext("Cancel")}
-          to={@return_to || ~p"/app/authenticators/email"}
+          to={@return_to || ~p"/authenticators/email"}
           link_type="live_patch"
         />
         <.button
-          to={~p"/app/emails/#{@template}/#{@language}/#{@live_action}?delete=true"}
+          to={~p"/emails/#{@template}/#{@language}/#{@live_action}?delete=true"}
           type="button"
           label={gettext("Reset")}
           icon="remix-delete-bin-line"
@@ -109,7 +109,7 @@
       subtitle={@page_subtitle}
       module={PasswordlessWeb.App.EmailLive.VariableComponent}
       live_action={@live_action}
-      return_to={~p"/app/emails/#{@template}/#{@language}/#{@live_action}"}
+      return_to={~p"/emails/#{@template}/#{@language}/#{@live_action}"}
     />
   <% true -> %>
 <% end %>

@@ -13,14 +13,13 @@
         )}
       </.p>
       <div class="flex items-center gap-3 flex-wrap">
-        <.a to={~p"/app/reports"} label={gettext("Manage plan")} styled link_type="live_redirect" />
+        <.a to={~p"/reports"} label={gettext("Manage plan")} styled link_type="live_redirect" />
         <.a
           to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
           label={gettext("Contact support")}
           styled
           link_type="a"
         />
-
         <.a label={gettext("Download billing data")} styled download link_type="a" />
       </div>
     </.box>
@@ -86,7 +85,7 @@
       <:col actions></:col>
       <:actions :let={item}>
         <.icon_button
-          to={~p"/app/billing/{@item}/edit"}
+          to={~p"/billing/{@item}/edit"}
           size="sm"
           icon="custom-edit"
           color="light"
@@ -104,7 +103,7 @@
       <:col actions></:col>
       <:actions :let={identity}>
         <.icon_button
-          to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
+          to={~p"/users/#{@actor}/edit/identity/#{identity}/delete"}
           size="sm"
           icon="custom-trash"
           color="light"
@@ -112,7 +111,7 @@
           link_type="live_patch"
         />
         <.icon_button
-          to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
+          to={~p"/users/#{@actor}/edit/identity/#{identity}/edit"}
           size="sm"
           icon="custom-edit"
           color="light"

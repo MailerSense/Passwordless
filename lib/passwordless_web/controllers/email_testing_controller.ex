@@ -39,7 +39,7 @@ defmodule PasswordlessWeb.EmailTestingController do
 
   defp generate_email("change_email", current_user) do
     {token_signed, _token} = Passwordless.Accounts.Token.new(current_user, :email_change)
-    Email.change_email(current_user.email, url(~p"/app/user/settings/confirm-email/#{token_signed}"))
+    Email.change_email(current_user.email, url(~p"/user/settings/confirm-email/#{token_signed}"))
   end
 
   defp generate_email("org_invitation", current_user) do

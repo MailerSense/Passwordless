@@ -12,7 +12,7 @@ defmodule PasswordlessWeb.UserTOTPHTML do
         </p>
       </div>
 
-      <.form for={@form} action={~p"/app/user/totp"}>
+      <.form for={@form} action={~p"/user/totp"}>
         <.field
           field={@form[:code]}
           label={gettext("Code")}

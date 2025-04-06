@@ -18,7 +18,7 @@ defmodule PasswordlessWeb.OrgController do
     |> put_session(@org_key, current_org.id)
     |> put_session(@app_key, load_app(current_org))
     |> put_flash(:info, gettext("You're now in %{org_name}.", org_name: current_org.name))
-    |> redirect(to: ~p"/app/home")
+    |> redirect(to: ~p"/home")
   end
 
   def accept_invitation(conn, %{"invitation_id" => invitation_id}, user) do
@@ -30,7 +30,7 @@ defmodule PasswordlessWeb.OrgController do
     |> put_session(@org_key, membership.org.id)
     |> put_session(@app_key, load_app(membership.org))
     |> put_flash(:info, gettext("You're now in %{org_name}.", org_name: membership.org.name))
-    |> redirect(to: ~p"/app/home")
+    |> redirect(to: ~p"/home")
   end
 
   # Private

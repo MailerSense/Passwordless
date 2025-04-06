@@ -27,12 +27,12 @@ defmodule PasswordlessWeb.Org.EditLive do
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/organization")}
+    {:noreply, push_patch(socket, to: ~p"/organization")}
   end
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/organization")}
+    {:noreply, push_patch(socket, to: ~p"/organization")}
   end
 
   @impl true

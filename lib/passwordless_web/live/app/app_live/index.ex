@@ -36,24 +36,24 @@ defmodule PasswordlessWeb.App.AppLive.Index do
         {:noreply,
          socket
          |> put_flash(:info, gettext("App deleted successfully."))
-         |> push_navigate(to: ~p"/app/app")}
+         |> push_navigate(to: ~p"/app")}
 
       {:error, _} ->
         {:noreply,
          socket
          |> put_toast(:error, gettext("Failed to delete app!"), title: gettext("Error"))
-         |> push_patch(to: ~p"/app/app")}
+         |> push_patch(to: ~p"/app")}
     end
   end
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/app")}
+    {:noreply, push_patch(socket, to: ~p"/app")}
   end
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/app")}
+    {:noreply, push_patch(socket, to: ~p"/app")}
   end
 
   @impl true

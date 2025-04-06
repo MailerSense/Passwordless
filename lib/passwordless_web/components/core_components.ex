@@ -532,11 +532,11 @@ defmodule PasswordlessWeb.CoreComponents do
       label_icon="remix-instance-line"
       placement="right"
     >
-      <.dropdown_menu_item link_type="live_redirect" to={~p"/app/apps/new"}>
+      <.dropdown_menu_item link_type="live_redirect" to={~p"/apps/new"}>
         <.icon name="remix-add-line" class="w-5 h-5" />
         {gettext("New App")}
       </.dropdown_menu_item>
-      <.form :for={app <- @app_menu_items} for={nil} action={~p"/app/apps/switch"} method="post">
+      <.form :for={app <- @app_menu_items} for={nil} action={~p"/apps/switch"} method="post">
         <.input type="hidden" name="app_id" value={app.id} />
         <button class="pc-dropdown__menu-item">
           <.icon name="remix-instance-line" class="w-5 h-5" />
@@ -554,11 +554,11 @@ defmodule PasswordlessWeb.CoreComponents do
       label_icon="remix-building-line"
       placement="right"
     >
-      <.dropdown_menu_item link_type="live_redirect" to={~p"/app/organization/new"}>
+      <.dropdown_menu_item link_type="live_redirect" to={~p"/organization/new"}>
         <.icon name="remix-add-line" class="w-5 h-5" />
         {gettext("New Organization")}
       </.dropdown_menu_item>
-      <.form :for={org <- @org_menu_items} for={nil} action={~p"/app/org/switch"} method="post">
+      <.form :for={org <- @org_menu_items} for={nil} action={~p"/org/switch"} method="post">
         <.input type="hidden" name="org_id" value={org.id} />
         <button class="pc-dropdown__menu-item">
           <.icon name="remix-building-line" class="w-5 h-5" />

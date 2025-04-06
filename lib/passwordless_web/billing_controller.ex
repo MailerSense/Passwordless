@@ -16,11 +16,11 @@ defmodule PasswordlessWeb.BillingController do
         if Subscription.valid?(subscription) do
           conn
           |> put_flash(:error, gettext("There is an existing valid subscription!"))
-          |> redirect(to: ~p"/app/billing")
+          |> redirect(to: ~p"/billing")
         else
           conn
           |> put_flash(:info, gettext("There is an existing subscription, but it's invalid. Please contact support."))
-          |> redirect(to: ~p"/app/billing")
+          |> redirect(to: ~p"/billing")
         end
 
       nil ->
@@ -31,7 +31,7 @@ defmodule PasswordlessWeb.BillingController do
           {:error, reason} ->
             conn
             |> put_flash(:error, gettext("Something went wrong with our payment portal: ") <> inspect(reason))
-            |> redirect(to: ~p"/app/billing")
+            |> redirect(to: ~p"/billing")
         end
     end
   end

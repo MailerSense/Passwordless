@@ -4,9 +4,7 @@
     <:col field={:search} searchable filterable={[:==]} />
     <:col :let={actor} field={:name}>
       <.a
-        to={
-          ~p"/app/users/#{actor}/edit?return_to=#{apply_filters(@filters, @meta, ~p"/app/users")}"
-        }
+        to={~p"/users/#{actor}/edit?return_to=#{apply_filters(@filters, @meta, ~p"/users")}"}
         label={Actor.handle(actor)}
         styled
         link_type="live_redirect"
@@ -31,7 +29,7 @@
     <:col actions></:col>
     <:actions :let={actor}>
       <.icon_button
-        to={apply_filters(@filters, @meta, ~p"/app/users/#{actor}/delete")}
+        to={apply_filters(@filters, @meta, ~p"/users/#{actor}/delete")}
         size="sm"
         icon="custom-trash"
         color="light"
@@ -39,9 +37,7 @@
         link_type="live_patch"
       />
       <.icon_button
-        to={
-          ~p"/app/users/#{actor}/edit?return_to=#{apply_filters(@filters, @meta, ~p"/app/users")}"
-        }
+        to={~p"/users/#{actor}/edit?return_to=#{apply_filters(@filters, @meta, ~p"/users")}"}
         size="sm"
         icon="custom-edit"
         color="light"
@@ -52,14 +48,14 @@
     <:header_actions>
       <div class="flex gap-3">
         <.button
-          to={apply_filters(@filters, @meta, ~p"/app/users/import")}
+          to={apply_filters(@filters, @meta, ~p"/users/import")}
           color="light"
           label={gettext("Import")}
           icon="remix-download-line"
           link_type="live_patch"
         />
         <.button
-          to={apply_filters(@filters, @meta, ~p"/app/users/new")}
+          to={apply_filters(@filters, @meta, ~p"/users/new")}
           color="primary"
           label={gettext("Create")}
           icon="remix-add-circle-line"
@@ -82,7 +78,7 @@
       current_org={@current_org}
       current_app={@current_app}
       current_user={@current_user}
-      return_to={apply_filters(@filters, @meta, ~p"/app/users")}
+      return_to={apply_filters(@filters, @meta, ~p"/users")}
     />
   <% :delete -> %>
     <.modal
@@ -118,7 +114,7 @@
       live_action={@live_action}
       current_org={@current_org}
       current_user={@current_user}
-      return_to={apply_filters(@filters, @meta, ~p"/app/users")}
+      return_to={apply_filters(@filters, @meta, ~p"/users")}
     />
   <% _ -> %>
 <% end %>

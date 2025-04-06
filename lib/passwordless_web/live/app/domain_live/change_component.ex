@@ -39,7 +39,7 @@ defmodule PasswordlessWeb.App.DomainLive.ChangeComponent do
             {:noreply,
              socket
              |> put_toast(:info, gettext("Domain has been changed successfully."), title: gettext("Success"))
-             |> push_navigate(to: ~p"/app/domain")}
+             |> push_navigate(to: ~p"/domain")}
 
           {:error, %Ecto.Changeset{} = changeset} ->
             {:noreply,
@@ -51,7 +51,7 @@ defmodule PasswordlessWeb.App.DomainLive.ChangeComponent do
                ),
                title: gettext("Error")
              )
-             |> push_navigate(to: ~p"/app/domain")}
+             |> push_navigate(to: ~p"/domain")}
         end
 
       {:error, %Ecto.Changeset{} = changeset} ->

@@ -15,7 +15,7 @@ defmodule PasswordlessWeb.Components.SignInButton do
       assign(
         assigns,
         if(assigns.current_user,
-          do: [label: gettext("Open App"), to: ~p"/app/home", icon: "remix-account-circle-line"],
+          do: [label: gettext("Open App"), to: ~p"/home", icon: "remix-account-circle-line"],
           else: [label: gettext("Sign in"), to: ~p"/auth/sign-in", icon: "remix-account-circle-line"]
         )
       )

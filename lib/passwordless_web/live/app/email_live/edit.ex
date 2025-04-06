@@ -50,7 +50,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   def handle_event("close_modal", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: ~p"/app/emails/#{socket.assigns.template}/#{socket.assigns.language}/#{socket.assigns.live_action}"
+       to: ~p"/emails/#{socket.assigns.template}/#{socket.assigns.language}/#{socket.assigns.live_action}"
      )}
   end
 
@@ -58,7 +58,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   def handle_event("close_slide_over", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: ~p"/app/emails/#{socket.assigns.template}/#{socket.assigns.language}/#{socket.assigns.live_action}"
+       to: ~p"/emails/#{socket.assigns.template}/#{socket.assigns.language}/#{socket.assigns.live_action}"
      )}
   end
 
@@ -111,7 +111,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
       {:noreply,
        socket
        |> assign(version_form: nil)
-       |> push_patch(to: ~p"/app/emails/#{template}/#{current_language}/edit")}
+       |> push_patch(to: ~p"/emails/#{template}/#{current_language}/edit")}
     end
   end
 

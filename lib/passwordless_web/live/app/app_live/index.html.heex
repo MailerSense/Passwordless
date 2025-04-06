@@ -33,12 +33,7 @@
     </div>
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <.a
-          to={~p"/app/app/new"}
-          label={gettext("Create new app")}
-          styled
-          link_type="live_redirect"
-        />
+        <.a to={~p"/app/new"} label={gettext("Create new app")} styled link_type="live_redirect" />
       </div>
       <.button icon="remix-save-line" label={gettext("Save")} />
     </div>
@@ -53,7 +48,7 @@
       subtitle={@page_subtitle}
       app={Ecto.build_assoc(@current_org, :apps)}
       module={PasswordlessWeb.App.AppLive.FormComponent}
-      return_to={~p"/app/app"}
+      return_to={~p"/app"}
       live_action={@live_action}
       current_org={@current_org}
       current_user={@current_user}

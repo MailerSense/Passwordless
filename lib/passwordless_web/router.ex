@@ -60,16 +60,7 @@ defmodule PasswordlessWeb.Router do
     }
   end
 
-  # Public routes
   scope "/", PasswordlessWeb do
-    pipe_through [:browser, :public_layout]
-
-    # Add public controller routes here
-    get "/", PageController, :landing_page
-    get "/sitemap.xml", SitemapController, :index
-  end
-
-  scope "/app", PasswordlessWeb do
     pipe_through [:browser, :authenticated_only]
 
     # Accept invitation to the organization
@@ -77,8 +68,11 @@ defmodule PasswordlessWeb.Router do
   end
 
   # App routes - for signed in and confirmed users only
-  scope "/app", PasswordlessWeb do
+  scope "/", PasswordlessWeb do
     pipe_through [:browser, :authenticated]
+
+    # Home
+    get "/", HomeController, :index
 
     # User email/password actions
     put "/user/settings/update-password", UserSettingsController, :update_password
@@ -170,8 +164,8 @@ defmodule PasswordlessWeb.Router do
 
       # App
       live "/app", App.AppLive.Index, :index
-      live "/app/new", App.AppLive.Index, :new
-      live "/app/delete", App.AppLive.Index, :delete
+      live "/new", App.AppLive.Index, :new
+      live "/delete", App.AppLive.Index, :delete
 
       # Domain
       live "/domain", App.DomainLive.Index, :index

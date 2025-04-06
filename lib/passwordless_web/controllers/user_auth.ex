@@ -34,7 +34,7 @@ defmodule PasswordlessWeb.UserAuth do
       conn
       |> put_session(:user_totp_pending, true)
       |> put_flash(:info, nil)
-      |> redirect(to: ~p"/app/user/totp")
+      |> redirect(to: ~p"/user/totp")
     else
       redirect_user_after_login(conn, user)
     end
@@ -183,10 +183,10 @@ defmodule PasswordlessWeb.UserAuth do
         |> halt()
 
       get_session(conn, :user_totp_pending) &&
-        conn.request_path != ~p"/app/user/totp" &&
+        conn.request_path != ~p"/user/totp" &&
           conn.request_path != ~p"/auth/sign-out" ->
         conn
-        |> redirect(to: ~p"/app/user/totp")
+        |> redirect(to: ~p"/user/totp")
         |> halt()
 
       true ->
@@ -248,7 +248,7 @@ defmodule PasswordlessWeb.UserAuth do
          {:yes, _} <- Accounts.user_needs_onboarding?(user),
          false <- onboarding_path?(conn) do
       conn
-      |> redirect(to: ~p"/app/onboarding?#{[user_return_to: return_to_path(conn)]}")
+      |> redirect(to: ~p"/onboarding?#{[user_return_to: return_to_path(conn)]}")
       |> halt()
     else
       _ -> conn
@@ -276,7 +276,7 @@ defmodule PasswordlessWeb.UserAuth do
     invitations = Organizations.list_invitations_by_user(user)
 
     if Enum.any?(invitations),
-      do: ~p"/app/invitations"
+      do: ~p"/invitations"
   end
 
   # Private
@@ -290,7 +290,7 @@ defmodule PasswordlessWeb.UserAuth do
   defp signed_in_path(%User{} = user), do: PasswordlessWeb.Helpers.home_path(user)
 
   defp onboarding_path?(%Plug.Conn{} = conn) do
-    conn.request_path == ~p"/app/onboarding"
+    conn.request_path == ~p"/onboarding"
   end
 
   defp return_to_path(%Plug.Conn{} = conn) do

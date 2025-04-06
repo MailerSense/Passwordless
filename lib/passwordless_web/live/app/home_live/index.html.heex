@@ -68,13 +68,13 @@
       <div class="flex items-center gap-3 flex-wrap">
         <.a
           label={gettext("Read documentation")}
-          to={~p"/app/embed/install"}
+          to={~p"/embed/install"}
           styled
           link_type="live_redirect"
         />
         <.a
           label={gettext("Reveal App Secret")}
-          to={~p"/app/embed/install"}
+          to={~p"/embed/install"}
           styled
           link_type="live_redirect"
         />
@@ -93,7 +93,7 @@
       <:col :let={action} label={gettext("User")} field={:user}>
         <.a
           :if={Util.present?(action.actor)}
-          to={~p"/app/users/#{action.actor}/edit"}
+          to={~p"/users/#{action.actor}/edit"}
           label={Actor.handle(action.actor)}
           styled
           link_type="live_redirect"
@@ -123,7 +123,7 @@
       <:col actions></:col>
       <:actions :let={action}>
         <.icon_button
-          to={~p"/app/home/#{action}/view"}
+          to={~p"/home/#{action}/view"}
           size="sm"
           icon="custom-edit"
           color="light"
@@ -144,7 +144,7 @@
       action={@action}
       module={PasswordlessWeb.App.HomeLive.ViewComponent}
       live_action={@live_action}
-      return_to={~p"/app/home"}
+      return_to={~p"/home"}
     />
   <% _ -> %>
 <% end %>

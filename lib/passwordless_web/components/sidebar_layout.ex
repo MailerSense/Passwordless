@@ -135,15 +135,12 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
 
           <.topbar_links links={[
             %{
-              to: ~p"/",
-              label: "Home Page"
+              to: ~p"/home",
+              label: "Home Page",
+              link_type: "live_redirect"
             },
             %{
-              to: ~p"/app/support",
-              label: "Support"
-            },
-            %{
-              to: ~p"/app/embed/install",
+              to: ~p"/embed/install",
               label: "Docs",
               link_type: "live_redirect"
             }

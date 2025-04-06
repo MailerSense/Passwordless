@@ -26,11 +26,11 @@ defmodule Passwordless.Billing.Providers.Behaviour do
     use PasswordlessWeb, :controller
 
     def success_url(%Customer{id: customer_id}) do
-      url(PasswordlessWeb.Endpoint, ~p"/app/subscribe/success?customer_id=#{customer_id}")
+      url(PasswordlessWeb.Endpoint, ~p"/subscribe/success?customer_id=#{customer_id}")
     end
 
     def cancel_url do
-      url(PasswordlessWeb.Endpoint, ~p"/app/subscribe")
+      url(PasswordlessWeb.Endpoint, ~p"/subscribe")
     end
   end
 end
