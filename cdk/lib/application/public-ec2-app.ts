@@ -48,6 +48,7 @@ export interface AppContainer {
   environment: Record<string, string>;
   stopTimeout?: Duration;
   containerPort: number;
+  minHealthyPercent: number;
   memoryReservation: number;
 }
 
@@ -99,6 +100,7 @@ export class PublicEC2App extends Construct {
       stopTimeout: container.stopTimeout,
       protocol: ApplicationProtocol.HTTPS,
       networkMode: NetworkMode.AWS_VPC,
+      minHealthyPercent: container.minHealthyPercent,
       memoryReservationMiB: container.memoryReservation,
       loadBalancerName: `${name}-lb`,
       enableExecuteCommand: true,
