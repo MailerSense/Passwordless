@@ -191,7 +191,6 @@ export class PasswordlessTools extends cdk.Stack {
       exclude: ["node_modules", "deps", "_build", ".git"],
       assetName: imageName,
       directory: join(__dirname, "../../"),
-      file: "Dockerfile",
       buildArgs: {
         OBAN_PRO_AUTH_KEY: obanAuthKey,
       },
