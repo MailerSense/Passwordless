@@ -11,8 +11,20 @@
   </:top_links>
 
   <.form for={@form} phx-update="ignore" id="sign_in_form" action={~p"/auth/sign-in"} class="mb-4">
-    <.field type="email" field={@form[:email]} required autocomplete="email" />
-    <.field type="password" field={@form[:password]} required autocomplete="current-password" />
+    <.field
+      type="email"
+      field={@form[:email]}
+      required
+      autocomplete="email"
+      placeholder={gettext("eg. you@example.com")}
+    />
+    <.field
+      type="password"
+      field={@form[:password]}
+      required
+      autocomplete="current-password"
+      placeholder={gettext("••••••••••••")}
+    />
 
     <div class="flex mt-6">
       <.button label={gettext("Sign in")} class="flex flex-1" />
@@ -22,7 +34,11 @@
   <.auth_providers mode={:sign_in} conn_or_socket={@socket} />
 
   <:bottom_links>
-    <.a class="text-sm text-slate-500 underline dark:text-slate-400" to={~p"/auth/reset-password"}>
+    <.a
+      class="text-sm text-slate-500 underline dark:text-slate-400"
+      to={~p"/auth/reset-password"}
+      link_type="live_patch"
+    >
       {gettext("Forgot your password?")}
     </.a>
   </:bottom_links>
