@@ -147,6 +147,71 @@ export class PublicEC2App extends Construct {
 
     this.service.taskDefinition.addToTaskRolePolicy(
       new PolicyStatement({
+        sid: "ServerAdhocSSH",
+        actions: [
+          "ssmmessages:CreateControlChannel",
+          "ssmmessages:CreateDataChannel",
+          "ssmmessages:OpenControlChannel",
+          "ssmmessages:OpenDataChannel",
+        ],
+        resources: ["*"],
+      }),
+    );
+
+    this.service.taskDefinition.addToTaskRolePolicy(
+      new PolicyStatement({
+        sid: "DomainManagement",
+        actions: [
+          "ses:CreateEmailIdentity",
+          "ses:GetIdentityDkimAttributes",
+          "ses:GetIdentityVerificationAttributes",
+          "ses:GetIdentityMailFromDomainAttributes",
+          "ses:PutEmailIdentityDkimSigningAttributes",
+          "ses:PutEmailIdentityMailFromAttributes",
+          "ses:PutEmailIdentityFeedbackAttributes",
+          "ses:SetIdentityMailFromDomain",
+          "ses:SetIdentityFeedbackForwardingEnabled",
+          "ses:SetIdentityHeadersInNotificationsEnabled",
+          "ses:VerifyDomainIdentity",
+          "ses:VerifyDomainDkim",
+        ],
+        resources: ["*"],
+      }),
+    );
+
+    this.service.taskDefinition.addToTaskRolePolicy(
+      new PolicyStatement({
+        sid: "SenderAddressManagement",
+        actions: [
+          "ses:DeleteIdentity",
+          "ses:GetEmailIdentity",
+          "ses:GetIdentityVerificationAttributes",
+          "ses:VerifyEmailAddress",
+          "ses:VerifyEmailIdentity",
+          "ses:ListIdentities",
+          "ses:ListIdentityPolicies",
+          "ses:ListVerifiedEmailAddresses",
+          "ses:DeleteVerifiedEmailAddress",
+          "ses:ListConfigurationSets",
+        ],
+        resources: ["*"],
+      }),
+    );
+
+    this.service.taskDefinition.addToTaskRolePolicy(
+      new PolicyStatement({
+        sid: "SendingStatistics",
+        actions: [
+          "ses:GetAccountSendingEnabled",
+          "ses:GetSendStatistics",
+          "ses:GetSendQuota",
+        ],
+        resources: ["*"],
+      }),
+    );
+
+    this.service.taskDefinition.addToTaskRolePolicy(
+      new PolicyStatement({
         sid: "EmailSending",
         actions: ["ses:SendEmail", "ses:SendRawEmail"],
         resources: ["*"],

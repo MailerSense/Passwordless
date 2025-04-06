@@ -1,11 +1,13 @@
 import { Duration } from "aws-cdk-lib";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
-import { SubnetType } from "aws-cdk-lib/aws-ec2";
+import { Port, SubnetType } from "aws-cdk-lib/aws-ec2";
 import {
   Cluster,
   ContainerDependencyCondition,
   ContainerImage,
+  CpuArchitecture,
   LogDrivers,
+  OperatingSystemFamily,
   Secret,
 } from "aws-cdk-lib/aws-ecs";
 import { ApplicationLoadBalancedFargateService } from "aws-cdk-lib/aws-ecs-patterns";
@@ -84,6 +86,10 @@ export class PublicFargateApp extends Construct {
         environment: container.environment,
         containerPort: container.containerPort,
       },
+      runtimePlatform: {
+        operatingSystemFamily: OperatingSystemFamily.LINUX,
+        cpuArchitecture: CpuArchitecture.ARM64,
+      },
       taskSubnets: {
         subnetType: SubnetType.PRIVATE_WITH_EGRESS,
       },
@@ -106,6 +112,12 @@ export class PublicFargateApp extends Construct {
           }
         : undefined,
     });
+
+    // Allow connections to itself
+    this.service.service.connections.allowFrom(
+      this.service.service,
+      Port.allTcp(),
+    );
 
     // Drop invalid headers rather than route to target
     this.service.loadBalancer.setAttribute(
@@ -220,21 +232,18 @@ export class PublicFargateApp extends Construct {
         container: init,
         condition: ContainerDependencyCondition.SUCCESS,
       });
+    }
 
-      if (namespace) {
-        const internalService = new Service(this, "app-service", {
-          name,
-          namespace,
-          dnsRecordType: DnsRecordType.A,
-          routingPolicy: RoutingPolicy.WEIGHTED,
-          loadBalancer: true,
-        });
+    if (namespace) {
+      const internalService = new Service(this, "app-service", {
+        name,
+        namespace,
+        dnsRecordType: DnsRecordType.A,
+        routingPolicy: RoutingPolicy.WEIGHTED,
+        loadBalancer: true,
+      });
 
-        internalService.registerLoadBalancer(
-          "app-lb",
-          this.service.loadBalancer,
-        );
-      }
+      internalService.registerLoadBalancer("app-lb", this.service.loadBalancer);
     }
   }
 }
