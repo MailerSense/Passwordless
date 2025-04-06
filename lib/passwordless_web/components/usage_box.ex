@@ -15,7 +15,7 @@ defmodule PasswordlessWeb.Components.UsageBox do
   def usage_box(assigns) do
     ~H"""
     <.a
-      to={~p"/app/billing"}
+      to={~p"/billing"}
       link_type="live_redirect"
       class="relative p-3 rounded-xl border border-slate-700 flex-col gap-3 flex overflow-hidden"
     >

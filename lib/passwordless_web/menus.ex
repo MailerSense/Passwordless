@@ -122,7 +122,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Profile"),
-      path: ~p"/app/profile",
+      path: ~p"/profile",
       icon: "remix-at-line",
       link_type: "live_patch"
     }
@@ -132,7 +132,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Password"),
-      path: ~p"/app/password",
+      path: ~p"/password",
       icon: "remix-key-line",
       link_type: "live_patch"
     }
@@ -142,7 +142,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Invitations"),
-      path: ~p"/app/invitations",
+      path: ~p"/invitations",
       icon: "remix-mail-line",
       link_type: "live_patch"
     }
@@ -152,7 +152,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Security"),
-      path: ~p"/app/security",
+      path: ~p"/security",
       icon: "remix-lock-line",
       link_type: "live_patch"
     }
@@ -162,7 +162,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Users"),
-      path: ~p"/app/users",
+      path: ~p"/users",
       icon: "remix-user-line",
       link_type: "live_patch"
     }
@@ -172,7 +172,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Home"),
-      path: ~p"/app/home",
+      path: ~p"/home",
       icon: "remix-home-line",
       link_type: "live_patch"
     }
@@ -182,7 +182,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Authenticators"),
-      path: ~p"/app/authenticators/email",
+      path: ~p"/authenticators/email",
       icon: "remix-shield-user-line",
       link_type: "live_patch"
     }
@@ -192,7 +192,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Reports"),
-      path: ~p"/app/reports",
+      path: ~p"/reports",
       icon: "remix-pie-chart-line",
       link_type: "live_patch"
     }
@@ -202,7 +202,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Settings"),
-      path: ~p"/app/app",
+      path: ~p"/app",
       icon: "remix-settings-2-line",
       link_type: "live_patch"
     }
@@ -212,7 +212,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Knowledge Base"),
-      path: ~p"/app/use-cases",
+      path: ~p"/use-cases",
       icon: "custom-knowledge"
     }
   end
@@ -329,7 +329,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Use cases"),
-      path: ~p"/app/use-cases",
+      path: ~p"/use-cases",
       icon: "remix-briefcase-line",
       link_type: "live_patch"
     }
@@ -339,7 +339,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Knowledge Base"),
-      path: ~p"/app/use-cases",
+      path: ~p"/use-cases",
       icon: "custom-knowledge"
     }
   end
@@ -348,7 +348,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("App"),
-      path: ~p"/app/home",
+      path: ~p"/home",
       icon: "custom-email",
       link_type: "live_patch"
     }
@@ -358,7 +358,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("App"),
-      path: ~p"/app/app",
+      path: ~p"/app",
       icon: "remix-instance-line",
       link_type: "live_patch"
     }
@@ -368,7 +368,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Organization"),
-      path: ~p"/app/organization",
+      path: ~p"/organization",
       icon: "remix-building-line",
       link_type: "live_patch"
     }
@@ -378,7 +378,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Team"),
-      path: ~p"/app/team",
+      path: ~p"/team",
       icon: "remix-group-line",
       link_type: "live_patch"
     }
@@ -388,7 +388,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Domain"),
-      path: ~p"/app/domain",
+      path: ~p"/domain",
       icon: "remix-cloud-line",
       link_type: "live_patch"
     }
@@ -398,7 +398,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Billing"),
-      path: ~p"/app/billing",
+      path: ~p"/billing",
       icon: "remix-bill-line",
       link_type: "live_patch"
     }
@@ -408,7 +408,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Embed & API"),
-      path: ~p"/app/embed/install",
+      path: ~p"/embed/install",
       icon: "remix-terminal-box-line",
       link_type: "live_patch"
     }

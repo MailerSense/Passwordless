@@ -39,7 +39,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   def handle_event("close_modal", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/users")
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/users")
      )}
   end
 
@@ -47,13 +47,13 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   def handle_event("close_slide_over", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/users")
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/users")
      )}
   end
 
   @impl true
   def handle_event("clear_filters", _params, socket) do
-    {:noreply, push_navigate(socket, to: ~p"/app/users")}
+    {:noreply, push_navigate(socket, to: ~p"/users")}
   end
 
   @impl true
@@ -66,9 +66,9 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
     to =
       if filtered? do
-        ~p"/app/users?#{build_filter_params(socket.assigns.meta, filter_params)}"
+        ~p"/users?#{build_filter_params(socket.assigns.meta, filter_params)}"
       else
-        ~p"/app/users"
+        ~p"/users"
       end
 
     {:noreply, push_patch(socket, to: to)}
@@ -84,13 +84,13 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
         {:noreply,
          socket
          |> put_flash(:info, gettext("User deleted successfully."))
-         |> push_patch(to: ~p"/app/users")}
+         |> push_patch(to: ~p"/users")}
 
       {:error, _} ->
         {:noreply,
          socket
          |> put_toast(:error, gettext("Failed to delete user!"), title: gettext("Error"))
-         |> push_patch(to: ~p"/app/users")}
+         |> push_patch(to: ~p"/users")}
     end
   end
 

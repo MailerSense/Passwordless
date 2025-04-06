@@ -32,7 +32,7 @@
               else: nil
           }
           data-tippy-placement="left"
-          to={apply_filters(@filters, @meta, ~p"/app/team/#{membership}/delete")}
+          to={apply_filters(@filters, @meta, ~p"/team/#{membership}/delete")}
         />
         <.icon_button
           size="sm"
@@ -40,7 +40,7 @@
           color="light"
           title={gettext("Edit")}
           link_type="live_patch"
-          to={apply_filters(@filters, @meta, ~p"/app/team/#{membership}/edit")}
+          to={apply_filters(@filters, @meta, ~p"/team/#{membership}/edit")}
         />
       </:actions>
     </.data_table>
@@ -63,7 +63,7 @@
           icon="custom-trash"
           color="light"
           title={gettext("Remove")}
-          to={~p"/app/team/invitation/#{invitation}/delete"}
+          to={~p"/team/invitation/#{invitation}/delete"}
           link_type="live_patch"
         />
         <.icon_button
@@ -71,7 +71,7 @@
           icon="custom-edit"
           color="light"
           title={gettext("Resend")}
-          to={~p"/app/team/invitation/#{invitation}/resend"}
+          to={~p"/team/invitation/#{invitation}/resend"}
           link_type="live_patch"
         />
       </:actions>
@@ -79,7 +79,7 @@
 
     <div class="flex items-center gap-3">
       <.a
-        to={~p"/app/team/invite"}
+        to={~p"/team/invite"}
         label={gettext("Invite teammate")}
         styled
         link_type="live_redirect"
@@ -99,7 +99,7 @@
       current_org={@current_org}
       current_user={@current_user}
       current_membership={@current_membership}
-      return_to={apply_filters(@filters, @meta, ~p"/app/team")}
+      return_to={apply_filters(@filters, @meta, ~p"/team")}
     />
   <% :invite -> %>
     <% origin = "right" %>

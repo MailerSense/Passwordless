@@ -129,7 +129,7 @@ defmodule PasswordlessWeb.User.SecurityLive do
 
         <div class="flex items-center justify-between">
           <.a
-            to={~p"/app/password/change"}
+            to={~p"/password/change"}
             type="button"
             link_type="live_patch"
             styled
@@ -148,7 +148,7 @@ defmodule PasswordlessWeb.User.SecurityLive do
         {gettext("You need to set your password to access features like 2FA.")}
       </.p>
       <.a
-        to={~p"/app/password"}
+        to={~p"/password"}
         label={gettext("Go to password settings")}
         class="underline font-semibold text-slate-900 dark:text-white"
         link_type="live_redirect"

@@ -114,7 +114,7 @@
               <.form
                 :for={invitation <- @invitations}
                 for={nil}
-                action={~p"/app/invitation/accept"}
+                action={~p"/invitation/accept"}
                 method="post"
               >
                 <.input type="hidden" name="invitation_id" value={invitation.id} />

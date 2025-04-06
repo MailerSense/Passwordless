@@ -84,12 +84,12 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/home")}
+    {:noreply, push_patch(socket, to: ~p"/home")}
   end
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/home")}
+    {:noreply, push_patch(socket, to: ~p"/home")}
   end
 
   @impl true

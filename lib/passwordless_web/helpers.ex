@@ -47,28 +47,28 @@ defmodule PasswordlessWeb.Helpers do
         name: :install,
         label: "Installation",
         icon: "remix-install-line",
-        path: ~p"/app/embed/install",
+        path: ~p"/embed/install",
         link_type: "live_patch"
       },
       %{
         name: :api,
         label: "Headless API",
         icon: "remix-code-s-slash-line",
-        path: ~p"/app/embed/api",
+        path: ~p"/embed/api",
         link_type: "live_patch"
       },
       %{
         name: :login,
         label: "Login window",
         icon: "remix-window-line",
-        path: ~p"/app/embed/login",
+        path: ~p"/embed/login",
         link_type: "live_patch"
       },
       %{
         name: :guard,
         label: "Identity guard",
         icon: "remix-police-badge-line",
-        path: ~p"/app/embed/guard",
+        path: ~p"/embed/guard",
         link_type: "live_patch"
       }
     ]
@@ -80,56 +80,56 @@ defmodule PasswordlessWeb.Helpers do
         name: :email,
         label: "Email",
         icon: "remix-mail-open-line",
-        path: ~p"/app/authenticators/email",
+        path: ~p"/authenticators/email",
         link_type: "live_patch"
       },
       %{
         name: :sms,
         label: "SMS",
         icon: "remix-message-2-line",
-        path: ~p"/app/authenticators/sms",
+        path: ~p"/authenticators/sms",
         link_type: "live_patch"
       },
       %{
         name: :whatsapp,
         label: "WhatsApp",
         icon: "remix-whatsapp-line",
-        path: ~p"/app/authenticators/whatsapp",
+        path: ~p"/authenticators/whatsapp",
         link_type: "live_patch"
       },
       %{
         name: :magic_link,
         label: "Magic link",
         icon: "remix-link",
-        path: ~p"/app/authenticators/magic-link",
+        path: ~p"/authenticators/magic-link",
         link_type: "live_patch"
       },
       %{
         name: :totp,
         label: "Time-based OTP",
         icon: "remix-qr-code-line",
-        path: ~p"/app/authenticators/totp",
+        path: ~p"/authenticators/totp",
         link_type: "live_patch"
       },
       %{
         name: :security_key,
         label: "Security key",
         icon: "remix-usb-line",
-        path: ~p"/app/authenticators/security-key",
+        path: ~p"/authenticators/security-key",
         link_type: "live_patch"
       },
       %{
         name: :passkey,
         label: "Passkey",
         icon: "remix-fingerprint-line",
-        path: ~p"/app/authenticators/passkey",
+        path: ~p"/authenticators/passkey",
         link_type: "live_patch"
       },
       %{
         name: :recovery_codes,
         label: "Recovery codes",
         icon: "remix-file-list-line",
-        path: ~p"/app/authenticators/recovery-codes",
+        path: ~p"/authenticators/recovery-codes",
         link_type: "live_patch"
       }
     ]
@@ -161,13 +161,13 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :details,
         label: "Details",
-        path: ~p"/app/users/#{actor}/edit",
+        path: ~p"/users/#{actor}/edit",
         link_type: "live_patch"
       },
       %{
         name: :activity,
         label: "Authenticators",
-        path: ~p"/app/users/#{actor}/activity",
+        path: ~p"/users/#{actor}/activity",
         link_type: "live_patch"
       }
     ]
@@ -178,13 +178,13 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :edit,
         label: gettext("Email"),
-        path: ~p"/app/emails/#{email_template}/#{language}/edit",
+        path: ~p"/emails/#{email_template}/#{language}/edit",
         link_type: "live_patch"
       },
       %{
         name: :code,
         label: gettext("Code"),
-        path: ~p"/app/emails/#{email_template}/#{language}/code",
+        path: ~p"/emails/#{email_template}/#{language}/code",
         link_type: "live_patch"
       }
     ]
@@ -195,13 +195,13 @@ defmodule PasswordlessWeb.Helpers do
       %{
         name: :sending,
         label: gettext("Email"),
-        path: ~p"/app/domain/send",
+        path: ~p"/domain/send",
         link_type: "live_patch"
       },
       %{
         name: :branding,
         label: gettext("Tracking"),
-        path: ~p"/app/domain/track",
+        path: ~p"/domain/track",
         link_type: "live_patch"
       }
     ]
@@ -264,7 +264,7 @@ defmodule PasswordlessWeb.Helpers do
   end
 
   def home_path(nil), do: "/"
-  def home_path(%User{}), do: ~p"/app/home"
+  def home_path(%User{}), do: ~p"/home"
 
   def user_name(nil), do: nil
   def user_name(%User{} = user), do: user.name

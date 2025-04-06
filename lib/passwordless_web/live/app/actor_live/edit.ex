@@ -44,7 +44,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
       code -> "flag-#{code}"
     end
 
-    return_to = Map.get(params, "return_to", ~p"/app/users")
+    return_to = Map.get(params, "return_to", ~p"/users")
 
     socket =
       socket
@@ -119,12 +119,12 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   @impl true
   def handle_event("close_modal", _, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/users/#{socket.assigns.actor}/edit")}
+    {:noreply, push_patch(socket, to: ~p"/users/#{socket.assigns.actor}/edit")}
   end
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/users/#{socket.assigns.actor}/edit")}
+    {:noreply, push_patch(socket, to: ~p"/users/#{socket.assigns.actor}/edit")}
   end
 
   @impl true
@@ -141,13 +141,13 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
            gettext("User \"%{name}\" has been deleted.", name: actor_name(actor)),
            title: gettext("Success")
          )
-         |> push_navigate(to: ~p"/app/users")}
+         |> push_navigate(to: ~p"/users")}
 
       {:error, _} ->
         {:noreply,
          socket
          |> put_toast(:error, gettext("Failed to delete actor!"), title: gettext("Error"))
-         |> push_patch(to: ~p"/app/users/#{actor}/edit")}
+         |> push_patch(to: ~p"/users/#{actor}/edit")}
     end
   end
 

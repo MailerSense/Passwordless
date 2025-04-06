@@ -12,6 +12,6 @@ defmodule PasswordlessWeb.ProjectController do
     conn
     |> assign(:current_app, app)
     |> put_session(@app_key, app.id)
-    |> redirect(to: ~p"/app/home")
+    |> redirect(to: ~p"/home")
   end
 end

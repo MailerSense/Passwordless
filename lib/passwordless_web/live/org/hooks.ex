@@ -31,7 +31,7 @@ defmodule PasswordlessWeb.Org.Hooks do
 
       _ ->
         socket = put_flash(socket, :error, gettext("You must belong to an organization to access this page."))
-        {:halt, redirect(socket, to: ~p"/app/home")}
+        {:halt, redirect(socket, to: ~p"/home")}
     end
   end
 

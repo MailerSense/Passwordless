@@ -51,7 +51,7 @@ defmodule PasswordlessWeb.User.InvitationsLive do
   def handle_event("confirmation_resend", _, socket) do
     Accounts.deliver_user_confirmation_instructions(
       socket.assigns.current_user,
-      &url(~p"/app/user/settings/confirm-email/#{&1}")
+      &url(~p"/user/settings/confirm-email/#{&1}")
     )
 
     {:noreply, put_flash(socket, :info, gettext("You will receive an e-mail with instructions shortly."))}

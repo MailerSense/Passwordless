@@ -31,12 +31,12 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Index do
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/authenticators/#{socket.assigns.live_action}")}
+    {:noreply, push_patch(socket, to: ~p"/authenticators/#{socket.assigns.live_action}")}
   end
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/authenticators/#{socket.assigns.live_action}")}
+    {:noreply, push_patch(socket, to: ~p"/authenticators/#{socket.assigns.live_action}")}
   end
 
   @impl true

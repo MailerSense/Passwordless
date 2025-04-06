@@ -35,14 +35,14 @@
         </.p>
         <div class="flex items-center justify-between gap-3">
           <.a
-            to={~p"/app/domain/dns"}
+            to={~p"/domain/dns"}
             label={gettext("Get DNS records")}
             styled
             link_type="live_patch"
           />
 
           <.button
-            to={~p"/app/domain/change"}
+            to={~p"/domain/change"}
             icon="remix-cloud-line"
             color="primary"
             label={gettext("Change domain")}
@@ -62,7 +62,7 @@
       domain={@domain}
       module={PasswordlessWeb.App.DomainLive.DNSComponent}
       live_action={@live_action}
-      return_to={~p"/app/domain"}
+      return_to={~p"/domain"}
     />
   <% :change -> %>
     <.live_component
@@ -73,7 +73,7 @@
       domain={@domain}
       module={PasswordlessWeb.App.DomainLive.ChangeComponent}
       live_action={@live_action}
-      return_to={~p"/app/domain"}
+      return_to={~p"/domain"}
     />
   <% _ -> %>
 <% end %>

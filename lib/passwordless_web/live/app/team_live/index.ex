@@ -65,7 +65,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   @impl true
   def handle_event("update_filters", %{"filters" => filter_params}, socket) do
     query_params = DataTable.build_filter_params(socket.assigns.meta, filter_params)
-    {:noreply, push_patch(socket, to: ~p"/app/team?#{query_params}")}
+    {:noreply, push_patch(socket, to: ~p"/team?#{query_params}")}
   end
 
   @impl true
@@ -86,7 +86,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
       {:ok, invitation} ->
         to =
           if invitation.user_id,
-            do: url(~p"/app/invitations"),
+            do: url(~p"/invitations"),
             else: url(~p"/auth/sign-up")
 
         Accounts.Notifier.deliver_org_invitation(org, invitation, to)
@@ -101,7 +101,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
         {:noreply,
          socket
          |> put_toast(:info, gettext("Invitation sent to the given email address."), title: gettext("Success"))
-         |> push_patch(to: ~p"/app/team")}
+         |> push_patch(to: ~p"/team")}
 
       {:error, changeset} ->
         {:noreply, assign_form(socket, changeset)}
@@ -123,13 +123,13 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
         {:noreply,
          socket
          |> put_toast(:info, gettext("Invitation has been deleted."), title: gettext("Success"))
-         |> push_navigate(to: ~p"/app/team")}
+         |> push_navigate(to: ~p"/team")}
 
       {:error, _} ->
         {:noreply,
          socket
          |> put_toast(:error, gettext("Failed to delete invitation!"), title: gettext("Error"))
-         |> push_navigate(to: ~p"/app/team")}
+         |> push_navigate(to: ~p"/team")}
     end
   end
 
@@ -138,7 +138,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
     {:noreply,
      socket
      |> put_toast(:info, gettext("Invitation resent successfully."), title: gettext("Success"))
-     |> push_patch(to: ~p"/app/team")}
+     |> push_patch(to: ~p"/team")}
   end
 
   @impl true
@@ -163,14 +163,14 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
           {:noreply,
            socket
            |> put_toast(:info, gettext("Member has been deleted."), title: gettext("Success"))
-           |> push_patch(to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/team"))}
+           |> push_patch(to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/team"))}
         end
 
       {:error, _changeset} ->
         {:noreply,
          socket
          |> put_toast(:error, gettext("Failed to delete member!"), title: gettext("Error"))
-         |> push_patch(to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/team"))}
+         |> push_patch(to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/team"))}
     end
   end
 
@@ -178,7 +178,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   def handle_event("close_slide_over", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/team")
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/team")
      )}
   end
 
@@ -186,7 +186,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   def handle_event("close_modal", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app/team")
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/team")
      )}
   end
 

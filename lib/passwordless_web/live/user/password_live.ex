@@ -28,12 +28,12 @@ defmodule PasswordlessWeb.User.PasswordLive do
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/password")}
+    {:noreply, push_patch(socket, to: ~p"/password")}
   end
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/password")}
+    {:noreply, push_patch(socket, to: ~p"/password")}
   end
 
   @impl true
@@ -74,7 +74,7 @@ defmodule PasswordlessWeb.User.PasswordLive do
      |> put_toast(:info, gettext("You will receive instructions to reset your password shortly."),
        title: gettext("Success")
      )
-     |> push_patch(to: ~p"/app/password")}
+     |> push_patch(to: ~p"/password")}
   end
 
   @impl true

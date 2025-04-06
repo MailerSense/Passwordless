@@ -11,7 +11,7 @@
           link_type="live_redirect"
         />
         <.button
-          to={~p"/app/users/#{@actor}/edit/delete"}
+          to={~p"/users/#{@actor}/edit/delete"}
           size="md"
           type="button"
           label={gettext("Delete")}
@@ -102,13 +102,13 @@
               label={gettext("Add new email")}
               styled
               link_type="live_patch"
-              to={~p"/app/users/#{@actor}/edit/email/new"}
+              to={~p"/users/#{@actor}/edit/email/new"}
             />
             <.a
               label={gettext("Add new phone")}
               styled
               link_type="live_patch"
-              to={~p"/app/users/#{@actor}/edit/phone/new"}
+              to={~p"/users/#{@actor}/edit/phone/new"}
             />
           </div>
         <% end %>
@@ -138,7 +138,7 @@
         <:col actions></:col>
         <:actions :let={email}>
           <.icon_button
-            to={~p"/app/users/#{@actor}/edit/email/#{email}/delete"}
+            to={~p"/users/#{@actor}/edit/email/#{email}/delete"}
             size="sm"
             icon="custom-trash"
             color="light"
@@ -146,7 +146,7 @@
             link_type="live_patch"
           />
           <.icon_button
-            to={~p"/app/users/#{@actor}/edit/email/#{email}/edit"}
+            to={~p"/users/#{@actor}/edit/email/#{email}/edit"}
             size="sm"
             icon="custom-edit"
             color="light"
@@ -186,7 +186,7 @@
         <:col actions></:col>
         <:actions :let={phone}>
           <.icon_button
-            to={~p"/app/users/#{@actor}/edit/phone/#{phone}/delete"}
+            to={~p"/users/#{@actor}/edit/phone/#{phone}/delete"}
             size="sm"
             icon="custom-trash"
             color="light"
@@ -194,7 +194,7 @@
             link_type="live_patch"
           />
           <.icon_button
-            to={~p"/app/users/#{@actor}/edit/phone/#{phone}/edit"}
+            to={~p"/users/#{@actor}/edit/phone/#{phone}/edit"}
             size="sm"
             icon="custom-edit"
             color="light"
@@ -214,7 +214,7 @@
         <:col actions></:col>
         <:actions :let={identity}>
           <.icon_button
-            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
+            to={~p"/users/#{@actor}/edit/identity/#{identity}/delete"}
             size="sm"
             icon="custom-trash"
             color="light"
@@ -222,7 +222,7 @@
             link_type="live_patch"
           />
           <.icon_button
-            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
+            to={~p"/users/#{@actor}/edit/identity/#{identity}/edit"}
             size="sm"
             icon="custom-edit"
             color="light"
@@ -239,7 +239,7 @@
         <:col actions></:col>
         <:actions :let={identity}>
           <.icon_button
-            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
+            to={~p"/users/#{@actor}/edit/identity/#{identity}/delete"}
             size="sm"
             icon="custom-trash"
             color="light"
@@ -247,7 +247,7 @@
             link_type="live_patch"
           />
           <.icon_button
-            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
+            to={~p"/users/#{@actor}/edit/identity/#{identity}/edit"}
             size="sm"
             icon="custom-edit"
             color="light"
@@ -262,7 +262,7 @@
         <:col actions></:col>
         <:actions :let={identity}>
           <.icon_button
-            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/delete"}
+            to={~p"/users/#{@actor}/edit/identity/#{identity}/delete"}
             size="sm"
             icon="custom-trash"
             color="light"
@@ -270,7 +270,7 @@
             link_type="live_patch"
           />
           <.icon_button
-            to={~p"/app/users/#{@actor}/edit/identity/#{identity}/edit"}
+            to={~p"/users/#{@actor}/edit/identity/#{identity}/edit"}
             size="sm"
             icon="custom-edit"
             color="light"
@@ -313,7 +313,7 @@
       <:col actions></:col>
       <:actions :let={action}>
         <.icon_button
-          to={~p"/app/home/#{action}/view"}
+          to={~p"/home/#{action}/view"}
           size="sm"
           icon="custom-edit"
           color="light"
@@ -339,7 +339,7 @@
       current_org={@current_org}
       current_app={@current_app}
       current_user={@current_user}
-      return_to={~p"/app/users/#{@actor}/edit"}
+      return_to={~p"/users/#{@actor}/edit"}
     />
   <% :edit_email -> %>
     <.live_component
@@ -354,7 +354,7 @@
       current_org={@current_org}
       current_app={@current_app}
       current_user={@current_user}
-      return_to={~p"/app/users/#{@actor}/edit"}
+      return_to={~p"/users/#{@actor}/edit"}
     />
   <% :new_phone -> %>
     <.live_component
@@ -369,7 +369,7 @@
       current_org={@current_org}
       current_app={@current_app}
       current_user={@current_user}
-      return_to={~p"/app/users/#{@actor}/edit"}
+      return_to={~p"/users/#{@actor}/edit"}
     />
   <% :edit_phone -> %>
     <.live_component
@@ -384,7 +384,7 @@
       current_org={@current_org}
       current_app={@current_app}
       current_user={@current_user}
-      return_to={~p"/app/users/#{@actor}/edit"}
+      return_to={~p"/users/#{@actor}/edit"}
     />
   <% :edit_properties -> %>
     <.live_component
@@ -398,7 +398,7 @@
       current_org={@current_org}
       current_app={@current_app}
       current_user={@current_user}
-      return_to={~p"/app/users/#{@actor}/edit"}
+      return_to={~p"/users/#{@actor}/edit"}
     />
   <% :delete -> %>
     <.modal

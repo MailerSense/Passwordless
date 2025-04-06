@@ -9,12 +9,7 @@
     />
 
     <div class="flex items-center justify-between">
-      <.a
-        to={~p"/app/edit-email"}
-        label={gettext("Change your email")}
-        styled
-        link_type="live_patch"
-      />
+      <.a to={~p"/edit-email"} label={gettext("Change your email")} styled link_type="live_patch" />
       <.button
         icon="remix-save-line"
         label={gettext("Save")}
@@ -32,7 +27,7 @@
       subtitle={@page_subtitle}
       module={PasswordlessWeb.User.ChangeEmailComponent}
       live_action={@live_action}
-      return_to={~p"/app/profile"}
+      return_to={~p"/profile"}
       current_user={@current_user}
     />
   <% _ -> %>

@@ -18,7 +18,7 @@ defmodule PasswordlessWeb.UserSettingsController do
       {:ok, user} ->
         conn
         |> put_flash(:info, gettext("Password updated successfully."))
-        |> put_session(:user_return_to, ~p"/app/password")
+        |> put_session(:user_return_to, ~p"/password")
         |> UserAuth.log_in(user, via: :password_change)
 
       {:error, changeset} ->
@@ -27,7 +27,7 @@ defmodule PasswordlessWeb.UserSettingsController do
           :error,
           PasswordlessWeb.CoreComponents.combine_changeset_error_messages(changeset)
         )
-        |> redirect(to: ~p"/app/password")
+        |> redirect(to: ~p"/password")
     end
   end
 
@@ -40,12 +40,12 @@ defmodule PasswordlessWeb.UserSettingsController do
 
         conn
         |> put_flash(:info, gettext("Email changed successfully."))
-        |> redirect(to: ~p"/app/profile")
+        |> redirect(to: ~p"/profile")
 
       _ ->
         conn
         |> put_flash(:error, gettext("Email change link is invalid or it has expired!"))
-        |> redirect(to: ~p"/app/profile")
+        |> redirect(to: ~p"/profile")
     end
   end
 
