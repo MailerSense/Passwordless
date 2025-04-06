@@ -3,10 +3,12 @@ import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
+  AmiHardwareType,
   AsgCapacityProvider,
   Cluster,
   ContainerImage,
   ContainerInsights,
+  EcsOptimizedImage,
   Secret,
 } from "aws-cdk-lib/aws-ecs";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
@@ -16,6 +18,7 @@ import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 import { join } from "path";
 
+import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
 import { AppContainer } from "./application/public-ec2-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
@@ -112,7 +115,32 @@ export class PasswordlessTools extends cdk.Stack {
       containerInsightsV2: ContainerInsights.ENHANCED,
     });
 
-    const capacityProviders: Record<string, AsgCapacityProvider> = {};
+    const capacityProviders: Record<string, AsgCapacityProvider> = {
+      "t4g-micro-asg-capacity-provider": new AsgCapacityProvider(
+        this,
+        "t4g-micro-asg-capacity-provider",
+        {
+          autoScalingGroup: new AutoScalingGroup(
+            this,
+            "t4g-micro-autoscaling-group",
+            {
+              vpc: vpc.vpc,
+              instanceType: InstanceType.of(
+                InstanceClass.T4G,
+                InstanceSize.MICRO,
+              ),
+              machineImage: EcsOptimizedImage.amazonLinux2023(
+                AmiHardwareType.ARM,
+              ),
+              minCapacity: 2,
+              maxCapacity: 2,
+            },
+          ),
+          enableManagedTerminationProtection: true,
+          enableManagedScaling: true,
+        },
+      ),
+    };
 
     for (const [_, capacityProvider] of Object.entries(capacityProviders)) {
       cluster.addAsgCapacityProvider(capacityProvider);
