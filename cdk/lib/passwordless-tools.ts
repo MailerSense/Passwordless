@@ -2,6 +2,12 @@ import * as cdk from "aws-cdk-lib";
 import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
 import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
 import {
+  CachePolicy,
+  OriginRequestPolicy,
+  ViewerProtocolPolicy,
+} from "aws-cdk-lib/aws-cloudfront";
+import { LoadBalancerV2Origin } from "aws-cdk-lib/aws-cloudfront-origins";
+import {
   InstanceClass,
   InstanceSize,
   InstanceType,
@@ -29,6 +35,7 @@ import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
 import { Migration } from "./lambda/migration";
+import { CDN } from "./network/cdn";
 import { Certificate } from "./network/certificate";
 import { VPC } from "./network/vpc";
 import { WAF } from "./network/waf";
@@ -36,8 +43,10 @@ import { PasswordlessToolsCertificates } from "./passwordless-tools-certificates
 import { CachedImage } from "./storage/cached-image";
 import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
+import { Region } from "./util/region";
 
 export interface PasswordlessToolsProps extends cdk.StackProps {
+  region: Region;
   certificates: PasswordlessToolsCertificates;
 }
 
@@ -45,9 +54,11 @@ export class PasswordlessTools extends cdk.Stack {
   public constructor(
     scope: Construct,
     id: string,
-    props?: PasswordlessToolsProps,
+    props: PasswordlessToolsProps,
   ) {
     super(scope, id, props);
+
+    const { region, certificates } = props;
 
     const env = process.env.DEPLOYMENT_ENV
       ? (process.env.DEPLOYMENT_ENV as Environment)
@@ -316,24 +327,22 @@ export class PasswordlessTools extends cdk.Stack {
       blockedPathPrefixes: ["/health"],
     });
 
-    /*  if (
-      envLookup.hostedZone.domains.cdn &&
-      props?.certificates.euCdnCertificate
-    ) {
-      const _cdn = new CDN(this, `${env}-app-cdn`, {
-        name: `${appName}-cdn`,
-        zone,
-        cert: props?.certificates.euCdnCertificate.certificate,
-        domain: envLookup.hostedZone.domains.cdn,
-        defaultBehavior: {
-          origin: new LoadBalancerV2Origin(app.service.loadBalancer),
-          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
-          originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
-        },
-        additionalBehaviors: {},
-      });
-    } */
+    const { domain, certificate: cert } =
+      certificates.certificates[region][env];
+
+    const _cdn = new CDN(this, `${env}-app-cdn`, {
+      name: `${appName}-cdn`,
+      zone,
+      cert,
+      domain,
+      defaultBehavior: {
+        origin: new LoadBalancerV2Origin(app.service.loadBalancer),
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
+        originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
+      },
+      additionalBehaviors: {},
+    });
 
     /* 
     const comCertificate = new Certificate(this, "com-certificate", {
