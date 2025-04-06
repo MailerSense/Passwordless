@@ -257,7 +257,7 @@ export class PasswordlessTools extends cdk.Stack {
       zone,
       domain: envLookup.hostedZone.domains.primary,
       cluster,
-      desiredCount: 2,
+      desiredCount: 1,
       certificate: certificate.certificate,
       container: appContainer,
       healthCheckCmd: "/app/bin/health",
