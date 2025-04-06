@@ -1,3 +1,4 @@
+alias Database.Tenant
 alias Passwordless.Accounts.UserSeeder
 alias Passwordless.Organizations
 alias Passwordless.Organizations.OrgSeeder
