@@ -29,7 +29,7 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
 
     if (envLookup.hostedZone.domains.cdn) {
       const cdnCertificate = new Certificate(this, `${env}-cdn-certificate`, {
-        name: `${appName}-certificate`,
+        name: `${appName}-cdn-certificate`,
         zone,
         domain: envLookup.hostedZone.domains.cdn,
       });
