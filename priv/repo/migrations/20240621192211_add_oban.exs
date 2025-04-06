@@ -1,4 +1,4 @@
-defmodule Passwordless.Repo.Migrations.AddObanJobsTable do
+defmodule Passwordless.Repo.Migrations.AddOban do
   use Ecto.Migration
 
   def up do

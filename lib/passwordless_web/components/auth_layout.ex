@@ -36,7 +36,7 @@ defmodule PasswordlessWeb.Components.AuthLayout do
       </div>
 
       <div class="pb-20 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="px-4 py-8 bg-white shadow-1 sm:rounded-lg sm:px-10 dark:bg-slate-800">
+        <div class="px-8 py-8 bg-white shadow-1 sm:rounded-lg sm:px-10 dark:bg-slate-800">
           {render_slot(@inner_block)}
         </div>
 

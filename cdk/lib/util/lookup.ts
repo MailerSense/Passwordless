@@ -56,7 +56,7 @@ export const lookupMap: EnvConfigMap = {
     appConfig: {
       PORT: "8000",
       PHX_HOST: "eu.passwordless.tools",
-      POOL_SIZE: "10",
+      POOL_SIZE: "20",
     },
     generalSecretArn:
       "arn:aws:secretsmanager:eu-west-1:728247919352:secret:general-application-config-uL5n4J",

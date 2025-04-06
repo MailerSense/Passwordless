@@ -149,9 +149,8 @@ defmodule Passwordless.MixProject do
       {:exvcr, "~> 0.15", only: :test},
 
       # Jobs / Cron
-      {:oban, "~> 2.17"},
-      {:oban_pro, "~> 1.3", repo: "oban"},
-      {:oban_web, "~> 2.10", repo: "oban"},
+      {:oban, "~> 2.19"},
+      {:oban_pro, "~> 1.5", repo: "oban"},
       {:gen_stage, "~> 1.2"},
 
       # Locate
