@@ -24,18 +24,11 @@ import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 import { join } from "path";
 
-import {
-  CachePolicy,
-  OriginRequestPolicy,
-  ViewerProtocolPolicy,
-} from "aws-cdk-lib/aws-cloudfront";
-import { LoadBalancerV2Origin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { AppContainer, PublicEC2App } from "./application/public-ec2-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
 import { Migration } from "./lambda/migration";
-import { CDN } from "./network/cdn";
 import { Certificate } from "./network/certificate";
 import { VPC } from "./network/vpc";
 import { WAF } from "./network/waf";
@@ -314,7 +307,7 @@ export class PasswordlessTools extends cdk.Stack {
       blockedPathPrefixes: ["/health"],
     });
 
-    if (envLookup.hostedZone.domains.cdn) {
+    /*  if (envLookup.hostedZone.domains.cdn) {
       const _cdn = new CDN(this, "main-cdn", {
         name: `${appName}-cdn`,
         zone,
@@ -328,7 +321,7 @@ export class PasswordlessTools extends cdk.Stack {
         },
         additionalBehaviors: {},
       });
-    }
+    } */
 
     /* 
     const comCertificate = new Certificate(this, "com-certificate", {

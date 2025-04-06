@@ -1,29 +1,4 @@
 <head>
-  <%= if public_page?(@conn) do %>
-    <!-- Start of Iubenda -->
-    <script type="text/javascript">
-      var _iub = _iub || [];
-      _iub.csConfiguration = {"siteId":3786301,"cookiePolicyId":23101660,"lang":"en","storage":{"useSiteId":true}};
-    </script>
-    <script type="text/javascript" src="https://cs.iubenda.com/autoblocking/3786301.js">
-    </script>
-    <script type="text/javascript" src="//cdn.iubenda.com/cs/gpp/stub.js">
-    </script>
-    <script type="text/javascript" src="//cdn.iubenda.com/cs/iubenda_cs.js" charset="UTF-8" async>
-    </script>
-    <!-- End of Iubenda -->
-    <!-- Start of Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y0YPHLP184">
-    </script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-Y0YPHLP184');
-    </script>
-    <!-- End of Google tag (gtag.js) -->
-  <% end %>
   <meta name="csrf-token" content={get_csrf_token()} />
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
