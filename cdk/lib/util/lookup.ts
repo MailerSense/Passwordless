@@ -2,7 +2,8 @@ import { Environment } from "./environment";
 import { Region } from "./region";
 
 export interface HostedZoneConfig {
-  hostedZoneId: string;
+  id: string;
+  name: string;
   domains: {
     primary: string;
     www?: string;
@@ -33,7 +34,8 @@ export const lookupMap: EnvConfigMap = {
     },
     generalSecretArn: "",
     hostedZone: {
-      hostedZoneId: "",
+      id: "",
+      name: "",
       domains: {
         primary: "dev.passwordless.tools",
         cdn: "cdn.dev.passwordless.tools",
@@ -41,7 +43,8 @@ export const lookupMap: EnvConfigMap = {
       },
     },
     hostedZoneCom: {
-      hostedZoneId: "",
+      id: "",
+      name: "",
       domains: {
         primary: "dev.eu.passwordlesstools.com",
         email: "dev.eu.passwordlesstools.com",
@@ -58,7 +61,8 @@ export const lookupMap: EnvConfigMap = {
     generalSecretArn:
       "arn:aws:secretsmanager:eu-west-1:728247919352:secret:general-application-config-uL5n4J",
     hostedZone: {
-      hostedZoneId: "Z0737569361XQK32FNWPX",
+      id: "Z0737569361XQK32FNWPX",
+      name: "passwordless.tools",
       domains: {
         primary: "eu.passwordless.tools",
         cdn: "cdn.eu.passwordless.tools",
@@ -66,7 +70,8 @@ export const lookupMap: EnvConfigMap = {
       },
     },
     hostedZoneCom: {
-      hostedZoneId: "Z06750861RW0K8GN2HE9G",
+      id: "Z06750861RW0K8GN2HE9G",
+      name: "passwordlesstools.com",
       domains: {
         primary: "eu.passwordlesstools.com",
         email: "eu.passwordlesstools.com",
@@ -75,39 +80,102 @@ export const lookupMap: EnvConfigMap = {
   },
 };
 
-export type CertificateConfig = {
+export enum ZoneType {
+  TOOLS = "tools",
+  COM = "com",
+}
+
+export interface DomainAttributes {
+  zone: ZoneType;
+  domain: string;
+}
+
+export type DomainConfig = {
   [R in Region]: {
     [E in Environment]: {
-      main: string;
-      www: string;
-      cdn: string;
+      main: DomainAttributes;
+      www: DomainAttributes;
+      cdn: DomainAttributes;
+      com: DomainAttributes;
     };
   };
 };
 
-export const domainLookup: CertificateConfig = {
+export const domainLookup: DomainConfig = {
   [Region.EU]: {
     [Environment.DEV]: {
-      main: "eu.dev.passwordless.tools",
-      www: "www.eu.dev.passwordless.tools",
-      cdn: "cdn.eu.dev.passwordless.tools",
+      main: {
+        zone: ZoneType.TOOLS,
+        domain: "eu.dev.passwordless.tools",
+      },
+      www: {
+        zone: ZoneType.TOOLS,
+        domain: "www.eu.dev.passwordless.tools",
+      },
+      cdn: {
+        zone: ZoneType.TOOLS,
+        domain: "cdn.eu.dev.passwordless.tools",
+      },
+      com: {
+        zone: ZoneType.COM,
+        domain: "dev.eu.passwordlesstools.com",
+      },
     },
     [Environment.PROD]: {
-      main: "eu.passwordless.tools",
-      www: "www.eu.passwordless.tools",
-      cdn: "cdn.eu.passwordless.tools",
+      main: {
+        zone: ZoneType.TOOLS,
+        domain: "eu.passwordless.tools",
+      },
+      www: {
+        zone: ZoneType.TOOLS,
+        domain: "www.eu.passwordless.tools",
+      },
+      cdn: {
+        zone: ZoneType.TOOLS,
+        domain: "cdn.eu.passwordless.tools",
+      },
+      com: {
+        zone: ZoneType.COM,
+        domain: "eu.passwordlesstools.com",
+      },
     },
   },
   [Region.US]: {
     [Environment.DEV]: {
-      main: "us.dev.passwordless.tools",
-      www: "www.us.dev.passwordless.tools",
-      cdn: "cdn.us.dev.passwordless.tools",
+      main: {
+        zone: ZoneType.TOOLS,
+        domain: "us.dev.passwordless.tools",
+      },
+      www: {
+        zone: ZoneType.TOOLS,
+        domain: "www.us.dev.passwordless.tools",
+      },
+      cdn: {
+        zone: ZoneType.TOOLS,
+        domain: "cdn.us.dev.passwordless.tools",
+      },
+      com: {
+        zone: ZoneType.COM,
+        domain: "us.dev.passwordlesstools.com",
+      },
     },
     [Environment.PROD]: {
-      main: "us.passwordless.tools",
-      www: "www.us.passwordless.tools",
-      cdn: "cdn.us.passwordless.tools",
+      main: {
+        zone: ZoneType.TOOLS,
+        domain: "us.passwordless.tools",
+      },
+      www: {
+        zone: ZoneType.TOOLS,
+        domain: "www.us.passwordless.tools",
+      },
+      cdn: {
+        zone: ZoneType.TOOLS,
+        domain: "cdn.us.passwordless.tools",
+      },
+      com: {
+        zone: ZoneType.COM,
+        domain: "us.passwordlesstools.com",
+      },
     },
   },
 };

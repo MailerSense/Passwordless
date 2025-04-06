@@ -36,9 +36,6 @@ config :phoenix, :plug_init_mode, :runtime
 # Only validate simple things
 config :passwordless, :email_validators, [:format, :domain]
 
-# Run browser in on demand mode
-config :passwordless, :browser, on_demand: true
-
 config :passwordless, :env, :test
 
 # Wallaby related settings:

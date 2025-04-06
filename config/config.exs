@@ -103,12 +103,6 @@ config :passwordless, :secret_manager,
 # Configures the media uploader to local
 config :passwordless, :media_upload, adapter: Passwordless.Media.Upload.Local
 
-config :passwordless, :media,
-  buckets: [
-    embedded: "blah",
-    attached: "blah"
-  ]
-
 config :passwordless, :emails,
   support: [
     name: "Passwordless",
@@ -187,21 +181,11 @@ config :tailwind,
 # (fr is France, change to whatever language you want - make sure it's included in the locales config below)
 config :passwordless, PasswordlessWeb.Gettext, allowed_locales: ~w(en)
 
-config :passwordless, :language_options, [
-  %{locale: "en", flag: "🇬🇧", label: "English"}
-]
-
 # Social login providers
 config :ueberauth, Ueberauth,
   providers: [
     google: {Ueberauth.Strategy.Google, [default_scope: "email profile"]}
   ]
-
-# Setup Contentful
-config :passwordless, :contentful,
-  space_id: "p33ulv4i0ung",
-  environment: "master",
-  access_token: {:system, "CONTENTFUL_ACCESS_TOKEN"}
 
 config :passwordless, :translation_helper_module, PasswordlessWeb.PetalFrameworkTranslations
 
@@ -219,19 +203,7 @@ config :passwordless, :content_security_policy, %{
     "blob:",
     "https://rsms.me",
     "*.amazonaws.com",
-    "https://*.google-analytics.com",
-    "https://*.analytics.google.com",
-    "https://*.googletagmanager.com",
-    "https://*.googleapis.com",
-    "https://*.gstatic.com",
-    "https://*.cloudflare.com",
-    "*.iubenda.com",
-    "*.fillout.com",
-    "*.savvycal.com",
-    "https://*.atlas.so",
-    "https://*.jsdelivr.net",
-    "https://*.passwordless.tools",
-    "https://*.featurebase.app"
+    "https://*.passwordless.tools"
   ],
   connect_src:
     case Mix.env() do
@@ -248,20 +220,7 @@ config :passwordless, :content_security_policy, %{
         ]
     end ++
       [
-        "https://*.google-analytics.com",
-        "https://*.analytics.google.com",
-        "https://*.googletagmanager.com",
-        "https://*.googleapis.com",
-        "https://*.gstatic.com",
-        "https://*.cloudflare.com",
-        "*.iubenda.com",
-        "*.fillout.com",
-        "*.savvycal.com",
-        "wss://*.atlas.so",
-        "https://*.atlas.so",
-        "https://*.jsdelivr.net",
-        "https://*.abstractapi.com",
-        "https://*.featurebase.app"
+        "https://*.googleapis.com"
       ],
   img_src: [
     "*",
@@ -271,11 +230,7 @@ config :passwordless, :content_security_policy, %{
   ],
   frame_src:
     [
-      "https://*.passwordless.tools",
-      "*.fillout.com",
-      "*.savvycal.com",
-      "savvycal.com",
-      "https://*.featurebase.app"
+      "https://*.passwordless.tools"
     ] ++
       case Mix.env() do
         :prod ->
@@ -387,11 +342,6 @@ config :passwordless, :billing_plans, [
 ]
 
 config :backpex, :pubsub_server, Passwordless.PubSub
-
-config :passwordless, :browser,
-  on_demand: false,
-  no_sandbox: true,
-  debug_browser_protocol: true
 
 config :passwordless, :countries,
   af: "Afghanistan",
@@ -851,11 +801,6 @@ config :passwordless, :languages,
   io: "Ido",
   or: "Oriya",
   bi: "Bislama"
-
-config :passwordless, :email_templates,
-  magic_link_first_sign_in: [
-    subject: "Welcome to Passwordless"
-  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
