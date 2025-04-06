@@ -42,7 +42,7 @@ import { WAF } from "./network/waf";
 import { PasswordlessToolsCertificates } from "./passwordless-tools-certificates";
 import { CachedImage } from "./storage/cached-image";
 import { Environment } from "./util/environment";
-import { lookupMap } from "./util/lookup";
+import { domainLookup as certificateLookup, lookupMap } from "./util/lookup";
 import { Region } from "./util/region";
 
 export interface PasswordlessToolsProps extends cdk.StackProps {
@@ -65,6 +65,8 @@ export class PasswordlessTools extends cdk.Stack {
       : Environment.DEV;
 
     const envLookup = lookupMap[env];
+
+    const domainLookup = certificateLookup[region][env];
 
     const removalPolicy =
       env == Environment.PROD ? RemovalPolicy.DESTROY : RemovalPolicy.DESTROY;

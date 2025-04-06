@@ -78,25 +78,35 @@ export const lookupMap: EnvConfigMap = {
 export type CertificateConfig = {
   [R in Region]: {
     [E in Environment]: {
+      main: string;
+      www: string;
       cdn: string;
     };
   };
 };
 
-export const certificateConfig: CertificateConfig = {
+export const domainLookup: CertificateConfig = {
   [Region.EU]: {
     [Environment.DEV]: {
+      main: "eu.dev.passwordless.tools",
+      www: "www.eu.dev.passwordless.tools",
       cdn: "cdn.eu.dev.passwordless.tools",
     },
     [Environment.PROD]: {
+      main: "eu.passwordless.tools",
+      www: "www.eu.passwordless.tools",
       cdn: "cdn.eu.passwordless.tools",
     },
   },
   [Region.US]: {
     [Environment.DEV]: {
+      main: "us.dev.passwordless.tools",
+      www: "www.us.dev.passwordless.tools",
       cdn: "cdn.us.dev.passwordless.tools",
     },
     [Environment.PROD]: {
+      main: "us.passwordless.tools",
+      www: "www.us.passwordless.tools",
       cdn: "cdn.us.passwordless.tools",
     },
   },

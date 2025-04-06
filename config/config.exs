@@ -237,8 +237,8 @@ config :passwordless, :content_security_policy, %{
     case Mix.env() do
       :prod ->
         [
-          "wss://#{System.get_env("PHX_HOST") || "passwordless.tools"}",
-          "https://#{System.get_env("PHX_HOST") || "passwordless.tools"}"
+          "wss://#{System.get_env("PHX_HOST") || "eu.passwordless.tools"}",
+          "https://#{System.get_env("PHX_HOST") || "eu.passwordless.tools"}"
         ]
 
       _ ->
