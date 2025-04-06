@@ -145,6 +145,30 @@ export class PasswordlessTools extends cdk.Stack {
           enableManagedScaling: true,
         },
       ),
+      "t4g-micro-asg-capacity-provider": new AsgCapacityProvider(
+        this,
+        "t4g-micro-asg-capacity-provider",
+        {
+          autoScalingGroup: new AutoScalingGroup(
+            this,
+            "t4g-micro-autoscaling-group",
+            {
+              vpc: vpc.vpc,
+              instanceType: InstanceType.of(
+                InstanceClass.T4G,
+                InstanceSize.MICRO,
+              ),
+              machineImage: EcsOptimizedImage.amazonLinux2023(
+                AmiHardwareType.ARM,
+              ),
+              minCapacity: 2,
+              maxCapacity: 2,
+            },
+          ),
+          enableManagedTerminationProtection: true,
+          enableManagedScaling: true,
+        },
+      ),
     };
 
     for (const [_, capacityProvider] of Object.entries(capacityProviders)) {
@@ -238,7 +262,7 @@ export class PasswordlessTools extends cdk.Stack {
       },
       stopTimeout: Duration.seconds(30),
       containerPort: 8000,
-      memoryReservation: 400,
+      memoryReservation: 512,
     };
 
     const migrationName = "passwordless-tools-migration-lambda";
