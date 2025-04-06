@@ -24,11 +24,18 @@ import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 import { join } from "path";
 
+import {
+  CachePolicy,
+  OriginRequestPolicy,
+  ViewerProtocolPolicy,
+} from "aws-cdk-lib/aws-cloudfront";
+import { LoadBalancerV2Origin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { AppContainer, PublicEC2App } from "./application/public-ec2-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
 import { Migration } from "./lambda/migration";
+import { CDN } from "./network/cdn";
 import { Certificate } from "./network/certificate";
 import { VPC } from "./network/vpc";
 import { WAF } from "./network/waf";
@@ -307,6 +314,22 @@ export class PasswordlessTools extends cdk.Stack {
       blockedPathPrefixes: ["/health"],
     });
 
+    if (envLookup.hostedZone.domains.cdn) {
+      const _cdn = new CDN(this, "main-cdn", {
+        name: `${appName}-cdn`,
+        zone,
+        cert: certificate.certificate,
+        domain: envLookup.hostedZone.domains.cdn,
+        defaultBehavior: {
+          origin: new LoadBalancerV2Origin(app.service.loadBalancer),
+          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
+          originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
+        },
+        additionalBehaviors: {},
+      });
+    }
+
     /* 
     const comCertificate = new Certificate(this, "com-certificate", {
       name: `${appName}-com-certificate`,
@@ -319,28 +342,7 @@ export class PasswordlessTools extends cdk.Stack {
       removalPolicy,
     });
 
-    if (envLookup.hostedZoneIo.domains.cdn) {
-      const _cdn = new CDN(this, "main-cdn", {
-        name: `${appName}-cdn`,
-        zone: ioZone,
-        cert: ioCertificate.certificate,
-        domain: envLookup.hostedZoneIo.domains.cdn,
-        defaultBehavior: {
-          origin: new LoadBalancerV2Origin(app.service.loadBalancer),
-          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
-          originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
-        },
-        additionalBehaviors: {
-          "public-sharing/*": {
-            origin: S3BucketOrigin.withOriginAccessControl(
-              publicSharing.bucket,
-            ),
-            viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          },
-        },
-      });
-    }
+    
 
     if (envLookup.hostedZoneIo.domains.email) {
       const domain = envLookup.hostedZoneIo.domains.email;
