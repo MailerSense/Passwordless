@@ -26,6 +26,7 @@ const certificates = new PasswordlessToolsCertificates(
 );
 
 const _stack = new PasswordlessTools(app, `${env}-stack`, {
+  env: { region: "eu-west-1" },
   region: Region.EU,
   certificates,
   crossRegionReferences: true,
