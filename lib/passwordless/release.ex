@@ -31,7 +31,7 @@ defmodule Passwordless.Release do
         Ecto.Migrator.with_repo(
           repo,
           fn repo ->
-            Ecto.Adapters.Postgres.execute_ddl(repo, "drop schema public cascade;", [])
+            Ecto.Adapters.Postgres.execute_ddl(repo, "drop schema if exists public cascade;", [])
             Ecto.Adapters.Postgres.execute_ddl(repo, "create schema public;", [])
 
             Ecto.Migrator.run(repo, :up, all: true)
