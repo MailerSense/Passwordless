@@ -32,12 +32,21 @@ import { Migration } from "./lambda/migration";
 import { Certificate } from "./network/certificate";
 import { VPC } from "./network/vpc";
 import { WAF } from "./network/waf";
+import { PasswordlessToolsCertificates } from "./passwordless-tools-certificates";
 import { CachedImage } from "./storage/cached-image";
 import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
 
+export interface PasswordlessToolsProps extends cdk.StackProps {
+  certificates: PasswordlessToolsCertificates;
+}
+
 export class PasswordlessTools extends cdk.Stack {
-  public constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  public constructor(
+    scope: Construct,
+    id: string,
+    props?: PasswordlessToolsProps,
+  ) {
     super(scope, id, props);
 
     const env = process.env.DEPLOYMENT_ENV
@@ -307,11 +316,14 @@ export class PasswordlessTools extends cdk.Stack {
       blockedPathPrefixes: ["/health"],
     });
 
-    /*  if (envLookup.hostedZone.domains.cdn) {
-      const _cdn = new CDN(this, "main-cdn", {
+    /*  if (
+      envLookup.hostedZone.domains.cdn &&
+      props?.certificates.euCdnCertificate
+    ) {
+      const _cdn = new CDN(this, `${env}-app-cdn`, {
         name: `${appName}-cdn`,
         zone,
-        cert: certificate.certificate,
+        cert: props?.certificates.euCdnCertificate.certificate,
         domain: envLookup.hostedZone.domains.cdn,
         defaultBehavior: {
           origin: new LoadBalancerV2Origin(app.service.loadBalancer),

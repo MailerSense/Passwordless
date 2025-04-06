@@ -1,4 +1,5 @@
 import { Environment } from "./environment";
+import { Region } from "./region";
 
 export interface HostedZoneConfig {
   hostedZoneId: string;
@@ -70,6 +71,33 @@ export const lookupMap: EnvConfigMap = {
         primary: "eu.passwordlesstools.com",
         email: "eu.passwordlesstools.com",
       },
+    },
+  },
+};
+
+export type CertificateConfig = {
+  [R in Region]: {
+    [E in Environment]: {
+      cdn: string;
+    };
+  };
+};
+
+export const certificateConfig: CertificateConfig = {
+  [Region.EU]: {
+    [Environment.DEV]: {
+      cdn: "cdn.eu.dev.passwordless.tools",
+    },
+    [Environment.PROD]: {
+      cdn: "cdn.eu.passwordless.tools",
+    },
+  },
+  [Region.US]: {
+    [Environment.DEV]: {
+      cdn: "cdn.us.dev.passwordless.tools",
+    },
+    [Environment.PROD]: {
+      cdn: "cdn.us.passwordless.tools",
     },
   },
 };

@@ -4,9 +4,12 @@ import { Construct } from "constructs";
 
 import { Certificate } from "./network/certificate";
 import { Environment } from "./util/environment";
-import { lookupMap } from "./util/lookup";
+import { certificateConfig, lookupMap } from "./util/lookup";
+import { Region } from "./util/region";
 
 export class PasswordlessToolsCertificates extends cdk.Stack {
+  public certificates: Record<Region, Record<Environment, Certificate>>;
+
   public constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -15,8 +18,6 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
       : Environment.DEV;
 
     const envLookup = lookupMap[env];
-
-    const appName = "passwordless-tools";
 
     const zone = PublicHostedZone.fromHostedZoneAttributes(
       this,
@@ -27,11 +28,21 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
       },
     );
 
-    if (envLookup.hostedZone.domains.cdn) {
-      const cdnCertificate = new Certificate(this, `${env}-cdn-certificate`, {
-        name: `${appName}-cdn-certificate`,
+    this.certificates = {} as Record<Region, Record<Environment, Certificate>>;
+
+    for (const [region, value] of Object.entries(certificateConfig)) {
+      const reg = region as Region;
+      const { cdn } = value[env];
+      const certName = `${reg}-${env}-cdn-certificate`;
+
+      if (!this.certificates[reg]) {
+        this.certificates[reg] = {} as Record<Environment, Certificate>;
+      }
+
+      this.certificates[reg][env] = new Certificate(this, certName, {
+        name: certName,
         zone,
-        domain: envLookup.hostedZone.domains.cdn,
+        domain: cdn,
       });
     }
   }

@@ -15,16 +15,16 @@ const app = new cdk.App({
   }),
 });
 
-const _stack = new PasswordlessTools(app, `${env}-stack`, {
-  crossRegionReferences: true,
-});
-
-const appCertificate = new cdk.App();
-const _stackCertificate = new PasswordlessToolsCertificates(
-  appCertificate,
+const certificates = new PasswordlessToolsCertificates(
+  app,
   `${env}-certificate-stack`,
   {
     env: { region: "us-east-1" },
     crossRegionReferences: true,
   },
 );
+
+const _stack = new PasswordlessTools(app, `${env}-stack`, {
+  certificates,
+  crossRegionReferences: true,
+});
