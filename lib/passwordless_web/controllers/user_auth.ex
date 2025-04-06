@@ -48,7 +48,7 @@ defmodule PasswordlessWeb.UserAuth do
         gettext("There is a problem with your account. Please contact support.")
       )
 
-    redirect(conn, to: ~p"/auth/sign-in")
+    redirect(conn, to: ~p"/")
   end
 
   @doc """

@@ -20,7 +20,6 @@
     "@codemirror/view": "^6.36.5",
     "@lezer/highlight": "^1.2.1",
     "alpinejs": "^3.14.9",
-    "apexcharts": "^4.5.0",
     "codemirror": "^6.0.1",
     "highlight.js": "^11.11.1",
     "motion": "^12.6.3",
