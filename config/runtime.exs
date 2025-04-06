@@ -21,11 +21,9 @@ if config_env() == :prod do
 
   config :passwordless, Passwordless.Repo,
     url: database_url,
-    ssl: true,
-    ssl_opts: AwsRdsCAStore.ssl_opts(database_url),
+    ssl: AwsRdsCAStore.ssl_opts(database_url),
     timeout: if(System.get_env("DATABASE_MIGRATION"), do: :timer.seconds(60), else: :timer.seconds(15)),
     pool_size: String.to_integer(System.get_env("POOL_SIZE", "20")),
-    queue_target: :timer.seconds(5),
     socket_options: maybe_ipv6
 
   redis_host = System.get_env("REDIS_HOST")
