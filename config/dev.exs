@@ -52,9 +52,6 @@ config :swoosh, :api_client, false
 # Only care for format validation in development
 config :passwordless, :email_validators, [:format, :domain]
 
-# Run browser in on demand mode
-config :passwordless, :browser, on_demand: true
-
 # Configure clustering
 config :libcluster,
   topologies: [

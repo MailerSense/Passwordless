@@ -178,17 +178,8 @@ export class PasswordlessTools extends cdk.Stack {
       this,
       `${env}-app-zone`,
       {
-        zoneName: envLookup.hostedZone.domains.primary,
-        hostedZoneId: envLookup.hostedZone.hostedZoneId,
-      },
-    );
-
-    const comZone = PublicHostedZone.fromHostedZoneAttributes(
-      this,
-      `${env}-app-come-zone`,
-      {
-        zoneName: envLookup.hostedZoneCom.domains.primary,
-        hostedZoneId: envLookup.hostedZoneCom.hostedZoneId,
+        zoneName: envLookup.hostedZone.name,
+        hostedZoneId: envLookup.hostedZone.id,
       },
     );
 
@@ -329,8 +320,7 @@ export class PasswordlessTools extends cdk.Stack {
       blockedPathPrefixes: ["/health"],
     });
 
-    const { domain, certificate: cert } =
-      certificates.certificates[region][env];
+    const { domain, certificate: cert } = certificates.cdn[region][env];
 
     const _cdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-cdn`,
