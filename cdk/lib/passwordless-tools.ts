@@ -1,6 +1,12 @@
 import * as cdk from "aws-cdk-lib";
 import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
-import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
+import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
+import {
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  Port,
+} from "aws-cdk-lib/aws-ec2";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
   AmiHardwareType,
@@ -18,8 +24,7 @@ import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 import { join } from "path";
 
-import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
-import { AppContainer } from "./application/public-ec2-app";
+import { AppContainer, PublicEC2App } from "./application/public-ec2-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
@@ -115,7 +120,7 @@ export class PasswordlessTools extends cdk.Stack {
       containerInsightsV2: ContainerInsights.ENHANCED,
     });
 
-    const capacityProviders: Record<string, AsgCapacityProvider> = {
+    const capacityProviders = {
       "t4g-micro-asg-capacity-provider": new AsgCapacityProvider(
         this,
         "t4g-micro-asg-capacity-provider",
@@ -186,7 +191,6 @@ export class PasswordlessTools extends cdk.Stack {
       exclude: ["node_modules", "deps", "_build", ".git"],
       assetName: imageName,
       directory: join(__dirname, "../../"),
-      file: "Dockerfile",
       buildArgs: {
         OBAN_PRO_AUTH_KEY: obanAuthKey,
       },
@@ -247,12 +251,12 @@ export class PasswordlessTools extends cdk.Stack {
       environment: { ...envLookup.appConfig, POOL_SIZE: "10" },
     });
 
-    /* const app = new PublicEC2App(this, appName, {
+    const app = new PublicEC2App(this, appName, {
       name: appName,
       zone,
       domain: envLookup.hostedZone.domains.primary,
       cluster,
-      desiredCount: 2,
+      desiredCount: 1,
       certificate: certificate.certificate,
       container: appContainer,
       healthCheckCmd: "/app/bin/health",
@@ -261,7 +265,7 @@ export class PasswordlessTools extends cdk.Stack {
       capacityProviderStrategies: [
         {
           capacityProvider:
-            capacityProviders["t4g-nano-asg-capacity-provider"]
+            capacityProviders["t4g-micro-asg-capacity-provider"]
               .capacityProviderName,
           weight: 100,
         },
@@ -288,7 +292,7 @@ export class PasswordlessTools extends cdk.Stack {
       app.service.service,
       Port.tcp(redis.port),
       `Allow traffic from app to Redis on port ${redis.port}`,
-    ); */
+    );
 
     /* 
     const comCertificate = new Certificate(this, "com-certificate", {

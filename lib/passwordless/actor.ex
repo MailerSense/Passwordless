@@ -203,8 +203,8 @@ defmodule Passwordless.Actor do
   @doc """
   A create changeset.
   """
-  def create_changeset(%__MODULE__{} = contact, attrs \\ %{}, opts \\ []) do
-    contact
+  def create_changeset(%__MODULE__{} = actor, attrs \\ %{}, opts \\ []) do
+    actor
     |> cast(attrs, @fields)
     |> validate_required(@required_fields ++ [:name])
     |> validate_name()
@@ -225,8 +225,8 @@ defmodule Passwordless.Actor do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = contact, attrs \\ %{}, opts \\ []) do
-    contact
+  def changeset(%__MODULE__{} = actor, attrs \\ %{}, opts \\ []) do
+    actor
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_name()
