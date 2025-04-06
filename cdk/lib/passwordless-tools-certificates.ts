@@ -28,10 +28,16 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
       },
     );
 
+    this.certificates = {} as Record<Region, Record<Environment, Certificate>>;
+
     for (const [region, value] of Object.entries(certificateConfig)) {
       const reg = region as Region;
       const { cdn } = value[env];
       const certName = `${reg}-${env}-cdn-certificate`;
+
+      if (!this.certificates[reg]) {
+        this.certificates[reg] = {} as Record<Environment, Certificate>;
+      }
 
       this.certificates[reg][env] = new Certificate(this, certName, {
         name: certName,
