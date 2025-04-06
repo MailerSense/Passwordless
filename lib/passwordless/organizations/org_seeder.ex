@@ -89,7 +89,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
     {:ok, _tenant} = Tenant.create(app)
 
-    for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1_000) do
+    for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1_00) do
       {:ok, actor} =
         Passwordless.create_actor(app, %{
           name: Faker.Person.name(),
