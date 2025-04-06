@@ -40,6 +40,7 @@ import { Certificate } from "./network/certificate";
 import { VPC } from "./network/vpc";
 import { WAF } from "./network/waf";
 import { PasswordlessToolsCertificates } from "./passwordless-tools-certificates";
+import { ContainerScanning } from "./pattern/container-scanning";
 import { CachedImage } from "./storage/cached-image";
 import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
@@ -334,6 +335,15 @@ export class PasswordlessTools extends cdk.Stack {
       },
       additionalBehaviors: {},
     });
+
+    const containerScanningName = `${env}-app`;
+    const _containerScanning = new ContainerScanning(
+      this,
+      containerScanningName,
+      {
+        name: containerScanningName,
+      },
+    );
 
     /* 
     const comCertificate = new Certificate(this, "com-certificate", {
