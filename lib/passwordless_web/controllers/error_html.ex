@@ -21,15 +21,6 @@ defmodule PasswordlessWeb.ErrorHTML do
 
     ~H"""
     <.container class="flex flex-col items-center lg:max-w-4xl py-6 md:py-16">
-      <.promo_banner
-        to={~p"/"}
-        icon="remix-alert-fill"
-        icon_class="h-4 w-4"
-        color_primary="bg-danger-300"
-        color_secondary="bg-danger-100"
-        class="mb-6"
-        content={gettext("Something went wrong")}
-      />
       <h1 class="text-white font-display font-bold text-4xl md:text-6xl leading-[44px] md:leading-[74px] tracking-tight text-center mb-6">
         {@status} {@message}
       </h1>
@@ -38,18 +29,6 @@ defmodule PasswordlessWeb.ErrorHTML do
       </p>
       <div class="flex flex-col sm:flex-row gap-4 items-center">
         <.button size="lg" title={gettext("Go to Homepage")} to={~p"/"} link_type="a" />
-        <div class="hidden sm:block">
-          <.button
-            size="lg"
-            title={gettext("Book a Demo")}
-            variant="outline"
-            with_icon
-            to={~p"/book-demo"}
-            link_type="a"
-          >
-            {gettext("Book a Demo")}<.icon name="remix-arrow-right-line" class="w-6 h-6 " />
-          </.button>
-        </div>
       </div>
     </.container>
     """
@@ -60,15 +39,6 @@ defmodule PasswordlessWeb.ErrorHTML do
 
     ~H"""
     <.container class="flex flex-col items-center lg:max-w-4xl py-6 md:py-16">
-      <.promo_banner
-        to={~p"/"}
-        icon="remix-alert-fill"
-        icon_class="h-4 w-4"
-        color_primary="bg-danger-300"
-        color_secondary="bg-danger-100"
-        class="mb-6"
-        content={gettext("Something went wrong")}
-      />
       <h1 class="text-white font-display font-bold text-4xl md:text-6xl leading-[44px] md:leading-[74px] tracking-tight text-center mb-6">
         {@status}
       </h1>
@@ -77,18 +47,6 @@ defmodule PasswordlessWeb.ErrorHTML do
       </p>
       <div class="flex flex-col sm:flex-row gap-4 items-center">
         <.button size="lg" title={gettext("Go to Homepage")} to={~p"/"} link_type="a" />
-        <div class="hidden sm:block">
-          <.button
-            size="lg"
-            title={gettext("Book a Demo")}
-            variant="outline"
-            with_icon
-            to={~p"/book-demo"}
-            link_type="a"
-          >
-            {gettext("Book a Demo")}<.icon name="remix-arrow-right-line" class="w-6 h-6 " />
-          </.button>
-        </div>
       </div>
     </.container>
     """

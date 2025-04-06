@@ -40,7 +40,6 @@ defmodule PasswordlessWeb.Components do
       import PasswordlessWeb.Components.UserTopbarMenu
       import PasswordlessWeb.DashboardComponents
       import PasswordlessWeb.FileUploadComponents
-      import PasswordlessWeb.LandingPageComponents
       import PasswordlessWeb.PricingPageComponents
     end
   end
