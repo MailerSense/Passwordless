@@ -238,7 +238,7 @@ export class PasswordlessTools extends cdk.Stack {
       },
       stopTimeout: Duration.seconds(30),
       containerPort: 8000,
-      memoryReservation: 256,
+      memoryReservation: 400,
     };
 
     const migrationName = "passwordless-tools-migration-lambda";
