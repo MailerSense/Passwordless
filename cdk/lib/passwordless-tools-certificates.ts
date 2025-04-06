@@ -7,6 +7,8 @@ import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
 
 export class PasswordlessToolsCertificates extends cdk.Stack {
+  public euCdnCertificate: Certificate;
+
   public constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -28,7 +30,7 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
     );
 
     if (envLookup.hostedZone.domains.cdn) {
-      const cdnCertificate = new Certificate(this, `${env}-cdn-certificate`, {
+      this.euCdnCertificate = new Certificate(this, `${env}-cdn-certificate`, {
         name: `${appName}-cdn-certificate`,
         zone,
         domain: envLookup.hostedZone.domains.cdn,

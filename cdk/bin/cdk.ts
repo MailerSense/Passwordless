@@ -7,6 +7,16 @@ import { PasswordlessTools } from "../lib/passwordless-tools";
 import { PasswordlessToolsCertificates } from "../lib/passwordless-tools-certificates";
 
 const env = process.env.DEPLOYMENT_ENV;
+
+const certificates = new PasswordlessToolsCertificates(
+  new cdk.App(),
+  `${env}-certificate-stack`,
+  {
+    env: { region: "us-east-1" },
+    crossRegionReferences: true,
+  },
+);
+
 const app = new cdk.App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: "passwordless-tools",
@@ -16,15 +26,6 @@ const app = new cdk.App({
 });
 
 const _stack = new PasswordlessTools(app, `${env}-stack`, {
+  certificates,
   crossRegionReferences: true,
 });
-
-const appCertificate = new cdk.App();
-const _stackCertificate = new PasswordlessToolsCertificates(
-  appCertificate,
-  `${env}-certificate-stack`,
-  {
-    env: { region: "us-east-1" },
-    crossRegionReferences: true,
-  },
-);
