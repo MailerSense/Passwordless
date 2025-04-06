@@ -4,6 +4,7 @@ import * as cdk from "aws-cdk-lib";
 import { BucketEncryption } from "aws-cdk-lib/aws-s3";
 
 import { PasswordlessTools } from "../lib/passwordless-tools";
+import { PasswordlessToolsCertificates } from "../lib/passwordless-tools-certificates";
 
 const env = process.env.DEPLOYMENT_ENV;
 const app = new cdk.App({
@@ -13,4 +14,17 @@ const app = new cdk.App({
     imageAssetVersionCount: 10, // Keep 10 latest images
   }),
 });
-const _stack = new PasswordlessTools(app, `${env}-stack`);
+
+const _stack = new PasswordlessTools(app, `${env}-stack`, {
+  crossRegionReferences: true,
+});
+
+const appCertificate = new cdk.App();
+const _stackCertificate = new PasswordlessToolsCertificates(
+  appCertificate,
+  `${env}-certificate-stack`,
+  {
+    env: { region: "us-east-1" },
+    crossRegionReferences: true,
+  },
+);

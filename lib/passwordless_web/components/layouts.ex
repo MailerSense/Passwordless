@@ -35,11 +35,7 @@ defmodule PasswordlessWeb.Layouts do
 
     public_pages =
       [
-        ~p"/",
-        ~p"/docs",
-        ~p"/guides",
-        ~p"/terms",
-        ~p"/privacy"
+        ~p"/"
       ]
       |> Enum.map(&URI.parse(&1).path)
       |> Enum.reject(&(&1 == "/"))
