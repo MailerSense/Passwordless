@@ -2,24 +2,31 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
-  @upload_provider Passwordless.FileUploads.Local
+  @upload_provider :passwordless |> Application.compile_env!(:media_upload) |> Keyword.fetch!(:adapter)
 
   @impl true
   def update(%{app: app} = assigns, socket) do
     changeset = Passwordless.change_app(app)
+
+    upload_opts = [
+      accept: ~w(.jpg .jpeg .png .svg .webp),
+      max_entries: 1,
+      max_file_size: 5_242_880 * 2
+    ]
+
+    upload_opts =
+      if Passwordless.config(:env) == :prod do
+        Keyword.put(upload_opts, :external, &@upload_provider.presign_upload/2)
+      else
+        upload_opts
+      end
 
     {:ok,
      socket
      |> assign(assigns)
      |> assign(uploaded_files: [])
      |> assign_form(changeset)
-     |> allow_upload(:logo,
-       # SETUP_TODO: Uncomment the line below if using an external provider (Cloudinary or S3)
-       # external: &@upload_provider.presign_upload/2,
-       accept: ~w(.jpg .jpeg .png .svg .webp),
-       max_entries: 1,
-       max_file_size: 5_242_880 * 2
-     )}
+     |> allow_upload(:logo, upload_opts)}
   end
 
   @impl true
@@ -73,4 +80,7 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
     |> assign(form: to_form(changeset))
     |> assign(logo_src: Ecto.Changeset.get_field(changeset, :logo))
   end
+
+  defp append_if(list, _value, false), do: list
+  defp append_if(list, value, true), do: list ++ List.wrap(value)
 end

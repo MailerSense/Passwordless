@@ -101,8 +101,9 @@ config :passwordless, :secret_manager,
   secret_name: "SM_LOCAL"
 
 # Configures the media uploader to local
-config :passwordless, :media_upload, adapter: Passwordless.Media.Upload.Local
+config :passwordless, :media_upload, adapter: Passwordless.FileUploads.Local
 
+# Configures the emails
 config :passwordless, :emails,
   support: [
     name: "Passwordless",

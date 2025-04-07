@@ -6,7 +6,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   alias Passwordless.Accounts.User
 
-  @upload_provider Passwordless.FileUploads.Local
+  @upload_provider :passwordless |> Application.compile_env!(:media_upload) |> Keyword.fetch!(:adapter)
 
   @impl true
   def mount(_params, _session, socket) do
@@ -15,18 +15,25 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
+    upload_opts = [
+      accept: ~w(.jpg .jpeg .png .svg .webp),
+      max_entries: 1,
+      max_file_size: 5_242_880 * 2
+    ]
+
+    upload_opts =
+      if Passwordless.config(:env) == :prod do
+        Keyword.put(upload_opts, :external, &@upload_provider.presign_upload/2)
+      else
+        upload_opts
+      end
+
     {:noreply,
      socket
      |> assign(uploaded_files: [])
      |> apply_action(socket.assigns.live_action, params)
      |> assign_form(Passwordless.change_app(socket.assigns.current_app))
-     |> allow_upload(:logo,
-       # SETUP_TODO: Uncomment the line below if using an external provider (Cloudinary or S3)
-       # external: &@upload_provider.presign_upload/2,
-       accept: ~w(.jpg .jpeg .png .svg .webp),
-       max_entries: 1,
-       max_file_size: 5_242_880 * 2
-     )}
+     |> allow_upload(:logo, upload_opts)}
   end
 
   @impl true

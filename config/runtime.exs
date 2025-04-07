@@ -111,4 +111,11 @@ if config_env() == :prod do
         ]
       ]
     ]
+
+  # Configures the media uploader to S3
+  config :passwordless, :s3,
+    customer_media: [
+      bucket: System.get_env("CUSTOMER_MEDIA_BUCKET"),
+      cdn_url: System.get_env("CUSTOMER_MEDIA_CDN_URL")
+    ]
 end
