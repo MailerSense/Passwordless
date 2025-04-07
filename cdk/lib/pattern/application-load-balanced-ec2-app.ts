@@ -1,5 +1,6 @@
 import { Duration } from "aws-cdk-lib";
 import {
+  AvailabilityZoneRebalancing,
   Ec2Service,
   Ec2TaskDefinition,
   HealthCheck,
@@ -102,6 +103,8 @@ export interface ApplicationLoadBalancedEc2ServiceProps
   readonly networkMode?: NetworkMode;
 
   readonly daemon?: boolean;
+
+  readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
 }
 
 /**
@@ -177,18 +180,7 @@ export class ApplicationLoadBalancedEC2App extends ApplicationLoadBalancedServic
       taskDefinition: this.taskDefinition,
       assignPublicIp: false,
       serviceName: props.serviceName,
-      healthCheckGracePeriod: props.healthCheckGracePeriod,
-      minHealthyPercent: props.minHealthyPercent,
-      maxHealthyPercent: props.maxHealthyPercent,
-      propagateTags: props.propagateTags,
-      enableECSManagedTags: props.enableECSManagedTags,
-      cloudMapOptions: props.cloudMapOptions,
-      deploymentController: props.deploymentController,
-      circuitBreaker: props.circuitBreaker,
-      enableExecuteCommand: props.enableExecuteCommand,
-      placementConstraints: props.placementConstraints,
-      placementStrategies: props.placementStrategies,
-      capacityProviderStrategies: props.capacityProviderStrategies,
+      ...props,
     });
 
     this.addServiceAsTarget(this.service);

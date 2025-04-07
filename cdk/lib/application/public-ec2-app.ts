@@ -2,6 +2,7 @@ import { Duration } from "aws-cdk-lib";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Port } from "aws-cdk-lib/aws-ec2";
 import {
+  AvailabilityZoneRebalancing,
   CapacityProviderStrategy,
   Cluster,
   ContainerDependencyCondition,
@@ -102,6 +103,7 @@ export class PublicEC2App extends Construct {
       networkMode: NetworkMode.AWS_VPC,
       minHealthyPercent: container.minHealthyPercent,
       memoryReservationMiB: container.memoryReservation,
+      availabilityZoneRebalancing: AvailabilityZoneRebalancing.ENABLED,
       loadBalancerName: `${name}-lb`,
       enableExecuteCommand: true,
       publicLoadBalancer: true,
