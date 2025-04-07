@@ -105,7 +105,7 @@ defmodule Passwordless.FileUploads.S3 do
     {:ok, url} =
       :s3
       |> ExAws.Config.new()
-      |> ExAws.S3.presigned_url(:post, bucket, key,
+      |> ExAws.S3.presigned_url(:put, bucket, key,
         expires_in: 3600,
         query_params: [{"Content-Type", entry.client_type}]
       )

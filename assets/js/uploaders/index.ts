@@ -3,38 +3,24 @@ const S3 = function (
   onViewError: (callback: () => void) => void,
 ) {
   entries.forEach((entry) => {
-    const formData = new FormData();
-    const { url, fields } = entry.meta;
+    const xhr = new XMLHttpRequest();
+    onViewError(() => xhr.abort());
+    xhr.onload = () =>
+      xhr.status === 200 ? entry.progress(100) : entry.error();
+    xhr.onerror = () => entry.error();
 
-    Object.entries(fields).forEach(([key, value]) => {
-      formData.append(key, value as string);
-    });
-    formData.append("file", entry.file);
-
-    // Build the request
-    const req = new XMLHttpRequest();
-    onViewError(() => req.abort());
-    req.onload = () => {
-      req.status >= 200 && req.status < 300
-        ? entry.progress(100)
-        : entry.error();
-    };
-    req.onerror = () => {
-      entry.error();
-    };
-
-    // Adds an event listener for upload progress, to enable an upload progress bar
-    req.upload.addEventListener("progress", (event) => {
+    xhr.upload.addEventListener("progress", (event) => {
       if (event.lengthComputable) {
-        const progressPercent = Math.round((event.loaded / event.total) * 100);
-        if (progressPercent < 100) {
-          entry.progress(progressPercent);
+        const percent = Math.round((event.loaded / event.total) * 100);
+        if (percent < 100) {
+          entry.progress(percent);
         }
       }
     });
 
-    req.open("POST", url, true);
-    req.send(formData);
+    const url = entry.meta.url;
+    xhr.open("PUT", url, true);
+    xhr.send(entry.file);
   });
 };
 
