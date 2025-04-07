@@ -6,7 +6,10 @@ import {
   OriginRequestPolicy,
   ViewerProtocolPolicy,
 } from "aws-cdk-lib/aws-cloudfront";
-import { LoadBalancerV2Origin } from "aws-cdk-lib/aws-cloudfront-origins";
+import {
+  LoadBalancerV2Origin,
+  S3BucketOrigin,
+} from "aws-cdk-lib/aws-cloudfront-origins";
 import {
   InstanceClass,
   InstanceSize,
@@ -42,6 +45,7 @@ import { WAF } from "./network/waf";
 import { PasswordlessToolsCertificates } from "./passwordless-tools-certificates";
 import { ContainerScanning } from "./pattern/container-scanning";
 import { CachedImage } from "./storage/cached-image";
+import { PublicBucket } from "./storage/public-bucket";
 import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
 import { Region } from "./util/region";
@@ -199,6 +203,14 @@ export class PasswordlessTools extends cdk.Stack {
       domain: envLookup.hostedZone.domains.primary,
     });
 
+    const bucketName = `${env}-customer-media`;
+    const customerMedia = new PublicBucket(this, bucketName, {
+      name: bucketName,
+      removalPolicy,
+    });
+
+    const { domain, certificate: cert } = certificates.cdn[region][env];
+
     const imageName = "passwordless-tools-image";
     const cachedImage = new CachedImage(this, imageName, {
       exclude: ["node_modules", "deps", "_build", ".git"],
@@ -247,6 +259,9 @@ export class PasswordlessTools extends cdk.Stack {
       environment: {
         // Static config
         ...envLookup.appConfig,
+        // S3
+        CUSTOMER_MEDIA_BUCKET: customerMedia.bucket.bucketName,
+        CUSTOMER_MEDIA_CDN_URL: `https://${domain}/customer-media/`,
       },
       stopTimeout: Duration.seconds(30),
       containerPort: 8000,
@@ -290,6 +305,8 @@ export class PasswordlessTools extends cdk.Stack {
 
     generalSecret.grantRead(app.service.taskDefinition.taskRole);
 
+    customerMedia.bucket.grantReadWrite(app.service.taskDefinition.taskRole);
+
     postgres.db.connections.allowFrom(
       migration.lambda,
       Port.tcp(postgres.port),
@@ -320,8 +337,6 @@ export class PasswordlessTools extends cdk.Stack {
       blockedPathPrefixes: ["/health"],
     });
 
-    const { domain, certificate: cert } = certificates.cdn[region][env];
-
     const _cdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-cdn`,
       zone,
@@ -333,7 +348,12 @@ export class PasswordlessTools extends cdk.Stack {
         cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
         originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
       },
-      additionalBehaviors: {},
+      additionalBehaviors: {
+        "customer-media/*": {
+          origin: S3BucketOrigin.withOriginAccessControl(customerMedia.bucket),
+          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        },
+      },
     });
 
     const containerScanningName = `${env}-app`;

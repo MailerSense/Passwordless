@@ -164,8 +164,8 @@ defmodule PasswordlessWeb.Router do
 
       # App
       live "/app", App.AppLive.Index, :index
-      live "/new", App.AppLive.Index, :new
-      live "/delete", App.AppLive.Index, :delete
+      live "/app/new", App.AppLive.Index, :new
+      live "/app/delete", App.AppLive.Index, :delete
 
       # Domain
       live "/domain", App.DomainLive.Index, :index
@@ -190,10 +190,6 @@ defmodule PasswordlessWeb.Router do
       # Org
       live "/organization", Org.EditLive, :index
       live "/organization/new", Org.EditLive, :new
-
-      # Apps
-      live "/apps", App.AppLive.Index, :index
-      live "/apps/new", App.AppLive.Index, :new
 
       # Knowledge
       live "/use-cases", Knowledge.UseCaseLive, :index

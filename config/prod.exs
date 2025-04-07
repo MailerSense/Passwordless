@@ -34,7 +34,7 @@ config :passwordless, :secret_manager,
   secret_name: "arn:aws:secretsmanager:eu-west-1:728247919352:secret:general-application-config-uL5n4J"
 
 # Configures the media uploader to S3
-config :passwordless, :media_upload, adapter: Passwordless.Media.Upload.S3
+config :passwordless, :media_upload, adapter: Passwordless.FileUploads.S3
 
 # Configures AWS
 config :ex_aws, require_imds_v2: true
