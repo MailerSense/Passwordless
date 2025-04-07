@@ -122,6 +122,24 @@ export class WAF extends Construct {
           },
         },
         {
+          name: `${name}-waf-admin-rule`,
+          priority: nextPriority(),
+          statement: {
+            managedRuleGroupStatement: {
+              name: "AWSManagedRulesAdminProtectionRuleSet",
+              vendorName: "AWS",
+            },
+          },
+          visibilityConfig: {
+            cloudWatchMetricsEnabled: true,
+            metricName: `${name}-waf-admin-metric`,
+            sampledRequestsEnabled: true,
+          },
+          overrideAction: {
+            none: {},
+          },
+        },
+        {
           name: `${name}-waf-bad-inputs-rule`,
           priority: nextPriority(),
           statement: {
@@ -133,6 +151,78 @@ export class WAF extends Construct {
           visibilityConfig: {
             cloudWatchMetricsEnabled: true,
             metricName: `${name}-waf-bad-inputs-metric`,
+            sampledRequestsEnabled: true,
+          },
+          overrideAction: {
+            none: {},
+          },
+        },
+        {
+          name: `${name}-waf-sqli-rule`,
+          priority: nextPriority(),
+          statement: {
+            managedRuleGroupStatement: {
+              name: "AWSManagedRulesSQLiRuleSet",
+              vendorName: "AWS",
+            },
+          },
+          visibilityConfig: {
+            cloudWatchMetricsEnabled: true,
+            metricName: `${name}-waf-sqli-metric`,
+            sampledRequestsEnabled: true,
+          },
+          overrideAction: {
+            none: {},
+          },
+        },
+        {
+          name: `${name}-waf-ip-rep-rule`,
+          priority: nextPriority(),
+          statement: {
+            managedRuleGroupStatement: {
+              name: "AWSManagedRulesAmazonIpReputationList",
+              vendorName: "AWS",
+            },
+          },
+          visibilityConfig: {
+            cloudWatchMetricsEnabled: true,
+            metricName: `${name}-waf-ip-rep-metric`,
+            sampledRequestsEnabled: true,
+          },
+          overrideAction: {
+            none: {},
+          },
+        },
+        {
+          name: `${name}-waf-linux-rule`,
+          priority: nextPriority(),
+          statement: {
+            managedRuleGroupStatement: {
+              name: "AWSManagedRulesLinuxRuleSet",
+              vendorName: "AWS",
+            },
+          },
+          visibilityConfig: {
+            cloudWatchMetricsEnabled: true,
+            metricName: `${name}-waf-linux-metric`,
+            sampledRequestsEnabled: true,
+          },
+          overrideAction: {
+            none: {},
+          },
+        },
+        {
+          name: `${name}-waf-unix-rule`,
+          priority: nextPriority(),
+          statement: {
+            managedRuleGroupStatement: {
+              name: "AWSManagedRulesUnixRuleSet",
+              vendorName: "AWS",
+            },
+          },
+          visibilityConfig: {
+            cloudWatchMetricsEnabled: true,
+            metricName: `${name}-waf-unix-metric`,
             sampledRequestsEnabled: true,
           },
           overrideAction: {
