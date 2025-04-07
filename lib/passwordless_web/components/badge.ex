@@ -22,7 +22,8 @@ defmodule PasswordlessWeb.Components.Badge do
       "purple",
       "fuchsia",
       "pink",
-      "rose"
+      "rose",
+      "cyan"
     ]
   )
 

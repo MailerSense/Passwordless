@@ -18,6 +18,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   alias PasswordlessWeb.Components.DataTable.FilterSet
   alias PasswordlessWeb.Components.DataTable.Header
 
+  attr :id, :string
   attr :size, :string, default: "md", values: ["sm", "md", "lg", "xl", "wide"], doc: "table sizes"
   attr :meta, Flop.Meta, required: true
   attr :items, :list, required: true
