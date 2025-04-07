@@ -115,7 +115,7 @@ export class SES extends Construct {
     );
 
     // Create the event topic name
-    const eventTopicName = `${name}-email-notifications`;
+    const eventTopicName = `${name}-email-topic`;
     const eventTopic = new Topic(this, eventTopicName, {
       topicName: eventTopicName,
       displayName: "SES Email Notifications",

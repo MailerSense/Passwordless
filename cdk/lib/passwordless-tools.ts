@@ -37,6 +37,7 @@ import { AppContainer, PublicEC2App } from "./application/public-ec2-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
+import { SES } from "./email/ses";
 import { Migration } from "./lambda/migration";
 import { CDN } from "./network/cdn";
 import { Certificate } from "./network/certificate";
@@ -214,13 +215,14 @@ export class PasswordlessTools extends cdk.Stack {
       domain: envLookup.hostedZone.domains.primary,
     });
 
-    const bucketName = `${env}-customer-media`;
-    const customerMedia = new PublicBucket(this, bucketName, {
-      name: bucketName,
+    const customerMediaName = `${env}-customer-media`;
+    const customerMedia = new PublicBucket(this, customerMediaName, {
+      name: customerMediaName,
       removalPolicy,
     });
 
-    const { domain, certificate: cert } = certificates.cdn[region][env];
+    const { domain: cdnDomain, certificate: cdnCert } =
+      certificates.cdn[region][env];
 
     const imageName = "passwordless-tools-image";
     const cachedImage = new CachedImage(this, imageName, {
@@ -272,7 +274,7 @@ export class PasswordlessTools extends cdk.Stack {
         ...envLookup.appConfig,
         // S3
         CUSTOMER_MEDIA_BUCKET: customerMedia.bucket.bucketName,
-        CUSTOMER_MEDIA_CDN_URL: `https://${domain}/customer-media/`,
+        CUSTOMER_MEDIA_CDN_URL: `https://${cdnDomain}/customer-media/`,
       },
       stopTimeout: Duration.seconds(30),
       containerPort: 8000,
@@ -351,8 +353,8 @@ export class PasswordlessTools extends cdk.Stack {
     const _cdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-cdn`,
       zone,
-      cert,
-      domain,
+      cert: cdnCert,
+      domain: cdnDomain,
       defaultBehavior: {
         origin: new LoadBalancerV2Origin(app.service.loadBalancer),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -376,7 +378,7 @@ export class PasswordlessTools extends cdk.Stack {
       },
     );
 
-    /*  const ses = new SES(this, `${env}-app-ses`, {
+    const ses = new SES(this, `${env}-app-ses`, {
       name: `${appName}-app-ses`,
       domains: [
         {
@@ -387,113 +389,20 @@ export class PasswordlessTools extends cdk.Stack {
           rufEmail: `dmarc@${domainLookup.email.domain}`,
         },
       ],
-      removalPolicy,
       tracking: {
         zone: comZone,
-        cert: certificate.certificate,
+        cert: certificates.tracking[region][env].certificate,
         domain: domainLookup.tracking.domain,
       },
+      removalPolicy,
     });
 
-    for (const domainIdentity of ses.domainIdentities) {
-      domainIdentity.grant(
+    for (const domain of ses.domainIdentities) {
+      domain.grant(
         app.service.taskDefinition.taskRole,
         "ses:SendEmail",
         "ses:SendRawEmail",
       );
-    } */
-
-    /* 
-    const comCertificate = new Certificate(this, "com-certificate", {
-      name: `${appName}-com-certificate`,
-      zone: comZone,
-      domain: envLookup.hostedZoneCom.domains.primary,
-    });
-
-    const publicSharing = new PublicBucket(this, "sharing-bucket", {
-      name: "sharing",
-      removalPolicy,
-    });
-
-    
-
-    if (envLookup.hostedZoneIo.domains.email) {
-      const domain = envLookup.hostedZoneIo.domains.email;
-      const sesIo = new SES(this, "main-ses", {
-        name: `${appName}-ses`,
-        zone: ioZone,
-        domains: [
-          {
-            domain,
-            subDomain: "email",
-            domainFromPrefix: "envelope",
-            ruaEmail: `dmarc@${envLookup.hostedZoneCom.domains.primary}`,
-            rufEmail: `dmarc@${envLookup.hostedZoneCom.domains.primary}`,
-          },
-          {
-            domain,
-            subDomain: "support",
-            domainFromPrefix: "envelope",
-            ruaEmail: `dmarc@${envLookup.hostedZoneCom.domains.primary}`,
-            rufEmail: `dmarc@${envLookup.hostedZoneCom.domains.primary}`,
-          },
-        ],
-      });
-
-      for (const domainIdentity of sesIo.domainIdentities) {
-        domainIdentity.grant(
-          app.service.taskDefinition.taskRole,
-          "ses:SendEmail",
-          "ses:SendRawEmail",
-        );
-      }
     }
-
-    if (envLookup.hostedZoneCom.domains.email) {
-      const domain = envLookup.hostedZoneCom.domains.email;
-      const sesCom = new SES(this, "com-ses", {
-        name: `${appName}-ses-com`,
-        zone: comZone,
-        domains: [
-          {
-            domain,
-            subDomain: "support",
-            domainFromPrefix: "envelope",
-            ruaEmail: `dmarc@${envLookup.hostedZoneCom.domains.primary}`,
-            rufEmail: `dmarc@${envLookup.hostedZoneCom.domains.primary}`,
-          },
-        ],
-      });
-
-      for (const domainIdentity of sesCom.domainIdentities) {
-        domainIdentity.grant(
-          app.service.taskDefinition.taskRole,
-          "ses:SendEmail",
-          "ses:SendRawEmail",
-        );
-      }
-    }
-
-    const redirectName = "com-to-io";
-    const _redirect = new Redirect(this, redirectName, {
-      name: redirectName,
-      zone: comZone,
-      cert: comCertificate.certificate,
-      toDomain: envLookup.hostedZoneIo.domains.primary,
-      fromDomains: [envLookup.hostedZoneCom.domains.primary],
-      removalPolicy,
-    });
-
-    if (envLookup.hostedZoneIo.domains.www) {
-      const wwwRedirectName = "www-to-io";
-      const _wwwRedirect = new Redirect(this, wwwRedirectName, {
-        name: wwwRedirectName,
-        zone: ioZone,
-        cert: ioCertificate.certificate,
-        toDomain: envLookup.hostedZoneIo.domains.primary,
-        fromDomains: [envLookup.hostedZoneIo.domains.www],
-        removalPolicy,
-      });
-    } */
   }
 }
