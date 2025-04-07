@@ -122,24 +122,6 @@ export class WAF extends Construct {
           },
         },
         {
-          name: `${name}-waf-admin-rule`,
-          priority: nextPriority(),
-          statement: {
-            managedRuleGroupStatement: {
-              name: "AWSManagedRulesAdminProtectionRuleSet",
-              vendorName: "AWS",
-            },
-          },
-          visibilityConfig: {
-            cloudWatchMetricsEnabled: true,
-            metricName: `${name}-waf-admin-metric`,
-            sampledRequestsEnabled: true,
-          },
-          overrideAction: {
-            none: {},
-          },
-        },
-        {
           name: `${name}-waf-bad-inputs-rule`,
           priority: nextPriority(),
           statement: {
