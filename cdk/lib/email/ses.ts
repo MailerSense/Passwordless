@@ -10,18 +10,18 @@ import { Topic } from "aws-cdk-lib/aws-sns";
 import { SqsSubscription } from "aws-cdk-lib/aws-sns-subscriptions";
 import { Queue } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
+import { parse } from "tldts";
 
 import { MessageQueue } from "../message/message-queue";
 
 export interface SESProps {
   name: string;
-  zone: IHostedZone;
   domains: DomainIdentity[];
 }
 
 export interface DomainIdentity {
+  zone: IHostedZone;
   domain: string;
-  subDomain: string;
   domainFromPrefix: string;
   ruaEmail?: string;
   rufEmail?: string;
@@ -60,7 +60,7 @@ export class SES extends Construct {
 
     // Create default domain identities
     this.domainIdentities = props.domains.map((identity) =>
-      this.createDomainIdentity(identity, props.zone, this.configSet),
+      this.createDomainIdentity(identity, this.configSet),
     );
 
     // Create the event topic name
@@ -97,14 +97,7 @@ export class SES extends Construct {
   }
 
   private createDomainIdentity(
-    {
-      domain: domain,
-      subDomain: subDomain,
-      domainFromPrefix: domainFromPrefix,
-      ruaEmail: ruaEmail,
-      rufEmail: rufEmail,
-    }: DomainIdentity,
-    hostedZone: IHostedZone,
+    { zone, domain, domainFromPrefix, ruaEmail, rufEmail }: DomainIdentity,
     configurationSet: IConfigurationSet,
   ): ses.IEmailIdentity {
     const slugify = (str: string): string =>
@@ -117,12 +110,17 @@ export class SES extends Construct {
         .replace(/\s+/g, "-")
         .replace(/-+/g, "-");
 
-    const emailDomain = `${subDomain}.${domain}`;
-    const domainSlug = slugify(emailDomain);
+    const { domain: rootDomain, subdomain } = parse(domain);
+
+    if (rootDomain === null || subdomain === null) {
+      throw new Error(`Invalid domain: ${domain}`);
+    }
+
+    const domainSlug = slugify(domain);
     const domainIdentityName = `${domainSlug}-identity`;
     const identity = new ses.EmailIdentity(this, domainIdentityName, {
-      identity: ses.Identity.domain(emailDomain),
-      mailFromDomain: `${domainFromPrefix}.${emailDomain}`,
+      identity: ses.Identity.domain(domain),
+      mailFromDomain: `${domainFromPrefix}.${domain}`,
       configurationSet,
       mailFromBehaviorOnMxFailure:
         ses.MailFromBehaviorOnMxFailure.REJECT_MESSAGE,
@@ -144,7 +142,7 @@ export class SES extends Construct {
           recordName,
           domainName,
           comment: `SES DKIM Record ${i + 1} for ${domain}`,
-          zone: hostedZone,
+          zone,
         },
       );
 
@@ -168,20 +166,20 @@ export class SES extends Construct {
     dmarcValue = dmarcValue.trim();
 
     const _txtRecord = new TxtRecord(this, `${domainSlug}-txt-recordset`, {
-      recordName: `${domainFromPrefix}.${subDomain}`,
+      recordName: `${domainFromPrefix}.${subdomain}`,
       values: [spfValue, dmarcValue],
-      zone: hostedZone,
+      zone,
     });
 
     const _mxRecord = new MxRecord(this, `${domainSlug}-mx-recordset`, {
-      recordName: `${domainFromPrefix}.${subDomain}`,
+      recordName: `${domainFromPrefix}.${subdomain}`,
       values: [
         {
           priority: 10,
           hostName: `feedback-smtp.${Stack.of(this).region}.amazonses.com`,
         },
       ],
-      zone: hostedZone,
+      zone,
     });
 
     return identity;

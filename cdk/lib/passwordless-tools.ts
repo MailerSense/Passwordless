@@ -379,11 +379,10 @@ export class PasswordlessTools extends cdk.Stack {
 
     const ses = new SES(this, `${env}-app-ses`, {
       name: `${appName}-app-ses`,
-      zone: comZone,
       domains: [
         {
-          domain,
-          subDomain: "email",
+          zone: comZone,
+          domain: domainLookup.email.domain,
           domainFromPrefix: "envelope",
           ruaEmail: `dmarc@${domainLookup.email.domain}`,
           rufEmail: `dmarc@${domainLookup.email.domain}`,
