@@ -28,6 +28,7 @@ import {
 } from "aws-cdk-lib/aws-ecs";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { PublicHostedZone } from "aws-cdk-lib/aws-route53";
+import { HttpMethods } from "aws-cdk-lib/aws-s3";
 import * as sm from "aws-cdk-lib/aws-secretsmanager";
 import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
@@ -218,6 +219,13 @@ export class PasswordlessTools extends cdk.Stack {
     const customerMediaName = `${env}-customer-media`;
     const customerMedia = new PublicBucket(this, customerMediaName, {
       name: customerMediaName,
+      cors: [
+        {
+          allowedMethods: [HttpMethods.PUT],
+          allowedOrigins: [`https://${domainLookup.main.domain}`],
+          allowedHeaders: ["*"],
+        },
+      ],
       removalPolicy,
     });
 

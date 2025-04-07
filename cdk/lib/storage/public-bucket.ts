@@ -3,12 +3,14 @@ import {
   BlockPublicAccess,
   Bucket,
   BucketEncryption,
+  CorsRule,
 } from "aws-cdk-lib/aws-s3";
 import { NagSuppressions } from "cdk-nag";
 import { Construct } from "constructs";
 
 export interface PublicBucketProps {
   name: string;
+  cors?: CorsRule[];
   removalPolicy: RemovalPolicy;
 }
 
@@ -18,8 +20,10 @@ export class PublicBucket extends Construct {
   public constructor(scope: Construct, id: string, props: PublicBucketProps) {
     super(scope, id);
 
-    this.bucket = new Bucket(this, `${props.name}-public`, {
-      removalPolicy: props.removalPolicy,
+    const { name, cors, removalPolicy } = props;
+
+    this.bucket = new Bucket(this, `${name}-public`, {
+      removalPolicy,
       publicReadAccess: true,
       blockPublicAccess: new BlockPublicAccess({
         blockPublicAcls: false,
@@ -30,6 +34,7 @@ export class PublicBucket extends Construct {
       encryption: BucketEncryption.S3_MANAGED,
       enforceSSL: true,
       versioned: true,
+      cors,
     });
 
     NagSuppressions.addResourceSuppressions(this, [
