@@ -54,23 +54,29 @@ export class SES extends Construct {
   public readonly configSet: ses.ConfigurationSet;
   public readonly eventQueue: Queue;
   public readonly domainIdentities: ses.IEmailIdentity[];
+  public readonly clickDomain?: ses.IEmailIdentity;
   public readonly clickDistribution?: Distribution;
 
   public constructor(scope: Construct, id: string, props: Readonly<SESProps>) {
     super(scope, id);
 
-    const region = Stack.of(this).region;
     const { name, removalPolicy, tracking } = props;
 
     if (tracking) {
       const { domain, zone, cert } = tracking;
+
+      this.clickDomain = this.createDomainIdentity({
+        zone,
+        domain,
+        domainFromPrefix: "email",
+      });
 
       this.clickDistribution = new Distribution(
         this,
         `${name}-ses-click-distribution`,
         {
           defaultBehavior: {
-            origin: new HttpOrigin(`r.${region}.awstrack.me`),
+            origin: new HttpOrigin(`r.${Stack.of(this).region}.awstrack.me`),
             cachePolicy: new CachePolicy(this, `${name}-ses-cache`, {
               cachePolicyName: `${name}-ses-cache-policy`,
               comment: "Policy to cache host header",
@@ -80,12 +86,12 @@ export class SES extends Construct {
               },
             }),
           },
-          domainNames: [domain],
+          domainNames: [this.clickDomain.emailIdentityName],
           certificate: cert,
         },
       );
 
-      const trackingRecord = new ARecord(this, `${name}-ses-click-record`, {
+      const _trackingRecord = new ARecord(this, `${name}-ses-click-record`, {
         recordName: domain,
         zone,
         target: RecordTarget.fromAlias(
@@ -150,7 +156,7 @@ export class SES extends Construct {
 
   private createDomainIdentity(
     { zone, domain, domainFromPrefix, ruaEmail, rufEmail }: DomainIdentity,
-    configurationSet: IConfigurationSet,
+    configurationSet?: IConfigurationSet,
   ): ses.IEmailIdentity {
     const slugify = (str: string): string =>
       String(str)
