@@ -385,8 +385,8 @@ export class PasswordlessTools extends cdk.Stack {
           zone: comZone,
           domain: domainLookup.email.domain,
           domainFromPrefix: "envelope",
-          ruaEmail: `dmarc@${domainLookup.email.domain}`,
-          rufEmail: `dmarc@${domainLookup.email.domain}`,
+          ruaEmail: `dmarc@${comZone.zoneName}`,
+          rufEmail: `dmarc@${comZone.zoneName}`,
         },
       ],
       tracking: {
