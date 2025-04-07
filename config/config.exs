@@ -210,18 +210,19 @@ config :passwordless, :content_security_policy, %{
     case Mix.env() do
       :prod ->
         [
-          "wss://#{System.get_env("PHX_HOST") || "eu.passwordless.tools"}",
-          "https://#{System.get_env("PHX_HOST") || "eu.passwordless.tools"}"
+          "wss://#{System.get_env("PHX_HOST", "eu.passwordless.tools")}",
+          "https://#{System.get_env("PHX_HOST", "eu.passwordless.tools")}"
         ]
 
       _ ->
         [
-          "ws://localhost:#{String.to_integer(System.get_env("PORT") || "4000")}",
-          "http://localhost:#{String.to_integer(System.get_env("PORT") || "4000")}"
+          "ws://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}",
+          "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
         ]
     end ++
       [
-        "https://*.googleapis.com"
+        "https://*.googleapis.com",
+        "*.amazonaws.com"
       ],
   img_src: [
     "*",
@@ -239,7 +240,7 @@ config :passwordless, :content_security_policy, %{
 
         _ ->
           [
-            "http://localhost:#{String.to_integer(System.get_env("PORT") || "4000")}"
+            "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
           ]
       end
 }
@@ -251,8 +252,6 @@ config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
 
 config :passwordless, :aws,
-  region: "eu-west-1",
-  account: "123456789012",
   regions: %{
     "af-south-1" => %{"description" => "Africa (Cape Town)"},
     "ap-northeast-1" => %{"description" => "Asia Pacific (Tokyo)"},

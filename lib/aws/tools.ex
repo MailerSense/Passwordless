@@ -8,8 +8,6 @@ defmodule AWS.Tools do
   @aws Application.compile_env!(:passwordless, :aws)
 
   @regions @aws |> Keyword.fetch!(:regions) |> Map.keys()
-  @default_region Keyword.fetch!(@aws, :region)
-  @default_account Keyword.fetch!(@aws, :account)
   @arn_regex ~r/^arn:aws:[A-Za-z0-9_\.-]+:(#{Enum.join(@regions, "|")})?:(\d{12})?:[A-Za-z0-9_\/\.\-\*]+$/
 
   @doc """
@@ -30,14 +28,4 @@ defmodule AWS.Tools do
   end
 
   def valid_arn?(_), do: false
-
-  @doc """
-  Provides the default AWS region.
-  """
-  def default_region, do: @default_region
-
-  @doc """
-  Provides the default AWS account.
-  """
-  def default_account, do: @default_account
 end
