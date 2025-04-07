@@ -4,7 +4,7 @@ import { Construct } from "constructs";
 
 import { Certificate } from "./network/certificate";
 import { Environment } from "./util/environment";
-import { domainLookup, lookupMap } from "./util/lookup";
+import { domainLookupMap, lookupMap } from "./util/lookup";
 import { Region } from "./util/region";
 
 export class PasswordlessToolsCertificates extends cdk.Stack {
@@ -41,7 +41,7 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
     this.cdn = {} as Record<Region, Record<Environment, Certificate>>;
     this.com = {} as Record<Region, Record<Environment, Certificate>>;
 
-    for (const [region, value] of Object.entries(domainLookup)) {
+    for (const [region, value] of Object.entries(domainLookupMap)) {
       const reg = region as Region;
       const { cdn, com } = value[env];
 

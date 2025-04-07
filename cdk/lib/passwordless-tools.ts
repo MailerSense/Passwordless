@@ -37,6 +37,7 @@ import { AppContainer, PublicEC2App } from "./application/public-ec2-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
+import { SES } from "./email/ses";
 import { Migration } from "./lambda/migration";
 import { CDN } from "./network/cdn";
 import { Certificate } from "./network/certificate";
@@ -47,7 +48,7 @@ import { ContainerScanning } from "./pattern/container-scanning";
 import { CachedImage } from "./storage/cached-image";
 import { PublicBucket } from "./storage/public-bucket";
 import { Environment } from "./util/environment";
-import { lookupMap } from "./util/lookup";
+import { domainLookupMap, lookupMap } from "./util/lookup";
 import { Region } from "./util/region";
 
 export interface PasswordlessToolsProps extends cdk.StackProps {
@@ -70,6 +71,8 @@ export class PasswordlessTools extends cdk.Stack {
       : Environment.DEV;
 
     const envLookup = lookupMap[env];
+
+    const domainLookup = domainLookupMap[region][env];
 
     const removalPolicy =
       env == Environment.PROD ? RemovalPolicy.DESTROY : RemovalPolicy.DESTROY;
@@ -183,6 +186,15 @@ export class PasswordlessTools extends cdk.Stack {
       {
         zoneName: envLookup.hostedZone.name,
         hostedZoneId: envLookup.hostedZone.id,
+      },
+    );
+
+    const comZone = PublicHostedZone.fromHostedZoneAttributes(
+      this,
+      `${env}-app-com-zone`,
+      {
+        zoneName: envLookup.hostedZoneCom.name,
+        hostedZoneId: envLookup.hostedZoneCom.id,
       },
     );
 
@@ -364,6 +376,28 @@ export class PasswordlessTools extends cdk.Stack {
         name: containerScanningName,
       },
     );
+
+    const ses = new SES(this, `${env}-app-ses`, {
+      name: `${appName}-app-ses`,
+      zone: comZone,
+      domains: [
+        {
+          domain,
+          subDomain: "email",
+          domainFromPrefix: "envelope",
+          ruaEmail: `dmarc@${domainLookup.email.domain}`,
+          rufEmail: `dmarc@${domainLookup.email.domain}`,
+        },
+      ],
+    });
+
+    for (const domainIdentity of ses.domainIdentities) {
+      domainIdentity.grant(
+        app.service.taskDefinition.taskRole,
+        "ses:SendEmail",
+        "ses:SendRawEmail",
+      );
+    }
 
     /* 
     const comCertificate = new Certificate(this, "com-certificate", {
