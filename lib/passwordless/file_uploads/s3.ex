@@ -94,13 +94,13 @@ defmodule Passwordless.FileUploads.S3 do
         )
   """
 
-  @prefix "logos/"
+  @prefix "customer-media/app/logos/"
 
   @spec presign_upload(map(), map()) :: {:ok, map(), map()} | {:error, term()}
   def presign_upload(entry, socket) do
     uploads = socket.assigns.uploads
     bucket = get_bucket()
-    key = @prefix <> Util.random_string(24) <> Path.extname(entry.client_name)
+    key = @prefix <> Util.random_string(32) <> Path.extname(entry.client_name)
 
     {:ok, url} =
       :s3
@@ -115,8 +115,8 @@ defmodule Passwordless.FileUploads.S3 do
 
   @spec consume_uploaded_entries(Phoenix.LiveView.Socket.t(), any) :: list
   def consume_uploaded_entries(socket, uploads_key) do
-    Phoenix.LiveView.consume_uploaded_entries(socket, uploads_key, fn upload, _entry ->
-      {:ok, get_cdn_url() <> @prefix <> upload.fields["key"]}
+    Phoenix.LiveView.consume_uploaded_entries(socket, uploads_key, fn %{key: key}, _entry ->
+      {:ok, get_cdn_url() <> key}
     end)
   end
 

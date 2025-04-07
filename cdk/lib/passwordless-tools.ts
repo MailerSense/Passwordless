@@ -282,7 +282,7 @@ export class PasswordlessTools extends cdk.Stack {
         ...envLookup.appConfig,
         // S3
         CUSTOMER_MEDIA_BUCKET: customerMedia.bucket.bucketName,
-        CUSTOMER_MEDIA_CDN_URL: `https://${cdnDomain}/customer-media/`,
+        CUSTOMER_MEDIA_CDN_URL: `https://${cdnDomain}/`,
       },
       stopTimeout: Duration.seconds(30),
       containerPort: 8000,

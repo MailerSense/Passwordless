@@ -12,11 +12,19 @@ config :passwordless, :stripe_production_mode, System.get_env("STRIPE_PRODUCTION
 
 if config_env() == :prod do
   postgres_user = System.get_env("POSTGRES_USER") || raise "env variable POSTGRES_USER is missing"
-  postgres_password = System.get_env("POSTGRES_PASSWORD") || raise "env variable POSTGRES_PASSWORD is missing"
+
+  postgres_password =
+    System.get_env("POSTGRES_PASSWORD") || raise "env variable POSTGRES_PASSWORD is missing"
+
   postgres_host = System.get_env("POSTGRES_HOST") || raise "env variable POSTGRES_HOST is missing"
   postgres_port = System.get_env("POSTGRES_PORT") || raise "env variable POSTGRES_PORT is missing"
-  postgres_db_name = System.get_env("POSTGRES_DB_NAME") || raise "env variable POSTGRES_DB_NAME is missing"
-  database_url = "ecto://#{postgres_user}:#{postgres_password}@#{postgres_host}:#{postgres_port}/#{postgres_db_name}"
+
+  postgres_db_name =
+    System.get_env("POSTGRES_DB_NAME") || raise "env variable POSTGRES_DB_NAME is missing"
+
+  database_url =
+    "ecto://#{postgres_user}:#{postgres_password}@#{postgres_host}:#{postgres_port}/#{postgres_db_name}"
+
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
   config :passwordless, Passwordless.Repo,
@@ -48,7 +56,11 @@ if config_env() == :prod do
              host: redis_host,
              port: String.to_integer(redis_port),
              password: redis_auth_token,
-             socket_opts: [customize_hostname_check: [match_fun: :public_key.pkix_verify_hostname_match_fun(:https)]]
+             socket_opts: [
+               customize_hostname_check: [
+                 match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+               ]
+             ]
            ]
          ]}
   else

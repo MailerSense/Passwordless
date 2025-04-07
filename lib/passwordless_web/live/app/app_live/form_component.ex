@@ -2,7 +2,9 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
-  @upload_provider :passwordless |> Application.compile_env!(:media_upload) |> Keyword.fetch!(:adapter)
+  @upload_provider :passwordless
+                   |> Application.compile_env!(:media_upload)
+                   |> Keyword.fetch!(:adapter)
 
   @impl true
   def update(%{app: app} = assigns, socket) do
