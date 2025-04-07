@@ -215,13 +215,14 @@ export class PasswordlessTools extends cdk.Stack {
       domain: envLookup.hostedZone.domains.primary,
     });
 
-    const bucketName = `${env}-customer-media`;
-    const customerMedia = new PublicBucket(this, bucketName, {
-      name: bucketName,
+    const customerMediaName = `${env}-customer-media`;
+    const customerMedia = new PublicBucket(this, customerMediaName, {
+      name: customerMediaName,
       removalPolicy,
     });
 
-    const { domain, certificate: cert } = certificates.cdn[region][env];
+    const { domain: cdnDomain, certificate: cdnCert } =
+      certificates.cdn[region][env];
 
     const imageName = "passwordless-tools-image";
     const cachedImage = new CachedImage(this, imageName, {
@@ -273,7 +274,7 @@ export class PasswordlessTools extends cdk.Stack {
         ...envLookup.appConfig,
         // S3
         CUSTOMER_MEDIA_BUCKET: customerMedia.bucket.bucketName,
-        CUSTOMER_MEDIA_CDN_URL: `https://${domain}/customer-media/`,
+        CUSTOMER_MEDIA_CDN_URL: `https://${cdnDomain}/customer-media/`,
       },
       stopTimeout: Duration.seconds(30),
       containerPort: 8000,
@@ -352,8 +353,8 @@ export class PasswordlessTools extends cdk.Stack {
     const _cdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-cdn`,
       zone,
-      cert,
-      domain,
+      cert: cdnCert,
+      domain: cdnDomain,
       defaultBehavior: {
         origin: new LoadBalancerV2Origin(app.service.loadBalancer),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
