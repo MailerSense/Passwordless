@@ -1,10 +1,16 @@
 import { CfnOutput, RemovalPolicy, aws_ses as ses, Stack } from "aws-cdk-lib";
+import { ICertificate } from "aws-cdk-lib/aws-certificatemanager";
+import { CachePolicy, Distribution } from "aws-cdk-lib/aws-cloudfront";
+import { HttpOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import {
+  ARecord,
   CnameRecord,
   IHostedZone,
   MxRecord,
+  RecordTarget,
   TxtRecord,
 } from "aws-cdk-lib/aws-route53";
+import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
 import { EmailSendingEvent, IConfigurationSet } from "aws-cdk-lib/aws-ses";
 import { Topic } from "aws-cdk-lib/aws-sns";
 import { SqsSubscription } from "aws-cdk-lib/aws-sns-subscriptions";
@@ -12,11 +18,11 @@ import { Queue } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
 import { parse } from "tldts";
 
-import { MessageQueue } from "../message/message-queue";
-
 export interface SESProps {
   name: string;
   domains: DomainIdentity[];
+  tracking?: TrackingIdentity;
+  removalPolicy: RemovalPolicy;
 }
 
 export interface DomainIdentity {
@@ -25,6 +31,12 @@ export interface DomainIdentity {
   domainFromPrefix: string;
   ruaEmail?: string;
   rufEmail?: string;
+}
+
+export interface TrackingIdentity {
+  zone: IHostedZone;
+  cert: ICertificate;
+  domain: string;
 }
 
 const allowedEventTypes: EmailSendingEvent[] = [
@@ -42,11 +54,45 @@ export class SES extends Construct {
   public readonly configSet: ses.ConfigurationSet;
   public readonly eventQueue: Queue;
   public readonly domainIdentities: ses.IEmailIdentity[];
+  public readonly clickDistribution?: Distribution;
 
   public constructor(scope: Construct, id: string, props: Readonly<SESProps>) {
     super(scope, id);
 
-    const { name } = props;
+    const region = Stack.of(this).region;
+    const { name, removalPolicy, tracking } = props;
+
+    if (tracking) {
+      const { domain, zone, cert } = tracking;
+
+      this.clickDistribution = new Distribution(
+        this,
+        `${name}-ses-click-distribution`,
+        {
+          defaultBehavior: {
+            origin: new HttpOrigin(`r.${region}.awstrack.me`),
+            cachePolicy: new CachePolicy(this, `${name}-ses-cache`, {
+              cachePolicyName: `${name}-ses-cache-policy`,
+              comment: "Policy to cache host header",
+              headerBehavior: {
+                behavior: "whitelist",
+                headers: ["Host"],
+              },
+            }),
+          },
+          domainNames: [domain],
+          certificate: cert,
+        },
+      );
+
+      const trackingRecord = new ARecord(this, `${name}-ses-click-record`, {
+        recordName: domain,
+        zone,
+        target: RecordTarget.fromAlias(
+          new CloudFrontTarget(this.clickDistribution),
+        ),
+      });
+    }
 
     // Create the configuration set (add pool once we have it)
     const configSetName = `${name}-config-set`;
@@ -56,7 +102,12 @@ export class SES extends Construct {
       tlsPolicy: ses.ConfigurationSetTlsPolicy.REQUIRE,
       sendingEnabled: true,
       suppressionReasons: ses.SuppressionReasons.BOUNCES_AND_COMPLAINTS,
+      customTrackingRedirectDomain: tracking?.domain,
     });
+
+    if (this.clickDistribution) {
+      this.configSet.node.addDependency(this.clickDistribution);
+    }
 
     // Create default domain identities
     this.domainIdentities = props.domains.map((identity) =>
@@ -84,16 +135,17 @@ export class SES extends Construct {
     );
 
     // Create the SQS queue for notifications
-    const notificationQueue = new MessageQueue(this, `${name}-notification`, {
-      name: name,
-      designation: "email-notifications",
-      removalPolicy: RemovalPolicy.DESTROY,
+    const queueName = `${name}-email-notifications`;
+    const notificationQueue = new Queue(this, queueName, {
+      queueName,
+      enforceSSL: true,
+      removalPolicy,
     });
 
     // Subscribe the queue to the topic
-    eventTopic.addSubscription(new SqsSubscription(notificationQueue.queue));
+    eventTopic.addSubscription(new SqsSubscription(notificationQueue));
 
-    this.eventQueue = notificationQueue.queue;
+    this.eventQueue = notificationQueue;
   }
 
   private createDomainIdentity(

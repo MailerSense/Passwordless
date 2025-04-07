@@ -37,7 +37,6 @@ import { AppContainer, PublicEC2App } from "./application/public-ec2-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
-import { SES } from "./email/ses";
 import { Migration } from "./lambda/migration";
 import { CDN } from "./network/cdn";
 import { Certificate } from "./network/certificate";
@@ -377,7 +376,7 @@ export class PasswordlessTools extends cdk.Stack {
       },
     );
 
-    const ses = new SES(this, `${env}-app-ses`, {
+    /*  const ses = new SES(this, `${env}-app-ses`, {
       name: `${appName}-app-ses`,
       domains: [
         {
@@ -388,6 +387,12 @@ export class PasswordlessTools extends cdk.Stack {
           rufEmail: `dmarc@${domainLookup.email.domain}`,
         },
       ],
+      removalPolicy,
+      tracking: {
+        zone: comZone,
+        cert: certificate.certificate,
+        domain: domainLookup.tracking.domain,
+      },
     });
 
     for (const domainIdentity of ses.domainIdentities) {
@@ -396,7 +401,7 @@ export class PasswordlessTools extends cdk.Stack {
         "ses:SendEmail",
         "ses:SendRawEmail",
       );
-    }
+    } */
 
     /* 
     const comCertificate = new Certificate(this, "com-certificate", {

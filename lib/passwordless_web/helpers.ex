@@ -59,7 +59,7 @@ defmodule PasswordlessWeb.Helpers do
       },
       %{
         name: :login,
-        label: "Login window",
+        label: "UI Components",
         icon: "remix-window-line",
         path: ~p"/embed/login",
         link_type: "live_patch"
@@ -69,6 +69,13 @@ defmodule PasswordlessWeb.Helpers do
         label: "Identity guard",
         icon: "remix-police-badge-line",
         path: ~p"/embed/guard",
+        link_type: "live_patch"
+      },
+      %{
+        name: :pricing,
+        label: "Pricing",
+        icon: "remix-coin-line",
+        path: ~p"/embed/pricing",
         link_type: "live_patch"
       }
     ]
@@ -278,11 +285,13 @@ defmodule PasswordlessWeb.Helpers do
   def user_state(nil), do: nil
   def user_state(%User{} = user), do: user.state
 
-  def user_org_name(%User{current_org: %Org{name: name}}) when is_binary(name), do: Util.truncate(name)
+  def user_org_name(%User{current_org: %Org{name: name}}) when is_binary(name),
+    do: Util.truncate(name)
 
   def user_org_name(_), do: nil
 
-  def user_app_name(%User{current_app: %App{name: name}}) when is_binary(name), do: Util.truncate(name)
+  def user_app_name(%User{current_app: %App{name: name}}) when is_binary(name),
+    do: Util.truncate(name)
 
   def user_app_name(_), do: nil
 
@@ -322,7 +331,8 @@ defmodule PasswordlessWeb.Helpers do
     Timex.today() in interval
   end
 
-  def user_added(%Membership{inserted_at: %DateTime{} = inserted_at}), do: format_date_time(inserted_at)
+  def user_added(%Membership{inserted_at: %DateTime{} = inserted_at}),
+    do: format_date_time(inserted_at)
 
   def user_added(%Membership{}), do: ""
 
@@ -344,12 +354,17 @@ defmodule PasswordlessWeb.Helpers do
   def log_source_badge(nil = source), do: {log_source(source), "blue"}
 
   def log_source_badge(source),
-    do: {log_source(source), Enum.at(@common_colors, :erlang.phash2(source, length(@common_colors)))}
+    do:
+      {log_source(source),
+       Enum.at(@common_colors, :erlang.phash2(source, length(@common_colors)))}
 
   def log_action_badge(%Log{action: action}),
-    do: {translate_action(action), Enum.at(@common_colors, :erlang.phash2(action, length(@common_colors)))}
+    do:
+      {translate_action(action),
+       Enum.at(@common_colors, :erlang.phash2(action, length(@common_colors)))}
 
-  def random_color(term), do: Enum.at(@common_colors, :erlang.phash2(term, length(@common_colors)))
+  def random_color(term),
+    do: Enum.at(@common_colors, :erlang.phash2(term, length(@common_colors)))
 
   @icon_mapping %{
     "create_auth_token" => "🔑",
