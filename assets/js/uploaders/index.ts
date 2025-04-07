@@ -1,4 +1,4 @@
-const ExternalUploader = function (
+const S3 = function (
   entries: any[],
   onViewError: (callback: () => void) => void,
 ) {
@@ -39,5 +39,5 @@ const ExternalUploader = function (
 };
 
 export default {
-  ExternalUploader,
+  S3,
 };

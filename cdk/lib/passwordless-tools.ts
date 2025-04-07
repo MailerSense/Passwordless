@@ -47,7 +47,7 @@ import { ContainerScanning } from "./pattern/container-scanning";
 import { CachedImage } from "./storage/cached-image";
 import { PublicBucket } from "./storage/public-bucket";
 import { Environment } from "./util/environment";
-import { lookupMap } from "./util/lookup";
+import { domainLookupMap, lookupMap } from "./util/lookup";
 import { Region } from "./util/region";
 
 export interface PasswordlessToolsProps extends cdk.StackProps {
@@ -70,6 +70,8 @@ export class PasswordlessTools extends cdk.Stack {
       : Environment.DEV;
 
     const envLookup = lookupMap[env];
+
+    const domainLookup = domainLookupMap[region][env];
 
     const removalPolicy =
       env == Environment.PROD ? RemovalPolicy.DESTROY : RemovalPolicy.DESTROY;
@@ -183,6 +185,15 @@ export class PasswordlessTools extends cdk.Stack {
       {
         zoneName: envLookup.hostedZone.name,
         hostedZoneId: envLookup.hostedZone.id,
+      },
+    );
+
+    const comZone = PublicHostedZone.fromHostedZoneAttributes(
+      this,
+      `${env}-app-com-zone`,
+      {
+        zoneName: envLookup.hostedZoneCom.name,
+        hostedZoneId: envLookup.hostedZoneCom.id,
       },
     );
 
@@ -364,6 +375,33 @@ export class PasswordlessTools extends cdk.Stack {
         name: containerScanningName,
       },
     );
+
+    /*  const ses = new SES(this, `${env}-app-ses`, {
+      name: `${appName}-app-ses`,
+      domains: [
+        {
+          zone: comZone,
+          domain: domainLookup.email.domain,
+          domainFromPrefix: "envelope",
+          ruaEmail: `dmarc@${domainLookup.email.domain}`,
+          rufEmail: `dmarc@${domainLookup.email.domain}`,
+        },
+      ],
+      removalPolicy,
+      tracking: {
+        zone: comZone,
+        cert: certificate.certificate,
+        domain: domainLookup.tracking.domain,
+      },
+    });
+
+    for (const domainIdentity of ses.domainIdentities) {
+      domainIdentity.grant(
+        app.service.taskDefinition.taskRole,
+        "ses:SendEmail",
+        "ses:SendRawEmail",
+      );
+    } */
 
     /* 
     const comCertificate = new Certificate(this, "com-certificate", {

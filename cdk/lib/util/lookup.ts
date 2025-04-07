@@ -97,11 +97,13 @@ export type DomainConfig = {
       www: DomainAttributes;
       cdn: DomainAttributes;
       com: DomainAttributes;
+      email: DomainAttributes;
+      tracking: DomainAttributes;
     };
   };
 };
 
-export const domainLookup: DomainConfig = {
+export const domainLookupMap: DomainConfig = {
   [Region.EU]: {
     [Environment.DEV]: {
       main: {
@@ -120,6 +122,14 @@ export const domainLookup: DomainConfig = {
         zone: ZoneType.COM,
         domain: "dev.eu.passwordlesstools.com",
       },
+      email: {
+        zone: ZoneType.COM,
+        domain: "auth.dev.eu.passwordlesstools.com",
+      },
+      tracking: {
+        zone: ZoneType.COM,
+        domain: "click.dev.eu.passwordlesstools.com",
+      },
     },
     [Environment.PROD]: {
       main: {
@@ -137,6 +147,14 @@ export const domainLookup: DomainConfig = {
       com: {
         zone: ZoneType.COM,
         domain: "eu.passwordlesstools.com",
+      },
+      email: {
+        zone: ZoneType.COM,
+        domain: "auth.eu.passwordlesstools.com",
+      },
+      tracking: {
+        zone: ZoneType.COM,
+        domain: "click.eu.passwordlesstools.com",
       },
     },
   },
@@ -158,6 +176,14 @@ export const domainLookup: DomainConfig = {
         zone: ZoneType.COM,
         domain: "us.dev.passwordlesstools.com",
       },
+      email: {
+        zone: ZoneType.COM,
+        domain: "auth.us.dev.passwordlesstools.com",
+      },
+      tracking: {
+        zone: ZoneType.COM,
+        domain: "click.us.dev.passwordlesstools.com",
+      },
     },
     [Environment.PROD]: {
       main: {
@@ -175,6 +201,14 @@ export const domainLookup: DomainConfig = {
       com: {
         zone: ZoneType.COM,
         domain: "us.passwordlesstools.com",
+      },
+      email: {
+        zone: ZoneType.COM,
+        domain: "auth.us.passwordlesstools.com",
+      },
+      tracking: {
+        zone: ZoneType.COM,
+        domain: "click.us.passwordlesstools.com",
       },
     },
   },
