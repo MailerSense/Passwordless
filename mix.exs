@@ -102,7 +102,7 @@ defmodule Passwordless.MixProject do
        github: "tailwindlabs/heroicons", tag: "v2.2.0", sparse: "optimized", app: false, compile: false, depth: 1},
 
       # Observability
-      {:sentry, "~> 10.8"},
+      {:sentry, "~> 10.9"},
       {:backpex, "~> 0.12.0"},
       {:ecto_psql_extras, "~> 0.8.7"},
 
@@ -119,7 +119,7 @@ defmodule Passwordless.MixProject do
       {:slugify, "~> 1.3"},
       {:burnex, "~> 3.2"},
       {:faker, "~> 0.17"},
-      {:redix, "~> 1.4"},
+      {:redix, "~> 1.5"},
       {:corsica, "~> 2.1"},
       {:castore, "~> 1.0"},
       {:cachex, "~> 4.0"},
@@ -139,8 +139,8 @@ defmodule Passwordless.MixProject do
       {:solid, "~> 0.18.0"},
 
       # HTTP client
-      {:tesla, "~> 1.9"},
-      {:finch, "~> 0.18.0"},
+      {:tesla, "~> 1.14"},
+      {:finch, "~> 0.19.0"},
       {:inet_cidr, "~> 1.0"},
 
       # Testing
