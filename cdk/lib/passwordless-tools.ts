@@ -42,6 +42,7 @@ import { WAF } from "./network/waf";
 import { PasswordlessToolsCertificates } from "./passwordless-tools-certificates";
 import { ContainerScanning } from "./pattern/container-scanning";
 import { CachedImage } from "./storage/cached-image";
+import { PublicBucket } from "./storage/public-bucket";
 import { Environment } from "./util/environment";
 import { lookupMap } from "./util/lookup";
 import { Region } from "./util/region";
@@ -344,6 +345,14 @@ export class PasswordlessTools extends cdk.Stack {
         name: containerScanningName,
       },
     );
+
+    const bucketName = `${env}-customer-media`;
+    const customerMedia = new PublicBucket(this, bucketName, {
+      name: bucketName,
+      removalPolicy,
+    });
+
+    customerMedia.bucket.grantReadWrite(app.service.taskDefinition.taskRole);
 
     /* 
     const comCertificate = new Certificate(this, "com-certificate", {
