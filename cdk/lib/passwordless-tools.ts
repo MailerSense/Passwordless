@@ -110,7 +110,7 @@ export class PasswordlessTools extends cdk.Stack {
       removalPolicy,
     });
 
-    const _clusterNamespace = new PrivateDnsNamespace(
+    const namespace = new PrivateDnsNamespace(
       this,
       `${env}-cluster-namespace`,
       {
@@ -312,6 +312,7 @@ export class PasswordlessTools extends cdk.Stack {
       healthCheckCmd: "/app/bin/health",
       healthCheckPath: "/health/ready",
       logRetention,
+      namespace,
       capacityProviderStrategies: [
         {
           capacityProvider:
