@@ -131,7 +131,7 @@ if config_env() == :prod do
       cdn_url: System.get_env("CUSTOMER_MEDIA_CDN_URL")
     ]
 
-  config :passwordless, :aws,
+  config :passwordless, :aws_current,
     region: System.get_env("AWS_REGION"),
     account: System.get_env("AWS_ACCOUNT")
 end

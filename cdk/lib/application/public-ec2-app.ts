@@ -101,6 +101,7 @@ export class PublicEC2App extends Construct {
       stopTimeout: container.stopTimeout,
       protocol: ApplicationProtocol.HTTPS,
       networkMode: NetworkMode.AWS_VPC,
+      circuitBreaker: { rollback: true },
       minHealthyPercent: container.minHealthyPercent,
       memoryReservationMiB: container.memoryReservation,
       availabilityZoneRebalancing: AvailabilityZoneRebalancing.ENABLED,

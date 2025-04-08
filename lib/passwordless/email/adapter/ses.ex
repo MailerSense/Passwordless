@@ -59,7 +59,7 @@ defmodule Passwordless.Email.Adapter.SES do
     Map.put(
       request,
       "SourceArn",
-      Domain.arn(domain, Passwordless.config([:aws, :region]), Passwordless.config([:aws, :account]))
+      Domain.arn(domain, Passwordless.config([:aws_current, :region]), Passwordless.config([:aws_current, :account]))
     )
   end
 
@@ -69,7 +69,7 @@ defmodule Passwordless.Email.Adapter.SES do
     Map.put(
       request,
       "FromArn",
-      Domain.arn(domain, Passwordless.config([:aws, :region]), Passwordless.config([:aws, :account]))
+      Domain.arn(domain, Passwordless.config([:aws_current, :region]), Passwordless.config([:aws_current, :account]))
     )
   end
 
@@ -79,7 +79,7 @@ defmodule Passwordless.Email.Adapter.SES do
     Map.put(
       request,
       "ReturnPathArn",
-      Domain.arn(domain, Passwordless.config([:aws, :region]), Passwordless.config([:aws, :account]))
+      Domain.arn(domain, Passwordless.config([:aws_current, :region]), Passwordless.config([:aws_current, :account]))
     )
   end
 

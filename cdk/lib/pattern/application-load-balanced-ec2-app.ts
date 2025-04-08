@@ -1,6 +1,7 @@
 import { Duration } from "aws-cdk-lib";
 import {
   AvailabilityZoneRebalancing,
+  DeploymentCircuitBreaker,
   Ec2Service,
   Ec2TaskDefinition,
   HealthCheck,
@@ -105,6 +106,8 @@ export interface ApplicationLoadBalancedEc2ServiceProps
   readonly daemon?: boolean;
 
   readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
+
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
 }
 
 /**
