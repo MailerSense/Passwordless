@@ -204,6 +204,8 @@ config :passwordless, :content_security_policy, %{
     "blob:",
     "https://rsms.me",
     "*.amazonaws.com",
+    "https://*.googleapis.com",
+    "https://*.gstatic.com",
     "https://*.passwordless.tools"
   ],
   connect_src:
@@ -222,6 +224,7 @@ config :passwordless, :content_security_policy, %{
     end ++
       [
         "https://*.googleapis.com",
+        "https://*.gstatic.com",
         "*.amazonaws.com"
       ],
   img_src: [
