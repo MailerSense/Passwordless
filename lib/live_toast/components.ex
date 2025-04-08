@@ -150,43 +150,6 @@ defmodule LiveToast.Components do
       phx-update="ignore"
       flash={@f}
     />
-    <.toast
-      data-component="flash"
-      corner={@corner}
-      toast_class_fn={@toast_class_fn}
-      id="client-error"
-      kind={:error}
-      title={Utility.translate("We can't find the internet")}
-      delay={@client_error_delay}
-      phx-update="ignore"
-      phx-disconnected={Utility.show_error(".phx-client-error #client-error")}
-      phx-connected={Utility.hide_error("#client-error")}
-      data-disconnected={Utility.show(".phx-client-error #client-error")}
-      data-connected={Utility.hide("#client-error")}
-      hidden
-    >
-      {Utility.translate("Attempting to reconnect")}
-      <Utility.svg name="hero-arrow-path" class="inline-block ml-1 h-3 w-3 animate-spin" />
-    </.toast>
-
-    <.toast
-      data-component="flash"
-      corner={@corner}
-      toast_class_fn={@toast_class_fn}
-      id="server-error"
-      kind={:error}
-      title={Utility.translate("Something went wrong!")}
-      phx-update="ignore"
-      phx-disconnected={Utility.show_error(".phx-server-error #server-error")}
-      phx-connected={Utility.hide_error("#server-error")}
-      data-disconnected={Utility.show(".phx-server-error #server-error")}
-      data-connected={Utility.hide("#server-error")}
-      delay={@client_error_delay}
-      hidden
-    >
-      {Utility.translate("Hang in there while we get back on track")}
-      <Utility.svg name="hero-arrow-path" class="inline-block ml-1 h-3 w-3 animate-spin" />
-    </.toast>
     """
   end
 
