@@ -211,24 +211,6 @@
         <:if_empty>{gettext("No %{models} defined yet", models: gettext("passkeys"))}</:if_empty>
         <:col field={:name} body_class="w-full" />
         <:col actions></:col>
-        <:actions :let={identity}>
-          <.icon_button
-            to={~p"/users/#{@actor}/edit/identity/#{identity}/delete"}
-            size="sm"
-            icon="custom-trash"
-            color="light"
-            title={gettext("Remove")}
-            link_type="live_patch"
-          />
-          <.icon_button
-            to={~p"/users/#{@actor}/edit/identity/#{identity}/edit"}
-            size="sm"
-            icon="custom-edit"
-            color="light"
-            title={gettext("Edit")}
-            link_type="live_patch"
-          />
-        </:actions>
       </.simple_table>
       <.simple_table items={[]} count={Enum.count([])} title={gettext("Security keys")}>
         <:if_empty>
@@ -236,47 +218,11 @@
         </:if_empty>
         <:col field={:name} body_class="w-full" />
         <:col actions></:col>
-        <:actions :let={identity}>
-          <.icon_button
-            to={~p"/users/#{@actor}/edit/identity/#{identity}/delete"}
-            size="sm"
-            icon="custom-trash"
-            color="light"
-            title={gettext("Remove")}
-            link_type="live_patch"
-          />
-          <.icon_button
-            to={~p"/users/#{@actor}/edit/identity/#{identity}/edit"}
-            size="sm"
-            icon="custom-edit"
-            color="light"
-            title={gettext("Edit")}
-            link_type="live_patch"
-          />
-        </:actions>
       </.simple_table>
       <.simple_table items={@totps} count={Enum.count([])} title={gettext("Time-based OTPs")}>
         <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
         <:col field={:name} body_class="w-full" />
         <:col actions></:col>
-        <:actions :let={identity}>
-          <.icon_button
-            to={~p"/users/#{@actor}/edit/identity/#{identity}/delete"}
-            size="sm"
-            icon="custom-trash"
-            color="light"
-            title={gettext("Remove")}
-            link_type="live_patch"
-          />
-          <.icon_button
-            to={~p"/users/#{@actor}/edit/identity/#{identity}/edit"}
-            size="sm"
-            icon="custom-edit"
-            color="light"
-            title={gettext("Edit")}
-            link_type="live_patch"
-          />
-        </:actions>
       </.simple_table>
     </div>
   </.form>

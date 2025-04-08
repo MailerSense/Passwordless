@@ -56,19 +56,31 @@ defmodule Passwordless.Email.Adapter.SES do
   defp prepare_source(request, %Email{}), do: request
 
   defp prepare_source_arn(request, %Email{provider_options: %{domain: %Domain{} = domain}}) do
-    Map.put(request, "SourceArn", Domain.arn(domain))
+    Map.put(
+      request,
+      "SourceArn",
+      Domain.arn(domain, Passwordless.config([:aws, :region]), Passwordless.config([:aws, :account]))
+    )
   end
 
   defp prepare_source_arn(request, %Email{}), do: request
 
   defp prepare_from_arn(request, %Email{provider_options: %{domain: %Domain{} = domain}}) do
-    Map.put(request, "FromArn", Domain.arn(domain))
+    Map.put(
+      request,
+      "FromArn",
+      Domain.arn(domain, Passwordless.config([:aws, :region]), Passwordless.config([:aws, :account]))
+    )
   end
 
   defp prepare_from_arn(request, %Email{}), do: request
 
   defp prepare_return_path_arn(request, %Email{provider_options: %{domain: %Domain{} = domain}}) do
-    Map.put(request, "ReturnPathArn", Domain.arn(domain))
+    Map.put(
+      request,
+      "ReturnPathArn",
+      Domain.arn(domain, Passwordless.config([:aws, :region]), Passwordless.config([:aws, :account]))
+    )
   end
 
   defp prepare_return_path_arn(request, %Email{}), do: request

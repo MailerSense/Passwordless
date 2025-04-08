@@ -420,6 +420,30 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create index(:magic_link_mappings, [:app_id])
     create unique_index(:magic_link_mappings, [:magic_link_id])
 
+    ## Billing items
+
+    create table(:billing_items, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :kind, :string, null: false
+      add :name, :string, null: false
+      add :period_start, :utc_datetime_usec, null: false
+      add :period_end, :utc_datetime_usec, null: false
+      add :amount, :integer, null: false, default: 0
+      add :amount_max, :integer, null: false, default: 0
+      add :base_cost, :integer, null: false, default: 0
+      add :added_cost, :integer, null: false, default: 0
+      add :total_cost, :integer, null: false, default: 0
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+      add :org_id, references(:orgs, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create index(:billing_items, [:app_id])
+    create index(:billing_items, [:org_id])
+
     ## Activity Log
 
     create table(:activity_logs, primary_key: false) do
