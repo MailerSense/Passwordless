@@ -18,7 +18,7 @@
         field={@form[:sender]}
         label={gettext("Sender email")}
         suffix={Domain.email_suffix(@domain)}
-        disabled={not @enabled}
+        disabled={not @enabled or Domain.system?(@domain)}
         required
         wrapper_class="mb-0!"
       />
@@ -27,7 +27,7 @@
       Do you want to send emails from your own domain?
       <.a
         to={~p"/domain"}
-        label={gettext("Set up custom domain")}
+        label={gettext("Set up domain")}
         style="link"
         class="inline"
         link_type="live_redirect"

@@ -209,7 +209,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     |> Action.preload_actor()
   end
 
-  defp update_top_actions(socket, %Action{name: action_name, state: state} = action) do
+  defp update_top_actions(socket, %Action{name: action_name, state: state}) do
     update(socket, :top_actions, fn top_actions ->
       Enum.map(top_actions, fn
         %{key: ^action_name, items: items, value: value} = top_action ->

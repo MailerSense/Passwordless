@@ -5,7 +5,6 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   import PasswordlessWeb.SettingsLayoutComponent
 
   alias Passwordless.Accounts.User
-  alias Passwordless.App
   alias Passwordless.Domain
   alias Passwordless.Repo
 
@@ -15,28 +14,37 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   end
 
   @impl true
-  def handle_params(_params, _url, socket) do
-    case Repo.preload(socket.assigns.current_app, :email_domain) do
-      %App{email_domain: %Domain{purpose: :email} = domain} = app ->
-        records = Passwordless.list_domain_record(domain)
-        changeset = Passwordless.change_app(app)
+  def handle_params(params, _url, socket) do
+    current_app = Repo.preload(socket.assigns.current_app, [:email_domain, :tracking_domain])
+    changeset = Passwordless.change_app(current_app)
 
-        {:noreply,
-         socket
-         |> assign(mode: :edit, domain: domain, records: records, current_app: app)
-         |> assign_form(changeset)
-         |> apply_action(socket.assigns.live_action)}
+    domain_kind =
+      case Map.get(params, "kind", "email") do
+        "email" -> :email_domain
+        "tracking" -> :tracking_domain
+        _ -> nil
+      end
 
-      _ ->
-        domain = Ecto.build_assoc(socket.assigns.current_app, :email_domain)
-        changeset = Passwordless.change_domain(domain)
+    domain_assigns =
+      case {socket.assigns.live_action, domain_kind} do
+        {a, :email_domain} when a in [:change, :dns] -> [domain: current_app.email_domain]
+        {a, :tracking_domain} when a in [:change, :dns] -> [domain: current_app.tracking_domain]
+        {:new, :email_domain} -> [domain: Ecto.build_assoc(current_app, :email_domain)]
+        {:new, :tracking_domain} -> [domain: Ecto.build_assoc(current_app, :tracking_domain)]
+        _ -> []
+      end
 
-        {:noreply,
-         socket
-         |> assign(mode: :new, domain: domain)
-         |> assign_form(changeset)
-         |> apply_action(socket.assigns.live_action)}
-    end
+    {:noreply,
+     socket
+     |> assign(
+       current_app: current_app,
+       domain_kind: domain_kind,
+       email_domain: current_app.email_domain,
+       tracking_domain: current_app.tracking_domain
+     )
+     |> assign(domain_assigns)
+     |> assign_form(changeset)
+     |> apply_action(socket.assigns.live_action)}
   end
 
   @impl true
@@ -60,57 +68,6 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   end
 
   @impl true
-  def handle_event("validate_domain", %{"domain" => domain_params}, socket) do
-    case socket.assigns[:mode] do
-      :new ->
-        changeset =
-          socket.assigns.domain
-          |> Passwordless.change_domain(domain_params)
-          |> Map.put(:action, :validate)
-
-        {:noreply, assign_form(socket, changeset)}
-
-      :edit ->
-        {:noreply, socket}
-    end
-  end
-
-  @impl true
-  def handle_event("save_domain", %{"domain" => domain_params}, socket) do
-    case socket.assigns[:mode] do
-      :new ->
-        case Passwordless.create_email_domain(socket.assigns.current_app, domain_params) do
-          {:ok, domain} ->
-            records =
-              for r <- default_domain_records(domain.name) do
-                {:ok, r} = Passwordless.create_domain_record(domain, r)
-                r
-              end
-
-            changeset = Passwordless.change_domain(domain)
-
-            socket =
-              socket
-              |> put_toast(
-                :info,
-                gettext("Domain added. Please add required DNS records in your domain provider."),
-                title: gettext("Success")
-              )
-              |> assign(mode: :edit, domain: domain, records: records)
-              |> assign_form(changeset)
-
-            {:noreply, socket}
-
-          {:error, %Ecto.Changeset{} = changeset} ->
-            {:noreply, assign_form(socket, changeset)}
-        end
-
-      :edit ->
-        {:noreply, socket}
-    end
-  end
-
-  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
@@ -127,6 +84,13 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
     assign(socket,
       page_title: gettext("Domain"),
       page_subtitle: gettext("Manage domain.")
+    )
+  end
+
+  defp apply_action(socket, :new) do
+    assign(socket,
+      page_title: gettext("New domain"),
+      page_subtitle: gettext("Register your own domain to improve deliverability of Email OTPs and Magic Links.")
     )
   end
 
@@ -171,37 +135,6 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
       override: true,
       class: "pc-field-badge"
     }
-
-  defp default_domain_records(domain) do
-    {:ok, %{subdomain: subdomain}} = Domainatrex.parse(domain)
-
-    [
-      %{kind: :txt, name: "envelope.#{subdomain}", value: "v=spf1 include:amazonses.com ~all"},
-      %{
-        kind: :txt,
-        name: "envelope.#{subdomain}",
-        value: "v=DMARC1; p=none; rua=mailto:dmarc@mailersense.com;"
-      },
-      %{
-        kind: :cname,
-        name: "6gofkzgsmtm3puhejogwvpq4hdulyhbt._domainkey.#{subdomain}",
-        value: "6gofkzgsmtm3puhejogwvpq4hdulyhbt.dkim.amazonses.com",
-        verified: true
-      },
-      %{
-        kind: :cname,
-        name: "4pjglljley3rptdd6x6jiukdffssnfj4._domainkey.#{subdomain}",
-        value: "4pjglljley3rptdd6x6jiukdffssnfj4.dkim.amazonses.com",
-        verified: true
-      },
-      %{
-        kind: :cname,
-        name: "vons5ikwlowq2o4k53modgl3wtfi4eqd._domainkey.#{subdomain}",
-        value: "vons5ikwlowq2o4k53modgl3wtfi4eqd.dkim.amazonses.com",
-        verified: true
-      }
-    ]
-  end
 
   defp save_app(socket, app_params) do
     case Passwordless.update_app(socket.assigns.current_app, app_params) do

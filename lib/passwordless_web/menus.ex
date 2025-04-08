@@ -328,7 +328,7 @@ defmodule PasswordlessWeb.Menus do
   def get_link(:use_cases = name, _user) do
     %{
       name: name,
-      label: gettext("Use cases"),
+      label: gettext("Use Cases"),
       path: ~p"/use-cases",
       icon: "remix-briefcase-line",
       link_type: "live_patch"

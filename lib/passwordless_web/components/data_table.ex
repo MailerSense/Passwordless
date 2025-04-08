@@ -7,7 +7,6 @@ defmodule PasswordlessWeb.Components.DataTable do
   use Gettext, backend: PasswordlessWeb.Gettext
 
   import PasswordlessWeb.Components.Badge
-  import PasswordlessWeb.Components.Button
   import PasswordlessWeb.Components.Field
   import PasswordlessWeb.Components.Pagination
   import PasswordlessWeb.Components.Table
@@ -206,7 +205,6 @@ defmodule PasswordlessWeb.Components.DataTable do
   end
 
   slot :actions, required: false
-  slot :header_actions, required: false
   slot :if_empty, required: false
 
   def stream_table(assigns) do
@@ -316,7 +314,6 @@ defmodule PasswordlessWeb.Components.DataTable do
   end
 
   slot :actions, required: false
-  slot :header_actions, required: false
   slot :if_empty, required: false
 
   def simple_table(assigns) do
@@ -324,7 +321,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
     ~H"""
     <section class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
-      <.table_header :if={@title} title={@title} count={@count} actions={@header_actions} />
+      <.table_header :if={@title} title={@title} count={@count} />
       <.table class="pc-data-table">
         <thead class="pc-table__thead-striped">
           <.tr>
@@ -436,18 +433,11 @@ defmodule PasswordlessWeb.Components.DataTable do
               icon="custom-search"
               type="search"
               field={f2[:value]}
-              class="md:min-w-[200px] xl:min-w-[400px] h-12"
+              class="md:max-w-[300px] lg:min-w-[500px] h-12"
               label=""
               clearable={true}
               wrapper_class="mb-0!"
               placeholder="Search"
-            />
-            <.button
-              color="light"
-              label={gettext("Filter")}
-              icon="remix-filter-3-line"
-              link_type="live_patch"
-              phx-click="open_filters"
             />
           </div>
         <% end %>

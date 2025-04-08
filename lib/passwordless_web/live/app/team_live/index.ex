@@ -288,7 +288,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
 
   defp role_badge(assigns) do
     details =
-      Enum.find_value(Roles.org_role_descriptions(), fn {role, {description, color}} ->
+      Enum.find_value(Roles.org_role_descriptions(), fn {role, {_description, color}} ->
         if role == assigns.role do
           %{role: Phoenix.Naming.humanize(role), color: color}
         end

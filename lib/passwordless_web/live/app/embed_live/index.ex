@@ -3,10 +3,9 @@ defmodule PasswordlessWeb.App.EmbedLive.Index do
   use PasswordlessWeb, :live_view
 
   @tabs [
-    install: PasswordlessWeb.App.EmbedLive.API,
+    install: PasswordlessWeb.App.EmbedLive.Install,
     api: PasswordlessWeb.App.EmbedLive.API,
-    login: PasswordlessWeb.App.EmbedLive.API,
-    guard: PasswordlessWeb.App.EmbedLive.API
+    ui: PasswordlessWeb.App.EmbedLive.UI
   ]
 
   @impl true

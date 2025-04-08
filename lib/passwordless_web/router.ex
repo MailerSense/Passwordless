@@ -151,8 +151,7 @@ defmodule PasswordlessWeb.Router do
       # Embed & API
       live "/embed/install", App.EmbedLive.Index, :install
       live "/embed/api", App.EmbedLive.Index, :api
-      live "/embed/login", App.EmbedLive.Index, :login
-      live "/embed/guard", App.EmbedLive.Index, :guard
+      live "/embed/ui", App.EmbedLive.Index, :ui
 
       # Team
       live "/team", App.TeamLive.Index, :index
@@ -169,8 +168,9 @@ defmodule PasswordlessWeb.Router do
 
       # Domain
       live "/domain", App.DomainLive.Index, :index
-      live "/domain/dns", App.DomainLive.Index, :dns
-      live "/domain/change", App.DomainLive.Index, :change
+      live "/domain/:kind/dns", App.DomainLive.Index, :dns
+      live "/domain/:kind/new", App.DomainLive.Index, :new
+      live "/domain/:kind/change", App.DomainLive.Index, :change
 
       # Billing
       live "/billing", App.BillingLive.Index, :index

@@ -2,8 +2,6 @@ defmodule PasswordlessWeb.App.ActorLive.ImportComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
-  @upload_provider :passwordless |> Application.compile_env!(:media_upload) |> Keyword.fetch!(:adapter)
-
   @impl true
   def update(assigns, socket) do
     {:ok,

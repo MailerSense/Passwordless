@@ -12,7 +12,7 @@ defmodule PasswordlessWeb.Components.Link do
 
   attr :styled, :boolean, default: false, doc: "title your link"
 
-  attr :style, :string, default: "none", values: ["link", "delete", "none"]
+  attr :style, :string, default: "none", values: ["link", "sensitive", "delete", "none"]
 
   attr :disabled, :boolean,
     default: false,
@@ -112,11 +112,14 @@ defmodule PasswordlessWeb.Components.Link do
 
   defp styled?("link"), do: true
   defp styled?("delete"), do: true
+  defp styled?("sensitive"), do: true
   defp styled?(_), do: false
 
   defp link_class("link", true), do: "pc-link--styled__disabled"
   defp link_class("delete", true), do: "pc-link--styled__disabled"
+  defp link_class("sensitive", true), do: "pc-link--styled__disabled"
   defp link_class("link", false), do: "pc-link--styled"
   defp link_class("delete", false), do: "pc-link--delete"
+  defp link_class("sensitive", false), do: "pc-link--sensitive"
   defp link_class(_, _), do: nil
 end

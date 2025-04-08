@@ -58,10 +58,10 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
-        name: :login,
+        name: :ui,
         label: "UI Components",
         icon: "remix-window-line",
-        path: ~p"/embed/login",
+        path: ~p"/embed/ui",
         link_type: "live_patch"
       }
     ]
@@ -178,23 +178,6 @@ defmodule PasswordlessWeb.Helpers do
         name: :code,
         label: gettext("Code"),
         path: ~p"/emails/#{email_template}/#{language}/code",
-        link_type: "live_patch"
-      }
-    ]
-  end
-
-  def domain_menu_items do
-    [
-      %{
-        name: :sending,
-        label: gettext("Email"),
-        path: ~p"/domain/send",
-        link_type: "live_patch"
-      },
-      %{
-        name: :branding,
-        label: gettext("Tracking"),
-        path: ~p"/domain/track",
         link_type: "live_patch"
       }
     ]

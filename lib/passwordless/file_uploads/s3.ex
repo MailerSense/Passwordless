@@ -98,7 +98,6 @@ defmodule Passwordless.FileUploads.S3 do
 
   @spec presign_upload(map(), map()) :: {:ok, map(), map()} | {:error, term()}
   def presign_upload(entry, socket) do
-    uploads = socket.assigns.uploads
     bucket = get_bucket()
     key = @prefix <> Util.random_string(32) <> Path.extname(entry.client_name)
 
