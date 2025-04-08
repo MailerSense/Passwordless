@@ -18,6 +18,35 @@ defmodule PasswordlessWeb.Knowledge.PricingLive do
   def render(assigns) do
     ~H"""
     <.layout current_user={@current_user} current_page={:pricing} current_section={:knowledge}>
+      <div class="flex flex-col gap-6">
+        <.box card>
+          <.form_header title={gettext("Monthly Active Users (MAUs)")} no_margin />
+          <.p>
+            test
+          </.p>
+        </.box>
+
+        <.box card>
+          <.form_header title={gettext("Email messages")} no_margin />
+          <.p>
+            test
+          </.p>
+        </.box>
+
+        <.box card>
+          <.form_header title={gettext("SMS messages")} no_margin />
+          <.p>
+            test
+          </.p>
+        </.box>
+
+        <.box card>
+          <.form_header title={gettext("WhatsApp messages")} no_margin />
+          <.p>
+            test
+          </.p>
+        </.box>
+      </div>
     </.layout>
     """
   end

@@ -83,6 +83,13 @@ defmodule Passwordless.Domain do
   end
 
   @doc """
+  Check if the domain is verified.
+  """
+  def verified?(%__MODULE__{verified: verified}) do
+    verified
+  end
+
+  @doc """
   Get the domain by tags.
   """
   def get_by_tags(query \\ __MODULE__, tags) when is_list(tags) do

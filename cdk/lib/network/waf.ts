@@ -84,11 +84,11 @@ export class WAF extends Construct {
     })) as CfnWebACL.RuleProperty[];
 
     this.waf = new CfnWebACL(this, `${name}-waf`, {
+      name: `${name}-waf`,
+      scope: "REGIONAL",
       defaultAction: {
         allow: {},
       },
-      name: `${name}-waf`,
-      scope: "REGIONAL",
       description: `Web Application Firewall for ${name}`,
       visibilityConfig: {
         cloudWatchMetricsEnabled: true,

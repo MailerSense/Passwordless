@@ -130,4 +130,8 @@ if config_env() == :prod do
       bucket: System.get_env("CUSTOMER_MEDIA_BUCKET"),
       cdn_url: System.get_env("CUSTOMER_MEDIA_CDN_URL")
     ]
+
+  config :passwordless, :aws,
+    region: System.get_env("AWS_REGION"),
+    account: System.get_env("AWS_ACCOUNT")
 end

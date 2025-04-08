@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.EmbedLive.API do
+defmodule PasswordlessWeb.App.EmbedLive.UI do
   @moduledoc false
 
   use PasswordlessWeb, :live_component

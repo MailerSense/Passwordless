@@ -243,6 +243,13 @@ export class PasswordlessTools extends cdk.Stack {
       platform: Platform.LINUX_ARM64,
     });
 
+    const appEnv = {
+      AWS_REGION: cdk.Stack.of(this).region,
+      AWS_ACCOUNT: cdk.Stack.of(this).account,
+      CUSTOMER_MEDIA_BUCKET: customerMedia.bucket.bucketName,
+      CUSTOMER_MEDIA_CDN_URL: `https://${cdnDomain}/`,
+    };
+
     const appContainer: AppContainer = {
       image: ContainerImage.fromDockerImageAsset(cachedImage),
       secrets: {
@@ -280,9 +287,8 @@ export class PasswordlessTools extends cdk.Stack {
       environment: {
         // Static config
         ...envLookup.appConfig,
-        // S3
-        CUSTOMER_MEDIA_BUCKET: customerMedia.bucket.bucketName,
-        CUSTOMER_MEDIA_CDN_URL: `https://${cdnDomain}/`,
+        // Dynamic config
+        ...appEnv,
       },
       stopTimeout: Duration.seconds(30),
       containerPort: 8000,

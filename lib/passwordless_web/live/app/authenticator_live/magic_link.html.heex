@@ -12,14 +12,13 @@
       Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in. The link is valid for a limited time and can only be used once.
     </.p>
     <.form_separator />
-
     <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2 mb-6">
       <.field field={@form[:sender_name]} disabled={not @enabled} required wrapper_class="mb-0!" />
       <.field
         field={@form[:sender]}
         label={gettext("Sender email")}
         suffix={Domain.email_suffix(@domain)}
-        disabled={not @enabled}
+        disabled={not @enabled or Domain.system?(@domain)}
         required
         wrapper_class="mb-0!"
       />
@@ -28,7 +27,7 @@
       Do you want to send emails from your own domain?
       <.a
         to={~p"/domain"}
-        label={gettext("Set up custom domain")}
+        label={gettext("Set up domain")}
         style="link"
         class="inline"
         link_type="live_redirect"

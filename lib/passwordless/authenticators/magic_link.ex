@@ -74,6 +74,11 @@ defmodule Passwordless.Authenticators.MagicLink do
   defp validate_sender(changeset, opts) do
     case Keyword.get(opts, :domain) do
       %Domain{purpose: :email} = domain ->
+        changeset =
+          if Domain.system?(domain),
+            do: put_change(changeset, :sender, "verify"),
+            else: changeset
+
         ChangesetExt.validate_email(changeset, :sender, suffix: domain.name)
 
       _ ->

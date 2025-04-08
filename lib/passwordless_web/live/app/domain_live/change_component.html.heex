@@ -25,7 +25,7 @@
         type="submit"
         form="change-domain-form"
         disabled={not @form.source.valid?}
-        label={gettext("Change")}
+        label={if @live_action == :change, do: gettext("Change"), else: gettext("Register")}
       />
     </:actions>
   </.slide_over>

@@ -9,7 +9,7 @@ defmodule Passwordless.Activity.Filter do
 
   def apply(query \\ Log, question) do
     is_uuid? =
-      case Uniq.UUID.cast(question) do
+      case Uniq.UUID.cast(question, %{format: :default}) do
         {:ok, _} -> true
         _ -> false
       end

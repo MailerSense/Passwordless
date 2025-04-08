@@ -67,19 +67,19 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Actor do
 
   # Private
 
-  defp add_email(%Actor{email: %Email{} = email} = actor) do
+  defp add_email(%Actor{email: %Email{} = email}) do
     %{email: email.address}
   end
 
   defp add_email(%Actor{}), do: %{}
 
-  defp add_phone(%Actor{phone: %Phone{} = phone} = actor) do
+  defp add_phone(%Actor{phone: %Phone{} = phone}) do
     %{phone: phone.canonical}
   end
 
   defp add_phone(%Actor{}), do: %{}
 
-  defp add_properties(%Actor{properties: properties} = actor) when is_map(properties) do
+  defp add_properties(%Actor{properties: properties}) when is_map(properties) do
     %{properties: properties}
   end
 
