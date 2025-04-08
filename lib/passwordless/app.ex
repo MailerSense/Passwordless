@@ -29,6 +29,8 @@ defmodule Passwordless.App do
       :display_name,
       :primary_button_color,
       :secondary_button_color,
+      :email_configuration_set,
+      :email_tracking,
       :inserted_at,
       :updated_at,
       :deleted_at
@@ -46,6 +48,8 @@ defmodule Passwordless.App do
     field :display_name, :string
     field :primary_button_color, :string, default: "#1570EF"
     field :secondary_button_color, :string, default: "#FFFFFF"
+    field :email_configuration_set, :string
+    field :email_tracking, :boolean, default: false
 
     has_one :email_domain, Domain, where: [purpose: :email]
     has_one :tracking_domain, Domain, where: [purpose: :tracking]
@@ -86,6 +90,8 @@ defmodule Passwordless.App do
     display_name
     primary_button_color
     secondary_button_color
+    email_configuration_set
+    email_tracking
     org_id
   )a
   @required_fields @fields -- [:logo]

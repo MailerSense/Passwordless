@@ -45,9 +45,9 @@ defmodule PasswordlessWeb.Components.Field do
 
   attr :type, :string,
     default: "text",
-    values:
-      ~w(checkbox checkbox-group color date datetime-local email file hidden month number password
-               range radio-group radio-card radio-card-group search select switch tel text textarea time url week editor editor-select),
+    values: ~w(checkbox checkbox-group color date datetime-local email file hidden month number password
+               range radio-group radio-card radio-card-group search select switch tel text textarea
+               time url week editor editor-select),
     doc: "the type of input"
 
   attr :size, :string,
@@ -677,6 +677,79 @@ defmodule PasswordlessWeb.Components.Field do
             </span>
           </button>
         </div>
+      </div>
+      <.field_error :for={msg <- @errors}>{msg}</.field_error>
+      <.field_success :for={msg <- @successes}>{msg}</.field_success>
+      <.field_help_text help_text={@help_text} />
+    </.field_wrapper>
+    """
+  end
+
+  def field(%{type: type, clearable: true} = assigns) when type in ["text", "search", "url", "email"] do
+    assigns =
+      assign(assigns, class: [assigns.class, get_class_for_type(assigns.type, assigns.size)])
+
+    ~H"""
+    <.field_wrapper
+      successes={@successes}
+      errors={@errors}
+      name={@name}
+      class={@wrapper_class}
+      no_margin={@no_margin}
+    >
+      <!-- Field Label -->
+      <.field_label :if={Util.present?(@label)} required={@required} for={@id} class={@label_class}>
+        {@label}
+      </.field_label>
+      <!-- Searchable Field Wrapper -->
+      <div
+        class="pc-clearable-field-wrapper"
+        x-data="{ showClearButton: false }"
+        x-init="showClearButton = $refs.clearInput.value.length > 0"
+      >
+        <span :if={Util.present?(@prefix)} class="pc-field-prefix">
+          {@prefix}
+        </span>
+        <!-- Input Field -->
+        <div class="relative">
+          <div class="pc-field-icon">
+            <Icon.icon name={@icon} class={@icon_class} />
+          </div>
+          <input
+            x-ref="clearInput"
+            type={@type || "text"}
+            name={@name}
+            id={@id}
+            value={Phoenix.HTML.Form.normalize_value(@type || "text", @value)}
+            class={[
+              @class,
+              "pc-field-icon__padding",
+              "pc-clearable-field-input",
+              if(Util.present?(@prefix), do: "rounded-l-none!")
+            ]}
+            disabled={@disabled}
+            x-on:input="showClearButton = $event.target.value.length > 0"
+            {@rest}
+          />
+        </div>
+        <!-- Clear Button -->
+        <button
+          type="button"
+          class="pc-clearable-field-button"
+          x-show="showClearButton"
+          x-on:click="
+              $refs.clearInput.value = '';
+              showClearButton = false;
+              $refs.clearInput.dispatchEvent(new Event('input', { bubbles: true }));
+            "
+          style="display: none;"
+          aria-label="Clear input"
+        >
+          <!-- Clear Icon -->
+          <span class="pc-clearable-field-icon-container">
+            <Icon.icon name="remix-close-line" class="pc-clearable-field-icon" />
+          </span>
+        </button>
       </div>
       <.field_error :for={msg <- @errors}>{msg}</.field_error>
       <.field_success :for={msg <- @successes}>{msg}</.field_success>

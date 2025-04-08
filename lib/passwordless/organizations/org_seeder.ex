@@ -28,17 +28,25 @@ defmodule Passwordless.Organizations.OrgSeeder do
   end
 
   def root_org_local(%User{} = user, attrs \\ %{}) do
-    attrs = Map.merge(random_org_attributes(), attrs)
-    attrs = Map.put(attrs, :name, "Passwordless GmbH")
-    attrs = Map.put(attrs, :tags, [:admin])
+    attrs =
+      Map.merge(
+        %{
+          tags: [:system, :default, :admin],
+          name: "OpenTide GmbH",
+          email: "passwordless@opentide.com"
+        },
+        attrs
+      )
 
     {:ok, org, _membership} = Organizations.create_org_with_owner(user, attrs)
 
     {:ok, app} =
       Passwordless.create_app(org, %{
-        "name" => "Demo App",
-        "website" => "https://google.com",
-        "display_name" => "Demo App"
+        name: "Demo App",
+        website: "https://google.com",
+        display_name: "Demo App",
+        email_configuration_set: "default-config-set",
+        email_tracking: false
       })
 
     {:ok, auth_token, _signed_api_key} =
@@ -49,9 +57,10 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
     {:ok, domain} =
       Passwordless.create_email_domain(app, %{
-        name: "auth.passwordlesstools.com",
+        name: "auth.eu.passwordlesstools.com",
         kind: :sub_domain,
-        tags: [:system, :default]
+        tags: [:system, :default],
+        purpose: :email
       })
 
     {:ok, magic_link_template} = Passwordless.seed_email_template(app, :magic_link_sign_in, :en)

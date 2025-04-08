@@ -2,7 +2,12 @@
   <div class="flex flex-col gap-6">
     <%= case @mode do %>
       <% :new -> %>
-        <.form id="new-domain-form" for={@form} phx-submit="save" phx-change="validate">
+        <.form
+          id="new-domain-form"
+          for={@form}
+          phx-submit="save_domain"
+          phx-change="validate_domain"
+        >
           <.field
             field={@form[:name]}
             label={gettext("Domain")}
@@ -22,30 +27,84 @@
           </div>
         </.form>
       <% :edit -> %>
-        <.form id="edit-domain-form" for={@form} phx-submit="save" phx-change="validate">
-          <.field
-            field={@form[:name]}
-            label={gettext("Domain")}
-            badge={domain_state_badge(@domain)}
-            readonly
-          />
-        </.form>
+        <.form_header title={gettext("Email branding")} no_margin />
         <.p>
           Domain used for email sending ensures your emails are branded correctly and are less likely to be marked as spam. You can add a domain to your app, and we'll guide you through the process of verifying it.
         </.p>
-        <div class="flex items-center justify-between gap-3">
+        <.field
+          name="domain"
+          value={@domain.name}
+          label={gettext("Domain")}
+          badge={domain_state_badge(@domain)}
+          readonly
+          wrapper_class="mb-0!"
+        />
+        <div class="flex items-center gap-3 flex-wrap">
           <.a
             to={~p"/domain/dns"}
             label={gettext("Get DNS records")}
-            styled
+            style="link"
             link_type="live_patch"
           />
-
-          <.button
+          <.a
             to={~p"/domain/change"}
-            icon="remix-cloud-line"
-            color="primary"
-            label={gettext("Change domain")}
+            label={gettext("Use another domain")}
+            style="link"
+            link_type="live_patch"
+          />
+        </div>
+        <.form_separator no_margin />
+        <.form_header title={gettext("Email tracking")} no_margin />
+        <.p>
+          Events such as email opens and clicks are tracked using a tracking pixel. This works best if you set up your own domain those pixels {gettext(
+            "e.g. auth.%{root}",
+            root: URI.parse(@current_app.website).host
+          )}
+        </.p>
+        <.form id="edit-app-form" for={@form} phx-submit="save_app" phx-change="validate_app">
+          <.field
+            type="checkbox"
+            field={@form[:email_tracking]}
+            help_text={
+              gettext(
+                "Track users who successfully received your email and opened it in their email clients."
+              )
+            }
+          />
+        </.form>
+        <.field
+          :if={@email_tracking}
+          name="domain"
+          value={@domain.name}
+          label={gettext("Domain")}
+          badge={domain_state_badge(@domain)}
+          readonly
+          wrapper_class="mb-0!"
+        />
+        <div :if={@email_tracking} class="flex items-center gap-3 flex-wrap">
+          <.a
+            to={~p"/domain/dns"}
+            label={gettext("Get DNS records")}
+            style="link"
+            link_type="live_patch"
+          />
+          <.a
+            to={~p"/domain/change"}
+            label={gettext("Use another domain")}
+            style="link"
+            link_type="live_patch"
+          />
+        </div>
+        <.form_separator no_margin />
+        <.form_header title={gettext("Danger zone")} no_margin />
+        <.p>
+          Email domains can be changed or removed at any time. Be aware that a domain will continue to be active for 1 day after you remove it. This is to ensure that any emails sent during that time are not lost.
+        </.p>
+        <div class="flex items-center gap-3 flex-wrap">
+          <.a
+            to={~p"/domain/change"}
+            label={gettext("Delete domain")}
+            style="delete"
             link_type="live_patch"
           />
         </div>

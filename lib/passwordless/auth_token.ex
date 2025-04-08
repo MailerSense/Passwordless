@@ -13,7 +13,7 @@ defmodule Passwordless.AuthToken do
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
 
-  @size 12
+  @size 16
   @states ~w(active revoked)a
 
   @derive {

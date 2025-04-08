@@ -115,6 +115,10 @@ defmodule PasswordlessWeb.User.SecurityLive do
     ~H"""
     <%= if @has_password do %>
       <.form id="submit-totp-form" for={@user_form} phx-submit="submit_totp" phx-change="change_totp">
+        <.form_header title={gettext("Security")} />
+        <.p class="mb-6">
+          Enabling two-factor authentication (2FA) adds an extra layer of security to your account. After enabling 2FA, you will need to enter a code from your authentication app every time you log in.
+        </.p>
         <.field
           type="password"
           field={@user_form[:current_password]}
@@ -132,7 +136,7 @@ defmodule PasswordlessWeb.User.SecurityLive do
             to={~p"/password/change"}
             type="button"
             link_type="live_patch"
-            styled
+            style="link"
             label={gettext("Learn about 2FA")}
           />
           <.button

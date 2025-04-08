@@ -192,6 +192,7 @@ defmodule PasswordlessWeb.Router do
       live "/organization/new", Org.EditLive, :new
 
       # Knowledge
+      live "/pricing", Knowledge.PricingLive, :index
       live "/use-cases", Knowledge.UseCaseLive, :index
     end
   end

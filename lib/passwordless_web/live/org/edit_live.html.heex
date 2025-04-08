@@ -1,24 +1,9 @@
 <.tabbed_settings_layout current_page={:organization} current_user={@current_user}>
-  <:action>
-    <.dropdown
-      size="lg"
-      label={PasswordlessWeb.Helpers.user_org_name(@current_user)}
-      label_icon="remix-building-line"
-    >
-      <.dropdown_menu_item link_type="live_redirect" to={~p"/organization/new"}>
-        <.icon name="remix-add-line" class="w-5 h-5" />
-        {gettext("New organization")}
-      </.dropdown_menu_item>
-      <.form :for={org <- @org_menu_items} for={nil} action={~p"/org/switch"} method="post">
-        <.input type="hidden" name="org_id" value={org.id} />
-        <button class="pc-dropdown__menu-item">
-          <.icon name="remix-building-line" class="w-5 h-5" />
-          <span class="line-clamp-1">{org.name}</span>
-        </button>
-      </.form>
-    </.dropdown>
-  </:action>
   <.form id="edit-org-form" for={@form} phx-submit="save" phx-change="validate">
+    <.form_header title={gettext("Organization")} />
+    <.p class="mb-6">
+      Organizations represent the top level in your hierarchy. You'll be able to bundle a collection of teams within an organization as well as give organization-wide permissions to users.
+    </.p>
     <.field
       field={@form[:name]}
       placeholder={gettext("e.g. YourOrg")}
@@ -37,7 +22,7 @@
       <.a
         to={~p"/organization/new"}
         label={gettext("Create new organization")}
-        styled
+        style="link"
         link_type="live_redirect"
       />
       <.button

@@ -13,14 +13,19 @@
         )}
       </.p>
       <div class="flex items-center gap-3 flex-wrap">
-        <.a to={~p"/reports"} label={gettext("Manage plan")} styled link_type="live_redirect" />
+        <.a
+          to={~p"/reports"}
+          label={gettext("Manage plan")}
+          style="link"
+          link_type="live_redirect"
+        />
         <.a
           to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
           label={gettext("Contact support")}
-          styled
+          style="link"
           link_type="a"
         />
-        <.a label={gettext("Download billing data")} styled download link_type="a" />
+        <.a label={gettext("Download billing data")} style="link" download link_type="a" />
       </div>
     </.box>
     <.simple_table

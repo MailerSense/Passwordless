@@ -37,11 +37,11 @@
         <.field type="checkbox" field={@form[:active]} />
         <.p>
           <%= if @user_active do %>
-            {gettext("User is active and can authenticate with the %{app}.",
+            {gettext("User is active and can authenticate with %{app}.",
               app: user_app_name(@current_user)
             )}
           <% else %>
-            {gettext("User is locked and cannot authenticate with the %{app}.",
+            {gettext("User is locked and cannot authenticate with %{app}.",
               app: user_app_name(@current_user)
             )}
           <% end %>
@@ -74,7 +74,7 @@
           />
           <.a
             label={gettext("Finish editing properties")}
-            styled
+            style="link"
             link_type="a"
             phx-click="toggle_property_editor"
             disabled={not @form.source.valid?}
@@ -93,20 +93,20 @@
           <div class="flex items-center gap-3 flex-wrap">
             <.a
               label={gettext("Edit properties")}
-              styled
+              style="link"
               link_type="a"
               phx-click="toggle_property_editor"
               disabled={not @user_active}
             />
             <.a
               label={gettext("Add new email")}
-              styled
+              style="link"
               link_type="live_patch"
               to={~p"/users/#{@actor}/edit/email/new"}
             />
             <.a
               label={gettext("Add new phone")}
-              styled
+              style="link"
               link_type="live_patch"
               to={~p"/users/#{@actor}/edit/phone/new"}
             />
