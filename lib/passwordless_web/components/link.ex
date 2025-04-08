@@ -12,6 +12,8 @@ defmodule PasswordlessWeb.Components.Link do
 
   attr :styled, :boolean, default: false, doc: "title your link"
 
+  attr :style, :string, default: "none", values: ["link", "delete", "none"]
+
   attr :disabled, :boolean,
     default: false,
     doc: "disables the link. This will turn an <a> into a <button> (<a> tags can't be disabled)"
@@ -24,7 +26,7 @@ defmodule PasswordlessWeb.Components.Link do
 
     ~H"""
     <button
-      class={[link_class(@styled, @disabled), @class]}
+      class={[link_class(@style, @disabled), @class]}
       disabled={@disabled}
       title={@label || @title}
       aria-label={@label || @title}
@@ -32,7 +34,7 @@ defmodule PasswordlessWeb.Components.Link do
       {@rest}
     >
       {if @label, do: @label, else: render_slot(@inner_block)}
-      <.icon :if={@styled} name="remix-external-link-line" class="w-4 h-4" />
+      <.icon :if={styled?(@style)} name="remix-external-link-line" class="w-4 h-4" />
     </button>
     """
   end
@@ -46,14 +48,14 @@ defmodule PasswordlessWeb.Components.Link do
     ~H"""
     <.link
       href={@to}
-      class={[link_class(@styled, @disabled), @class]}
+      class={[link_class(@style, @disabled), @class]}
       title={@label || @title}
       aria-label={@label || @title}
       aria-disabled={@disabled}
       {@rest}
     >
       {if(@label, do: @label, else: render_slot(@inner_block))}
-      <.icon :if={@styled} name="remix-external-link-line" class="w-4 h-4" />
+      <.icon :if={styled?(@style)} name="remix-external-link-line" class="w-4 h-4" />
     </.link>
     """
   end
@@ -62,14 +64,14 @@ defmodule PasswordlessWeb.Components.Link do
     ~H"""
     <.link
       patch={@to}
-      class={[link_class(@styled, @disabled), @class]}
+      class={[link_class(@style, @disabled), @class]}
       title={@label || @title}
       aria-label={@label || @title}
       aria-disabled={@disabled}
       {@rest}
     >
       {if(@label, do: @label, else: render_slot(@inner_block))}
-      <.icon :if={@styled} name="remix-external-link-line" class="w-4 h-4" />
+      <.icon :if={styled?(@style)} name="remix-external-link-line" class="w-4 h-4" />
     </.link>
     """
   end
@@ -78,14 +80,14 @@ defmodule PasswordlessWeb.Components.Link do
     ~H"""
     <.link
       navigate={@to}
-      class={[link_class(@styled, @disabled), @class]}
+      class={[link_class(@style, @disabled), @class]}
       title={@label || @title}
       aria-label={@label || @title}
       aria-disabled={@disabled}
       {@rest}
     >
       {if(@label, do: @label, else: render_slot(@inner_block))}
-      <.icon :if={@styled} name="remix-external-link-line" class="w-4 h-4" />
+      <.icon :if={styled?(@style)} name="remix-external-link-line" class="w-4 h-4" />
     </.link>
     """
   end
@@ -93,7 +95,7 @@ defmodule PasswordlessWeb.Components.Link do
   def a(%{link_type: "button"} = assigns) do
     ~H"""
     <button
-      class={[link_class(@styled, @disabled), @class]}
+      class={[link_class(@style, @disabled), @class]}
       disabled={@disabled}
       title={@label || @title}
       aria-label={@label || @title}
@@ -101,14 +103,20 @@ defmodule PasswordlessWeb.Components.Link do
       {@rest}
     >
       {if @label, do: @label, else: render_slot(@inner_block)}
-      <.icon :if={@styled} name="remix-external-link-line" class="w-4 h-4" />
+      <.icon :if={styled?(@style)} name="remix-external-link-line" class="w-4 h-4" />
     </button>
     """
   end
 
   # Private
 
-  defp link_class(true, true), do: "pc-link--styled__disabled"
-  defp link_class(true, false), do: "pc-link--styled"
+  defp styled?("link"), do: true
+  defp styled?("delete"), do: true
+  defp styled?(_), do: false
+
+  defp link_class("link", true), do: "pc-link--styled__disabled"
+  defp link_class("delete", true), do: "pc-link--styled__disabled"
+  defp link_class("link", false), do: "pc-link--styled"
+  defp link_class("delete", false), do: "pc-link--delete"
   defp link_class(_, _), do: nil
 end

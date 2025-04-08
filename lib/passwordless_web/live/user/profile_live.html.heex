@@ -1,5 +1,9 @@
 <.tabbed_settings_layout current_page={:edit_profile} current_user={@current_user}>
   <.form id="edit-profile-form" for={@form} phx-submit="submit" phx-change="validate">
+    <.form_header title={gettext("Profile")} />
+    <.p class="mb-6">
+      Your profile information is used to personalize your experience. You can change your name and email address here. Your profile is distinct from your organization settings.
+    </.p>
     <.field
       field={@form[:name]}
       label={gettext("Name")}
@@ -9,7 +13,12 @@
     />
 
     <div class="flex items-center justify-between">
-      <.a to={~p"/edit-email"} label={gettext("Change your email")} styled link_type="live_patch" />
+      <.a
+        to={~p"/edit-email"}
+        label={gettext("Change your email")}
+        style="link"
+        link_type="live_patch"
+      />
       <.button
         icon="remix-save-line"
         label={gettext("Save")}

@@ -11,7 +11,6 @@ defmodule PasswordlessWeb.Components.DataTable do
   import PasswordlessWeb.Components.Field
   import PasswordlessWeb.Components.Pagination
   import PasswordlessWeb.Components.Table
-  import PasswordlessWeb.Components.Tabs
 
   alias PasswordlessWeb.Components.DataTable.Cell
   alias PasswordlessWeb.Components.DataTable.Filter
@@ -42,15 +41,12 @@ defmodule PasswordlessWeb.Components.DataTable do
     values: ["solid", "outline"],
     doc: "table variant"
 
-  attr :switch_items, :list, default: [], doc: "Items for the switch field"
-
   slot :col, required: true do
     attr :label, :string
     attr :class, :string
     attr :body_class, :string
     attr :field, :atom
     attr :sortable, :boolean
-    attr :switchable, :boolean
     attr :searchable, :boolean
     attr :filterable, :list
     attr :date_format, :string
@@ -82,13 +78,6 @@ defmodule PasswordlessWeb.Components.DataTable do
           _ -> nil
         end)
       )
-      |> assign(
-        :switch_field,
-        Enum.find_value(assigns.col, fn
-          %{switchable: true, field: field} -> field
-          _ -> nil
-        end)
-      )
       |> assign(:col, Enum.reject(assigns.col, fn col -> col[:searchable] end))
       |> assign_new(:filter_changeset, fn -> FilterSet.changeset(%FilterSet{}) end)
       |> assign_new(:base_url_params, fn -> %{} end)
@@ -104,15 +93,8 @@ defmodule PasswordlessWeb.Components.DataTable do
       phx-submit="update_filters"
       {form_assigns(@form_target)}
     >
-      <div :if={@search_field || @switch_field} class="flex items-center justify-between gap-3 mb-6">
-        <.table_search_bar
-          meta={@meta}
-          form={filter_form}
-          switch_field={@switch_field}
-          search_field={@search_field}
-          switch_items={@switch_items}
-        />
-
+      <div :if={@search_field} class="flex items-center justify-between gap-3 mb-6">
+        <.table_search_bar meta={@meta} form={filter_form} search_field={@search_field} />
         {render_slot(@header_actions)}
       </div>
       <section class={[@wrapper_class, @class]}>
@@ -441,43 +423,31 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   attr :form, :map, default: nil
   attr :meta, Flop.Meta, required: true
-  attr :switch_field, :atom, default: nil
   attr :search_field, :atom, default: nil
-  attr :switch_items, :list, default: []
 
   defp table_search_bar(assigns) do
     ~H"""
     <div class="flex items-center justify-between gap-3">
       <.inputs_for :let={f2} field={@form[:filters]}>
-        <%= if Phoenix.HTML.Form.input_value(f2, :field) == @switch_field do %>
-          <.tab_menu
-            mode="form"
-            field={f2[:value]}
-            name_field={f2[:field]}
-            menu_items={@switch_items}
-            current_tab={:all}
-            variant="buttons"
-          />
-        <% end %>
-
         <%= if Phoenix.HTML.Form.input_value(f2, :field) == @search_field do %>
           <div class="flex items-center gap-3">
             <.field field={f2[:field]} type="hidden" />
             <.field
               icon="custom-search"
+              type="search"
               field={f2[:value]}
-              class="md:min-w-[400px] h-12"
+              class="md:min-w-[200px] xl:min-w-[400px] h-12"
               label=""
+              clearable={true}
               wrapper_class="mb-0!"
               placeholder="Search"
             />
-
             <.button
               color="light"
-              label={gettext("Clear")}
+              label={gettext("Filter")}
               icon="remix-filter-3-line"
               link_type="live_patch"
-              phx-click="clear_filters"
+              phx-click="open_filters"
             />
           </div>
         <% end %>

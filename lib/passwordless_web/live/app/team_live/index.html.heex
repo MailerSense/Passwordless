@@ -77,11 +77,16 @@
       </:actions>
     </.simple_table>
 
+    <.form_separator no_margin />
+    <.form_header title={gettext("Invitations")} no_margin />
+    <.p>
+      You can invite new teammates to your organization. They will receive an email with a link to join. You can also resend or remove invitations.
+    </.p>
     <div class="flex items-center gap-3">
       <.a
         to={~p"/team/invite"}
         label={gettext("Invite teammate")}
-        styled
+        style="link"
         link_type="live_redirect"
       />
     </div>

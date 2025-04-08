@@ -71,7 +71,7 @@ defmodule Passwordless.Authenticators.MagicLink do
     |> validate_length(field, min: 1, max: 255)
   end
 
-  defp validate_sender(changeset, opts \\ []) do
+  defp validate_sender(changeset, opts) do
     case Keyword.get(opts, :domain) do
       %Domain{purpose: :email} = domain ->
         ChangesetExt.validate_email(changeset, :sender, suffix: domain.name)

@@ -37,15 +37,15 @@
     <.sms_preview preview={@preview} />
     <div class="flex items-center gap-3 flex-wrap">
       <.a
-        to={~p"/authenticators/sms?sms_learn=true"}
+        to={~p"/pricing"}
         label={gettext("Review pricing")}
-        styled
+        style="link"
         link_type="live_redirect"
       />
       <.a
         to={~p"/authenticators/sms?sms_learn=true"}
         label={gettext("Read documentation")}
-        styled
+        style="link"
         link_type="live_redirect"
       />
     </div>

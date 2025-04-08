@@ -63,20 +63,6 @@ defmodule PasswordlessWeb.Helpers do
         icon: "remix-window-line",
         path: ~p"/embed/login",
         link_type: "live_patch"
-      },
-      %{
-        name: :guard,
-        label: "Identity guard",
-        icon: "remix-police-badge-line",
-        path: ~p"/embed/guard",
-        link_type: "live_patch"
-      },
-      %{
-        name: :pricing,
-        label: "Pricing",
-        icon: "remix-coin-line",
-        path: ~p"/embed/pricing",
-        link_type: "live_patch"
       }
     ]
   end

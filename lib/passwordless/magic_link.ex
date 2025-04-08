@@ -9,7 +9,7 @@ defmodule Passwordless.MagicLink do
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
 
-  @size 12
+  @size 16
 
   @derive {
     Jason.Encoder,

@@ -12,7 +12,7 @@ defmodule Passwordless.Organizations.Org do
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
 
-  @tags ~w(admin)a
+  @tags ~w(admin system default)a
   @states ~w(active)a
 
   @derive {

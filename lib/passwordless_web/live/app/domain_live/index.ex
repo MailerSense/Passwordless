@@ -4,6 +4,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
   import PasswordlessWeb.SettingsLayoutComponent
 
+  alias Passwordless.Accounts.User
   alias Passwordless.App
   alias Passwordless.Domain
   alias Passwordless.Repo
@@ -16,13 +17,13 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   @impl true
   def handle_params(_params, _url, socket) do
     case Repo.preload(socket.assigns.current_app, :email_domain) do
-      %App{email_domain: %Domain{purpose: :email} = domain} ->
+      %App{email_domain: %Domain{purpose: :email} = domain} = app ->
         records = Passwordless.list_domain_record(domain)
-        changeset = Passwordless.change_domain(domain)
+        changeset = Passwordless.change_app(app)
 
         {:noreply,
          socket
-         |> assign(mode: :edit, domain: domain, records: records)
+         |> assign(mode: :edit, domain: domain, records: records, current_app: app)
          |> assign_form(changeset)
          |> apply_action(socket.assigns.live_action)}
 
@@ -49,7 +50,17 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   end
 
   @impl true
-  def handle_event("validate", %{"domain" => domain_params}, socket) do
+  def handle_event("validate_app", %{"app" => app_params}, socket) do
+    save_app(socket, app_params)
+  end
+
+  @impl true
+  def handle_event("save_app", %{"app" => app_params}, socket) do
+    save_app(socket, app_params)
+  end
+
+  @impl true
+  def handle_event("validate_domain", %{"domain" => domain_params}, socket) do
     case socket.assigns[:mode] do
       :new ->
         changeset =
@@ -65,10 +76,10 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   end
 
   @impl true
-  def handle_event("save", %{"domain" => domain_params}, socket) do
+  def handle_event("save_domain", %{"domain" => domain_params}, socket) do
     case socket.assigns[:mode] do
       :new ->
-        case Passwordless.create_domain(socket.assigns.current_app, domain_params) do
+        case Passwordless.create_email_domain(socket.assigns.current_app, domain_params) do
           {:ok, domain} ->
             records =
               for r <- default_domain_records(domain.name) do
@@ -107,7 +118,9 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   # Private
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    assign(socket, form: to_form(changeset))
+    socket
+    |> assign(form: to_form(changeset))
+    |> assign(email_tracking: Ecto.Changeset.get_field(changeset, :email_tracking))
   end
 
   defp apply_action(socket, :index) do
@@ -188,5 +201,21 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
         verified: true
       }
     ]
+  end
+
+  defp save_app(socket, app_params) do
+    case Passwordless.update_app(socket.assigns.current_app, app_params) do
+      {:ok, app} ->
+        socket =
+          socket
+          |> assign(current_app: app)
+          |> assign(current_user: %User{socket.assigns.current_user | current_app: app})
+          |> assign_form(Passwordless.change_app(app))
+
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
   end
 end

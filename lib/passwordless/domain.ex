@@ -164,12 +164,12 @@ defmodule Passwordless.Domain do
     |> validate_name()
     |> validate_state()
     |> validate_tags()
-    |> unique_constraint([:app_id, :purpose], error_key: :purpose)
-    |> unsafe_validate_unique([:app_id, :purpose], Passwordless.Repo, error_key: :purpose)
     |> unique_constraint(:name)
     |> unsafe_validate_unique(:name, Passwordless.Repo,
       query: from(d in __MODULE__, where: d.verified and is_nil(d.deleted_at))
     )
+    |> unique_constraint([:app_id, :purpose], error_key: :purpose)
+    |> unsafe_validate_unique([:app_id, :purpose], Passwordless.Repo, error_key: :purpose)
     |> assoc_constraint(:app)
   end
 

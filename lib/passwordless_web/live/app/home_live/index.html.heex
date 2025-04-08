@@ -69,13 +69,13 @@
         <.a
           label={gettext("Read documentation")}
           to={~p"/embed/install"}
-          styled
+          style="link"
           link_type="live_redirect"
         />
         <.a
           label={gettext("Reveal App Secret")}
           to={~p"/embed/install"}
-          styled
+          style="link"
           link_type="live_redirect"
         />
       </div>
@@ -95,7 +95,7 @@
           :if={Util.present?(action.actor)}
           to={~p"/users/#{action.actor}/edit"}
           label={Actor.handle(action.actor)}
-          styled
+          style="link"
           link_type="live_redirect"
         />
       </:col>

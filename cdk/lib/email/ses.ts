@@ -103,11 +103,9 @@ export class SES extends Construct {
     // Create the configuration set (add pool once we have it)
     const configSetName = `${name}-config-set`;
     this.configSet = new ses.ConfigurationSet(this, configSetName, {
-      configurationSetName: configSetName,
-      reputationMetrics: true,
       tlsPolicy: ses.ConfigurationSetTlsPolicy.REQUIRE,
-      sendingEnabled: true,
       suppressionReasons: ses.SuppressionReasons.BOUNCES_AND_COMPLAINTS,
+      configurationSetName: configSetName,
       customTrackingRedirectDomain: tracking?.domain,
     });
 

@@ -118,13 +118,6 @@ config :passwordless, :emails,
     domain: "alerts.passwordlesstools.com",
     reply_to: "hello@passwordless.tools",
     reply_to_name: "Passwordless Support"
-  ],
-  challenge: [
-    name: "Passwordless Tools",
-    email: "verify@auth.passwordlesstools.com",
-    domain: "auth.passwordlesstools.com",
-    reply_to: "hello@passwordless.tools",
-    reply_to_name: "Passwordless Support"
   ]
 
 config :passwordless, :queues, email_notifications: %{sqs_queue_url: ""}
