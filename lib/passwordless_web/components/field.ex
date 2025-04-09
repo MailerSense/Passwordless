@@ -43,6 +43,8 @@ defmodule PasswordlessWeb.Components.Field do
 
   attr :option_func, :any, default: nil, doc: "the icon mapping for select inputs"
 
+  attr :nonce, :string, doc: "the nonce"
+
   attr :type, :string,
     default: "text",
     values: ~w(checkbox checkbox-group color date datetime-local email file hidden month number password
@@ -596,18 +598,18 @@ defmodule PasswordlessWeb.Components.Field do
       <.field_label required={@required} for={@id} class={@label_class}>
         {@label}
       </.field_label>
-      <div class="pc-password-field-wrapper" x-data="{ show: false }">
+      <div class="pc-password-field-wrapper" x-data="viewable">
         <input
-          x-bind:type="show ? 'text' : 'password'"
-          name={@name}
           id={@id}
+          name={@name}
+          x-bind:type="fieldType"
           value={Phoenix.HTML.Form.normalize_value(@type, @value)}
           class={[@class, "pc-password-field-input"]}
           required={@required}
           {@rest}
         />
-        <button type="button" class="pc-password-field-toggle-button" @click="show = !show">
-          <span x-show="!show" class="pc-password-field-toggle-icon-container">
+        <button type="button" class="pc-password-field-toggle-button" x-on:click="toggleShow">
+          <span x-show="notShow" class="pc-password-field-toggle-icon-container">
             <Icon.icon name="remix-eye-line" class="pc-password-field-toggle-icon" />
           </span>
           <span x-show="show" class="pc-password-field-toggle-icon-container" style="display: none;">
@@ -638,7 +640,7 @@ defmodule PasswordlessWeb.Components.Field do
         {@label}
       </.field_label>
       <!-- Copyable Field Wrapper -->
-      <div class={["pc-copyable-field-wrapper"]} x-data="{ copied: false }">
+      <div class={["pc-copyable-field-wrapper"]} x-data="copyable">
         <div class="flex">
           <span :if={Util.present?(@prefix)} class="pc-field-prefix">
             {@prefix}
@@ -659,16 +661,9 @@ defmodule PasswordlessWeb.Components.Field do
             {@rest}
           />
           <!-- Copy Button -->
-          <button
-            type="button"
-            class="pc-copyable-field-button"
-            @click="
-            navigator.clipboard.writeText($refs.copyInput.value)
-              .then(() => { copied = true; setTimeout(() => copied = false, 2000); })
-          "
-          >
+          <button type="button" class="pc-copyable-field-button" x-on:click="doCopy">
             <!-- Copy Icon -->
-            <span x-show="!copied" class="pc-copyable-field-icon-container">
+            <span x-show="notCopied" class="pc-copyable-field-icon-container">
               <Icon.icon name="remix-file-copy-line" class="pc-copyable-field-icon" />
             </span>
             <!-- Copied Icon -->
@@ -702,11 +697,7 @@ defmodule PasswordlessWeb.Components.Field do
         {@label}
       </.field_label>
       <!-- Searchable Field Wrapper -->
-      <div
-        class="pc-clearable-field-wrapper"
-        x-data="{ showClearButton: false }"
-        x-init="showClearButton = $refs.clearInput.value.length > 0"
-      >
+      <div class="pc-clearable-field-wrapper" x-data="clearable">
         <span :if={Util.present?(@prefix)} class="pc-field-prefix">
           {@prefix}
         </span>
@@ -728,7 +719,7 @@ defmodule PasswordlessWeb.Components.Field do
               if(Util.present?(@prefix), do: "rounded-l-none!")
             ]}
             disabled={@disabled}
-            x-on:input="showClearButton = $event.target.value.length > 0"
+            x-on:input="onInput"
             {@rest}
           />
         </div>
@@ -737,11 +728,7 @@ defmodule PasswordlessWeb.Components.Field do
           type="button"
           class="pc-clearable-field-button"
           x-show="showClearButton"
-          x-on:click="
-              $refs.clearInput.value = '';
-              showClearButton = false;
-              $refs.clearInput.dispatchEvent(new Event('input', { bubbles: true }));
-            "
+          x-on:click="doClearInput"
           style="display: none;"
           aria-label="Clear input"
         >

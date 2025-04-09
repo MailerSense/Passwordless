@@ -129,6 +129,7 @@ defmodule PasswordlessWeb.User.SecurityLive do
           autocomplete="current-password"
           viewable={true}
           required
+          nonce={get_csp_nonce()}
         />
 
         <div class="flex items-center justify-between">

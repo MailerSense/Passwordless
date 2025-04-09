@@ -26,10 +26,7 @@ importers:
 
   assets:
     dependencies:
-      '@alpinejs/collapse':
-        specifier: ^3.14.9
-        version: 3.14.9
-      '@alpinejs/persist':
+      '@alpinejs/csp':
         specifier: ^3.14.9
         version: 3.14.9
       '@codemirror/autocomplete':
@@ -53,9 +50,6 @@ importers:
       '@lezer/highlight':
         specifier: ^1.2.1
         version: 1.2.1
-      alpinejs:
-        specifier: ^3.14.9
-        version: 3.14.9
       codemirror:
         specifier: ^6.0.1
         version: 6.0.1
@@ -157,11 +151,8 @@ importers:
 
 packages:
 
-  '@alpinejs/collapse@3.14.9':
-    resolution: {integrity: sha512-cUjbBVo4KR/CfFg0cLB+Q7a8SnjmD4MdxmtZvFjh25Dlf/ZWYPSPx/28b+aAykuX/SUoDPQRmdFiVVvq+iILHw==}
-
-  '@alpinejs/persist@3.14.9':
-    resolution: {integrity: sha512-Td9hWEUtFFguYCRjXhq06sDultW21wXUnVro7YWJm+vjGu/nV/v3hepOXyYVjkGvH/F+zjx5UkzWXXzr3UiQ/w==}
+  '@alpinejs/csp@3.14.9':
+    resolution: {integrity: sha512-Z/aeDo4Wn4bA4+u77kw9h+nGGW+QzbR2ULTQ1pwOFWk3j2SZtTTI1ZM6FrYOqkFUcwo44e12pY+Y/Va6GTIlFQ==}
 
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
@@ -815,9 +806,6 @@ packages:
 
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
-
-  alpinejs@3.14.9:
-    resolution: {integrity: sha512-gqSOhTEyryU9FhviNqiHBHzgjkvtukq9tevew29fTj+ofZtfsYriw4zPirHHOAy9bw8QoL3WGhyk7QqCh5AYlw==}
 
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
@@ -2972,9 +2960,9 @@ packages:
 
 snapshots:
 
-  '@alpinejs/collapse@3.14.9': {}
-
-  '@alpinejs/persist@3.14.9': {}
+  '@alpinejs/csp@3.14.9':
+    dependencies:
+      '@vue/reactivity': 3.1.5
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -3896,10 +3884,6 @@ snapshots:
       fast-json-stable-stringify: 2.1.0
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
-
-  alpinejs@3.14.9:
-    dependencies:
-      '@vue/reactivity': 3.1.5
 
   ansi-escapes@4.3.2:
     dependencies:

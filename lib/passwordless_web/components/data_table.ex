@@ -23,6 +23,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
+  attr :nonce, :string, doc: "the nonce"
 
   attr :wrapper_class, :any,
     default: "pc-table__wrapper pc-data-table__wrapper",
@@ -93,7 +94,12 @@ defmodule PasswordlessWeb.Components.DataTable do
       {form_assigns(@form_target)}
     >
       <div :if={@search_field} class="flex items-center justify-between gap-3 mb-6">
-        <.table_search_bar meta={@meta} form={filter_form} search_field={@search_field} />
+        <.table_search_bar
+          meta={@meta}
+          nonce={@nonce}
+          form={filter_form}
+          search_field={@search_field}
+        />
         {render_slot(@header_actions)}
       </div>
       <section class={[@wrapper_class, @class]}>
@@ -420,6 +426,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   attr :form, :map, default: nil
   attr :meta, Flop.Meta, required: true
+  attr :nonce, :string, doc: "the nonce"
   attr :search_field, :atom, default: nil
 
   defp table_search_bar(assigns) do
@@ -432,6 +439,7 @@ defmodule PasswordlessWeb.Components.DataTable do
             <.field
               icon="custom-search"
               type="search"
+              nonce={@nonce}
               field={f2[:value]}
               class="md:max-w-[300px] lg:min-w-[500px] h-12"
               label=""

@@ -1,6 +1,4 @@
-import collapse from "@alpinejs/collapse";
-import persist from "@alpinejs/persist";
-import Alpine from "alpinejs";
+import Alpine from "@alpinejs/csp";
 import hljs from "highlight.js/lib/core";
 import javascript from "highlight.js/lib/languages/javascript";
 import json from "highlight.js/lib/languages/json";
@@ -10,6 +8,7 @@ import "phoenix_html";
 import { LiveSocket, SocketOptions } from "phoenix_live_view";
 import topbar from "topbar";
 
+import { Hooks as BackpexHooks } from "backpex";
 import hooks from "./hooks";
 import uploaders from "./uploaders";
 
@@ -116,18 +115,87 @@ function defaultReconnectAfterMs(tries: number): number {
   return nominalMs * jitterRatio;
 }
 
-Alpine.plugin(persist);
-Alpine.plugin(collapse);
-Alpine.start();
+Alpine.data("viewable", () => {
+  return {
+    show: false,
+    get fieldType() {
+      return this.show ? "text" : "password";
+    },
+    get notShow() {
+      return !this.show;
+    },
+    toggleShow() {
+      this.show = !this.show;
+    },
+  };
+});
+
+Alpine.data("copyable", () => {
+  return {
+    copied: false,
+    doCopy() {
+      let current = this;
+      navigator.clipboard
+        .writeText((this.$refs.copyInput as HTMLInputElement).value)
+        .then(() => {
+          current.copied = true;
+          setTimeout(() => (current.copied = false), 2000);
+        });
+    },
+    get notCopied() {
+      return !this.copied;
+    },
+  };
+});
+
+Alpine.data("clearable", () => {
+  return {
+    showClearButton: false,
+    init() {
+      this.showClearButton =
+        (this.$refs.clearInput as HTMLInputElement).value.length > 0;
+    },
+    onInput(event) {
+      this.showClearButton = event.target.value.length > 0;
+    },
+    doClearInput() {
+      (this.$refs.clearInput as HTMLInputElement).value = "";
+      this.showClearButton = false;
+      this.$refs.clearInput.dispatchEvent(
+        new Event("input", { bubbles: true }),
+      );
+    },
+  };
+});
+
+Alpine.data("sidebar", () => {
+  return {
+    sidebarOpen: true,
+    isCollapsible: false,
+    isCollapsed: false,
+    closeSidebar() {
+      this.sidebarOpen = !this.sidebarOpen;
+    },
+    get sidebarOpenClass() {
+      return this.sidebarOpen ? "" : "bg-primary-500";
+    },
+  };
+});
 
 (window as any).Alpine = Alpine;
+
+Alpine.start();
 
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")!
   .getAttribute("content");
 
+let cspNonce = document
+  .querySelector("meta[name='csp-nonce']")!
+  .getAttribute("content");
+
 const socketOptions: Partial<SocketOptions> = {
-  hooks,
+  hooks: { ...hooks, ...BackpexHooks },
   uploaders,
   dom: {
     onBeforeElUpdated(from, to) {
@@ -146,7 +214,7 @@ const socketOptions: Partial<SocketOptions> = {
       return node;
     },
   },
-  params: { _csrf_token: csrfToken },
+  params: { _csrf_token: csrfToken, _csp_nonce: cspNonce },
   reconnectAfterMs: defaultReconnectAfterMs,
 };
 

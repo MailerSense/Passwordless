@@ -28,7 +28,7 @@ defmodule PasswordlessWeb.Components.Dropdown do
 
   attr :js_lib, :string,
     default: "live_view_js",
-    values: ["alpine_js", "live_view_js"],
+    values: ["live_view_js"],
     doc: "javascript library used for toggling"
 
   attr :placement, :string, default: "left", values: ["left", "right", "center"]
@@ -142,35 +142,6 @@ defmodule PasswordlessWeb.Components.Dropdown do
 
   defp trigger_button_classes(_label, _trigger_element, size, variant),
     do: "pc-dropdown__trigger-button--with-label-and-trigger-element--#{size}-#{variant}"
-
-  defp js_attributes("container", "alpine_js", _options_container_id) do
-    %{
-      "x-data": "{open: false}",
-      "@keydown.escape.stop": "open = false",
-      "@click.outside": "open = false"
-    }
-  end
-
-  defp js_attributes("button", "alpine_js", _options_container_id) do
-    %{
-      "@click": "open = !open",
-      "@click.outside": "open = false",
-      "x-bind:aria-expanded": "open.toString()"
-    }
-  end
-
-  defp js_attributes("options_container", "alpine_js", _options_container_id) do
-    %{
-      "x-cloak": true,
-      "x-show": "open",
-      "x-transition:enter": @transition_in_base,
-      "x-transition:enter-start": @transition_in_start,
-      "x-transition:enter-end": @transition_in_end,
-      "x-transition:leave": @transition_out_base,
-      "x-transition:leave-start": @transition_out_start,
-      "x-transition:leave-end": @transition_out_end
-    }
-  end
 
   defp js_attributes("container", "live_view_js", options_container_id) do
     %{

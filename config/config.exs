@@ -188,58 +188,62 @@ config :passwordless, :translation_helper_module, PasswordlessWeb.PetalFramework
 # Policy struct: https://github.com/mbramson/content_security_policy/blob/master/lib/content_security_policy/policy.ex
 # Read more about the options: https://content-security-policy.com
 # Note that we use unsafe-eval because Alpine JS requires it :( (see https://alpinejs.dev/advanced/csp)
-config :passwordless, :content_security_policy, %{
+config :passwordless, :content_security_policy,
   default_src: [
-    "'unsafe-inline'",
-    "'unsafe-eval'",
     "'self'",
-    "data:",
-    "blob:",
-    "https://rsms.me",
-    "*.amazonaws.com",
-    "https://*.googleapis.com",
-    "https://*.gstatic.com",
     "https://*.passwordless.tools"
   ],
   connect_src:
-    case Mix.env() do
-      :prod ->
-        [
-          "wss://#{System.get_env("PHX_HOST", "eu.passwordless.tools")}",
-          "https://#{System.get_env("PHX_HOST", "eu.passwordless.tools")}"
-        ]
+    (case Mix.env() do
+       :prod ->
+         [
+           "wss://#{System.fetch_env!("PHX_HOST")}",
+           "https://#{System.fetch_env!("PHX_HOST")}"
+         ]
 
-      _ ->
-        [
-          "ws://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}",
-          "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
-        ]
-    end ++
+       _ ->
+         [
+           "ws://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}",
+           "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
+         ]
+     end) ++
       [
-        "https://*.googleapis.com",
-        "https://*.gstatic.com",
         "*.amazonaws.com"
       ],
   img_src: [
-    "*",
+    "https:",
     "'self'",
-    "data:",
-    "https:"
+    "data:"
+  ],
+  font_src: [
+    "https://rsms.me",
+    "https://*.googleapis.com",
+    "https://*.gstatic.com"
+  ],
+  style_src: [
+    "'self'",
+    "'unsafe-inline'",
+    "https://rsms.me",
+    "https://*.googleapis.com",
+    "https://*.gstatic.com"
+  ],
+  script_src: [
+    "'self'",
+    "'nonce'"
   ],
   frame_src:
     [
       "https://*.passwordless.tools"
     ] ++
-      case Mix.env() do
-        :prod ->
-          []
+      (case(Mix.env()) do
+         :prod ->
+           []
 
-        _ ->
-          [
-            "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
-          ]
-      end
-}
+         _ ->
+           [
+             "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
+           ]
+       end)
 
 config :flop, repo: Passwordless.Repo, default_limit: 10
 config :tesla, :adapter, {Tesla.Adapter.Finch, name: Passwordless.Finch}
@@ -338,6 +342,10 @@ config :passwordless, :billing_plans, [
 ]
 
 config :backpex, :pubsub_server, Passwordless.PubSub
+
+config :backpex,
+  translator_function: {PasswordlessWeb.CoreComponents, :translate_backpex},
+  error_translator_function: {PasswordlessWeb.CoreComponents, :translate_error}
 
 config :passwordless, :countries,
   af: "Afghanistan",
