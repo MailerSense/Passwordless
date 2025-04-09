@@ -477,6 +477,22 @@ defmodule PasswordlessWeb.CoreComponents do
     end)
   end
 
+  def translate_backpex({msg, opts}) do
+    if count = opts[:count] do
+      Gettext.dngettext(Passwordless.Gettext, "backpex", msg, msg, count, opts)
+    else
+      Gettext.dgettext(Passwordless.Gettext, "backpex", msg, opts)
+    end
+  end
+
+  def translate_error({msg, opts}) do
+    if count = opts[:count] do
+      Gettext.dngettext(Passwordless.Gettext, "errors", msg, msg, count, opts)
+    else
+      Gettext.dgettext(Passwordless.Gettext, "errors", msg, opts)
+    end
+  end
+
   # Private
 
   attr :wrap, :boolean, default: false

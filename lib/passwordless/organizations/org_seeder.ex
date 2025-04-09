@@ -181,13 +181,6 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
   # Private
 
-  defp random_org_attributes do
-    %{
-      name: Faker.Company.name(),
-      email: Enum.random(@random_emails)
-    }
-  end
-
   defp default_domain_records(domain) do
     {:ok, %{subdomain: subdomain}} = Domainatrex.parse(domain)
 

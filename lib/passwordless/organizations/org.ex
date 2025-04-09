@@ -55,7 +55,7 @@ defmodule Passwordless.Organizations.Org do
   @doc """
   A changeset.
   """
-  def changeset(org, attrs \\ %{}, _metadata \\ []) do
+  def changeset(org, attrs \\ %{}, _opts \\ []) do
     org
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)

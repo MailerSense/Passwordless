@@ -29,7 +29,7 @@
     <.form_separator />
     <.form_header title="Advanced" />
     <div class="pc-form-field-wrapper">
-      <.form_label required={true}>{gettext("Expected origins")}</.form_label>
+      <.form_label>{gettext("Expected origins")}</.form_label>
       <div class="flex flex-col gap-y-2">
         <.inputs_for :let={expected_origin} field={@form[:expected_origins]}>
           <input

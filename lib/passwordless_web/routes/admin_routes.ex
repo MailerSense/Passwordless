@@ -35,11 +35,10 @@ defmodule PasswordlessWeb.AdminRoutes do
             {PasswordlessWeb.Org.Hooks, :fetch_current_org}
           ] do
           # Admin
+          live_resources "/apps", Admin.AppLive
           live_resources "/orgs", Admin.OrgLive
           live_resources "/users", Admin.UserLive
-          live_resources "/tokens", Admin.TokenLive
           live_resources "/memberships", Admin.MembershipLive
-          live_resources "/credentials", Admin.CredentialLive
 
           # Activity
           live "/activity", Admin.ActivityLive.Index, :index
