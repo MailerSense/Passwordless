@@ -20,7 +20,7 @@ import {
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { IHostedZone } from "aws-cdk-lib/aws-route53";
-import { DnsRecordType, INamespace } from "aws-cdk-lib/aws-servicediscovery";
+import { INamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 
 import { ApplicationLoadBalancedEC2App } from "../pattern/application-load-balanced-ec2-app";
@@ -124,15 +124,6 @@ export class PublicEC2App extends Construct {
           }
         : undefined,
       capacityProviderStrategies,
-      cloudMapOptions: namespace
-        ? {
-            name,
-            containerPort: container.containerPort,
-            cloudMapNamespace: namespace,
-            dnsRecordType: DnsRecordType.A,
-            dnsTtl: Duration.seconds(10),
-          }
-        : undefined,
       containerMappingName,
       containerMappingProtocol: AppProtocol.http2,
       serviceConnectConfiguration: namespace
