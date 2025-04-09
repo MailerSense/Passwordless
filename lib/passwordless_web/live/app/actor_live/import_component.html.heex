@@ -2,13 +2,9 @@
   <% origin = "right" %>
   <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
     <div class="flex flex-col gap-6">
-      <.link
-        to={~p"/domain/dns/download"}
-        class="underline text-primary-600 dark:text-primary-300"
-        download
-      >
+      <.a to={~p"/domain/dns/download"} style="link" download>
         Download template
-      </.link>
+      </.a>
       <.form_separator no_margin />
       <.form_header title="Upload" no_margin />
       <.p>

@@ -105,12 +105,10 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :recipient_name, :string
       add :reply_to, :citext, null: false
       add :reply_to_name, :string
-      add :subject, :string, null: false
-      add :preheader, :string
+      add :subject, :text, null: false
       add :text_content, :text, null: false
       add :html_content, :text, null: false
       add :current, :boolean, null: false, default: false
-
       add :metadata, :map
 
       add :email_id, references(:emails, type: :uuid, on_delete: :delete_all), null: false
@@ -120,8 +118,12 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
       add :challenge_id, references(:challenges, type: :uuid, on_delete: :delete_all), null: false
 
-      add :email_template_id,
-          references(:email_templates, type: :uuid, on_delete: :delete_all, prefix: "public"),
+      add :email_template_version_id,
+          references(:email_template_versions,
+            type: :uuid,
+            on_delete: :delete_all,
+            prefix: "public"
+          ),
           null: false
 
       timestamps()
@@ -129,7 +131,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create index(:email_messages, [:email_id])
     create index(:email_messages, [:domain_id])
-    create index(:email_messages, [:email_template_id])
+    create index(:email_messages, [:email_template_version_id])
     create unique_index(:email_messages, [:challenge_id], where: "\"current\"")
 
     ## Email events

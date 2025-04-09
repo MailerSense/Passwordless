@@ -7,6 +7,7 @@ defmodule PasswordlessWeb.Components.AuthLayout do
   import PasswordlessWeb.Components.Typography
 
   attr :title, :string
+  attr :rest, :global, doc: "other html attributes"
   slot(:inner_block)
   slot(:logo)
   slot(:top_links)
@@ -14,7 +15,7 @@ defmodule PasswordlessWeb.Components.AuthLayout do
 
   def auth_layout(assigns) do
     ~H"""
-    <section class="fixed w-full h-full overflow-y-scroll bg-slate-100 dark:bg-slate-900">
+    <section class="fixed w-full h-full overflow-y-scroll bg-slate-100 dark:bg-slate-900" {@rest}>
       <div class="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div class="text-center sm:mx-auto sm:w-full sm:max-w-md">
           <div class="flex justify-center mb-10">

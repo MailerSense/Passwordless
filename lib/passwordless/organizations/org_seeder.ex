@@ -45,8 +45,8 @@ defmodule Passwordless.Organizations.OrgSeeder do
         name: "Demo App",
         website: "https://google.com",
         display_name: "Demo App",
-        email_configuration_set: "default-config-set",
-        email_tracking: false
+        email_tracking: false,
+        email_configuration_set: "passwordless-tools-app-ses-config-set"
       })
 
     {:ok, auth_token, _signed_api_key} =
@@ -61,6 +61,14 @@ defmodule Passwordless.Organizations.OrgSeeder do
         kind: :sub_domain,
         tags: [:system, :default],
         purpose: :email
+      })
+
+    {:ok, tracking_domain} =
+      Passwordless.create_tracking_domain(app, %{
+        name: "click.eu.passwordlesstools.com",
+        kind: :sub_domain,
+        tags: [:system, :default],
+        purpose: :tracking
       })
 
     {:ok, magic_link_template} = Passwordless.seed_email_template(app, :magic_link_sign_in, :en)

@@ -14,12 +14,14 @@ defmodule Passwordless.Email.Renderer do
     :action
   ]
 
-  def render(%EmailTemplateVersion{mjml_body: mjml_body} = email_template_version, attrs \\ %{}, opts \\ []) do
-    variables = Map.get(attrs, :variables, %{})
-
+  def render(
+        %EmailTemplateVersion{subject: subject, preheader: preheader, mjml_body: mjml_body} = email_template_version,
+        variables \\ %{},
+        opts \\ []
+      ) do
     provider_variables =
-      attrs
-      |> Map.take(@variable_providers)
+      opts
+      |> Keyword.take(@variable_providers)
       |> Enum.reject(&Util.blank?/1)
       |> Enum.reduce(%{}, fn {_key, mod}, acc ->
         Map.put(acc, VariableProvider.name(mod), VariableProvider.variables(mod))
@@ -27,9 +29,22 @@ defmodule Passwordless.Email.Renderer do
 
     variables = Map.merge(variables, provider_variables)
 
-    with {:ok, body} <- Liquid.render(mjml_body, variables, opts),
-         {:ok, body} <- MJML.convert(body) do
-      {:ok, nil}
+    variables =
+      case Liquid.render(preheader, variables) do
+        {:ok, preheader} -> Map.put(variables, :preheader, preheader)
+        _ -> variables
+      end
+
+    with {:ok, subject} <- Liquid.render(subject, variables),
+         {:ok, mjml_body} <- Liquid.render(mjml_body, variables),
+         {:ok, html_body} <- MJML.convert(mjml_body) do
+      {:ok,
+       %{
+         subject: subject,
+         html_content: html_body,
+         text_content: Premailex.to_text(html_body),
+         email_template_version_id: email_template_version.id
+       }}
     end
   end
 end

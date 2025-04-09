@@ -184,6 +184,13 @@ defmodule Passwordless do
     |> Repo.insert()
   end
 
+  def create_tracking_domain(%App{} = app, attrs \\ %{}) do
+    app
+    |> Ecto.build_assoc(:tracking_domain)
+    |> Domain.changeset(attrs)
+    |> Repo.insert()
+  end
+
   def create_domain_record(%Domain{} = domain, attrs \\ %{}) do
     domain
     |> Ecto.build_assoc(:records)
@@ -285,6 +292,16 @@ defmodule Passwordless do
   def get_email_domain!(%App{} = app) do
     {:ok, domain} = get_email_domain(app)
     domain
+  end
+
+  def get_tracking_domain(%App{} = app) do
+    case Repo.preload(app, :tracking_domain) do
+      %App{email_tracking: true, tracking_domain: %Domain{purpose: :tracking} = domain} ->
+        {:ok, domain}
+
+      _ ->
+        {:error, :tracking_domain_not_found}
+    end
   end
 
   crud(:magic_link, :magic_link, Passwordless.Authenticators.MagicLink)

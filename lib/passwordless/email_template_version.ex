@@ -20,7 +20,6 @@ defmodule Passwordless.EmailTemplateVersion do
       :preheader,
       :text_body,
       :html_body,
-      :json_body,
       :mjml_body,
       :inserted_at,
       :updated_at,
@@ -35,13 +34,10 @@ defmodule Passwordless.EmailTemplateVersion do
     field :language, Ecto.Enum, values: @languages, default: :en
     field :current_style, Ecto.Enum, values: @styles, default: :clean, virtual: true
     field :current_language, Ecto.Enum, values: @languages, default: :en, virtual: true
-
     field :subject, :string
     field :preheader, :string
-
     field :text_body, :string
     field :html_body, :string
-    field :json_body, :map
     field :mjml_body, :string
 
     belongs_to :email_template, EmailTemplate
@@ -65,7 +61,6 @@ defmodule Passwordless.EmailTemplateVersion do
     preheader
     text_body
     html_body
-    json_body
     mjml_body
     email_template_id
   )a
