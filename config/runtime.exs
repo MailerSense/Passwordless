@@ -135,3 +135,60 @@ if config_env() == :prod do
     region: System.get_env("AWS_REGION"),
     account: System.get_env("AWS_ACCOUNT")
 end
+
+config :passwordless, :content_security_policy,
+  default_src: [
+    "'self'",
+    "https://*.passwordless.tools"
+  ],
+  connect_src:
+    (case config_env() do
+       :prod ->
+         [
+           "wss://#{System.fetch_env!("PHX_HOST")}",
+           "https://#{System.fetch_env!("PHX_HOST")}"
+         ]
+
+       _ ->
+         [
+           "ws://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}",
+           "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
+         ]
+     end) ++
+      [
+        "*.amazonaws.com"
+      ],
+  img_src: [
+    "https:",
+    "'self'",
+    "data:"
+  ],
+  font_src: [
+    "https://rsms.me",
+    "https://*.googleapis.com",
+    "https://*.gstatic.com"
+  ],
+  style_src: [
+    "'self'",
+    "'unsafe-inline'",
+    "https://rsms.me",
+    "https://*.googleapis.com",
+    "https://*.gstatic.com"
+  ],
+  script_src: [
+    "'self'",
+    "'nonce'"
+  ],
+  frame_src:
+    [
+      "https://*.passwordless.tools"
+    ] ++
+      (case(config_env()) do
+         :prod ->
+           []
+
+         _ ->
+           [
+             "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
+           ]
+       end)
