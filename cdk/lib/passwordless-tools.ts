@@ -315,7 +315,7 @@ export class PasswordlessTools extends cdk.Stack {
       desiredCount: 1,
       certificate: certificate.certificate,
       container: appContainer,
-      healthCheckCmd: "/app/bin/health",
+      healthCheckCmd: ["CMD-SHELL", "/app/bin/health"],
       healthCheckPath: "/health/ready",
       logRetention,
       namespace,

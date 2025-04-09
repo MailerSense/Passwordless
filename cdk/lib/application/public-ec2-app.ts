@@ -37,7 +37,7 @@ export interface PublicEC2AppProps {
   desiredCount?: number;
   container: AppContainer;
   initContainer?: AppContainer;
-  healthCheckCmd?: string;
+  healthCheckCmd?: string[];
   healthCheckPath: string;
   logRetention: RetentionDays;
   capacityProviderStrategies?: CapacityProviderStrategy[];
@@ -117,7 +117,7 @@ export class PublicEC2App extends Construct {
       domainZone: zone,
       healthCheck: healthCheckCmd
         ? {
-            command: [healthCheckCmd],
+            command: healthCheckCmd,
             interval: Duration.seconds(10),
             timeout: Duration.seconds(5),
             startPeriod: Duration.seconds(30),
