@@ -136,6 +136,12 @@ if config_env() == :prod do
     account: System.get_env("AWS_ACCOUNT")
 end
 
+# Reduce XSS risks by declaring which dynamic resources are allowed to load
+# If you use any CDNs, whitelist them here.
+# Policy struct: https://github.com/mbramson/content_security_policy/blob/master/lib/content_security_policy/policy.ex
+# Read more about the options: https://content-security-policy.com
+# Note that we use unsafe-eval because Alpine JS requires it :( (see https://alpinejs.dev/advanced/csp)
+
 config :passwordless, :content_security_policy,
   default_src: [
     "'self'",
