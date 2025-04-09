@@ -51,7 +51,8 @@
           field={@form[:user_id]}
           label={gettext("User ID")}
           disabled={not @user_active}
-          copyable
+          copyable={true}
+          nonce={get_csp_nonce()}
         />
         <.field
           field={@form[:language]}

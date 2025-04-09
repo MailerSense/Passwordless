@@ -1,5 +1,6 @@
 import { Duration } from "aws-cdk-lib";
 import {
+  AppProtocol,
   AvailabilityZoneRebalancing,
   DeploymentCircuitBreaker,
   Ec2Service,
@@ -8,6 +9,7 @@ import {
   NetworkMode,
   PlacementConstraint,
   PlacementStrategy,
+  ServiceConnectProps,
 } from "aws-cdk-lib/aws-ecs";
 import {
   ApplicationLoadBalancedServiceBase,
@@ -108,6 +110,12 @@ export interface ApplicationLoadBalancedEc2ServiceProps
   readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
 
   readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  readonly serviceConnectConfiguration?: ServiceConnectProps;
+
+  readonly containerMappingName?: string;
+
+  readonly containerMappingProtocol?: AppProtocol;
 }
 
 /**
@@ -170,6 +178,8 @@ export class ApplicationLoadBalancedEC2App extends ApplicationLoadBalancedServic
         stopTimeout: props.stopTimeout,
       });
       container.addPortMappings({
+        name: props.containerMappingName,
+        appProtocol: props.containerMappingProtocol,
         containerPort: taskImageOptions.containerPort || 80,
       });
     } else {
@@ -177,12 +187,9 @@ export class ApplicationLoadBalancedEC2App extends ApplicationLoadBalancedServic
     }
 
     this.service = new Ec2Service(this, "Service", {
-      daemon: props.daemon,
       cluster: this.cluster,
-      desiredCount: props.desiredCount,
       taskDefinition: this.taskDefinition,
       assignPublicIp: false,
-      serviceName: props.serviceName,
       ...props,
     });
 

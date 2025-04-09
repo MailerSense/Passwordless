@@ -39,6 +39,7 @@
       name="app_id"
       value={@app.id}
       label="App ID"
+      nonce={@nonce}
       readonly
       copyable={true}
       class="font-mono"
@@ -48,6 +49,7 @@
       value={@signed}
       label="App Secret"
       type="password"
+      nonce={@nonce}
       readonly
       viewable={true}
       class="font-mono"

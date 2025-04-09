@@ -15,6 +15,8 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
   import PasswordlessWeb.Components.UsageBox
   import PasswordlessWeb.Components.UserTopbarMenu
 
+  attr :nonce, :string, doc: "the nonce"
+
   attr :collapsible, :boolean,
     default: false,
     doc:
@@ -75,10 +77,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
 
   def sidebar_layout(assigns) do
     ~H"""
-    <div
-      class="flex h-screen bg-white dark:bg-slate-900"
-      x-data={"{sidebarOpen: $persist(true), isCollapsible: #{@collapsible}, #{x_persist_collapsed(assigns)}}"}
-    >
+    <div class="flex h-screen bg-white dark:bg-slate-900" x-data="sidebar">
       <div class="pc-sidebar__container">
         <.sidebar_section_menu menu_items={@section_menu_items} current_section={@current_section} />
 
@@ -89,17 +88,13 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
             phx-hook="TippyHook"
             data-tippy-content={gettext("Toggle Sidebar")}
             data-tippy-placement="right"
-            @click.stop="sidebarOpen = !sidebarOpen"
+            x-on:click.stop="closeSidebar"
             aria-controls="sidebar"
           >
             <.icon
               name="custom-board-document"
               class="w-10 h-10 text-white/60 group-hover:bg-primary-500 transition duration-200"
-              x-bind:class="
-                {
-                  'bg-primary-500': !sidebarOpen
-                }
-              "
+              x-bind:class="sidebarOpenClass"
             />
           </span>
         </div>

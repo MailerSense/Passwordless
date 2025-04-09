@@ -2,6 +2,7 @@ import { Duration } from "aws-cdk-lib";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Port } from "aws-cdk-lib/aws-ec2";
 import {
+  AppProtocol,
   AvailabilityZoneRebalancing,
   CapacityProviderStrategy,
   Cluster,
@@ -81,6 +82,8 @@ export class PublicEC2App extends Construct {
       capacityProviderStrategies,
     } = props;
 
+    const containerMappingName = "web";
+
     this.service = new ApplicationLoadBalancedEC2App(this, name, {
       daemon,
       cluster,
@@ -124,9 +127,29 @@ export class PublicEC2App extends Construct {
       cloudMapOptions: namespace
         ? {
             name,
+            containerPort: container.containerPort,
             cloudMapNamespace: namespace,
             dnsRecordType: DnsRecordType.A,
             dnsTtl: Duration.seconds(10),
+          }
+        : undefined,
+      containerMappingName,
+      containerMappingProtocol: AppProtocol.http2,
+      serviceConnectConfiguration: namespace
+        ? {
+            namespace: namespace.namespaceName,
+            logDriver: LogDrivers.awsLogs({
+              streamPrefix: `${name}-service`,
+            }),
+            services: [
+              {
+                port: container.containerPort,
+                dnsName: name,
+                discoveryName: name,
+                portMappingName: containerMappingName,
+                perRequestTimeout: Duration.seconds(10),
+              },
+            ],
           }
         : undefined,
     });

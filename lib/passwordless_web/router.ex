@@ -13,13 +13,10 @@ defmodule PasswordlessWeb.Router do
     plug :fetch_live_flash
     plug :put_root_layout, {PasswordlessWeb.Layouts, :root}
     plug :protect_from_forgery
+    plug :put_secure_browser_headers
 
-    plug :put_secure_browser_headers, %{
-      "content-security-policy" =>
-        ContentSecurityPolicy.serialize(
-          struct(ContentSecurityPolicy.Policy, Passwordless.config(:content_security_policy))
-        )
-    }
+    plug :put_content_security_policy,
+         Passwordless.config(:content_security_policy)
 
     plug :fetch_current_user
     plug :fetch_active_user
@@ -44,20 +41,6 @@ defmodule PasswordlessWeb.Router do
     plug :require_authenticated_user
     plug :fetch_current_org
     plug :fetch_current_app
-  end
-
-  pipeline :public_browser do
-    plug :parse_ip
-    plug :accepts, ["html"]
-    plug :put_root_layout, {PasswordlessWeb.Layouts, :root}
-    plug :protect_from_forgery
-
-    plug :put_secure_browser_headers, %{
-      "content-security-policy" =>
-        ContentSecurityPolicy.serialize(
-          struct(ContentSecurityPolicy.Policy, Passwordless.config(:content_security_policy))
-        )
-    }
   end
 
   scope "/", PasswordlessWeb do

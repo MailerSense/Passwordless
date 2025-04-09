@@ -126,6 +126,7 @@ defmodule PasswordlessWeb.CoreComponents do
   Ideally you should modify this file a lot and not touch the actual layout components like "sidebar_layout" and "stacked_layout".
   If you're creating a new layout then duplicate "sidebar_layout" or "stacked_layout" and give it a new name. Then modify this file to allow your new layout. This way live views can keep using this component and simply switch the "type" attribute to your new layout.
   """
+  attr :nonce, :string, doc: "the nonce"
   attr :current_user, :map, default: nil
   attr :current_page, :any, required: true
   attr :current_section, :atom, required: true
@@ -143,6 +144,7 @@ defmodule PasswordlessWeb.CoreComponents do
   def layout(assigns) do
     assigns =
       assigns
+      |> assign_new(:nonce, fn -> PasswordlessWeb.CSP.get_csp_nonce() end)
       |> assign_new(:home_path, fn -> home_path(assigns[:current_user]) end)
       |> assign_new(:org_menu_items, fn -> org_menu_items(assigns[:current_user]) end)
       |> assign_new(:user_menu_items, fn -> user_menu_items(assigns[:current_user]) end)
@@ -180,6 +182,7 @@ defmodule PasswordlessWeb.CoreComponents do
 
     ~H"""
     <.sidebar_layout
+      nonce={@nonce}
       home_path={@home_path}
       current_user={@current_user}
       current_page={@current_page}
@@ -479,17 +482,17 @@ defmodule PasswordlessWeb.CoreComponents do
 
   def translate_backpex({msg, opts}) do
     if count = opts[:count] do
-      Gettext.dngettext(Passwordless.Gettext, "backpex", msg, msg, count, opts)
+      Gettext.dngettext(PasswordlessWeb.Gettext, "backpex", msg, msg, count, opts)
     else
-      Gettext.dgettext(Passwordless.Gettext, "backpex", msg, opts)
+      Gettext.dgettext(PasswordlessWeb.Gettext, "backpex", msg, opts)
     end
   end
 
   def translate_error({msg, opts}) do
     if count = opts[:count] do
-      Gettext.dngettext(Passwordless.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(PasswordlessWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(Passwordless.Gettext, "errors", msg, opts)
+      Gettext.dgettext(PasswordlessWeb.Gettext, "errors", msg, opts)
     end
   end
 

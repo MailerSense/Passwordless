@@ -57,7 +57,7 @@ defmodule PasswordlessWeb.Components.Tabs do
 
   attr :id, :string, default: nil
   attr :rest, :global, include: ~w(class)
-  attr :mode, :string, default: "link", values: ["link", "form", "live"]
+  attr :mode, :string, default: "link", values: ["link", "live"]
   attr :field, :any, default: nil
   attr :name_field, :any, default: nil
   attr :variant, :string, default: "basic", values: ["basic", "native", "contrast", "buttons"]
@@ -111,25 +111,6 @@ defmodule PasswordlessWeb.Components.Tabs do
             variant={@variant}
           />
         </.tabs>
-      <% "form" -> %>
-        <input type="hidden" name={@name_name} value={@name_value} />
-
-        <div id={@id} phx-hook="BadgeSelectHook" {js_attributes("container", @current_tab)}>
-          <input type="hidden" name={@name} value={@value} />
-          <.tabs variant={@variant} {@rest}>
-            <span
-              :for={item <- @menu_items}
-              role="tab"
-              class={["pc-tab__pill--#{@variant}", "cursor-pointer"]}
-              {js_attributes("tab", item, @variant)}
-            >
-              <%= if item[:icon] do %>
-                <Icon.icon name={item[:icon]} />
-              <% end %>
-              {item.label}
-            </span>
-          </.tabs>
-        </div>
     <% end %>
     """
   end
@@ -145,40 +126,5 @@ defmodule PasswordlessWeb.Components.Tabs do
         else: "pc-tab__pill--is-not-active"
 
     Enum.map([base_classes, active_classes], fn class -> "#{class}--#{variant}" end)
-  end
-
-  defp js_attributes("container", current_tab) do
-    %{
-      "x-on:reset": "tab = '#{current_tab}'",
-      "x-data": "{
-        tab: '#{current_tab}',
-        input: '#{current_tab}',
-        init() {
-          this.$watch('input', (value) => {
-            $dispatch('selected-change', {value: value});
-          });
-        }
-      }"
-    }
-  end
-
-  defp js_attributes("tab", %{name: name, clear: true}, variant) do
-    %{
-      "x-on:click": "tab = '#{name}'; input = null",
-      "x-bind:class": "{
-        'pc-tab__pill--is-active--#{variant}': tab === '#{name}',
-        'pc-tab__pill--is-not-active--#{variant}': tab !== '#{name}'
-      }"
-    }
-  end
-
-  defp js_attributes("tab", %{name: name}, variant) do
-    %{
-      "x-on:click": "tab = '#{name}'; input = '#{name}'",
-      "x-bind:class": "{
-        'pc-tab__pill--is-active--#{variant}': tab === '#{name}',
-        'pc-tab__pill--is-not-active--#{variant}': tab !== '#{name}'
-      }"
-    }
   end
 end

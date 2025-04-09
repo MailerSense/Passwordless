@@ -1,5 +1,5 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
-  <.data_table meta={@meta} items={@actors} title={gettext("All users")}>
+  <.data_table meta={@meta} nonce={get_csp_nonce()} items={@actors} title={gettext("All users")}>
     <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
     <:col field={:search} searchable filterable={[:==]} />
     <:col :let={actor} field={:name}>

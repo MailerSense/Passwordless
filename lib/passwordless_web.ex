@@ -87,11 +87,12 @@ defmodule PasswordlessWeb do
         layout: {PasswordlessWeb.Layouts, :app},
         global_prefixes: ~w(x-)
 
-      on_mount({PasswordlessWeb.User.Hooks, :maybe_assign_user})
-      on_mount(PasswordlessWeb.Hooks.RestoreLocale)
-      on_mount(PasswordlessWeb.Hooks.AllowEctoSandbox)
-      on_mount({PasswordlessWeb.Hooks.ViewSetup, :reset_page_title})
-      on_mount(Sentry.LiveViewHook)
+      on_mount PasswordlessWeb.CSP
+      on_mount {PasswordlessWeb.User.Hooks, :maybe_assign_user}
+      on_mount PasswordlessWeb.Hooks.RestoreLocale
+      on_mount PasswordlessWeb.Hooks.AllowEctoSandbox
+      on_mount {PasswordlessWeb.Hooks.ViewSetup, :reset_page_title}
+      on_mount Sentry.LiveViewHook
 
       unquote(html_helpers())
     end
@@ -108,6 +109,8 @@ defmodule PasswordlessWeb do
   def html do
     quote do
       use Phoenix.Component, global_prefixes: ~w(x-)
+
+      import PasswordlessWeb.CSP, only: [get_csp_nonce: 0]
 
       # Import convenience functions from controllers
       import Phoenix.Controller,
@@ -127,6 +130,7 @@ defmodule PasswordlessWeb do
 
       import LiveToast, only: [put_toast: 3, put_toast: 4]
       import PasswordlessWeb.CoreComponents
+      import PasswordlessWeb.CSP, only: [get_csp_nonce: 0]
       import PasswordlessWeb.Helpers
       import Phoenix.HTML
 
@@ -142,6 +146,7 @@ defmodule PasswordlessWeb do
     quote do
       use Phoenix.Router
 
+      import PasswordlessWeb.CSP, only: [put_content_security_policy: 2]
       import Phoenix.Controller
       import Phoenix.LiveView.Router
       import Plug.Conn
