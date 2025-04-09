@@ -161,7 +161,6 @@ defmodule Passwordless.MixProject do
       {:hammer, "~> 6.2"},
       {:hammer_plug, "~> 3.0"},
       {:hammer_backend_redis, "~> 6.1"},
-      {:content_security_policy, "~> 1.0"},
 
       # Code quality
       {:sobelow, "~> 0.12", only: [:dev, :test], runtime: false},
