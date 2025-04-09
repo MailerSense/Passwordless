@@ -23,16 +23,7 @@ defmodule PasswordlessWeb.Menus do
   def main_menu_items(:admin, %User{} = current_user),
     do:
       build_menu(
-        [
-          :user_admin,
-          :token_admin,
-          :credentials_admin,
-          :membership_admin,
-          :org_admin,
-          :activity_admin,
-          :live_dashboard,
-          :oban_web
-        ],
+        [:user_admin, :membership_admin, :org_admin, :app_admin, :activity_admin, :live_dashboard, :oban_web],
         current_user
       )
 
@@ -232,6 +223,16 @@ defmodule PasswordlessWeb.Menus do
       label: gettext("Dev"),
       path: ~p"/dev/emails",
       icon: "custom-check-fancy"
+    }
+  end
+
+  def get_link(:app_admin = name, _user) do
+    %{
+      name: name,
+      label: gettext("Apps"),
+      path: ~p"/admin/apps",
+      icon: "remix-instance-line",
+      link_type: "live_patch"
     }
   end
 

@@ -85,7 +85,7 @@ defmodule Passwordless.Organizations.Membership do
   @doc """
   An organization membership changeset to update a membership.
   """
-  def changeset(membership, attrs \\ %{}, _metadata \\ []) do
+  def changeset(membership, attrs \\ %{}, _opts \\ []) do
     membership
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)

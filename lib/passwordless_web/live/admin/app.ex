@@ -1,21 +1,18 @@
-defmodule PasswordlessWeb.Admin.UserLive do
+defmodule PasswordlessWeb.Admin.AppLive do
   @moduledoc false
   use Backpex.LiveResource,
     layout: {PasswordlessWeb.Layouts, :admin},
     adapter_config: [
-      schema: Passwordless.Accounts.User,
+      schema: Passwordless.App,
       repo: Passwordless.Repo,
-      update_changeset: &Passwordless.Accounts.User.changeset/3,
-      create_changeset: &Passwordless.Accounts.User.create_changeset/3
+      update_changeset: &Passwordless.App.changeset/3,
+      create_changeset: &Passwordless.App.changeset/3
     ]
 
   import Ecto.Query
 
-  alias Passwordless.Accounts.User
-  alias Passwordless.Security.Guard
-  alias Passwordless.Security.Policy.Accounts, as: AccountsPolicy
+  alias Passwordless.App
   alias PasswordlessWeb.Admin.Filters.SoftDelete, as: SoftDeleteFilter
-  alias PasswordlessWeb.Admin.ItemActions.ImpersonateUser
   alias PasswordlessWeb.Admin.ItemActions.SoftDelete, as: SoftDeleteAction
   alias PasswordlessWeb.Admin.ItemActions.SoftRecover, as: SoftRecoverAction
 
@@ -26,18 +23,13 @@ defmodule PasswordlessWeb.Admin.UserLive do
   def can?(_assigns, :soft_recover, item), do: not is_nil(item.deleted_at)
 
   @impl Backpex.LiveResource
-  def can?(%{current_user: %User{} = impersonator}, :impersonate_user, %User{} = user) do
-    Guard.permit(AccountsPolicy, impersonator, :"user.impersonate", user)
-  end
-
-  @impl Backpex.LiveResource
   def can?(_assigns, _action, _item), do: true
 
   @impl Backpex.LiveResource
-  def singular_name, do: "User"
+  def singular_name, do: "App"
 
   @impl Backpex.LiveResource
-  def plural_name, do: "Users"
+  def plural_name, do: "Apps"
 
   @impl Backpex.LiveResource
   def fields do
@@ -52,16 +44,26 @@ defmodule PasswordlessWeb.Admin.UserLive do
         label: "Name",
         searchable: true
       },
-      email: %{
-        module: Backpex.Fields.Text,
-        label: "Email",
+      logo: %{
+        module: Backpex.Fields.URL,
+        label: "Logo",
         searchable: true
       },
       state: %{
         module: Backpex.Fields.Select,
         label: "State",
-        options: fn _assigns -> Enum.map(User.states(), &{String.capitalize(Atom.to_string(&1)), &1}) end,
+        options: fn _assigns -> Enum.map(App.states(), &{String.capitalize(Atom.to_string(&1)), &1}) end,
         index_editable: true
+      },
+      website: %{
+        module: Backpex.Fields.URL,
+        label: "Website",
+        searchable: true
+      },
+      display_name: %{
+        module: Backpex.Fields.Text,
+        label: "Display Name",
+        searchable: true
       },
       inserted_at: %{
         module: Backpex.Fields.DateTime,
@@ -114,30 +116,16 @@ defmodule PasswordlessWeb.Admin.UserLive do
     [
       total: %{
         module: Backpex.Metrics.Value,
-        label: "Total users",
-        class: "w-full lg:w-1/4",
-        select: dynamic([u], count(u.id)),
-        format: &Integer.to_string/1
-      },
-      active: %{
-        module: Backpex.Metrics.Value,
-        label: "Active users",
-        class: "w-full lg:w-1/4",
-        select: dynamic([u], u.id |> count() |> filter(u.state == :active)),
-        format: &Integer.to_string/1
-      },
-      locked: %{
-        module: Backpex.Metrics.Value,
-        label: "Locked users",
-        class: "w-full lg:w-1/4",
-        select: dynamic([u], u.id |> count() |> filter(u.state == :locked)),
+        label: "Total apps",
+        class: "w-full lg:w-1/2",
+        select: dynamic([o], count(o.id)),
         format: &Integer.to_string/1
       },
       deleted: %{
         module: Backpex.Metrics.Value,
-        label: "Deleted users",
-        class: "w-full lg:w-1/4",
-        select: dynamic([u], u.id |> count() |> filter(not is_nil(u.deleted_at))),
+        label: "Deleted apps",
+        class: "w-full lg:w-1/2",
+        select: dynamic([o], o.id |> count() |> filter(not is_nil(o.deleted_at))),
         format: &Integer.to_string/1
       }
     ]
@@ -149,8 +137,7 @@ defmodule PasswordlessWeb.Admin.UserLive do
     |> Keyword.drop([:delete])
     |> Enum.concat(
       soft_delete: %{module: SoftDeleteAction},
-      soft_recover: %{module: SoftRecoverAction},
-      impersonate_user: %{module: ImpersonateUser}
+      soft_recover: %{module: SoftRecoverAction}
     )
   end
 end

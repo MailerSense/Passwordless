@@ -75,6 +75,8 @@ defmodule Passwordless.App do
     soft_delete_timestamp()
   end
 
+  def states, do: @states
+
   @doc """
   Get by organization.
   """

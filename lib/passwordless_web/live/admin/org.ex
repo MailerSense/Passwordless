@@ -151,9 +151,6 @@ defmodule PasswordlessWeb.Admin.OrgLive do
   end
 
   @impl Backpex.LiveResource
-  def item_query(query, _live_action, _assigns), do: where(query, [s], is_nil(s.deleted_at) or not is_nil(s.deleted_at))
-
-  @impl Backpex.LiveResource
   def item_actions(default_actions) do
     default_actions
     |> Keyword.drop([:delete])

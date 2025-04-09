@@ -1,10 +1,4 @@
 <main>
-  <LiveToast.toast_group
-    flash={@flash}
-    corner={:bottom_right}
-    connected={assigns[:socket] != nil}
-    toasts_sync={assigns[:toasts_sync]}
-  />
   <.layout
     current_user={@current_user}
     current_page={@current_url}
@@ -12,6 +6,7 @@
     padded={false}
   >
     <div class="px-6 xl:px-8 py-6">
+      <Backpex.HTML.Layout.flash_messages flash={@flash} />
       {@inner_content}
     </div>
   </.layout>

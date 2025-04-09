@@ -4,7 +4,6 @@
 
 @plugin "@tailwindcss/forms";
 @plugin "../custom.tailwind.plugin.js";
-@plugin "../heroicon.tailwind.plugin.js";
 @plugin "../remix.tailwind.plugin.js";
 
 /*

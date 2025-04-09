@@ -71,7 +71,7 @@ defmodule Passwordless.Accounts.User do
   @doc """
   A user changeset.
   """
-  def changeset(user, attrs \\ %{}, _metadata \\ []) do
+  def changeset(user, attrs \\ %{}, _opts \\ []) do
     user
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)

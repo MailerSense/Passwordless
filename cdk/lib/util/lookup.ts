@@ -103,6 +103,37 @@ export type DomainConfig = {
   };
 };
 
+export const rootDomainLookupMap = {
+  [Environment.DEV]: {
+    com: {
+      domain: "dev.passwordlesstools.com",
+      zone: ZoneType.COM,
+    },
+    main: {
+      domain: "dev.passwordless.tools",
+      zone: ZoneType.TOOLS,
+    },
+    www: {
+      domain: "www.dev.passwordless.tools",
+      zone: ZoneType.TOOLS,
+    },
+  },
+  [Environment.PROD]: {
+    com: {
+      domain: "passwordlesstools.com",
+      zone: ZoneType.COM,
+    },
+    main: {
+      domain: "passwordless.tools",
+      zone: ZoneType.TOOLS,
+    },
+    www: {
+      domain: "www.passwordless.tools",
+      zone: ZoneType.TOOLS,
+    },
+  },
+};
+
 export const domainLookupMap: DomainConfig = {
   [Region.EU]: {
     [Environment.DEV]: {
