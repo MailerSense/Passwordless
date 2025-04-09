@@ -7,8 +7,8 @@ import { Socket } from "phoenix";
 import "phoenix_html";
 import { LiveSocket, SocketOptions } from "phoenix_live_view";
 import topbar from "topbar";
-
 import { Hooks as BackpexHooks } from "backpex";
+
 import hooks from "./hooks";
 import uploaders from "./uploaders";
 
@@ -134,7 +134,7 @@ Alpine.data("copyable", () => {
   return {
     copied: false,
     doCopy() {
-      let current = this;
+      const current = this;
       navigator.clipboard
         .writeText((this.$refs.copyInput as HTMLInputElement).value)
         .then(() => {
@@ -190,7 +190,7 @@ const csrfToken = document
   .querySelector("meta[name='csrf-token']")!
   .getAttribute("content");
 
-let cspNonce = document
+const cspNonce = document
   .querySelector("meta[name='csp-nonce']")!
   .getAttribute("content");
 
