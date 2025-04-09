@@ -263,10 +263,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :subject, :string, null: false
       add :language, :string, null: false
       add :preheader, :string, null: false
-
       add :text_body, :text
       add :html_body, :text
-      add :json_body, :text
       add :mjml_body, :text
 
       add :email_template_id, references(:email_templates, type: :uuid, on_delete: :delete_all),

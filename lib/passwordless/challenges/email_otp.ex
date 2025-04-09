@@ -15,6 +15,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   alias Passwordless.Challenge
   alias Passwordless.Domain
   alias Passwordless.Email
+  alias Passwordless.Email.Renderer
   alias Passwordless.EmailMessage
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateVersion
@@ -31,7 +32,7 @@ defmodule Passwordless.Challenges.EmailOTP do
         %App{} = app,
         %Actor{} = actor,
         %Action{challenge: %Challenge{type: @challenge, state: state} = challenge} = action,
-        event: :send_otp,
+        event: "send_otp",
         attrs: %{email: %Email{} = email}
       )
       when state in [:started, :otp_sent] do
@@ -44,6 +45,7 @@ defmodule Passwordless.Challenges.EmailOTP do
          :ok <- update_existing_messages(app, action),
          {:ok, email_message} <-
            create_email_message(
+             app,
              actor,
              action,
              domain,
@@ -55,7 +57,7 @@ defmodule Passwordless.Challenges.EmailOTP do
            ),
          {:ok, otp} <- create_otp(authenticator, email_message, otp_code),
          {:ok, challenge} <- update_challenge_state(app, challenge, :otp_sent),
-         :ok <- enqueue_email_message(email_message),
+         {:ok, _job} <- enqueue_email_message(email_message),
          do:
            {:ok,
             %Action{
@@ -73,7 +75,7 @@ defmodule Passwordless.Challenges.EmailOTP do
         %App{} = app,
         %Actor{} = _actor,
         %Action{challenge: %Challenge{type: @type, state: state} = challenge} = action,
-        event: :validate_otp,
+        event: "validate_otp",
         attrs: %{code: code}
       )
       when state in [:otp_sent] and is_binary(code) do
@@ -118,6 +120,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   end
 
   defp create_email_message(
+         %App{} = app,
          %Actor{} = actor,
          %Action{challenge: %Challenge{} = challenge} = action,
          %Domain{} = domain,
@@ -127,31 +130,25 @@ defmodule Passwordless.Challenges.EmailOTP do
          %Authenticators.Email{} = authenticator,
          otp_code
        ) do
-    # Render the email content with the OTP code
-    html_content = render_email_content(version.html_body || "", otp_code)
-    text_content = render_email_content(version.text_body || "", otp_code)
-
     attrs = %{
-      state: :created,
       sender: Authenticators.Email.sender_email(authenticator, domain),
       sender_name: authenticator.sender_name,
       recipient: email.address,
       recipient_name: Actor.handle(actor),
-      subject: version.subject,
-      preheader: version.preheader,
-      text_content: text_content,
-      html_content: html_content,
       current: true,
       email_id: email.id,
       domain_id: domain.id,
-      challenge_id: challenge.id,
-      email_template_id: template.id
+      email_template_version_id: version.id
     }
 
-    challenge
-    |> Ecto.build_assoc(:email_messages)
-    |> EmailMessage.changeset(attrs)
-    |> Repo.insert()
+    with {:ok, message_attrs} <- Renderer.render(version, %{otp_code: otp_code}, app: app, actor: actor, action: action) do
+      attrs = Map.merge(attrs, message_attrs)
+
+      challenge
+      |> Ecto.build_assoc(:email_messages)
+      |> EmailMessage.changeset(attrs)
+      |> Repo.insert()
+    end
   end
 
   defp update_existing_messages(%App{} = app, %Action{challenge: %Challenge{} = challenge}) do
@@ -177,22 +174,31 @@ defmodule Passwordless.Challenges.EmailOTP do
     |> Repo.insert()
   end
 
-  defp enqueue_email_message(%EmailMessage{domain: %Domain{} = domain} = email_message) do
+  defp enqueue_email_message(
+         %EmailMessage{
+           sender: sender,
+           sender_name: sender_name,
+           recipient: recipient,
+           recipient_name: recipient_name,
+           reply_to: reply_to,
+           reply_to_name: reply_to_name,
+           subject: subject,
+           html_content: html_content,
+           text_content: text_content,
+           domain: %Domain{} = domain
+         } = email_message
+       ) do
     swoosh_email =
       SwooshEmail.new()
-      |> SwooshEmail.from({email_message.sender_name, email_message.sender})
-      |> SwooshEmail.to({email_message.recipient_name, email_message.recipient})
-      |> SwooshEmail.subject(email_message.subject)
-      |> SwooshEmail.html_body(email_message.html_content)
-      |> SwooshEmail.text_body(email_message.text_content)
+      |> SwooshEmail.from({sender_name, sender})
+      |> SwooshEmail.to({recipient_name, recipient})
+      |> SwooshEmail.subject(subject)
+      |> SwooshEmail.html_body(html_content)
+      |> SwooshEmail.text_body(text_content)
 
     %{email: Mailer.to_map(swoosh_email), domain_id: domain.id}
     |> MailerExecutor.new()
     |> Oban.insert()
-  end
-
-  defp render_email_content(content, otp_code) do
-    String.replace(content, "{{otp_code}}", otp_code)
   end
 
   defp update_challenge_state(%App{} = app, %Challenge{} = challenge, state) do

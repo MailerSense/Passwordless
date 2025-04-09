@@ -17,7 +17,7 @@
       <.a
         :if={not Domain.verified?(@email_domain)}
         to={~p"/domain/email/dns"}
-        label={gettext("Get DNS records")}
+        label={gettext("DNS records")}
         style="link"
         link_type="live_patch"
       />
@@ -70,7 +70,7 @@
       <.a
         :if={not Domain.verified?(@tracking_domain)}
         to={~p"/domain/tracking/dns"}
-        label={gettext("Get DNS records")}
+        label={gettext("DNS records")}
         style="link"
         link_type="live_patch"
       />

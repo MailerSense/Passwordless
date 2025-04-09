@@ -719,7 +719,7 @@
   }
 
   .pc-link--styled {
-    @apply flex items-center gap-1 text-info-600 dark:text-info-300 underline underline-offset-4;
+    @apply flex items-center gap-1 text-info-600 dark:text-info-300 underline underline-offset-2;
   }
 
   .pc-link--styled__disabled {
@@ -727,11 +727,11 @@
   }
 
   .pc-link--delete {
-    @apply flex items-center gap-1 text-danger-600 dark:text-danger-300 underline underline-offset-4;
+    @apply flex items-center gap-1 text-danger-600 dark:text-danger-300 underline underline-offset-2;
   }
 
   .pc-link--sensitive {
-    @apply flex items-center gap-1 text-warning-600 dark:text-warning-300 underline underline-offset-4;
+    @apply flex items-center gap-1 text-warning-600 dark:text-warning-300 underline underline-offset-2;
   }
 
   .pc-link--alternative {
