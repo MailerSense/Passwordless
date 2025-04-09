@@ -318,7 +318,7 @@ export class PasswordlessTools extends cdk.Stack {
       healthCheckCmd: "/app/bin/health",
       healthCheckPath: "/health/ready",
       logRetention,
-      namespace,
+      namespace: undefined,
       capacityProviderStrategies: [
         {
           capacityProvider:
