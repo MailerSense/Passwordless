@@ -139,7 +139,7 @@ export class PublicEC2App extends Construct {
         ? {
             namespace: namespace.namespaceName,
             logDriver: LogDrivers.awsLogs({
-              streamPrefix: name,
+              streamPrefix: `${name}-service`,
             }),
             services: [
               {
