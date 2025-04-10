@@ -116,6 +116,8 @@ export interface ApplicationLoadBalancedEc2ServiceProps
   readonly containerMappingName?: string;
 
   readonly containerMappingProtocol?: AppProtocol;
+
+  readonly enableECSManagedTags?: boolean;
 }
 
 /**
