@@ -90,6 +90,13 @@ defmodule Passwordless.Domain do
   end
 
   @doc """
+  Get the domain by name.
+  """
+  def get_by_name(query \\ __MODULE__, name) do
+    from q in query, where: q.name == ^name
+  end
+
+  @doc """
   Get the domain by tags.
   """
   def get_by_tags(query \\ __MODULE__, tags) when is_list(tags) do
