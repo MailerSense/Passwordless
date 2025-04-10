@@ -353,10 +353,10 @@ export class PasswordlessTools extends cdk.Stack {
     const _waf = new WAF(this, "main-waf", {
       name: `${appName}-waf`,
       associationArns: [
-        /*   {
+        {
           name: `${appName}-alb`,
           arn: app.service.loadBalancer.loadBalancerArn,
-        }, */
+        },
       ],
       allowedPathPrefixes: ["/api", "/webhook"],
       blockedPathPrefixes: ["/health"],
