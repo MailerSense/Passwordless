@@ -2,7 +2,6 @@ import { Duration } from "aws-cdk-lib";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Port } from "aws-cdk-lib/aws-ec2";
 import {
-  AppProtocol,
   AvailabilityZoneRebalancing,
   CapacityProviderStrategy,
   Cluster,
@@ -82,8 +81,6 @@ export class PublicEC2App extends Construct {
       capacityProviderStrategies,
     } = props;
 
-    const containerMappingName = "web";
-
     this.service = new ApplicationLoadBalancedEC2App(this, name, {
       daemon,
       cluster,
@@ -124,8 +121,7 @@ export class PublicEC2App extends Construct {
           }
         : undefined,
       capacityProviderStrategies,
-      containerMappingName,
-      containerMappingProtocol: AppProtocol.http2,
+      enableECSManagedTags: true,
     });
 
     // Allow connections to itself

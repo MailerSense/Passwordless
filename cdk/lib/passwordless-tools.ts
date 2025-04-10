@@ -7,7 +7,12 @@ import {
   ViewerProtocolPolicy,
 } from "aws-cdk-lib/aws-cloudfront";
 import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
-import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
+import {
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  Port,
+} from "aws-cdk-lib/aws-ec2";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
   AmiHardwareType,
@@ -26,7 +31,7 @@ import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 import { join } from "path";
 
-import { AppContainer } from "./application/public-ec2-app";
+import { AppContainer, PublicEC2App } from "./application/public-ec2-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
@@ -299,7 +304,7 @@ export class PasswordlessTools extends cdk.Stack {
       environment: { ...envLookup.appConfig, POOL_SIZE: "10" },
     });
 
-    /*     const app = new PublicEC2App(this, appName, {
+    const app = new PublicEC2App(this, appName, {
       name: appName,
       zone,
       domain: envLookup.hostedZone.domains.primary,
@@ -343,7 +348,7 @@ export class PasswordlessTools extends cdk.Stack {
       app.service.service,
       Port.tcp(redis.port),
       `Allow traffic from app to Redis on port ${redis.port}`,
-    ); */
+    );
 
     const _waf = new WAF(this, "main-waf", {
       name: `${appName}-waf`,
