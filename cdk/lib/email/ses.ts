@@ -209,8 +209,13 @@ export class SES extends Construct {
     });
 
     const spfValue = "v=spf1 include:amazonses.com ~all";
-    let dmarcValue = "v=DMARC1; p=none; ";
+    const _txtRecord = new TxtRecord(this, `${domainSlug}-txt-recordset`, {
+      recordName: `${domainFromPrefix}.${subdomain}`,
+      values: [spfValue],
+      zone,
+    });
 
+    let dmarcValue = "v=DMARC1; p=none; ";
     if (ruaEmail) {
       dmarcValue += `rua=mailto:${ruaEmail}; `;
     }
@@ -221,9 +226,9 @@ export class SES extends Construct {
 
     dmarcValue = dmarcValue.trim();
 
-    const _txtRecord = new TxtRecord(this, `${domainSlug}-txt-recordset`, {
-      recordName: `${domainFromPrefix}.${subdomain}`,
-      values: [spfValue, dmarcValue],
+    const _dmarcRecord = new TxtRecord(this, `${domainSlug}-dmarc-recordset`, {
+      recordName: `_dmarc.${subdomain}`,
+      values: [dmarcValue],
       zone,
     });
 

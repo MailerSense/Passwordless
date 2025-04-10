@@ -18,7 +18,7 @@ defmodule Passwordless.Accounts.Notifier do
   def deliver_confirmation_instructions(%User{email: email}, url) when is_binary(url) do
     email
     |> Email.confirm_register_email(url)
-    |> deliver()
+    |> deliver(via: system_domain(Email.auth_email_domain()))
   end
 
   @doc """
@@ -27,7 +27,7 @@ defmodule Passwordless.Accounts.Notifier do
   def deliver_reset_password_instructions(%User{email: email}, url) when is_binary(url) do
     email
     |> Email.reset_password(url)
-    |> deliver()
+    |> deliver(via: system_domain(Email.auth_email_domain()))
   end
 
   @doc """
@@ -36,7 +36,7 @@ defmodule Passwordless.Accounts.Notifier do
   def deliver_update_email_instructions(%User{email: email}, url) when is_binary(url) do
     email
     |> Email.change_email(url)
-    |> deliver()
+    |> deliver(via: system_domain(Email.auth_email_domain()))
   end
 
   @doc """
@@ -45,7 +45,7 @@ defmodule Passwordless.Accounts.Notifier do
   def deliver_org_invitation(org, invitation, url) do
     org
     |> Email.org_invitation(invitation, url)
-    |> deliver()
+    |> deliver(via: system_domain(Email.auth_email_domain()))
   end
 
   @doc """

@@ -22,7 +22,7 @@ defmodule PasswordlessWeb.Email do
   end
 
   def confirm_register_email(email, url) do
-    support_email()
+    auth_email()
     |> to(email)
     |> subject(gettext("Confirm instructions"))
     |> put_private(:preview_text, gettext("Click the link below to confirm your email"))
@@ -31,7 +31,7 @@ defmodule PasswordlessWeb.Email do
   end
 
   def reset_password(email, url) do
-    support_email()
+    auth_email()
     |> to(email)
     |> subject(gettext("Reset password"))
     |> put_private(:preview_text, gettext("Click the link below to reset your password"))
@@ -40,7 +40,7 @@ defmodule PasswordlessWeb.Email do
   end
 
   def change_email(email, url) do
-    support_email()
+    auth_email()
     |> to(email)
     |> subject(gettext("Change email"))
     |> put_private(:preview_text, gettext("Click the link below to change your email"))
@@ -49,7 +49,7 @@ defmodule PasswordlessWeb.Email do
   end
 
   def org_invitation(%Org{} = org, invitation, url) do
-    support_email()
+    auth_email()
     |> to(invitation.email)
     |> subject(gettext("Invitation to join %{org_name}", org_name: org.name))
     |> put_private(
@@ -64,7 +64,7 @@ defmodule PasswordlessWeb.Email do
   end
 
   def passwordless_token(email, url) do
-    support_email()
+    auth_email()
     |> to(email)
     |> subject(gettext("%{app} Login Link", app: Passwordless.config(:app_name)))
     |> put_private(
