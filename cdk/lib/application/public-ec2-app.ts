@@ -115,26 +115,17 @@ export class PublicEC2App extends Construct {
       certificate,
       domainName: domain,
       domainZone: zone,
+      healthCheck: healthCheckCmd
+        ? {
+            command: healthCheckCmd,
+            interval: Duration.seconds(10),
+            timeout: Duration.seconds(5),
+            startPeriod: Duration.seconds(30),
+          }
+        : undefined,
       capacityProviderStrategies,
       containerMappingName,
       containerMappingProtocol: AppProtocol.http2,
-      serviceConnectConfiguration: namespace
-        ? {
-            namespace: namespace.namespaceName,
-            logDriver: LogDrivers.awsLogs({
-              streamPrefix: `${name}-service`,
-            }),
-            services: [
-              {
-                port: container.containerPort,
-                dnsName: name,
-                discoveryName: name,
-                portMappingName: containerMappingName,
-                perRequestTimeout: Duration.seconds(10),
-              },
-            ],
-          }
-        : undefined,
     });
 
     // Allow connections to itself
