@@ -34,7 +34,7 @@
         wrapper_class="mb-0!"
       />
     </div>
-    <.sms_preview preview={@preview} />
+    <.sms_preview preview={@preview} variant="whatsapp" />
     <div class="flex items-center gap-3 flex-wrap">
       <.a
         to={~p"/pricing"}
@@ -43,7 +43,7 @@
         link_type="live_redirect"
       />
       <.a
-        to={~p"/authenticators/sms?sms_learn=true"}
+        to={~p"/embed/api"}
         label={gettext("Read documentation")}
         style="link"
         link_type="live_redirect"
