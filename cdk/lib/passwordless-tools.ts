@@ -6,16 +6,8 @@ import {
   OriginRequestPolicy,
   ViewerProtocolPolicy,
 } from "aws-cdk-lib/aws-cloudfront";
-import {
-  LoadBalancerV2Origin,
-  S3BucketOrigin,
-} from "aws-cdk-lib/aws-cloudfront-origins";
-import {
-  InstanceClass,
-  InstanceSize,
-  InstanceType,
-  Port,
-} from "aws-cdk-lib/aws-ec2";
+import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
+import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
   AmiHardwareType,
@@ -34,7 +26,7 @@ import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 import { join } from "path";
 
-import { AppContainer, PublicEC2App } from "./application/public-ec2-app";
+import { AppContainer } from "./application/public-ec2-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
@@ -307,7 +299,7 @@ export class PasswordlessTools extends cdk.Stack {
       environment: { ...envLookup.appConfig, POOL_SIZE: "10" },
     });
 
-    const app = new PublicEC2App(this, appName, {
+    /*     const app = new PublicEC2App(this, appName, {
       name: appName,
       zone,
       domain: envLookup.hostedZone.domains.primary,
@@ -351,15 +343,15 @@ export class PasswordlessTools extends cdk.Stack {
       app.service.service,
       Port.tcp(redis.port),
       `Allow traffic from app to Redis on port ${redis.port}`,
-    );
+    ); */
 
     const _waf = new WAF(this, "main-waf", {
       name: `${appName}-waf`,
       associationArns: [
-        {
+        /*   {
           name: `${appName}-alb`,
           arn: app.service.loadBalancer.loadBalancerArn,
-        },
+        }, */
       ],
       allowedPathPrefixes: ["/api", "/webhook"],
       blockedPathPrefixes: ["/health"],
@@ -371,7 +363,8 @@ export class PasswordlessTools extends cdk.Stack {
       cert: cdnCert,
       domain: cdnDomain,
       defaultBehavior: {
-        origin: new LoadBalancerV2Origin(app.service.loadBalancer),
+        /*  origin: new LoadBalancerV2Origin(app.service.loadBalancer), */
+        origin: S3BucketOrigin.withOriginAccessControl(customerMedia.bucket),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
         originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
@@ -412,12 +405,12 @@ export class PasswordlessTools extends cdk.Stack {
       removalPolicy,
     });
 
-    for (const domain of ses.domainIdentities) {
+    /* for (const domain of ses.domainIdentities) {
       domain.grant(
         app.service.taskDefinition.taskRole,
         "ses:SendEmail",
         "ses:SendRawEmail",
       );
-    }
+    } */
   }
 }

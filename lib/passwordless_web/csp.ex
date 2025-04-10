@@ -124,6 +124,10 @@ defmodule PasswordlessWeb.CSP do
     put_content_security_policy(conn, fun.(conn))
   end
 
+  def put_content_security_policy(conn, {:config, path}) when is_atom(path) do
+    put_content_security_policy(conn, Passwordless.config(path))
+  end
+
   def put_content_security_policy(conn, opts) when is_list(opts) do
     csp =
       opts

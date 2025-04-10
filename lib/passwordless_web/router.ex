@@ -16,7 +16,7 @@ defmodule PasswordlessWeb.Router do
     plug :put_secure_browser_headers
 
     plug :put_content_security_policy,
-         Passwordless.config(:content_security_policy)
+         {:config, :content_security_policy}
 
     plug :fetch_current_user
     plug :fetch_active_user
