@@ -1,7 +1,7 @@
-defmodule AWS.Lambda.Monitor.State do
+defmodule Passwordless.AWS.Lambda.Monitor.State do
   @moduledoc false
-  alias AWS.Lambda.Client
-  alias AWS.Lambda.Monitor.Error
+  alias Passwordless.AWS.Lambda.Client
+  alias Passwordless.AWS.Lambda.Monitor.Error
 
   @doc "the monitor's initial state"
   def initial do

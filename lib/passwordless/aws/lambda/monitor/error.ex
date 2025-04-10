@@ -1,4 +1,4 @@
-defmodule AWS.Lambda.Monitor.Error do
+defmodule Passwordless.AWS.Lambda.Monitor.Error do
   @moduledoc """
   This module defines the Error struct which is used to communicate runtime
   errors to the Lambda Runtime Service.

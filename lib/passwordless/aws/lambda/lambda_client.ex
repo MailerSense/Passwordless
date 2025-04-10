@@ -1,4 +1,4 @@
-defmodule AWS.Lambda.Client do
+defmodule Passwordless.AWS.Lambda.Client do
   @moduledoc """
   This module represents an HTTP client for the Lambda Runtime service.
   """

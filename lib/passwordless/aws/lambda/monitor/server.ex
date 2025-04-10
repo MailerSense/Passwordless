@@ -1,8 +1,8 @@
-defmodule AWS.Lambda.Monitor.Server do
+defmodule Passwordless.AWS.Lambda.Monitor.Server do
   @moduledoc false
   use GenServer
 
-  alias AWS.Lambda.Monitor.State
+  alias Passwordless.AWS.Lambda.Monitor.State
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args, name: __MODULE__)

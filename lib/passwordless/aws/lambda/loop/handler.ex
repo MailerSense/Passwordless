@@ -1,4 +1,4 @@
-defmodule AWS.Lambda.Loop.Handler do
+defmodule Passwordless.AWS.Lambda.Loop.Handler do
   @moduledoc """
   This module defines the Handler struct which is used to represent the
   module-function atom pair which identifies a client's entrypoint.
@@ -16,8 +16,8 @@ defmodule AWS.Lambda.Loop.Handler do
   Manually create a handler from two atoms.
   ## Examples
 
-    iex> AWS.Lambda.Loop.Handler.new(Elixir.Example, :handle)
-    %AWS.Lambda.Loop.Handler{module: Elixir.Example, function: :handle}
+    iex> Passwordless.AWS.Lambda.Loop.Handler.new(Elixir.Example, :handle)
+    %Passwordless.AWS.Lambda.Loop.Handler{module: Elixir.Example, function: :handle}
   """
   def new(module, function) when is_atom(module) and is_atom(function) do
     %__MODULE__{module: module, function: function}
@@ -28,8 +28,8 @@ defmodule AWS.Lambda.Loop.Handler do
   ## Examples
 
       iex> System.put_env("_HANDLER", "Elixir.Example:handle")
-      iex> AWS.Lambda.Loop.Handler.configured()
-      %AWS.Lambda.Loop.Handler{module: Elixir.Example, function: :handle}
+      iex> Passwordless.AWS.Lambda.Loop.Handler.configured()
+      %Passwordless.AWS.Lambda.Loop.Handler{module: Elixir.Example, function: :handle}
   """
   def configured do
     [module, function] = String.split(handler_string(), ":", trim: true)
@@ -42,8 +42,8 @@ defmodule AWS.Lambda.Loop.Handler do
 
   Create a handler for String.trim and invoke it to get a result.
       iex> defmodule Example, do: def func(body, _context), do: body
-      iex> handler = AWS.Lambda.Loop.Handler.new(Example, :func)
-      iex> handler |> AWS.Lambda.Loop.Handler.invoke(%{msg: "hello"}, %{})
+      iex> handler = Passwordless.AWS.Lambda.Loop.Handler.new(Example, :func)
+      iex> handler |> Passwordless.AWS.Lambda.Loop.Handler.invoke(%{msg: "hello"}, %{})
       %{msg: "hello"}
   """
   def invoke(%__MODULE__{module: module, function: function}, body, context) when is_map(body) and is_map(context) do

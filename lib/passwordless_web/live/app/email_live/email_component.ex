@@ -55,7 +55,6 @@ defmodule PasswordlessWeb.App.EmailLive.EmailComponent do
   def handle_event("send_preview", _params, socket) do
     opts = [{:app, socket.assigns.current_app} | @examples]
     user = socket.assigns.current_user
-    template = socket.assigns.template
     version = socket.assigns.version
     user_name = Helpers.user_name(user)
     user_email = Helpers.user_email(user)

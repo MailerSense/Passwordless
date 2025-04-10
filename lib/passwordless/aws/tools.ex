@@ -1,9 +1,9 @@
-defmodule AWS.Tools do
+defmodule Passwordless.AWS.Tools do
   @moduledoc """
   Provides AWS tools & utilities.
   """
 
-  alias AWS.Policy
+  alias Passwordless.AWS.Policy
 
   @aws Application.compile_env!(:passwordless, :aws)
 

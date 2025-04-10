@@ -5,8 +5,6 @@ defmodule PasswordlessWeb.App.BillingLive.SubscribeSuccessLive do
   alias Passwordless.Billing
   alias Passwordless.Billing.Subscription
 
-  @provider Application.compile_env!(:passwordless, :billing_provider)
-
   @impl true
   def mount(_params, _session, socket) do
     socket =

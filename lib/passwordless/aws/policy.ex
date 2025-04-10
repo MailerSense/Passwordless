@@ -1,11 +1,11 @@
-defmodule AWS.Policy do
+defmodule Passwordless.AWS.Policy do
   @moduledoc """
   Represents an AWS IAM policy.
   """
 
   use TypedStruct
 
-  alias AWS.Policy.Statement
+  alias Passwordless.AWS.Policy.Statement
 
   typedstruct do
     field :id, binary()
@@ -53,7 +53,7 @@ defmodule AWS.Policy do
   end
 end
 
-defmodule AWS.Policy.Statement do
+defmodule Passwordless.AWS.Policy.Statement do
   @moduledoc """
   Represents an AWS IAM policy statement.
   """
@@ -131,7 +131,7 @@ defmodule AWS.Policy.Statement do
   defp parse_resource!(resources) when is_list(resources), do: Enum.map(resources, &parse_resource_literal!/1)
 
   defp parse_resource_literal!("arn:" <> _rest = arn) do
-    if AWS.Tools.valid_arn?(arn),
+    if Passwordless.AWS.Tools.valid_arn?(arn),
       do: arn,
       else: raise(ArgumentError, "invalid ARN: #{inspect(arn)}")
   end

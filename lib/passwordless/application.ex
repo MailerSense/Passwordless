@@ -19,8 +19,8 @@ defmodule Passwordless.Application do
           {Finch, name: Passwordless.Finch.AWS},
           Passwordless.Repo,
           PasswordlessWeb.Endpoint,
-          AWS.Lambda.Monitor.Server,
-          AWS.Lambda.Loop
+          Passwordless.AWS.Lambda.Monitor.Server,
+          Passwordless.AWS.Lambda.Loop
         ]
       else
         [

@@ -1,4 +1,4 @@
-defmodule AWS.Lambda.Loop do
+defmodule Passwordless.AWS.Lambda.Loop do
   @moduledoc """
   The main Runtime loop process.
 
@@ -9,9 +9,9 @@ defmodule AWS.Lambda.Loop do
 
   use GenServer
 
-  alias AWS.Lambda.Client
-  alias AWS.Lambda.Loop.Handler
-  alias AWS.Lambda.Monitor.Server
+  alias Passwordless.AWS.Lambda.Client
+  alias Passwordless.AWS.Lambda.Loop.Handler
+  alias Passwordless.AWS.Lambda.Monitor.Server
 
   require Logger
 

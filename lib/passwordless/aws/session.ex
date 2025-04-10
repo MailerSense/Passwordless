@@ -1,4 +1,4 @@
-defmodule AWS.Session do
+defmodule Passwordless.AWS.Session do
   @moduledoc """
   Represents a session with AWS or other cloud provider.
   """
