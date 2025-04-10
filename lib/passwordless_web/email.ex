@@ -16,7 +16,6 @@ defmodule PasswordlessWeb.Email do
     support_email()
     |> to(email)
     |> subject(gettext("Template for showing how to do headings, buttons etc in emails"))
-    |> put_private(:preview_text, gettext("This is a preview of the email template"))
     |> render_body("template.html")
     |> premail()
   end
@@ -25,7 +24,6 @@ defmodule PasswordlessWeb.Email do
     auth_email()
     |> to(email)
     |> subject(gettext("Confirm instructions"))
-    |> put_private(:preview_text, gettext("Click the link below to confirm your email"))
     |> render_body("confirm_register_email.html", %{url: url})
     |> premail()
   end
@@ -34,7 +32,6 @@ defmodule PasswordlessWeb.Email do
     auth_email()
     |> to(email)
     |> subject(gettext("Reset password"))
-    |> put_private(:preview_text, gettext("Click the link below to reset your password"))
     |> render_body("reset_password.html", %{url: url})
     |> premail()
   end
@@ -43,7 +40,6 @@ defmodule PasswordlessWeb.Email do
     auth_email()
     |> to(email)
     |> subject(gettext("Change email"))
-    |> put_private(:preview_text, gettext("Click the link below to change your email"))
     |> render_body("change_email.html", %{url: url})
     |> premail()
   end
@@ -52,13 +48,6 @@ defmodule PasswordlessWeb.Email do
     auth_email()
     |> to(invitation.email)
     |> subject(gettext("Invitation to join %{org_name}", org_name: org.name))
-    |> put_private(
-      :preview_text,
-      gettext("You've been invited to join %{org_name} on %{app}",
-        org_name: org.name,
-        app: Passwordless.config(:app_name)
-      )
-    )
     |> render_body("org_invitation.html", %{org: org, invitation: invitation, url: url})
     |> premail()
   end
@@ -67,10 +56,6 @@ defmodule PasswordlessWeb.Email do
     auth_email()
     |> to(email)
     |> subject(gettext("%{app} Login Link", app: Passwordless.config(:app_name)))
-    |> put_private(
-      :preview_text,
-      gettext("Click the link below to log in to %{app}", app: Passwordless.config(:app_name))
-    )
     |> render_body("passwordless_token.html", %{url: url})
     |> premail()
   end

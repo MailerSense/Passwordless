@@ -155,11 +155,8 @@ defmodule Database.ChangesetExt do
         %URI{host: nil} ->
           [{field, "is missing a host"}]
 
-        %URI{host: host} ->
-          case :inet.gethostbyname(Kernel.to_charlist(host)) do
-            {:ok, _} -> []
-            {:error, _} -> [{field, "invalid host"}]
-          end
+        %URI{} ->
+          []
       end
     end)
   end

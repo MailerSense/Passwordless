@@ -66,21 +66,19 @@ defmodule Passwordless.Accounts.Notifier do
     |> deliver()
   end
 
-  # Private
-
-  defp deliver(%Swoosh.Email{} = email) do
+  def deliver(%Swoosh.Email{} = email) do
     %{email: Mailer.to_map(email)}
     |> MailerExecutor.new()
     |> Oban.insert()
   end
 
-  defp deliver(%Swoosh.Email{} = email, via: %Domain{} = domain) do
+  def deliver(%Swoosh.Email{} = email, via: %Domain{} = domain) do
     %{email: Mailer.to_map(email), domain_id: domain.id}
     |> MailerExecutor.new()
     |> Oban.insert()
   end
 
-  defp system_domain(domain) when is_binary(domain) do
+  def system_domain(domain) when is_binary(domain) do
     Domain
     |> Domain.get_by_name(domain)
     |> Domain.get_by_tags([:system, :default])
