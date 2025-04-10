@@ -412,12 +412,12 @@ export class PasswordlessTools extends cdk.Stack {
       removalPolicy,
     });
 
-    /* for (const domain of ses.domainIdentities) {
+    for (const domain of ses.domainIdentities) {
       domain.grant(
         app.service.taskDefinition.taskRole,
         "ses:SendEmail",
         "ses:SendRawEmail",
       );
-    } */
+    }
   }
 }
