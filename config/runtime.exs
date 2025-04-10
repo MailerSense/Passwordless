@@ -47,18 +47,13 @@ if config_env() == :prod do
   if redis_host do
     config :passwordless, :hammer,
       redis: [
-        delete_buckets_timeout: 100_000,
-        key_prefix: "passwordless:rate_limiter",
-        expiry_ms: 60_000 * 60 * 2,
-        redix_config: [
-          ssl: true,
-          host: redis_host,
-          port: String.to_integer(redis_port),
-          password: redis_auth_token,
-          socket_opts: [
-            customize_hostname_check: [
-              match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
-            ]
+        ssl: true,
+        host: redis_host,
+        port: String.to_integer(redis_port),
+        password: redis_auth_token,
+        socket_opts: [
+          customize_hostname_check: [
+            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
           ]
         ]
       ]
@@ -159,12 +154,22 @@ config :passwordless, :content_security_policy,
   ],
   style_src:
     append_if(
-      ["'self'", "'unsafe-inline'", "https://rsms.me", "https://*.googleapis.com", "https://*.gstatic.com"],
+      [
+        "'self'",
+        "'unsafe-inline'",
+        "https://rsms.me",
+        "https://*.googleapis.com",
+        "https://*.gstatic.com"
+      ],
       "https://#{System.get_env("CDN_HOST")}",
       config_env() == :prod
     ),
   script_src:
-    append_if(["'self'", "'nonce'", "'unsafe-inline'"], "https://#{System.get_env("CDN_HOST")}", config_env() == :prod),
+    append_if(
+      ["'self'", "'nonce'", "'unsafe-inline'"],
+      "https://#{System.get_env("CDN_HOST")}",
+      config_env() == :prod
+    ),
   frame_src:
     append_if(
       ["https://*.passwordless.tools"],

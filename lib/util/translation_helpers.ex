@@ -125,7 +125,7 @@ defmodule Util.TranslationHelpers do
   end
 
   defp get_error_translator_from_config do
-    case Application.get_env(:passwordless, :error_translator_function) do
+    case Passwordless.config(:error_translator_function) do
       {module, function} -> &apply(module, function, [&1])
       nil -> nil
     end

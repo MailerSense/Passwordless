@@ -15,7 +15,10 @@ defmodule Passwordless.Cache do
   @impl true
   def init(_opts) do
     in_memory_cache = [
-      %{id: __MODULE__.InMemory.name(), start: {Cachex, :start_link, [__MODULE__.InMemory.name(), []]}}
+      %{
+        id: __MODULE__.InMemory.name(),
+        start: {Cachex, :start_link, [__MODULE__.InMemory.name(), []]}
+      }
     ]
 
     children =
@@ -24,7 +27,7 @@ defmodule Passwordless.Cache do
           in_memory_cache
 
         __MODULE__.Redis ->
-          redis = Application.get_env(:passwordless, :redis)
+          redis = Passwordless.config(:redis)
           [{__MODULE__.Redix, redis_config(redis)} | in_memory_cache]
 
         _ ->
@@ -61,7 +64,9 @@ defmodule Passwordless.Cache do
       host: Keyword.fetch!(redis, :host),
       port: String.to_integer(Keyword.fetch!(redis, :port)),
       password: Keyword.fetch!(redis, :auth_token),
-      socket_opts: [customize_hostname_check: [match_fun: :public_key.pkix_verify_hostname_match_fun(:https)]]
+      socket_opts: [
+        customize_hostname_check: [match_fun: :public_key.pkix_verify_hostname_match_fun(:https)]
+      ]
     ]
   end
 end

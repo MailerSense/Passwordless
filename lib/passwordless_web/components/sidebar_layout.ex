@@ -153,15 +153,4 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
     </div>
     """
   end
-
-  # Private
-
-  # We load Alpine state dynamically in this way because we need to persist the sidebar isCollapsed state
-  # across page reloads when it's togglable. This requires the Alpine Persist plugin, and throws a JS error
-  # if the plugin is missing, so this reduces that impact as much as possible.
-
-  defp x_persist_collapsed(%{collapsible: true, default_collapsed: default_collapsed}),
-    do: "isCollapsed: $persist(#{default_collapsed})"
-
-  defp x_persist_collapsed(_), do: "isCollapsed: false"
 end
