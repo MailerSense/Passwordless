@@ -19,8 +19,8 @@ defmodule Passwordless.Accounts.UserSeeder do
     %{
       kind: :user,
       state: :active,
-      name: "John Smith",
-      email: "marcin.praski@mailersend.com",
+      name: "Marcin Praski",
+      email: "marcin.praski@opentide.com",
       password: @password
     }
     |> Map.merge(attrs)
