@@ -115,14 +115,6 @@ export class PublicEC2App extends Construct {
       certificate,
       domainName: domain,
       domainZone: zone,
-      healthCheck: healthCheckCmd
-        ? {
-            command: healthCheckCmd,
-            interval: Duration.seconds(10),
-            timeout: Duration.seconds(5),
-            startPeriod: Duration.seconds(30),
-          }
-        : undefined,
       capacityProviderStrategies,
       containerMappingName,
       containerMappingProtocol: AppProtocol.http2,
