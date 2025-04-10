@@ -85,7 +85,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
   end
 
   @impl true
-  def handle_event("cancel-upload", %{"ref" => ref}, socket) do
+  def handle_event("cancel_upload", %{"ref" => ref}, socket) do
     {:noreply, cancel_upload(socket, :logo, ref)}
   end
 

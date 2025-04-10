@@ -86,7 +86,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
                 <.live_img_preview entry={entry} class={@new_image_class} />
                 <button
                   type="button"
-                  phx-click="cancel-upload"
+                  phx-click="cancel_upload"
                   phx-target={@phx_target}
                   phx-value-ref={entry.ref}
                   aria-label="cancel"
@@ -132,7 +132,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
 
               <button
                 type="button"
-                phx-click="cancel-upload"
+                phx-click="cancel_upload"
                 phx-value-ref={entry.ref}
                 aria-label="cancel"
               >
@@ -199,7 +199,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
             <.live_img_preview entry={entry} class={@new_image_class} />
             <button
               type="button"
-              phx-click="cancel-upload"
+              phx-click="cancel_upload"
               phx-target={@phx_target}
               phx-value-ref={entry.ref}
               aria-label="cancel"
@@ -243,7 +243,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
 
               <button
                 type="button"
-                phx-click="cancel-upload"
+                phx-click="cancel_upload"
                 phx-value-ref={entry.ref}
                 aria-label="cancel"
               >
