@@ -6,7 +6,10 @@ import {
   OriginRequestPolicy,
   ViewerProtocolPolicy,
 } from "aws-cdk-lib/aws-cloudfront";
-import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
+import {
+  LoadBalancerV2Origin,
+  S3BucketOrigin,
+} from "aws-cdk-lib/aws-cloudfront-origins";
 import {
   InstanceClass,
   InstanceSize,
@@ -368,8 +371,7 @@ export class PasswordlessTools extends cdk.Stack {
       cert: cdnCert,
       domain: cdnDomain,
       defaultBehavior: {
-        /*  origin: new LoadBalancerV2Origin(app.service.loadBalancer), */
-        origin: S3BucketOrigin.withOriginAccessControl(customerMedia.bucket),
+        origin: new LoadBalancerV2Origin(app.service.loadBalancer),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
         originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
