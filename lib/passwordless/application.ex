@@ -3,9 +3,6 @@ defmodule Passwordless.Application do
 
   use Application
 
-  @secret Application.compile_env!(:passwordless, :secret_manager)
-  @secret_name Keyword.fetch!(@secret, :secret_name)
-
   @impl true
   def start(_type, _args) do
     :logger.add_handler(:sentry_handler, Sentry.LoggerHandler, %{
@@ -27,7 +24,7 @@ defmodule Passwordless.Application do
           {Finch, name: Passwordless.Finch},
           {Finch, name: Passwordless.Finch.Swoosh},
           {Finch, name: Passwordless.Finch.AWS},
-          {Passwordless.SecretVault, @secret_name},
+          {Passwordless.SecretVault, app_secret()},
           Passwordless.Vault,
           Passwordless.Repo,
           PasswordlessWeb.Telemetry
@@ -64,6 +61,10 @@ defmodule Passwordless.Application do
     readiness = [Passwordless.HealthCheck.repo?(Passwordless.Repo)]
     liveness = [Passwordless.HealthCheck.repo?(Passwordless.Repo)]
     {readiness, liveness}
+  end
+
+  defp app_secret do
+    Passwordless.config([:secret_manager, :secret_name])
   end
 
   defp append_if(list, _value, false), do: list
