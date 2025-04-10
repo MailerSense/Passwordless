@@ -26,8 +26,23 @@ defmodule PasswordlessWeb.Router do
     plug PasswordlessWeb.Plugs.SetLocale, gettext: PasswordlessWeb.Gettext
   end
 
+  pipeline :public_browser do
+    plug :parse_ip
+    plug :accepts, ["html"]
+    plug :put_root_layout, {MailerSenseWeb.Layouts, :root}
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+
+    plug :put_content_security_policy,
+         {:config, :content_security_policy}
+  end
+
   pipeline :public_layout do
     plug :put_layout, html: {PasswordlessWeb.Layouts, :public}
+  end
+
+  pipeline :unsubscribe_layout do
+    plug :put_layout, html: {PasswordlessWeb.Layouts, :unsubscribe}
   end
 
   pipeline :authenticated do
@@ -48,6 +63,12 @@ defmodule PasswordlessWeb.Router do
 
     # Accept invitation to the organization
     post "/invitation/accept", OrgController, :accept_invitation
+  end
+
+  scope "/unsubscribe", PasswordlessWeb do
+    pipe_through [:public_browser, :unsubscribe_layout]
+
+    post "/email/:token", EmailSubscriptionController, :unsubscribe_email
   end
 
   # App routes - for signed in and confirmed users only

@@ -418,6 +418,20 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create index(:magic_link_mappings, [:app_id])
     create unique_index(:magic_link_mappings, [:magic_link_id])
 
+    ## Email Unsubscribe Link mapping
+
+    create table(:email_unsubscribe_link_mappings, primary_key: false) do
+      add :token, :binary, primary_key: true
+      add :email_id, :uuid, null: false
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps(updated_at: false)
+    end
+
+    create index(:email_unsubscribe_link_mappings, [:app_id])
+    create unique_index(:email_unsubscribe_link_mappings, [:email_id])
+
     ## Billing items
 
     create table(:billing_items, primary_key: false) do
