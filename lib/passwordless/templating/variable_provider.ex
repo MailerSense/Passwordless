@@ -68,19 +68,19 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Actor do
   # Private
 
   defp add_email(%Actor{email: %Email{} = email}) do
-    %{email: email.address}
+    %{"email" => email.address}
   end
 
   defp add_email(%Actor{}), do: %{}
 
   defp add_phone(%Actor{phone: %Phone{} = phone}) do
-    %{phone: phone.canonical}
+    %{"phone" => phone.canonical}
   end
 
   defp add_phone(%Actor{}), do: %{}
 
   defp add_properties(%Actor{properties: properties}) when is_map(properties) do
-    %{properties: properties}
+    %{"properties" => properties}
   end
 
   defp add_properties(%Actor{}), do: %{properties: %{}}
@@ -95,6 +95,6 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Action do
   Provide the action variables.
   """
   def variables(%Action{name: name}) do
-    %{name: name}
+    %{"name" => name}
   end
 end

@@ -60,21 +60,21 @@ defmodule PasswordlessWeb.App.EmailLive.EmailComponent do
     user_name = Helpers.user_name(user)
     user_email = Helpers.user_email(user)
 
-    email =
+    with {:ok,
+          %{
+            subject: subject,
+            html_content: html_content,
+            text_content: text_content
+          }} <- Renderer.render(version, %{}, opts) do
       EmailWeb.auth_email()
       |> SwooshEmail.to({user_name, user_email})
-      |> SwooshEmail.subject(gettext("[Test] %{name}", name: template.name))
-
-    IO.inspect({opts, user, template, version, user_name, user_email, email})
-
-    with {:ok, %{html_content: html_content, text_content: text_content}} <- Renderer.render(version, %{}, opts) do
-      IO.inspect(%{html_content: html_content, text_content: text_content})
-
-      email
+      |> SwooshEmail.subject(gettext("[Test] %{name}", name: subject))
       |> SwooshEmail.html_body(html_content)
       |> SwooshEmail.text_body(text_content)
       |> Notifier.deliver(via: Notifier.system_domain(EmailWeb.auth_email_domain()))
     end
+
+    LiveToast.send_toast(:info, "Preview email sent.", title: gettext("Success"))
 
     {:noreply, socket}
   end

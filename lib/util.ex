@@ -469,6 +469,33 @@ defmodule Util do
   def append_if(list, _value, false), do: list
   def append_if(list, value, true), do: list ++ List.wrap(value)
 
+  # Stringify keys
+
+  def stringify_keys(map) when is_map(map) do
+    for {key, val} <- map, into: %{} do
+      string_key = if is_atom(key), do: Atom.to_string(key), else: key
+
+      string_val =
+        cond do
+          is_map(val) -> stringify_keys(val)
+          is_atom(val) -> Atom.to_string(val)
+          is_list(val) -> Enum.map(val, &stringify_keys/1)
+          is_struct(val) -> stringify_keys(Map.from_struct(val))
+          is_binary(val) -> val
+          is_integer(val) -> Integer.to_string(val)
+          is_float(val) -> Float.to_string(val)
+          is_boolean(val) -> to_string(val)
+          is_nil(val) -> nil
+          is_function(val) -> "<function>"
+          true -> val
+        end
+
+      {string_key, string_val}
+    end
+  end
+
+  def stringify_keys(other), do: other
+
   # Private
 
   # Key exists in both maps, and both values are maps as well.

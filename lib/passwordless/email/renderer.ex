@@ -41,7 +41,9 @@ defmodule Passwordless.Email.Renderer do
         _ -> variables
       end
 
-    with {:ok, subject} <- Map.fetch(variables, :subject),
+    variables = Util.stringify_keys(variables)
+
+    with {:ok, subject} <- Map.fetch(variables, "subject"),
          {:ok, mjml_body} <- Liquid.render(mjml_body, variables),
          {:ok, html_body} <- MJML.convert(mjml_body) do
       {:ok,
