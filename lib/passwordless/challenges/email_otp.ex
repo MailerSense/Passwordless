@@ -19,6 +19,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   alias Passwordless.EmailMessage
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateVersion
+  alias Passwordless.EmailUnsubscribeLinkMapping
   alias Passwordless.Mailer
   alias Passwordless.MailerExecutor
   alias Passwordless.OTP
@@ -57,7 +58,7 @@ defmodule Passwordless.Challenges.EmailOTP do
            ),
          {:ok, otp} <- create_otp(authenticator, email_message, otp_code),
          {:ok, challenge} <- update_challenge_state(app, challenge, :otp_sent),
-         {:ok, _job} <- enqueue_email_message(email_message),
+         {:ok, _job} <- enqueue_email_message(app, email_message),
          do:
            {:ok,
             %Action{
@@ -65,7 +66,7 @@ defmodule Passwordless.Challenges.EmailOTP do
               | challenge: %Challenge{
                   challenge
                   | email_message: %EmailMessage{email_message | otp: otp},
-                    email_messages: Repo.preload(challenge, :email_messages).email_messages
+                    email_messages: [email_message | challenge.email_messages]
                 }
             }}
   end
@@ -130,6 +131,8 @@ defmodule Passwordless.Challenges.EmailOTP do
          %Authenticators.Email{} = authenticator,
          otp_code
        ) do
+    opts = [app: app, actor: actor, action: action]
+
     attrs = %{
       sender: Authenticators.Email.sender_email(authenticator, domain),
       sender_name: authenticator.sender_name,
@@ -141,13 +144,20 @@ defmodule Passwordless.Challenges.EmailOTP do
       email_template_version_id: version.id
     }
 
-    with {:ok, message_attrs} <- Renderer.render(version, %{otp_code: otp_code}, app: app, actor: actor, action: action) do
+    with {:ok, message_attrs} <- Renderer.render(version, %{otp_code: otp_code}, opts) do
       attrs = Map.merge(attrs, message_attrs)
 
       challenge
       |> Ecto.build_assoc(:email_messages)
       |> EmailMessage.changeset(attrs)
       |> Repo.insert()
+      |> case do
+        {:ok, %EmailMessage{} = message} ->
+          {:ok, %EmailMessage{message | email: email, domain: domain}}
+
+        error ->
+          error
+      end
     end
   end
 
@@ -175,6 +185,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   end
 
   defp enqueue_email_message(
+         %App{} = app,
          %EmailMessage{
            sender: sender,
            sender_name: sender_name,
@@ -185,6 +196,7 @@ defmodule Passwordless.Challenges.EmailOTP do
            subject: subject,
            html_content: html_content,
            text_content: text_content,
+           email: %Email{} = email,
            domain: %Domain{} = domain
          } = email_message
        ) do
@@ -195,6 +207,8 @@ defmodule Passwordless.Challenges.EmailOTP do
       |> SwooshEmail.subject(subject)
       |> SwooshEmail.html_body(html_content)
       |> SwooshEmail.text_body(text_content)
+      |> SwooshEmail.header("List-Unsubscribe", unsubscribe_url(app, email))
+      |> SwooshEmail.header("List-Unsubscribe-Post", "List-Unsubscribe=One-Click")
 
     %{email: Mailer.to_map(swoosh_email), domain_id: domain.id}
     |> MailerExecutor.new()
@@ -215,5 +229,15 @@ defmodule Passwordless.Challenges.EmailOTP do
     action
     |> Action.state_changeset(%{state: state})
     |> Repo.update(opts)
+  end
+
+  defp unsubscribe_url(%App{} = app, %Email{} = email) do
+    with {:ok, link} <- Passwordless.create_email_unsubscribe_link(app, email) do
+      PasswordlessWeb.Router.Helpers.email_subscription_url(
+        PasswordlessWeb.Endpoint,
+        :unsubscribe_email,
+        EmailUnsubscribeLinkMapping.sign_token(link)
+      )
+    end
   end
 end

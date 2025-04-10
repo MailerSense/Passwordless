@@ -20,6 +20,7 @@ defmodule Passwordless do
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateVersion
+  alias Passwordless.EmailUnsubscribeLinkMapping
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
@@ -470,6 +471,40 @@ defmodule Passwordless do
     actor
     |> Ecto.assoc(:emails)
     |> Repo.all(prefix: Tenant.to_prefix(app))
+  end
+
+  def create_email_unsubscribe_link(%App{} = app, %Email{} = email) do
+    attrs = %{token: EmailUnsubscribeLinkMapping.generate_token(), email_id: email.id}
+
+    changeset =
+      app
+      |> Ecto.build_assoc(:email_unsubscribe_link_mappings)
+      |> EmailUnsubscribeLinkMapping.changeset(attrs)
+
+    upsert_clause = [
+      returning: true,
+      on_conflict: :nothing,
+      conflict_target: [:email_id]
+    ]
+
+    Repo.insert(changeset, upsert_clause)
+  end
+
+  @doc """
+  Unsubscribe an email.
+  """
+  def unsubscribe_email(token) when is_binary(token) do
+    with {:ok, query} <- EmailUnsubscribeLinkMapping.get_by_token(token) do
+      Repo.transact(fn ->
+        case Repo.one(query) do
+          %EmailUnsubscribeLinkMapping{app_id: app_id, email_id: email_id} = mapping ->
+            {:ok, mapping}
+
+          _ ->
+            {:error, :link_not_found}
+        end
+      end)
+    end
   end
 
   def get_phone!(%App{} = app, %Actor{} = actor, id) do

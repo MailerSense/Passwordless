@@ -364,7 +364,7 @@
         <.button
           icon="remix-delete-bin-line"
           size="md"
-          label={gettext("Yes, Delete \"%{actor}\"", actor: @actor.name)}
+          label={gettext("Yes, Delete \"%{actor}\"", actor: Util.truncate(Actor.handle(@actor)))}
           color="danger"
           phx-click="delete_actor"
         />

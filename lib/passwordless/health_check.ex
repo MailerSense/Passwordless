@@ -140,10 +140,16 @@ defmodule Passwordless.HealthCheck do
   """
   def alive?(pid_fun) do
     fn ->
-      if Process.alive?(pid_fun.()) do
-        :ok
-      else
-        {:error, :process_died}
+      case pid_fun.() do
+        pid when is_pid(pid) ->
+          if Process.alive?(pid) do
+            :ok
+          else
+            {:error, :process_died}
+          end
+
+        _ ->
+          {:error, :process_died}
       end
     end
   end
