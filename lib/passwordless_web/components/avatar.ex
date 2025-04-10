@@ -89,7 +89,7 @@ defmodule PasswordlessWeb.Components.Avatar do
           ]}
         >
           <Icon.icon
-            name="hero-user-solid"
+            name="remix-image-line"
             class={["pc-avatar__placeholder-icon", "pc-avatar__placeholder-icon--#{@size}"]}
           />
         </div>

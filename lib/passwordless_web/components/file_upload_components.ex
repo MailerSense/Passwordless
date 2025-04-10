@@ -26,7 +26,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
 
   attr :delete_button_class, :string,
     default:
-      "rounded-full w-6 h-6 p-0 m-0 absolute bottom-[-10%] right-[-10%] bg-slate-700/70 text-white hover:bg-slate-700 dark:hover:bg-slate-500/50"
+      "rounded-full w-6 h-6 p-0 m-0 absolute bottom-[-10%] right-[-10%] bg-slate-700/70 text-white hover:bg-slate-700 dark:hover:bg-slate-500/50 flex items-center justify-center"
 
   attr :on_delete, :string,
     default: nil,
@@ -65,7 +65,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
               data-confirm={@confirm_delete_text}
               class={@delete_button_class}
             >
-              <.icon name="hero-x-mark-solid" class="h-4 w-4 -mt-1" />
+              <.icon name="remix-close-line" class="h-4 w-4" />
             </button>
           </div>
 
@@ -80,7 +80,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
           />
 
           <%= if @upload.entries != [] do %>
-            <.icon name="hero-arrow-right-solid" class="h-5" />
+            <.icon name="remix-arrow-right-line" class="h-5" />
             <%= for entry <- @upload.entries do %>
               <div class="relative shrink-0">
                 <.live_img_preview entry={entry} class={@new_image_class} />
@@ -92,7 +92,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
                   aria-label="cancel"
                   class={@delete_button_class}
                 >
-                  <.icon name="hero-x-mark-solid" class="h-4 w-4 -mt-1" />
+                  <.icon name="remix-close-line" class="h-4 w-4" />
                 </button>
               </div>
             <% end %>
@@ -169,7 +169,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
 
   attr :delete_button_class, :string,
     default:
-      "rounded-full w-6 h-6 p-0 m-0 absolute bottom-[-10%] right-[-10%] bg-slate-700/70 text-white hover:bg-slate-700 dark:hover:bg-slate-500/50"
+      "rounded-full w-6 h-6 p-0 m-0 absolute bottom-[-10%] right-[-10%] bg-slate-700/70 text-white hover:bg-slate-700 dark:hover:bg-slate-500/50 flex items-center justify-center"
 
   attr :on_delete, :string,
     default: nil,
@@ -205,7 +205,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
               aria-label="cancel"
               class={@delete_button_class}
             >
-              <.icon name="hero-x-mark-solid" class="h-4 w-4 -mt-1" />
+              <.icon name="remix-close-line" class="h-4 w-4 -mt-1" />
             </button>
           </div>
         </div>

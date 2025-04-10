@@ -52,6 +52,11 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
     save_app(socket, %{logo: nil})
   end
 
+  @impl true
+  def handle_event("cancel-upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :logo, ref)}
+  end
+
   # Private
 
   defp maybe_add_logo(user_params, socket) do
