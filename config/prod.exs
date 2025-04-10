@@ -28,6 +28,9 @@ config :passwordless, :cache, adapter: Cache.Redis
 # Configures the object storage to AWS
 config :passwordless, :storage, adapter: Storage.Amazon
 
+# Configures the rate limit
+config :passwordless, :rate_limit, adapter: RateLimit.Redis
+
 # Configures the secret manager to AWS
 config :passwordless, :secret_manager,
   adapter: SecretManager.Amazon,

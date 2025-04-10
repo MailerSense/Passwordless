@@ -45,34 +45,23 @@ if config_env() == :prod do
     auth_token: redis_auth_token
 
   if redis_host do
-    config :hammer,
-      backend:
-        {Hammer.Backend.Redis,
-         [
-           delete_buckets_timeout: 100_000,
-           key_prefix: "passwordless:rate_limiter",
-           expiry_ms: 60_000 * 60 * 2,
-           redix_config: [
-             ssl: true,
-             host: redis_host,
-             port: String.to_integer(redis_port),
-             password: redis_auth_token,
-             socket_opts: [
-               customize_hostname_check: [
-                 match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
-               ]
-             ]
-           ]
-         ]}
-  else
-    config :hammer,
-      backend: {
-        Hammer.Backend.ETS,
-        [
-          expiry_ms: 60_000 * 60 * 4,
-          cleanup_interval_ms: 60_000 * 10
+    config :passwordless, :hammer,
+      redis: [
+        delete_buckets_timeout: 100_000,
+        key_prefix: "passwordless:rate_limiter",
+        expiry_ms: 60_000 * 60 * 2,
+        redix_config: [
+          ssl: true,
+          host: redis_host,
+          port: String.to_integer(redis_port),
+          password: redis_auth_token,
+          socket_opts: [
+            customize_hostname_check: [
+              match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+            ]
+          ]
         ]
-      }
+      ]
   end
 
   secret_key_base =

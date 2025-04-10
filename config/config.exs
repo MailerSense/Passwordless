@@ -94,6 +94,15 @@ config :passwordless, :cache, adapter: Cache.InMemory
 # Configures the object storage
 config :passwordless, :storage, adapter: Storage.Local
 
+# Configures the rate limit
+config :passwordless, :rate_limit, adapter: RateLimit.ETS
+
+config :passwordless, :hammer,
+  ets: [
+    expiry_ms: 60_000 * 60 * 4,
+    cleanup_interval_ms: 60_000 * 10
+  ]
+
 # Configures the secret manager
 config :passwordless, :secret_manager,
   adapter: SecretManager.Local,
