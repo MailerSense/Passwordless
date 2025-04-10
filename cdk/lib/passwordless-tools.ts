@@ -168,7 +168,7 @@ export class PasswordlessTools extends cdk.Stack {
                 AmiHardwareType.ARM,
               ),
               minCapacity: 2,
-              maxCapacity: 2,
+              maxCapacity: 6,
             },
           ),
           enableManagedTerminationProtection: true,
@@ -328,6 +328,17 @@ export class PasswordlessTools extends cdk.Stack {
           weight: 100,
         },
       ],
+    });
+
+    const scaling = app.service.service.autoScaleTaskCount({
+      minCapacity: 1,
+      maxCapacity: 6,
+    });
+
+    scaling.scaleOnCpuUtilization(`${env}-app-cpu-scaling`, {
+      targetUtilizationPercent: 50,
+      scaleInCooldown: Duration.minutes(1),
+      scaleOutCooldown: Duration.minutes(1),
     });
 
     app.node.addDependency(migration);

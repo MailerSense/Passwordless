@@ -105,6 +105,13 @@ config :passwordless, :media_upload, adapter: Passwordless.FileUploads.Local
 
 # Configures the emails
 config :passwordless, :emails,
+  auth: [
+    name: "Passwordless",
+    email: "noreply@auth.eu.passwordlesstools.com",
+    domain: "auth.eu.passwordlesstools.com",
+    reply_to: "hello@passwordless.tools",
+    reply_to_name: "Passwordless Support"
+  ],
   support: [
     name: "Passwordless",
     email: "noreply@support.passwordlesstools.com",

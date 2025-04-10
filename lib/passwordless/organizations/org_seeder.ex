@@ -43,9 +43,9 @@ defmodule Passwordless.Organizations.OrgSeeder do
     {:ok, app} =
       Passwordless.create_app(org, %{
         name: "Demo App",
-        website: "https://google.com",
+        website: "https://passwordless.tools",
         display_name: "Demo App",
-        email_tracking: false,
+        email_tracking: true,
         email_configuration_set: "passwordless-tools-app-ses-config-set"
       })
 

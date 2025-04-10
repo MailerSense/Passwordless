@@ -288,22 +288,55 @@ defmodule PasswordlessWeb.DashboardComponents do
   attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
   attr :preview, :string, default: "", doc: "any extra CSS class for the parent container"
 
+  attr :variant, :string,
+    default: "sms",
+    values: ["sms", "whatsapp"]
+
   attr :rest, :global
 
   def sms_preview(assigns) do
+    assigns =
+      assign(
+        assigns,
+        whatsapp: assigns[:variant] == "whatsapp",
+        bg_class:
+          case assigns[:variant] do
+            "sms" -> "bg-slate-100 dark:bg-slate-700/50"
+            "whatsapp" -> "relative overflow-hidden"
+          end,
+        avatar_attrs: %{
+          icon:
+            case assigns[:variant] do
+              "sms" -> "remix-whatsapp-fill"
+              "whatsapp" -> "remix-whatsapp-fill"
+            end,
+          name:
+            case assigns[:variant] do
+              "sms" -> "AU"
+              "whatsapp" -> nil
+            end
+        }
+      )
+
     ~H"""
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
       <.form_label>{gettext("Preview")}</.form_label>
 
-      <div class="flex flex-col gap-y-8 flex-auto shrink-0 p-4 bg-slate-100 rounded-lg dark:bg-slate-700/50">
-        <div class="flex flex-row items-center max-w-md ml-4">
-          <.avatar name="AU" size="md" color="success" class="shrink-0" />
+      <div class={["flex flex-col gap-y-8 flex-auto shrink-0 p-4 rounded-lg", @bg_class]}>
+        <img
+          :if={@whatsapp}
+          src={~p"/images/whatsapp_bg.png"}
+          class="absolute top-0 left-0 w-full object-contain z-10"
+        />
+
+        <div class="flex flex-row items-center max-w-md ml-4 z-20">
+          <.avatar {@avatar_attrs} size="md" color="success" class="shrink-0" />
           <div class="relative px-4 py-2 ml-3 text-sm bg-white shadow-0 dark:bg-slate-600 rounded-xl">
             <.p class="text-slate-900 dark:text-white">{Phoenix.HTML.raw(@preview)}</.p>
           </div>
         </div>
 
-        <div class="flex flex-row items-center grow w-full h-auto px-4">
+        <div class="flex flex-row items-center grow w-full h-auto px-4 z-20">
           <div class="mr-4">
             <button
               type="button"
@@ -321,7 +354,7 @@ defmodule PasswordlessWeb.DashboardComponents do
                 value=""
                 type="textarea"
                 rows="1"
-                class="flex w-full pl-4 border min-h-10 rounded-xl bg-white dark:bg-transparent focus:outline-hidden border border-slate-300 dark:border-slate-600"
+                class="flex w-full pl-4 border min-h-10 rounded-xl bg-white dark:bg-slate-700 focus:outline-hidden border border-slate-300 dark:border-slate-600"
               />
             </div>
           </div>
@@ -329,7 +362,7 @@ defmodule PasswordlessWeb.DashboardComponents do
             <button
               type="submit"
               id="submit-button"
-              class="w-9 h-9 flex items-center justify-center text-sm text-slate-600 rounded-full shadow-sm dark:text-white ring-slate-300 hover:bg-slate-100 focus:bg-white ring-1 dark:ring-slate-300 group dark:hover:bg-slate-400 bg-white dark:bg-transparent"
+              class="w-9 h-9 flex items-center justify-center text-sm text-slate-600 rounded-full shadow-sm dark:text-white ring-slate-300 hover:bg-slate-100 focus:bg-white ring-1 dark:ring-slate-500 group dark:hover:bg-slate-400 bg-white dark:bg-slate-700"
             >
               <.icon id="icon" name="remix-send-plane-2-fill" class={["w-4 h-4"]} />
             </button>

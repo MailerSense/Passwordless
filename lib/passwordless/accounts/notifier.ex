@@ -6,8 +6,10 @@ defmodule Passwordless.Accounts.Notifier do
   """
 
   alias Passwordless.Accounts.User
+  alias Passwordless.Domain
   alias Passwordless.Mailer
   alias Passwordless.MailerExecutor
+  alias Passwordless.Repo
   alias PasswordlessWeb.Email
 
   @doc """
@@ -52,7 +54,7 @@ defmodule Passwordless.Accounts.Notifier do
   def deliver_passwordless_token(%User{email: email}, url) when is_binary(url) do
     email
     |> Email.passwordless_token(url)
-    |> deliver()
+    |> deliver(via: system_domain(Email.auth_email_domain()))
   end
 
   @doc """
@@ -67,14 +69,21 @@ defmodule Passwordless.Accounts.Notifier do
   # Private
 
   defp deliver(%Swoosh.Email{} = email) do
-    with {:ok, _job} <- enqueue_worker(Mailer.to_map(email)) do
-      {:ok, email}
-    end
-  end
-
-  defp enqueue_worker(email) do
-    %{email: email}
+    %{email: Mailer.to_map(email)}
     |> MailerExecutor.new()
     |> Oban.insert()
+  end
+
+  defp deliver(%Swoosh.Email{} = email, via: %Domain{} = domain) do
+    %{email: Mailer.to_map(email), domain_id: domain.id}
+    |> MailerExecutor.new()
+    |> Oban.insert()
+  end
+
+  defp system_domain(domain) when is_binary(domain) do
+    Domain
+    |> Domain.get_by_name(domain)
+    |> Domain.get_by_tags([:system, :default])
+    |> Repo.one()
   end
 end

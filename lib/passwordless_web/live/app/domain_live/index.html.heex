@@ -88,19 +88,18 @@
       style="link"
       link_type="live_patch"
     />
-    <.form_separator no_margin />
-    <.form_header title={gettext("Danger zone")} no_margin />
-    <.p>
+    <.form_separator :if={Util.present?(@email_domain)} no_margin />
+    <.form_header :if={Util.present?(@email_domain)} title={gettext("Danger zone")} no_margin />
+    <.p :if={Util.present?(@email_domain)}>
       Email domains can be changed or removed at any time. Be aware that a domain will continue to be active for 1 day after you remove it. This is to ensure that any emails sent during that time are not lost.
     </.p>
-    <div class="flex items-center gap-3 flex-wrap">
-      <.a
-        to={~p"/domain/tracking/change"}
-        label={gettext("Delete domain")}
-        style="delete"
-        link_type="live_patch"
-      />
-    </div>
+    <.a
+      :if={Util.present?(@email_domain)}
+      to={~p"/domain/delete"}
+      label={gettext("Delete domain")}
+      style="delete"
+      link_type="live_patch"
+    />
   </div>
 </.tabbed_settings_layout>
 
@@ -122,6 +121,7 @@
       subtitle={@page_subtitle}
       app={@current_app}
       domain={@domain}
+      domain_kind={@domain_kind}
       module={PasswordlessWeb.App.DomainLive.ChangeComponent}
       live_action={@live_action}
       return_to={~p"/domain"}
@@ -133,9 +133,34 @@
       subtitle={@page_subtitle}
       app={@current_app}
       domain={@domain}
+      domain_kind={@domain_kind}
       module={PasswordlessWeb.App.DomainLive.ChangeComponent}
       live_action={@live_action}
       return_to={~p"/domain"}
     />
+  <% :delete -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light-flat"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Delete \"%{domain}\"", domain: @email_domain.name)}
+          color="danger"
+          phx-click="delete_domain"
+        />
+      </div>
+    </.modal>
   <% _ -> %>
 <% end %>

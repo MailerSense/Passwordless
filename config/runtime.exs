@@ -140,6 +140,7 @@ end
 # If you use any CDNs, whitelist them here.
 
 config :passwordless, :content_security_policy,
+  base_uri: "https://#{System.get_env("PHX_HOST")}",
   default_src: append_if(["'self'"], "https://#{System.get_env("CDN_HOST")}", config_env() == :prod),
   connect_src:
     [
@@ -159,7 +160,8 @@ config :passwordless, :content_security_policy,
   img_src: [
     "https:",
     "'self'",
-    "data:"
+    "data:",
+    "blob:"
   ],
   font_src: [
     "https://rsms.me",
@@ -172,7 +174,8 @@ config :passwordless, :content_security_policy,
       "https://#{System.get_env("CDN_HOST")}",
       config_env() == :prod
     ),
-  script_src: append_if(["'self'", "'nonce'"], "https://#{System.get_env("CDN_HOST")}", config_env() == :prod),
+  script_src:
+    append_if(["'self'", "'nonce'", "'unsafe-inline'"], "https://#{System.get_env("CDN_HOST")}", config_env() == :prod),
   frame_src:
     append_if(
       ["https://*.passwordless.tools"],

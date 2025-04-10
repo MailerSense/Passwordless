@@ -8,7 +8,20 @@
       phx-change="validate"
       phx-target={@myself}
     >
-      <.field field={@form[:domain]} required phx-debounce="blur" />
+      <.field
+        field={@form[:domain]}
+        required
+        placeholder={
+          gettext(
+            "e.g. %{prefix}.%{root}",
+            prefix: @prefix,
+            root: URI.parse(@app.website).host
+          )
+        }
+        help_text={
+          if @replacement, do: gettext("Current domain: %{domain}", domain: @domain.name)
+        }
+      />
     </.form>
 
     <:actions>
