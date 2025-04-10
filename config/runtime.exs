@@ -178,7 +178,8 @@ config :passwordless, :content_security_policy,
     "'unsafe-inline'",
     "https://rsms.me",
     "https://*.googleapis.com",
-    "https://*.gstatic.com"
+    "https://*.gstatic.com",
+    "https://*.passwordless.tools"
   ],
   script_src: [
     "'self'",
