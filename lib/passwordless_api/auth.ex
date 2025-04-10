@@ -8,8 +8,8 @@ defmodule PasswordlessApi.Auth do
 
   import Plug.Conn
 
+  alias Passwordless.App
   alias Passwordless.AuthToken
-  alias Passwordless.Organizations.Org
   alias Passwordless.Repo
   alias PasswordlessWeb.FallbackController
 
@@ -18,10 +18,10 @@ defmodule PasswordlessApi.Auth do
   """
   def fetch_org(%Plug.Conn{} = conn, _opts) do
     with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
-         {:ok, query} <- AuthToken.get_org_and_key(token),
-         {%Org{} = org, %AuthToken{} = token} <- Repo.one(query) do
+         {:ok, query} <- AuthToken.get_app_and_key(token),
+         {%App{} = app, %AuthToken{} = token} <- Repo.one(query) do
       conn
-      |> assign(:current_org, org)
+      |> assign(:current_app, app)
       |> assign(:current_auth_token, token)
     else
       _ ->
@@ -52,17 +52,28 @@ defmodule PasswordlessApi.Auth do
   end
 
   @doc """
-  Fetches the current org id from the connection.
+  Rate limits the API requests to 200 requests per minute.
   """
-  def get_current_org_id(%Plug.Conn{assigns: %{current_org: %Org{id: org_id}}}) when is_binary(org_id), do: org_id
-  def get_current_org_id(%Plug.Conn{}), do: nil
+  def rate_limit_api(conn, _opts) do
+    key = "api:authenticated:" <> get_current_app_id(conn)
+    scale = :timer.minutes(1)
+    limit = 200
+
+    case Passwordless.RateLimit.hit(key, scale, limit) do
+      {:allow, _count} ->
+        conn
+
+      {:deny, retry_after} ->
+        conn
+        |> put_resp_header("retry-after", Integer.to_string(div(retry_after, 1000)))
+        |> send_resp(429, [])
+        |> halt()
+    end
+  end
 
   @doc """
-  Handles a rate limit deny.
+  Fetches the current app id from the connection.
   """
-  def handle_rate_limit_exceeded(%Plug.Conn{} = conn, _opts) do
-    conn
-    |> FallbackController.call({:error, :rate_limit_exceeded})
-    |> halt()
-  end
+  def get_current_app_id(%Plug.Conn{assigns: %{current_app: %App{id: app_id}}}) when is_binary(app_id), do: app_id
+  def get_current_app_id(%Plug.Conn{}), do: nil
 end

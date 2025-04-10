@@ -1,6 +1,6 @@
 defmodule Passwordless.SecretVault do
   @moduledoc """
-  A central store of secrets fetched from a JSON secret in SecretManager.
+  A central store of secrets fetched from a JSON secret in Passwordless.SecretManager.
   """
 
   use GenServer
@@ -54,7 +54,7 @@ defmodule Passwordless.SecretVault do
   defp tick, do: Process.send_after(self(), :tick, @interval)
 
   defp refresh_secret(secret_name) do
-    with {:ok, {:secret, _name, raw_body}} <- SecretManager.get(secret_name),
+    with {:ok, {:secret, _name, raw_body}} <- Passwordless.SecretManager.get(secret_name),
          {:ok, json_body} <- Jason.decode(raw_body) do
       Enum.each(json_body, fn
         {key, value} when is_binary(key) and is_binary(value) ->

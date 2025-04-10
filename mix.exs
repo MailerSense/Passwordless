@@ -158,9 +158,8 @@ defmodule Passwordless.MixProject do
       {:ex_cldr_numbers, "~> 2.33"},
 
       # Security
-      {:hammer, "~> 6.2"},
-      {:hammer_plug, "~> 3.0"},
-      {:hammer_backend_redis, "~> 6.1"},
+      {:hammer, "~> 7.0"},
+      {:hammer_backend_redis, "~> 7.0"},
 
       # Code quality
       {:sobelow, "~> 0.12", only: [:dev, :test], runtime: false},

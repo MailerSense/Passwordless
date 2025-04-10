@@ -8,7 +8,7 @@ defmodule LiveToast.Utility do
   attr(:name, :string, required: true, doc: "the name of the icon")
   attr(:rest, :global, doc: "other html attributes")
 
-  def svg(%{name: "hero-x-mark-solid"} = assigns) do
+  def svg(%{name: "remix-close-line"} = assigns) do
     ~H"""
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -32,7 +32,7 @@ defmodule Passwordless.EventQueue.Monitor do
   def handle_cast({:record_failure, %Source{id: source_id} = source}, state) do
     state =
       state
-      |> Map.put_new(source_id, Cache.get(cache_key(source_id)) || 0)
+      |> Map.put_new(source_id, Passwordless.Cache.get(cache_key(source_id)) || 0)
       |> Map.update(source_id, 0, fn
         i when is_integer(i) -> i + 1
         o -> o
@@ -64,7 +64,7 @@ defmodule Passwordless.EventQueue.Monitor do
   end
 
   defp store_state(state, source_id) do
-    Cache.put(cache_key(source_id), state[source_id], ttl: :timer.hours(6))
+    Passwordless.Cache.put(cache_key(source_id), state[source_id], ttl: :timer.hours(6))
     state
   end
 end

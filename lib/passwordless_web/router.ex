@@ -21,9 +21,9 @@ defmodule PasswordlessWeb.Router do
     plug :fetch_current_user
     plug :fetch_active_user
     plug :fetch_impersonator_user
+    plug :rate_limit_browser
 
     plug PasswordlessWeb.Plugs.SetLocale, gettext: PasswordlessWeb.Gettext
-    plug Hammer.Plug, rate_limit: {"browser:unauthenticated", :timer.minutes(1), 200}
   end
 
   pipeline :public_layout do
@@ -186,5 +186,22 @@ defmodule PasswordlessWeb.Router do
     use PasswordlessWeb.AuthRoutes
     use PasswordlessWeb.AdminRoutes
     use PasswordlessWeb.DevRoutes
+  end
+
+  defp rate_limit_browser(conn, _opts) do
+    key = "browser:unauthenticated"
+    scale = :timer.minutes(1)
+    limit = 100
+
+    case Passwordless.RateLimit.hit(key, scale, limit) do
+      {:allow, _count} ->
+        conn
+
+      {:deny, retry_after} ->
+        conn
+        |> put_resp_header("retry-after", Integer.to_string(div(retry_after, 1000)))
+        |> send_resp(429, [])
+        |> halt()
+    end
   end
 end

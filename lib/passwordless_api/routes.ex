@@ -14,12 +14,7 @@ defmodule PasswordlessApi.Routes do
 
       pipeline :api_authenticated do
         plug :fetch_org
-
-        plug Hammer.Plug,
-          rate_limit: {"api:authenticated", :timer.minutes(1), 300},
-          when_nil: :raise,
-          on_deny: &PasswordlessApi.Auth.handle_rate_limit_exceeded/2,
-          by: {:conn, &PasswordlessApi.Auth.get_current_org_id/1}
+        plug :rate_limit_api
 
         plug OneAndDone.Plug, cache: Cache
       end

@@ -108,7 +108,7 @@ defmodule LiveToast.Components do
         }
       >
         <Utility.svg
-          name="hero-x-mark-solid"
+          name="remix-close-line"
           class="h-[14px] w-[14px] opacity-40 group-hover:opacity-70"
         />
       </button>

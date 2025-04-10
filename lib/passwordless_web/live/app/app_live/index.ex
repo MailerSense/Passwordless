@@ -5,8 +5,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
   import PasswordlessWeb.SettingsLayoutComponent
 
   alias Passwordless.Accounts.User
-
-  @upload_provider :passwordless |> Application.compile_env!(:media_upload) |> Keyword.fetch!(:adapter)
+  alias Passwordless.FileUploads
 
   @impl true
   def mount(_params, _session, socket) do
@@ -15,18 +14,12 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    upload_opts = [
-      accept: ~w(.jpg .jpeg .png .svg .webp),
-      max_entries: 1,
-      max_file_size: 5_242_880 * 2
-    ]
-
     upload_opts =
-      if Passwordless.config(:env) == :prod do
-        Keyword.put(upload_opts, :external, &@upload_provider.presign_upload/2)
-      else
-        upload_opts
-      end
+      FileUploads.prepare(
+        accept: ~w(.jpg .jpeg .png .svg .webp),
+        max_entries: 1,
+        max_file_size: 5_242_880 * 2
+      )
 
     {:noreply,
      socket
@@ -85,6 +78,11 @@ defmodule PasswordlessWeb.App.AppLive.Index do
   end
 
   @impl true
+  def handle_event("cancel_upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :logo, ref)}
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
@@ -119,7 +117,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
   end
 
   defp maybe_add_logo(user_params, socket) do
-    uploaded_files = @upload_provider.consume_uploaded_entries(socket, :logo)
+    uploaded_files = FileUploads.consume_uploaded_entries(socket, :logo)
 
     if length(uploaded_files) > 0 do
       Map.put(user_params, "logo", hd(uploaded_files))

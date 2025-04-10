@@ -20,12 +20,9 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    sms_learn? = Map.has_key?(params, "sms_learn")
-
     {:noreply,
      socket
      |> apply_action(socket.assigns.live_action, params)
-     |> assign(sms_learn?: sms_learn?)
      |> assign(module: Keyword.fetch!(@authenticators, socket.assigns.live_action))}
   end
 
@@ -45,16 +42,6 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Index do
   end
 
   # Private
-
-  defp apply_action(socket, action, %{"sms_learn" => _}) do
-    assign(socket,
-      page_title: gettext("SMS OTP"),
-      page_subtitle:
-        gettext(
-          "Learn how to use SMS OTP for your app. SMS OTP is a simple and secure way to verify your users. It is a great way to get started with Passwordless."
-        )
-    )
-  end
 
   defp apply_action(socket, _action, _params) do
     assign(socket,

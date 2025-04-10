@@ -19,8 +19,8 @@ defmodule Passwordless.Application do
           {Finch, name: Passwordless.Finch.AWS},
           Passwordless.Repo,
           PasswordlessWeb.Endpoint,
-          AWS.Lambda.Monitor.Server,
-          AWS.Lambda.Loop
+          Passwordless.AWS.Lambda.Monitor.Server,
+          Passwordless.AWS.Lambda.Loop
         ]
       else
         [
@@ -39,7 +39,8 @@ defmodule Passwordless.Application do
         |> Kernel.++([
           {Phoenix.PubSub, name: Passwordless.PubSub},
           {Task.Supervisor, name: Passwordless.BackgroundTask},
-          Cache,
+          Passwordless.Cache,
+          Passwordless.RateLimit,
           Passwordless.EventQueue.Manager,
           {Oban, Application.fetch_env!(:passwordless, Oban)},
           {Passwordless.HealthCheck, health_checks()},

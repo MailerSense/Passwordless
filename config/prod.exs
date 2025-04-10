@@ -23,18 +23,21 @@ config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Passwordless.Fin
 config :swoosh, local: false
 
 # Configures the cache to ElastiCache
-config :passwordless, :cache, adapter: Cache.Redis
+config :passwordless, :cache, adapter: Passwordless.Cache.Redis
 
 # Configures the object storage to AWS
-config :passwordless, :storage, adapter: Storage.Amazon
+config :passwordless, :storage, adapter: Passwordless.Storage.Amazon
+
+# Configures the rate limit
+config :passwordless, :rate_limit, adapter: Passwordless.RateLimit.Redis
 
 # Configures the secret manager to AWS
 config :passwordless, :secret_manager,
-  adapter: SecretManager.Amazon,
+  adapter: Passwordless.SecretManager.Amazon,
   secret_name: "arn:aws:secretsmanager:eu-west-1:728247919352:secret:general-application-config-uL5n4J"
 
 # Configures the media uploader to S3
-config :passwordless, :media_upload, adapter: Passwordless.FileUploads.S3
+config :passwordless, :file_uploads, adapter: Passwordless.FileUploads.S3
 
 # Configures AWS
 config :ex_aws, require_imds_v2: true
