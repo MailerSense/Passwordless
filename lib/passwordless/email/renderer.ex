@@ -30,12 +30,18 @@ defmodule Passwordless.Email.Renderer do
     variables = Map.merge(variables, provider_variables)
 
     variables =
+      case Liquid.render(subject, variables) do
+        {:ok, subject} -> Map.put(variables, :subject, subject)
+        _ -> variables
+      end
+
+    variables =
       case Liquid.render(preheader, variables) do
         {:ok, preheader} -> Map.put(variables, :preheader, preheader)
         _ -> variables
       end
 
-    with {:ok, subject} <- Liquid.render(subject, variables),
+    with {:ok, subject} <- Map.fetch(variables, :subject),
          {:ok, mjml_body} <- Liquid.render(mjml_body, variables),
          {:ok, html_body} <- MJML.convert(mjml_body) do
       {:ok,

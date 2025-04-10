@@ -47,7 +47,7 @@ import { WAF } from "./network/waf";
 import { PasswordlessToolsCertificates } from "./passwordless-tools-certificates";
 import { ContainerScanning } from "./pattern/container-scanning";
 import { CachedImage } from "./storage/cached-image";
-import { PublicBucket } from "./storage/public-bucket";
+import { PrivateBucket } from "./storage/private-bucket";
 import { Environment } from "./util/environment";
 import { domainLookupMap, lookupMap } from "./util/lookup";
 import { Region } from "./util/region";
@@ -217,7 +217,7 @@ export class PasswordlessTools extends cdk.Stack {
     });
 
     const customerMediaName = `${env}-customer-media`;
-    const customerMedia = new PublicBucket(this, customerMediaName, {
+    const customerMedia = new PrivateBucket(this, customerMediaName, {
       name: customerMediaName,
       cors: [
         {

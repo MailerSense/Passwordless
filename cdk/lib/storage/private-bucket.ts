@@ -1,10 +1,11 @@
 import { RemovalPolicy } from "aws-cdk-lib";
-import { Bucket, BucketEncryption } from "aws-cdk-lib/aws-s3";
+import { Bucket, BucketEncryption, CorsRule } from "aws-cdk-lib/aws-s3";
 import { NagSuppressions } from "cdk-nag";
 import { Construct } from "constructs";
 
 export interface PrivateBucketProps {
   name: string;
+  cors?: CorsRule[];
   removalPolicy: RemovalPolicy;
 }
 
@@ -14,11 +15,14 @@ export class PrivateBucket extends Construct {
   public constructor(scope: Construct, id: string, props: PrivateBucketProps) {
     super(scope, id);
 
-    this.bucket = new Bucket(this, `${props.name}-private`, {
+    const { name, cors, removalPolicy } = props;
+
+    this.bucket = new Bucket(this, `${name}-private`, {
       versioned: true,
       enforceSSL: true,
       encryption: BucketEncryption.S3_MANAGED,
-      removalPolicy: props.removalPolicy,
+      removalPolicy,
+      cors,
     });
 
     NagSuppressions.addResourceSuppressions(this, [
