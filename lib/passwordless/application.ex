@@ -58,8 +58,20 @@ defmodule Passwordless.Application do
   # Private
 
   defp health_checks do
+    key_processes = [
+      Passwordless.Repo,
+      PasswordlessWeb.Endpoint,
+      Passwordless.RateLimit,
+      Passwordless.Vault
+    ]
+
     readiness = [Passwordless.HealthCheck.repo?(Passwordless.Repo)]
-    liveness = [Passwordless.HealthCheck.repo?(Passwordless.Repo)]
+
+    liveness =
+      Enum.map(key_processes, fn proc ->
+        Passwordless.HealthCheck.alive?(fn -> Process.whereis(proc) end)
+      end)
+
     {readiness, liveness}
   end
 

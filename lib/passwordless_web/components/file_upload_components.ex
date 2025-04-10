@@ -80,7 +80,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
           />
 
           <%= if @upload.entries != [] do %>
-            <.icon name="remix-arrow-right-line" class="h-5" />
+            <.icon name="remix-arrow-right-line text-slate-900 dark:text-white" class="h-5" />
             <%= for entry <- @upload.entries do %>
               <div class="relative shrink-0">
                 <.live_img_preview entry={entry} class={@new_image_class} />
