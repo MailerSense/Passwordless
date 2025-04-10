@@ -113,6 +113,10 @@ export const rootDomainLookupMap = {
       domain: "dev.passwordless.tools",
       zone: ZoneType.TOOLS,
     },
+    cdn: {
+      domain: "cdn.dev.passwordlesstools.com",
+      zone: ZoneType.COM,
+    },
     www: {
       domain: "www.dev.passwordless.tools",
       zone: ZoneType.TOOLS,
@@ -126,6 +130,10 @@ export const rootDomainLookupMap = {
     main: {
       domain: "passwordless.tools",
       zone: ZoneType.TOOLS,
+    },
+    cdn: {
+      domain: "cdn.passwordlesstools.com",
+      zone: ZoneType.COM,
     },
     www: {
       domain: "www.passwordless.tools",

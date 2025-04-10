@@ -256,42 +256,12 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
-  def get_link(:token_admin = name, _user) do
-    %{
-      name: name,
-      label: gettext("Tokens"),
-      path: ~p"/admin/tokens",
-      icon: "remix-lock-line",
-      link_type: "live_patch"
-    }
-  end
-
   def get_link(:membership_admin = name, _user) do
     %{
       name: name,
       label: gettext("Memberships"),
       path: ~p"/admin/memberships",
       icon: "remix-organization-chart",
-      link_type: "live_patch"
-    }
-  end
-
-  def get_link(:credentials_admin = name, _user) do
-    %{
-      name: name,
-      label: gettext("Credentials"),
-      path: ~p"/admin/credentials",
-      icon: "remix-id-card-line",
-      link_type: "live_patch"
-    }
-  end
-
-  def get_link(:passwordless_admin = name, _user) do
-    %{
-      name: name,
-      label: gettext("Checks"),
-      path: ~p"/admin/checks",
-      icon: "remix-radar-line",
       link_type: "live_patch"
     }
   end

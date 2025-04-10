@@ -6,8 +6,7 @@ config :passwordless,
   business_name: "Passwordless",
   support_email: "hello@passwordless.tools",
   sales_email: "sales@passwordless.tools",
-  logo_url_for_emails:
-    "https://res.cloudinary.com/wickedsites/image/upload/v1643336799/petal/petal_logo_light_w5jvlg.png",
+  logo_url_for_emails: "https://cdn.passwordlesstools.com/logos/passwordless.png",
   description:
     "Passwordless introduces code-first synthetic monitoring to secure the uptime and performance of your apps and websites",
   seo_description:

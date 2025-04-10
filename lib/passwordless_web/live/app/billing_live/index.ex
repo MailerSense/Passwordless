@@ -121,7 +121,7 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
           }
       end
 
-    plans = Map.new(Product.pricing_plans2(), fn %{kind: kind} = plan -> {kind, plan} end)
+    plans = Map.new(Product.pricing_plans(), fn %{kind: kind} = plan -> {kind, plan} end)
 
     assign(socket, plans: plans, billing: config)
   end

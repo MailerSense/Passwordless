@@ -26,8 +26,8 @@ defmodule Passwordless.EmailTemplates do
               ~S"""
               <mjml>
               <mj-head>
-              <mj-title>{{ campaign.subject }}</mj-title>
-              <mj-preview>{{ campaign.preview_text }}</mj-preview>
+              <mj-title>{{ subject }}</mj-title>
+              <mj-preview>{{ preheader }}</mj-preview>
               <mj-attributes>
               <mj-text
               font-size="15px"
@@ -58,7 +58,7 @@ defmodule Passwordless.EmailTemplates do
               <mj-section background-color="#ffffff">
               <mj-column>
               <mj-text font-size="18px">
-              Hey {{contact.first_name | default: "there" }}, this is an
+              Hey {{user.name | default: "there" }}, this is an
               <strong>MJML</strong> campaign!
               </mj-text>
               </mj-column>
@@ -160,8 +160,8 @@ defmodule Passwordless.EmailTemplates do
               ~S"""
               <mjml>
               <mj-head>
-              <mj-title>{{ campaign.subject }}</mj-title>
-              <mj-preview>{{ campaign.preview_text }}</mj-preview>
+              <mj-title>{{ subject }}</mj-title>
+              <mj-preview>{{ preheader }}</mj-preview>
               <mj-attributes>
               <mj-text
               font-size="15px"
@@ -192,7 +192,7 @@ defmodule Passwordless.EmailTemplates do
               <mj-section background-color="#ffffff">
               <mj-column>
               <mj-text font-size="18px">
-              Hey {{contact.first_name | default: "there" }}, this is an
+              Hey {{user.name | default: "there" }}, this is an
               <strong>MJML</strong> campaign!
               </mj-text>
               </mj-column>
