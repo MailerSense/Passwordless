@@ -137,7 +137,7 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
       removalPolicy,
     });
 
-    const cdnBucketName = `${env}-global-cdn`;
+    const cdnBucketName = `${env}-global-bucket`;
     const cdnBucket = new PrivateBucket(this, cdnBucketName, {
       name: cdnBucketName,
       removalPolicy,
