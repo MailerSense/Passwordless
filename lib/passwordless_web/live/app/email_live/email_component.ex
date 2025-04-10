@@ -63,9 +63,13 @@ defmodule PasswordlessWeb.App.EmailLive.EmailComponent do
     email =
       EmailWeb.auth_email()
       |> SwooshEmail.to({user_name, user_email})
-      |> SwooshEmail.subject(gettext("Test: %{name}", name: template.name))
+      |> SwooshEmail.subject(gettext("[Test] %{name}", name: template.name))
+
+    IO.inspect({opts, user, template, version, user_name, user_email, email})
 
     with {:ok, %{html_content: html_content, text_content: text_content}} <- Renderer.render(version, %{}, opts) do
+      IO.inspect(%{html_content: html_content, text_content: text_content})
+
       email
       |> SwooshEmail.html_body(html_content)
       |> SwooshEmail.text_body(text_content)

@@ -1,9 +1,13 @@
 import * as cdk from "aws-cdk-lib";
+import { ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
+import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { PublicHostedZone } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
 
+import { CDN } from "./network/cdn";
 import { Certificate } from "./network/certificate";
 import { Redirect } from "./network/redirect";
+import { PrivateBucket } from "./storage/private-bucket";
 import { Environment } from "./util/environment";
 import { domainLookupMap, lookupMap, rootDomainLookupMap } from "./util/lookup";
 import { Region } from "./util/region";
@@ -131,6 +135,25 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
       toDomain: rootDomains.main.domain,
       fromDomains: [rootDomains.www.domain],
       removalPolicy,
+    });
+
+    const cdnBucketName = `${env}-global-cdn`;
+    const cdnBucket = new PrivateBucket(this, cdnBucketName, {
+      name: cdnBucketName,
+      removalPolicy,
+    });
+
+    const cdnName = `${env}-global-cdn`;
+    const _cdn = new CDN(this, cdnName, {
+      name: cdnName,
+      zone,
+      cert: this.comCert.certificate,
+      domain: rootDomains.cdn.domain,
+      defaultBehavior: {
+        origin: S3BucketOrigin.withOriginAccessControl(cdnBucket.bucket),
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
+      additionalBehaviors: {},
     });
   }
 }
