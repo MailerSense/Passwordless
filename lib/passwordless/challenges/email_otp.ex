@@ -131,6 +131,8 @@ defmodule Passwordless.Challenges.EmailOTP do
          %Authenticators.Email{} = authenticator,
          otp_code
        ) do
+    opts = [app: app, actor: actor, action: action]
+
     attrs = %{
       sender: Authenticators.Email.sender_email(authenticator, domain),
       sender_name: authenticator.sender_name,
@@ -142,8 +144,7 @@ defmodule Passwordless.Challenges.EmailOTP do
       email_template_version_id: version.id
     }
 
-    with {:ok, message_attrs} <-
-           Renderer.render(version, %{otp_code: otp_code}, app: app, actor: actor, action: action) do
+    with {:ok, message_attrs} <- Renderer.render(version, %{otp_code: otp_code}, opts) do
       attrs = Map.merge(attrs, message_attrs)
 
       challenge
