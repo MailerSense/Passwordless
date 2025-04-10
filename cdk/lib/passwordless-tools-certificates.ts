@@ -146,7 +146,7 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
     const cdnName = `${env}-global-cdn`;
     const _cdn = new CDN(this, cdnName, {
       name: cdnName,
-      zone,
+      zone: comZone,
       cert: this.comCert.certificate,
       domain: rootDomains.cdn.domain,
       defaultBehavior: {
