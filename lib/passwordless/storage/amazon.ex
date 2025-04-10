@@ -1,9 +1,9 @@
-defmodule Storage.Amazon do
+defmodule Passwordless.Storage.Amazon do
   @moduledoc """
   Provides an implementation of the Storage behaviour for Amazon S3.
   """
 
-  @behaviour Storage.Behaviour
+  @behaviour Passwordless.Storage.Behaviour
 
   alias ExAws.S3
 

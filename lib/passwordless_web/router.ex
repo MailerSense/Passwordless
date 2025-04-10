@@ -193,7 +193,7 @@ defmodule PasswordlessWeb.Router do
     scale = :timer.minutes(1)
     limit = 100
 
-    case RateLimit.hit(key, scale, limit) do
+    case Passwordless.RateLimit.hit(key, scale, limit) do
       {:allow, _count} ->
         conn
 

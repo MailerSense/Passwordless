@@ -1,9 +1,9 @@
-defmodule Storage.Local do
+defmodule Passwordless.Storage.Local do
   @moduledoc """
   Provides an implementation of the Storage behaviour for local filesystem.
   """
 
-  @behaviour Storage.Behaviour
+  @behaviour Passwordless.Storage.Behaviour
 
   @impl true
   def upload(bucket, _path, {:file, _name, _mime, _content}) when is_binary(bucket) do

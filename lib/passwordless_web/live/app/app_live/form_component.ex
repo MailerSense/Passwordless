@@ -2,26 +2,18 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
-  @upload_provider :passwordless
-                   |> Application.compile_env!(:media_upload)
-                   |> Keyword.fetch!(:adapter)
+  alias Passwordless.FileUploads
 
   @impl true
   def update(%{app: app} = assigns, socket) do
     changeset = Passwordless.change_app(app)
 
-    upload_opts = [
-      accept: ~w(.jpg .jpeg .png .svg .webp),
-      max_entries: 1,
-      max_file_size: 5_242_880 * 2
-    ]
-
     upload_opts =
-      if Passwordless.config(:env) == :prod do
-        Keyword.put(upload_opts, :external, &@upload_provider.presign_upload/2)
-      else
-        upload_opts
-      end
+      FileUploads.prepare(
+        accept: ~w(.jpg .jpeg .png .svg .webp),
+        max_entries: 1,
+        max_file_size: 5_242_880 * 2
+      )
 
     {:ok,
      socket
@@ -60,7 +52,7 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   # Private
 
   defp maybe_add_logo(user_params, socket) do
-    uploaded_files = @upload_provider.consume_uploaded_entries(socket, :logo)
+    uploaded_files = FileUploads.consume_uploaded_entries(socket, :logo)
 
     if length(uploaded_files) > 0 do
       Map.put(user_params, "logo", hd(uploaded_files))

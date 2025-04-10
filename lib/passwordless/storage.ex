@@ -1,4 +1,4 @@
-defmodule Storage do
+defmodule Passwordless.Storage do
   @moduledoc """
   API for interacting with object storage.
   """

@@ -1,4 +1,4 @@
-defmodule Storage.Behaviour do
+defmodule Passwordless.Storage.Behaviour do
   @moduledoc """
   Defines the contract for an object storage.
   """

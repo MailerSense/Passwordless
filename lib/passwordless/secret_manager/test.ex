@@ -1,9 +1,9 @@
-defmodule SecretManager.Test do
+defmodule Passwordless.SecretManager.Test do
   @moduledoc """
   Provides a local machine secret manager.
   """
 
-  @behaviour SecretManager.Behaviour
+  @behaviour Passwordless.SecretManager.Behaviour
 
   import Util.Persistent
 

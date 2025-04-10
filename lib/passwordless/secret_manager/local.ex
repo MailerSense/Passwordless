@@ -1,9 +1,9 @@
-defmodule SecretManager.Local do
+defmodule Passwordless.SecretManager.Local do
   @moduledoc """
   Provides a local machine secret manager.
   """
 
-  @behaviour SecretManager.Behaviour
+  @behaviour Passwordless.SecretManager.Behaviour
 
   @impl true
   def get(secret_name, _opts \\ []) do

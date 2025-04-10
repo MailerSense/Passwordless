@@ -1,4 +1,4 @@
-defmodule Cache do
+defmodule Passwordless.Cache do
   @moduledoc """
   API for caching objects across the application.
   """
@@ -14,16 +14,18 @@ defmodule Cache do
 
   @impl true
   def init(_opts) do
-    in_memory_cache = [%{id: Cache.InMemory.name(), start: {Cachex, :start_link, [Cache.InMemory.name(), []]}}]
+    in_memory_cache = [
+      %{id: __MODULE__.InMemory.name(), start: {Cachex, :start_link, [__MODULE__.InMemory.name(), []]}}
+    ]
 
     children =
       case @adapter do
-        Cache.InMemory ->
+        __MODULE__.InMemory ->
           in_memory_cache
 
-        Cache.Redis ->
+        __MODULE__.Redis ->
           redis = Application.get_env(:passwordless, :redis)
-          [{Cache.Redix, redis_config(redis)} | in_memory_cache]
+          [{__MODULE__.Redix, redis_config(redis)} | in_memory_cache]
 
         _ ->
           raise ArgumentError, "Unknown cache adapter: #{@adapter}"
@@ -40,10 +42,10 @@ defmodule Cache do
   defdelegate exists?(key), to: @adapter
 
   def with(key, producer, opts) do
-    case Cache.get(key) do
+    case get(key) do
       nil ->
         value = producer.()
-        Cache.put(key, value, opts)
+        put(key, value, opts)
         value
 
       value ->

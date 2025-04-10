@@ -1,9 +1,9 @@
-defmodule Cache.InMemory do
+defmodule Passwordless.Cache.InMemory do
   @moduledoc """
   Provides a template for in-memory cache
   """
 
-  @behaviour Cache.Behaviour
+  @behaviour Passwordless.Cache.Behaviour
 
   @cache :in_memory_cache
 

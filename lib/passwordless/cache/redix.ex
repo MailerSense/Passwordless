@@ -1,4 +1,4 @@
-defmodule Cache.Redix do
+defmodule Passwordless.Cache.Redix do
   @moduledoc """
   Manages redis connection pool
   """
@@ -13,7 +13,7 @@ defmodule Cache.Redix do
       end
 
     %{
-      id: Cache.RedisSupervisor,
+      id: Passwordless.Cache.RedisSupervisor,
       type: :supervisor,
       start: {Supervisor, :start_link, [children, [strategy: :one_for_one]]}
     }

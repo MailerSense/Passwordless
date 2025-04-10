@@ -712,7 +712,7 @@ defmodule Passwordless do
   end
 
   def get_top_actions_cached(%App{} = app) do
-    Cache.with(
+    Passwordless.Cache.with(
       "top_actions_#{app.id}",
       fn -> get_top_actions(app) end,
       ttl: :timer.hours(1)
@@ -731,7 +731,7 @@ defmodule Passwordless do
   end
 
   def get_app_user_count_cached(%App{} = app) do
-    Cache.with(
+    Passwordless.Cache.with(
       "app_user_count_#{app.id}",
       fn -> get_app_user_count(app) end,
       ttl: :timer.hours(1)
@@ -762,7 +762,7 @@ defmodule Passwordless do
   end
 
   def get_app_mau_count_cached(%App{} = app, date) do
-    Cache.with(
+    Passwordless.Cache.with(
       "app_mau_count_#{app.id}_#{date.year}_#{date.month}",
       fn -> get_app_mau_count(app, date) end,
       ttl: :timer.hours(1)

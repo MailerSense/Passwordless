@@ -1,4 +1,4 @@
-defmodule RateLimit.ETS do
+defmodule Passwordless.RateLimit.ETS do
   @moduledoc false
 
   use Hammer, backend: :ets

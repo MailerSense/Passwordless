@@ -1,9 +1,9 @@
-defmodule SecretManager.Amazon do
+defmodule Passwordless.SecretManager.Amazon do
   @moduledoc """
   Provides a AWS SecretsManager.
   """
 
-  @behaviour SecretManager.Behaviour
+  @behaviour Passwordless.SecretManager.Behaviour
 
   alias ExAws.SecretsManager
 

@@ -1,4 +1,4 @@
-defmodule SecretManager.Behaviour do
+defmodule Passwordless.SecretManager.Behaviour do
   @moduledoc """
   Defines the contract for a secret manager system.
   """

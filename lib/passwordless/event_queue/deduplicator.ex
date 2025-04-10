@@ -41,11 +41,11 @@ defmodule Passwordless.EventQueue.Deduplicator do
       %Message{} = message ->
         key = duplicate_key(message)
 
-        if Cache.exists?(key) do
+        if Passwordless.Cache.exists?(key) do
           Message.ack(message)
           false
         else
-          Cache.put(key, true, ttl: :timer.hours(1))
+          Passwordless.Cache.put(key, true, ttl: :timer.hours(1))
           true
         end
     end)

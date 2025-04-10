@@ -473,7 +473,7 @@ defmodule Passwordless.Accounts do
   """
   def generate_user_temporary_token(%User{id: user_id}) do
     token = Util.random_string()
-    Cache.put(token, user_id, ttl: :timer.minutes(5))
+    Passwordless.Cache.put(token, user_id, ttl: :timer.minutes(5))
     token
   end
 
@@ -481,7 +481,7 @@ defmodule Passwordless.Accounts do
   Fetches user by temporary token.
   """
   def get_user_by_temporary_token!(token) do
-    get_user!(Cache.get(token))
+    get_user!(Passwordless.Cache.get(token))
   end
 
   @doc """

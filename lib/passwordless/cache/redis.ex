@@ -1,11 +1,11 @@
-defmodule Cache.Redis do
+defmodule Passwordless.Cache.Redis do
   @moduledoc """
   Provides a template for redis cache
   """
 
-  @behaviour Cache.Behaviour
+  @behaviour Passwordless.Cache.Behaviour
 
-  @redix Cache.Redix
+  @redix Passwordless.Cache.Redix
 
   @impl true
   def get(key) do

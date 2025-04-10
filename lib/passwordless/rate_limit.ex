@@ -1,4 +1,4 @@
-defmodule RateLimit do
+defmodule Passwordless.RateLimit do
   @moduledoc false
 
   use Supervisor
@@ -14,10 +14,10 @@ defmodule RateLimit do
   def init(_opts) do
     opts =
       case @adapter do
-        RateLimit.ETS ->
+        __MODULE__.ETS ->
           Passwordless.config([:hammer, :ets])
 
-        RateLimit.Redis ->
+        __MODULE__.Redis ->
           Passwordless.config([:hammer, :redis])
 
         _ ->

@@ -1,4 +1,4 @@
-defmodule Cache.Behaviour do
+defmodule Passwordless.Cache.Behaviour do
   @moduledoc """
   Defines the contract for entity permission management
   """

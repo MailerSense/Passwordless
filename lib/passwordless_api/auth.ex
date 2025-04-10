@@ -59,7 +59,7 @@ defmodule PasswordlessApi.Auth do
     scale = :timer.minutes(1)
     limit = 200
 
-    case RateLimit.hit(key, scale, limit) do
+    case Passwordless.RateLimit.hit(key, scale, limit) do
       {:allow, _count} ->
         conn
 
@@ -76,13 +76,4 @@ defmodule PasswordlessApi.Auth do
   """
   def get_current_app_id(%Plug.Conn{assigns: %{current_app: %App{id: app_id}}}) when is_binary(app_id), do: app_id
   def get_current_app_id(%Plug.Conn{}), do: nil
-
-  @doc """
-  Handles a rate limit deny.
-  """
-  def handle_rate_limit_exceeded(%Plug.Conn{} = conn, _opts) do
-    conn
-    |> FallbackController.call({:error, :rate_limit_exceeded})
-    |> halt()
-  end
 end
