@@ -246,6 +246,7 @@ export class PasswordlessTools extends cdk.Stack {
     const appEnv = {
       AWS_REGION: cdk.Stack.of(this).region,
       AWS_ACCOUNT: cdk.Stack.of(this).account,
+      CDN_HOST: cdnDomain,
       CUSTOMER_MEDIA_BUCKET: customerMedia.bucket.bucketName,
       CUSTOMER_MEDIA_CDN_URL: `https://${cdnDomain}/`,
     };

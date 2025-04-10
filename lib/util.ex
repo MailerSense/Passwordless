@@ -464,6 +464,11 @@ defmodule Util do
 
   def sensitive?(_key), do: false
 
+  # Append if
+
+  def append_if(list, _value, false), do: list
+  def append_if(list, value, true), do: list ++ List.wrap(value)
+
   # Private
 
   # Key exists in both maps, and both values are maps as well.

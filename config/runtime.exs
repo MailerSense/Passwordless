@@ -1,4 +1,5 @@
 import Config
+import Util, only: [append_if: 3]
 
 config :ueberauth, Ueberauth.Strategy.Google.OAuth,
   client_id: System.get_env("GOOGLE_OAUTH_CLIENT_ID"),
@@ -137,32 +138,24 @@ end
 
 # Reduce XSS risks by declaring which dynamic resources are allowed to load
 # If you use any CDNs, whitelist them here.
-# Policy struct: https://github.com/mbramson/content_security_policy/blob/master/lib/content_security_policy/policy.ex
-# Read more about the options: https://content-security-policy.com
-# Note that we use unsafe-eval because Alpine JS requires it :( (see https://alpinejs.dev/advanced/csp)
 
 config :passwordless, :content_security_policy,
-  default_src: [
-    "'self'",
-    "https://*.passwordless.tools"
-  ],
+  default_src: append_if(["'self'"], "https://#{System.get_env("CDN_HOST")}", config_env() == :prod),
   connect_src:
-    (case config_env() do
-       :prod ->
-         [
-           "wss://#{System.fetch_env!("PHX_HOST")}",
-           "https://#{System.fetch_env!("PHX_HOST")}"
-         ]
-
-       _ ->
-         [
-           "ws://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}",
-           "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
-         ]
-     end) ++
+    [
+      "*.amazonaws.com"
+    ]
+    |> append_if(
+      ["wss://#{System.get_env("PHX_HOST")}", "https://#{System.get_env("PHX_HOST")}"],
+      config_env() == :prod
+    )
+    |> append_if(
       [
-        "*.amazonaws.com"
+        "ws://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}",
+        "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
       ],
+      config_env() != :prod
+    ),
   img_src: [
     "https:",
     "'self'",
@@ -173,28 +166,16 @@ config :passwordless, :content_security_policy,
     "https://*.googleapis.com",
     "https://*.gstatic.com"
   ],
-  style_src: [
-    "'self'",
-    "'unsafe-inline'",
-    "https://rsms.me",
-    "https://*.googleapis.com",
-    "https://*.gstatic.com",
-    "https://*.passwordless.tools"
-  ],
-  script_src: [
-    "'self'",
-    "'nonce'"
-  ],
+  style_src:
+    append_if(
+      ["'self'", "'unsafe-inline'", "https://rsms.me", "https://*.googleapis.com", "https://*.gstatic.com"],
+      "https://#{System.get_env("CDN_HOST")}",
+      config_env() == :prod
+    ),
+  script_src: append_if(["'self'", "'nonce'"], "https://#{System.get_env("CDN_HOST")}", config_env() == :prod),
   frame_src:
-    [
-      "https://*.passwordless.tools"
-    ] ++
-      (case(config_env()) do
-         :prod ->
-           []
-
-         _ ->
-           [
-             "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
-           ]
-       end)
+    append_if(
+      ["https://*.passwordless.tools"],
+      "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}",
+      config_env() != :prod
+    )
