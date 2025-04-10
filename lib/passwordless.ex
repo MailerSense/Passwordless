@@ -180,6 +180,7 @@ defmodule Passwordless do
   def create_email_domain(%App{} = app, attrs \\ %{}) do
     app
     |> Ecto.build_assoc(:email_domain)
+    |> Kernel.then(&%Domain{&1 | purpose: :email})
     |> Domain.changeset(attrs)
     |> Repo.insert()
   end
@@ -187,6 +188,7 @@ defmodule Passwordless do
   def create_tracking_domain(%App{} = app, attrs \\ %{}) do
     app
     |> Ecto.build_assoc(:tracking_domain)
+    |> Kernel.then(&%Domain{&1 | purpose: :tracking})
     |> Domain.changeset(attrs)
     |> Repo.insert()
   end
@@ -228,6 +230,39 @@ defmodule Passwordless do
                end
              end),
            do: {:ok, %Domain{domain | records: records}}
+    end)
+  end
+
+  def replace_email_domain(%App{} = app, %Domain{purpose: :email} = current_domain, attrs) do
+    Repo.transact(fn ->
+      with {:ok, _deleted} <- delete_domain(current_domain),
+           do: create_email_domain(app, attrs)
+    end)
+  end
+
+  def replace_tracking_domain(%App{} = app, %Domain{purpose: :tracking} = current_domain, attrs) do
+    Repo.transact(fn ->
+      with {:ok, _deleted} <- delete_domain(current_domain),
+           do: create_tracking_domain(app, attrs)
+    end)
+  end
+
+  def teardown_domains(%App{} = app) do
+    Repo.transact(fn ->
+      with {_, _} <-
+             app
+             |> Ecto.assoc(:email_domain)
+             |> Repo.delete_all(),
+           {_, _} <-
+             app
+             |> Ecto.assoc(:tracking_domain)
+             |> Repo.delete_all(),
+           {:ok, app} <-
+             app
+             |> change_app(%{email_tracking: false, email_configuration_set: nil})
+             |> Repo.update() do
+        {:ok, %App{app | email_domain: nil, tracking_domain: nil}}
+      end
     end)
   end
 

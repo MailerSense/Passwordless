@@ -96,7 +96,7 @@ defmodule Passwordless.App do
     email_tracking
     org_id
   )a
-  @required_fields @fields -- [:logo]
+  @required_fields @fields -- [:logo, :email_configuration_set]
 
   @doc """
   A changeset to update an existing organization.

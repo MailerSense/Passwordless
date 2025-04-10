@@ -68,6 +68,28 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   end
 
   @impl true
+  def handle_event("delete_domain", _params, socket) do
+    case Passwordless.teardown_domains(socket.assigns.current_app) do
+      {:ok, app} ->
+        {:noreply,
+         socket
+         |> assign(current_app: app)
+         |> put_toast(
+           :info,
+           gettext("Domain has been deleted."),
+           title: gettext("Success")
+         )
+         |> push_navigate(to: ~p"/domain")}
+
+      _ ->
+        {:noreply,
+         socket
+         |> put_toast(:error, gettext("Failed to delete domains!"), title: gettext("Error"))
+         |> push_patch(to: ~p"/domain")}
+    end
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
@@ -111,6 +133,13 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
         gettext(
           "If you change the domain, the previous one will be deleted after 1 day. Keep in mind the new one still needs to be validated."
         )
+    )
+  end
+
+  defp apply_action(socket, :delete) do
+    assign(socket,
+      page_title: gettext("Delete domain"),
+      page_subtitle: gettext("Are you sure you want to delete this domain? This action cannot be undone.")
     )
   end
 
