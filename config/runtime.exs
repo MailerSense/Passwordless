@@ -117,8 +117,7 @@ if config_env() == :prod do
           database: postgres_db_name,
           port: String.to_integer(postgres_port),
           parameters: [],
-          ssl: true,
-          ssl_opts: AwsRdsCAStore.ssl_opts(database_url),
+          ssl: AwsRdsCAStore.ssl_opts(database_url),
           channel_name: "elixir_cluster"
         ]
       ]
