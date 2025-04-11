@@ -2,14 +2,40 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
+  alias Passwordless.Action
+  alias Passwordless.Actor
+  alias Passwordless.Email
+  alias Passwordless.Email.Renderer
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateVersion
+  alias Passwordless.Phone
 
   @default PasswordlessWeb.App.EmailLive.EmailComponent
   @components [
     edit: PasswordlessWeb.App.EmailLive.EmailComponent,
     code: PasswordlessWeb.App.EmailLive.CodeComponent,
     styles: PasswordlessWeb.App.EmailLive.StylesComponent
+  ]
+
+  @examples [
+    actor: %Actor{
+      name: "John Doe",
+      user_id: "1234567890",
+      language: :en,
+      properties: %{
+        "key1" => "value1",
+        "key2" => "value2"
+      },
+      email: %Email{
+        address: "john.doe@megacorp.com"
+      },
+      phone: %Phone{
+        canonical: "+491234567890"
+      }
+    },
+    action: %Action{
+      name: "login"
+    }
   ]
 
   @impl true
@@ -148,16 +174,35 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   end
 
   defp assign_version_form(socket, %Ecto.Changeset{} = changeset) do
+    opts = [{:app, socket.assigns.current_app} | @examples]
+
+    version = %EmailTemplateVersion{
+      subject: Ecto.Changeset.get_field(changeset, :subject),
+      preheader: Ecto.Changeset.get_field(changeset, :preheader),
+      mjml_body: Ecto.Changeset.get_field(changeset, :mjml_body)
+    }
+
+    socket =
+      case Renderer.render(version, %{}, opts) do
+        {:ok, %{html_content: html_content}} ->
+          assign(socket, preview: html_content)
+
+        {:error, _} ->
+          assign(socket, preview: Ecto.Changeset.get_field(changeset, :html_body))
+      end
+
     assign(socket,
-      version_form: to_form(changeset),
-      preview: Ecto.Changeset.get_field(changeset, :html_body)
+      version_form: to_form(changeset)
     )
   end
 
   defp apply_action(socket, _action, %{"delete" => _}) do
     assign(socket,
       page_title: gettext("Reset email template"),
-      page_subtitle: gettext("Are you sure you want to reset this email template? This action cannot be undone.")
+      page_subtitle:
+        gettext(
+          "Are you sure you want to reset this email template? Any customizations to the subject, preheader and content will be erased and replaced with default values."
+        )
     )
   end
 

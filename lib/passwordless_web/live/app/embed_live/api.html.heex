@@ -1,3 +1,57 @@
 <div class="p-6 flex flex-col gap-6">
   <.form_header title={gettext("Headless API")} no_margin />
+  <.p>
+    You can use the Headless API to authenticate your users directly from your backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
+  </.p>
+  <.a
+    to={~p"/embed/install"}
+    label={gettext("Install Passwordless SDK")}
+    style="link"
+    link_type="live_redirect"
+  />
+  <.form_separator no_margin />
+  <.form_header title={gettext("Basic usage")} no_margin />
+  <.p>
+    You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
+  </.p>
+  <.code_block
+    language={:typescript}
+    code={
+      ~s"""
+      import { Passwordless } from '@passwordless/tools';
+
+      Passwordless.init({
+        appId: '#{@app.id}',
+        appSecret: '**********', // ⚠️ Never expose this in frontend code!
+        defaultRules: [
+          {
+            condition: { type: "constant", value: true },
+            effects: [
+              { type: "challenge", with: Passwordless.ALL_ENABLED_AUTHENTICATORS },
+            ],
+          },
+        ]
+      });
+      """
+    }
+  />
+  <.p>
+    If the action is challenged and it requires some input from the user, for example the OTP code, you can pass the action ID along with the input to the "process" endpoint.
+  </.p>
+  <.form_separator no_margin />
+  <.form_header title={gettext("Rule evaluation")} no_margin />
+  <.p>
+    Passwordless comes with a powerful rules engine that allows you to define complex rules for your authentication flows. You can use the rules engine to define conditions and effects for your actions.
+  </.p>
+  <.form_separator no_margin />
+  <.form_header title={gettext("Webhooks")} no_margin />
+  <.p>
+    Passwordless supports webhooks for various events, such as user login, user registration, and password reset. You can use webhooks to trigger actions in your application when these events occur.
+  </.p>
+  <.form_separator no_margin />
+  <.form_header title={gettext("Security")} no_margin />
+  <.p>
+    Passwordless uses industry-standard security practices to protect your data. All data is encrypted in transit and at rest. We also support two-factor authentication for added security.
+  </.p>
+  <.form_separator no_margin />
 </div>

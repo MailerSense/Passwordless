@@ -43,6 +43,7 @@
       <div class={[
         "grow lg:flex-none",
         "transition-all duration-150 ease-linear",
+        "lg:min-w-[400px]",
         if(@live_action == :code, do: "lg:w-1/2", else: "lg:w-1/3")
       ]}>
         <.tab_menu
