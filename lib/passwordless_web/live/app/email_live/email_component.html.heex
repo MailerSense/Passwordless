@@ -17,12 +17,6 @@
       required
       required_asterix={false}
     />
-    <.a
-      to={~p"/emails/#{@template}/#{@language}/#{@live_action}?variables=true"}
-      label={gettext("Learn about variables")}
-      style="link"
-      link_type="live_patch"
-    />
   </.form>
   <.form_separator />
   <.form_header title={gettext("Preview")} />
@@ -49,6 +43,7 @@
   <.form_separator />
   <.form_header title={gettext("Variables")} />
   <.p class="mb-6">
-    Modify the preview variables below to see how your emails will look like for real users.
+    Email templates can use variables to customize the content. The following variables are available.
   </.p>
+  <.json_block label={gettext("Test variables")} code={@variables} />
 </div>

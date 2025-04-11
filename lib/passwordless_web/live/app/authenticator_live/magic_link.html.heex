@@ -38,7 +38,7 @@
     <.email_preview
       to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/magic-link"}"}
       name={gettext("Edit email template")}
-      preview={@email_version.html_body}
+      preview={@preview}
       link_type="live_redirect"
     />
     <div class="flex items-center gap-3 flex-wrap">

@@ -39,12 +39,12 @@
       </.subpage_header>
     </.form>
 
-    <.box class="flex flex-col lg:flex-row divide-x divide-slate-200 dark:divide-slate-700 overflow-hidden">
+    <.box class="flex flex-col xl:flex-row divide-x divide-slate-200 dark:divide-slate-700 overflow-hidden">
       <div class={[
-        "grow lg:flex-none",
+        "grow xl:flex-none",
         "transition-all duration-150 ease-linear",
-        "lg:min-w-[400px]",
-        if(@live_action == :code, do: "lg:w-1/2", else: "lg:w-1/3")
+        "xl:min-w-[400px]",
+        if(@live_action == :code, do: "xl:w-1/2", else: "xl:w-1/3")
       ]}>
         <.tab_menu
           class="m-6"
@@ -68,7 +68,7 @@
         <iframe
           id="html-preview"
           src="about:blank"
-          class="w-full h-lvh"
+          class="w-full h-full min-h-screen"
           data-source="html-preview-data"
         >
         </iframe>
@@ -106,15 +106,5 @@
         />
       </div>
     </.modal>
-  <% @variables?-> %>
-    <.live_component
-      id={@live_action}
-      app={@current_app}
-      title={@page_title}
-      subtitle={@page_subtitle}
-      module={PasswordlessWeb.App.EmailLive.VariableComponent}
-      live_action={@live_action}
-      return_to={~p"/emails/#{@template}/#{@language}/#{@live_action}"}
-    />
   <% true -> %>
 <% end %>

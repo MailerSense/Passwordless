@@ -2,40 +2,15 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
-  alias Passwordless.Action
-  alias Passwordless.Actor
-  alias Passwordless.Email
   alias Passwordless.Email.Renderer
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateVersion
-  alias Passwordless.Phone
 
   @default PasswordlessWeb.App.EmailLive.EmailComponent
   @components [
     edit: PasswordlessWeb.App.EmailLive.EmailComponent,
     code: PasswordlessWeb.App.EmailLive.CodeComponent,
     styles: PasswordlessWeb.App.EmailLive.StylesComponent
-  ]
-
-  @examples [
-    actor: %Actor{
-      name: "John Doe",
-      user_id: "1234567890",
-      language: :en,
-      properties: %{
-        "key1" => "value1",
-        "key2" => "value2"
-      },
-      email: %Email{
-        address: "john.doe@megacorp.com"
-      },
-      phone: %Phone{
-        canonical: "+491234567890"
-      }
-    },
-    action: %Action{
-      name: "login"
-    }
   ]
 
   @impl true
@@ -63,12 +38,11 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
     module = Keyword.get(@components, socket.assigns.live_action, @default)
     delete? = Map.has_key?(params, "delete")
-    variables? = Map.has_key?(params, "variables")
     return_to = Map.get(params, "return_to")
 
     {:noreply,
      socket
-     |> assign(delete?: delete?, variables?: variables?, return_to: return_to, module: module)
+     |> assign(delete?: delete?, return_to: return_to, module: module)
      |> apply_action(socket.assigns.live_action, params)}
   end
 
@@ -174,7 +148,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   end
 
   defp assign_version_form(socket, %Ecto.Changeset{} = changeset) do
-    opts = [{:app, socket.assigns.current_app} | @examples]
+    opts = [{:app, socket.assigns.current_app} | Renderer.demo_opts()]
 
     version = %EmailTemplateVersion{
       subject: Ecto.Changeset.get_field(changeset, :subject),
