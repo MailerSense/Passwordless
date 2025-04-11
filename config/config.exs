@@ -99,8 +99,7 @@ config :passwordless, :rate_limit, adapter: Passwordless.RateLimit.ETS
 
 config :passwordless, :hammer,
   ets: [
-    expiry_ms: 60_000 * 60 * 4,
-    cleanup_interval_ms: 60_000 * 10
+    clean_period: :timer.minutes(1)
   ]
 
 # Configures the secret manager

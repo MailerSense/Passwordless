@@ -1,5 +1,14 @@
 <div class="p-6 flex flex-col gap-6">
   <.form_header title={gettext("Installation")} no_margin />
+  <.p>
+    To use Passwordless in your backend, you need to install the Passwordless SDK. We currently support NodeJS, and will continue to add support for further frameworks.
+  </.p>
+  <.a
+    to={~p"/embed/install"}
+    label={gettext("Install Passwordless SDK")}
+    style="link"
+    link_type="live_redirect"
+  />
   <.code_block
     language={:typescript}
     code={
