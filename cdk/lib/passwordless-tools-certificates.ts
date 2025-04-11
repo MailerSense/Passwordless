@@ -75,7 +75,7 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
       const cdnName = `${reg}-${env}-cdn-certificate`;
       this.cdn[reg][env] = new Certificate(this, cdnName, {
         name: cdnName,
-        zone,
+        zone: comZone,
         domain: cdn.domain,
       });
 
