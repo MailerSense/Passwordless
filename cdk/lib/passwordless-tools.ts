@@ -380,7 +380,7 @@ export class PasswordlessTools extends cdk.Stack {
       blockedPathPrefixes: ["/health"],
     });
 
-    // Create a CDN for:
+    // Create a CDN for a
     const _cdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-cdn`,
       zone,
