@@ -96,7 +96,7 @@ defmodule PasswordlessWeb.Router do
     get "/billing/checkout/:plan_id", BillingController, :checkout
 
     # DNS
-    get "/domain/dns/download", DNSController, :download
+    get "/domain/:id/dns/download", DNSController, :download
 
     # Recovery codes
     get "/recovery-codes/download/:actor_id", RecoveryCodeController, :download
@@ -199,6 +199,7 @@ defmodule PasswordlessWeb.Router do
 
       # Knowledge
       live "/pricing", Knowledge.PricingLive, :index
+      live "/support", Knowledge.SupportLive, :index
       live "/use-cases", Knowledge.UseCaseLive, :index
     end
   end

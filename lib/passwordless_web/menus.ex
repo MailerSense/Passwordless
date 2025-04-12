@@ -18,7 +18,7 @@ defmodule PasswordlessWeb.Menus do
   def main_menu_items(:app, %User{} = current_user),
     do: build_menu([:home, :users, :reports, :embed, :authenticators, :settings, :billing], current_user)
 
-  def main_menu_items(:knowledge, %User{} = current_user), do: build_menu([:pricing, :use_cases], current_user)
+  def main_menu_items(:knowledge, %User{} = current_user), do: build_menu([:pricing, :use_cases, :support], current_user)
 
   def main_menu_items(:admin, %User{} = current_user),
     do:
@@ -312,6 +312,16 @@ defmodule PasswordlessWeb.Menus do
       label: gettext("Pricing"),
       path: ~p"/pricing",
       icon: "remix-coin-line",
+      link_type: "live_patch"
+    }
+  end
+
+  def get_link(:support = name, _user) do
+    %{
+      name: name,
+      label: gettext("Support Call"),
+      path: ~p"/support",
+      icon: "remix-phone-line",
       link_type: "live_patch"
     }
   end

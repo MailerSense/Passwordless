@@ -6,8 +6,8 @@ defmodule PasswordlessWeb.DNSController do
 
   NimbleCSV.define(DNSDumper, separator: ",", escape: "\"")
 
-  def download(conn, _params, %User{current_app: %App{} = app}) do
-    domain = Passwordless.get_domain!(app)
+  def download(conn, %{"id" => id}, %User{current_app: %App{} = app}) do
+    domain = Passwordless.get_domain!(app, id)
     records = Passwordless.list_domain_record(domain)
 
     header = ["Name", "Kind", "Value"]

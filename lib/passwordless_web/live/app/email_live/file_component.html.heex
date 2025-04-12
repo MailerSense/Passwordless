@@ -22,7 +22,10 @@
       <%= unless Enum.empty?(@uploads.new_media.entries) do %>
         <%= for entry <- @uploads.new_media.entries do %>
           <div class="relative shrink-0">
-            <.live_img_preview entry={entry} class="h-[76px] w-[76px] rounded-lg" />
+            <.live_img_preview
+              entry={entry}
+              class="h-[52px] w-[52px] xl:h-[76px] xl:w-[76px] rounded-lg"
+            />
           </div>
         <% end %>
       <% end %>
@@ -31,12 +34,15 @@
         <div class="text-primary-500 dark:text-primary-600 text-base font-semibold line-clamp-1">
           {if Enum.empty?(@uploads.new_media.entries),
             do: gettext("Upload a new file"),
-            else: gettext("Finish uploading file")}
+            else: hd(@uploads.new_media.entries).client_name}
         </div>
 
         <%= if @uploads.new_media.max_file_size do %>
           <div class="text-gray-600 dark:text-gray-300 text-sm font-medium leading-tight line-clamp-1">
-            {Sizeable.filesize(@uploads.new_media.max_file_size)} max.
+            {if Enum.empty?(@uploads.new_media.entries),
+              do:
+                gettext("%{size} max.", size: Sizeable.filesize(@uploads.new_media.max_file_size)),
+              else: Sizeable.filesize(hd(@uploads.new_media.entries).client_size)}
           </div>
         <% end %>
 

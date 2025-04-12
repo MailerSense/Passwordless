@@ -6,8 +6,6 @@ defmodule Passwordless.Expletive do
   alias Passwordless.Expletive.Configuration, as: Configuration
   alias Passwordless.Expletive.Replacement, as: Replacement
 
-  @configurations
-
   @type replacement ::
           :default
           | :garbled
@@ -18,6 +16,8 @@ defmodule Passwordless.Expletive do
           | {:repeat, String.t()}
           | :keep_first_letter
           | {:keep_first_letter, String.t()}
+
+  @english Configuration.new(blacklist: Passwordless.Expletive.Blacklist.english())
 
   @doc """
   Returns a configuration to pass to other functions.
@@ -51,7 +51,7 @@ defmodule Passwordless.Expletive do
   Returns `true` if the given string contains a word considered profane by the given configuration
   """
   @spec profane?(String.t(), Configuration.t()) :: boolean
-  def profane?(string, config) do
+  def profane?(string, config \\ @english) do
     Regex.match?(config.regex, string)
   end
 
@@ -59,7 +59,7 @@ defmodule Passwordless.Expletive do
   Returns a list of profanities found in the given string.  All occurences are returned, duplicates may thus occur
   """
   @spec profanities(String.t(), Configuration.t()) :: [String.t()]
-  def profanities(string, config) do
+  def profanities(string, config \\ @english) do
     config.regex
     |> Regex.scan(string)
     |> Enum.map(fn [match] -> match end)
@@ -71,7 +71,9 @@ defmodule Passwordless.Expletive do
   """
   @spec sanitize(String.t(), Configuration.t()) :: String.t()
   def sanitize(string, config) do
-    Regex.replace(config.regex, string, fn word -> Replacement.replace(word, config.replacement) end)
+    Regex.replace(config.regex, string, fn word ->
+      Replacement.replace(word, config.replacement)
+    end)
   end
 
   @doc """

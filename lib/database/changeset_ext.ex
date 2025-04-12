@@ -177,6 +177,18 @@ defmodule Database.ChangesetExt do
     |> validate_state_transition(transitions, states, field)
   end
 
+  def validate_profanities(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
+    validate_change(changeset, field, fn ^field, value ->
+      case Passwordless.Expletive.profanities(value) do
+        [_ | _] = list ->
+          [{field, "let's keep it professional, please :) - " <> Enum.join(list, ", ")}]
+
+        _ ->
+          []
+      end
+    end)
+  end
+
   @doc """
   Ensure that the personal identifiable information (PIA) is removed from the value.
   """

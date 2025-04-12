@@ -5,6 +5,7 @@ defmodule Passwordless.EmailTemplateVersion do
 
   use Passwordless.Schema, prefix: "emtplver"
 
+  alias Database.ChangesetExt
   alias Passwordless.EmailTemplate
   alias Passwordless.Templating.MJML
 
@@ -80,12 +81,28 @@ defmodule Passwordless.EmailTemplateVersion do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> update_html_body()
+    |> validate_subject()
+    |> validate_preheader()
     |> unique_constraint([:email_template_id, :language], error_key: :language)
     |> unsafe_validate_unique([:email_template_id, :language], Passwordless.Repo, error_key: :language)
     |> assoc_constraint(:email_template)
   end
 
   # Private
+
+  defp validate_subject(changeset) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(:subject)
+    |> ChangesetExt.validate_profanities(:subject)
+    |> validate_length(:subject, min: 1, max: 255)
+  end
+
+  defp validate_preheader(changeset) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(:preheader)
+    |> ChangesetExt.validate_profanities(:preheader)
+    |> validate_length(:preheader, min: 1, max: 255)
+  end
 
   defp update_html_body(changeset) do
     with {_, mjml_body} when is_binary(mjml_body) <- fetch_field(changeset, :mjml_body),
