@@ -219,8 +219,8 @@ export class PasswordlessTools extends cdk.Stack {
       removalPolicy,
     });
 
-    const { domain: cdnDomain, certificate: cdnCert } =
-      certificates.cdn[region][env];
+    /*  const { domain: cdnDomain, certificate: cdnCert } =
+      certificates.cdn[region][env]; */
 
     const imageName = "passwordless-tools-image";
     const cachedImage = new CachedImage(this, imageName, {
@@ -233,6 +233,7 @@ export class PasswordlessTools extends cdk.Stack {
       platform: Platform.LINUX_ARM64,
     });
 
+    const cdnDomain = "dumbo";
     const appEnv = {
       AWS_REGION: cdk.Stack.of(this).region,
       AWS_ACCOUNT: cdk.Stack.of(this).account,
@@ -407,11 +408,11 @@ export class PasswordlessTools extends cdk.Stack {
           rufEmail: `dmarc@${comZone.zoneName}`,
         },
       ],
-      tracking: {
+      /*  tracking: {
         zone: comZone,
         cert: certificates.tracking[region][env].certificate,
         domain: domainLookup.tracking.domain,
-      },
+      }, */
       removalPolicy,
     });
 
