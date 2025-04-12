@@ -15,6 +15,7 @@ import { Region } from "./util/region";
 export class PasswordlessToolsCertificates extends cdk.Stack {
   public cdn: Record<Region, Record<Environment, Certificate>>;
   public com: Record<Region, Record<Environment, Certificate>>;
+  public appCdn: Record<Region, Record<Environment, Certificate>>;
   public tracking: Record<Region, Record<Environment, Certificate>>;
   public mainCert: Certificate;
   public wwwCert: Certificate;
@@ -54,11 +55,12 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
 
     this.cdn = {} as Record<Region, Record<Environment, Certificate>>;
     this.com = {} as Record<Region, Record<Environment, Certificate>>;
+    this.appCdn = {} as Record<Region, Record<Environment, Certificate>>;
     this.tracking = {} as Record<Region, Record<Environment, Certificate>>;
 
     for (const [region, value] of Object.entries(domainLookupMap)) {
       const reg = region as Region;
-      const { cdn, com, tracking } = value[env];
+      const { cdn, com, appCdn, tracking } = value[env];
 
       if (!this.cdn[reg]) {
         this.cdn[reg] = {} as Record<Environment, Certificate>;
@@ -66,6 +68,10 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
 
       if (!this.com[reg]) {
         this.com[reg] = {} as Record<Environment, Certificate>;
+      }
+
+      if (!this.appCdn[reg]) {
+        this.appCdn[reg] = {} as Record<Environment, Certificate>;
       }
 
       if (!this.tracking[reg]) {
@@ -84,6 +90,13 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
         name: comName,
         zone: comZone,
         domain: com.domain,
+      });
+
+      const appCdnName = `${reg}-${env}-app-cdn-certificate`;
+      this.appCdn[reg][env] = new Certificate(this, appCdnName, {
+        name: appCdnName,
+        zone,
+        domain: appCdn.domain,
       });
 
       const trackingName = `${reg}-${env}-tracking-certificate`;

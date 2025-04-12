@@ -96,6 +96,7 @@ export type DomainConfig = {
       main: DomainAttributes;
       www: DomainAttributes;
       cdn: DomainAttributes;
+      appCdn: DomainAttributes;
       com: DomainAttributes;
       email: DomainAttributes;
       tracking: DomainAttributes;
@@ -157,17 +158,21 @@ export const domainLookupMap: DomainConfig = {
         zone: ZoneType.COM,
         domain: "cdn.eu.dev.passwordlesstools.com",
       },
+      appCdn: {
+        zone: ZoneType.TOOLS,
+        domain: "cdn.eu.dev.passwordless.tools",
+      },
       com: {
         zone: ZoneType.COM,
         domain: "dev.eu.passwordlesstools.com",
       },
       email: {
         zone: ZoneType.COM,
-        domain: "auth.dev.eu.passwordlesstools.com",
+        domain: "auth.eu.dev.passwordlesstools.com",
       },
       tracking: {
         zone: ZoneType.COM,
-        domain: "click.dev.eu.passwordlesstools.com",
+        domain: "click.eu.dev.passwordlesstools.com",
       },
     },
     [Environment.PROD]: {
@@ -182,6 +187,10 @@ export const domainLookupMap: DomainConfig = {
       cdn: {
         zone: ZoneType.COM,
         domain: "cdn.eu.passwordlesstools.com",
+      },
+      appCdn: {
+        zone: ZoneType.TOOLS,
+        domain: "cdn.eu.passwordless.tools",
       },
       com: {
         zone: ZoneType.COM,
@@ -211,6 +220,10 @@ export const domainLookupMap: DomainConfig = {
         zone: ZoneType.COM,
         domain: "cdn.us.dev.passwordlesstools.com",
       },
+      appCdn: {
+        zone: ZoneType.TOOLS,
+        domain: "cdn.us.dev.passwordless.tools",
+      },
       com: {
         zone: ZoneType.COM,
         domain: "us.dev.passwordlesstools.com",
@@ -236,6 +249,10 @@ export const domainLookupMap: DomainConfig = {
       cdn: {
         zone: ZoneType.COM,
         domain: "cdn.us.passwordlesstools.com",
+      },
+      appCdn: {
+        zone: ZoneType.TOOLS,
+        domain: "cdn.us.passwordless.tools",
       },
       com: {
         zone: ZoneType.COM,
