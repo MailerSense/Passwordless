@@ -382,7 +382,7 @@ export class PasswordlessTools extends cdk.Stack {
     // b) serving customer media from S3
     const _cdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-cdn`,
-      zone,
+      zone: comZone,
       cert: cdnCert,
       domain: cdnDomain,
       defaultBehavior: {
@@ -419,11 +419,11 @@ export class PasswordlessTools extends cdk.Stack {
           rufEmail: `dmarc@${comZone.zoneName}`,
         },
       ],
-      /*  tracking: {
+      tracking: {
         zone: comZone,
         cert: certificates.tracking[region][env].certificate,
         domain: domainLookup.tracking.domain,
-      }, */
+      },
       removalPolicy,
     });
 
