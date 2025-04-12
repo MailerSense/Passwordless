@@ -172,7 +172,7 @@ config :passwordless, :content_security_policy,
     ),
   frame_src:
     append_if(
-      ["https://*.passwordless.tools"],
+      ["https://*.passwordless.tools", "https://calendar.google.com"],
       "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}",
       config_env() != :prod
     )

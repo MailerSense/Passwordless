@@ -135,6 +135,11 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
               link_type: "live_redirect"
             },
             %{
+              to: ~p"/support",
+              label: "Support",
+              link_type: "live_redirect"
+            },
+            %{
               to: ~p"/embed/install",
               label: "Docs",
               link_type: "live_redirect"
