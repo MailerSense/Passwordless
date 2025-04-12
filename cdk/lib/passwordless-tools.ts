@@ -232,6 +232,9 @@ export class PasswordlessTools extends cdk.Stack {
     const { domain: cdnDomain, certificate: cdnCert } =
       certificates.cdn[region][env];
 
+    const { domain: appCdnDomain, certificate: appCdnCert } =
+      certificates.appCdn[region][env];
+
     const imageName = "passwordless-tools-image";
     const cachedImage = new CachedImage(this, imageName, {
       exclude: ["node_modules", "deps", "_build", ".git"],
@@ -246,7 +249,7 @@ export class PasswordlessTools extends cdk.Stack {
     const appEnv = {
       AWS_REGION: cdk.Stack.of(this).region,
       AWS_ACCOUNT: cdk.Stack.of(this).account,
-      CDN_HOST: cdnDomain,
+      CDN_HOST: appCdnDomain,
       CUSTOMER_MEDIA_BUCKET: customerMedia.bucket.bucketName,
       CUSTOMER_MEDIA_CDN_URL: `https://${cdnDomain}/`,
     };
@@ -382,9 +385,9 @@ export class PasswordlessTools extends cdk.Stack {
     // b) serving customer media from S3
     const _cdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-cdn`,
-      zone: comZone,
-      cert: cdnCert,
-      domain: cdnDomain,
+      zone,
+      cert: appCdnCert,
+      domain: appCdnDomain,
       defaultBehavior: {
         origin: new LoadBalancerV2Origin(app.service.loadBalancer),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
