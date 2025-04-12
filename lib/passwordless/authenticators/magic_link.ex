@@ -19,7 +19,6 @@ defmodule Passwordless.Authenticators.MagicLink do
     field :expires, :integer, default: 15
     field :sender, :string
     field :sender_name, :string
-    field :email_tracking, :boolean, default: true
     field :fingerprint_device, :boolean, default: false
 
     embeds_many :redirect_urls, RedirectURL, on_replace: :delete do
@@ -46,7 +45,6 @@ defmodule Passwordless.Authenticators.MagicLink do
     expires
     sender
     sender_name
-    email_tracking
     fingerprint_device
     app_id
     email_template_id

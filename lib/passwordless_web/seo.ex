@@ -13,10 +13,13 @@ defmodule PasswordlessWeb.SEO do
     SEO.Site.build(
       title: get_in(conn.assigns, [Access.key(:page_title, Passwordless.config(:app_name))]),
       default_title: Passwordless.config(:app_name),
-      description: get_in(conn.assigns, [Access.key(:page_description, Passwordless.config(:seo_description))]),
-      theme_color: "#243837",
-      windows_tile_color: "#243837",
-      mask_icon_color: "#243837",
+      description:
+        get_in(conn.assigns, [
+          Access.key(:page_description, Passwordless.config(:seo_description))
+        ]),
+      theme_color: "#162a55",
+      windows_tile_color: "#162a55",
+      mask_icon_color: "#162a55",
       manifest_url: "/site.webmanifest"
     )
   end
@@ -31,7 +34,10 @@ defmodule PasswordlessWeb.SEO do
         width: 1536,
         height: 768
       },
-      description: get_in(conn.assigns, [Access.key(:page_description, Passwordless.config(:seo_description))]),
+      description:
+        get_in(conn.assigns, [
+          Access.key(:page_description, Passwordless.config(:seo_description))
+        ]),
       site_name: Passwordless.config(:app_name),
       locale: "en_US"
     )
@@ -40,7 +46,10 @@ defmodule PasswordlessWeb.SEO do
   def twitter_config(conn) do
     SEO.Twitter.build(
       title: get_in(conn.assigns, [Access.key(:page_title, Passwordless.config(:app_name))]),
-      description: get_in(conn.assigns, [Access.key(:page_description, Passwordless.config(:seo_description))]),
+      description:
+        get_in(conn.assigns, [
+          Access.key(:page_description, Passwordless.config(:seo_description))
+        ]),
       creator: "@PasswordlessIO",
       image: "https://cdn.passwordless.tools/public-sharing/twitter-card.webp",
       image_alt: "Easy, Continuous Monitoring With Playwright",

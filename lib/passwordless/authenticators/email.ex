@@ -19,7 +19,6 @@ defmodule Passwordless.Authenticators.Email do
     field :expires, :integer, default: 15
     field :sender, :string
     field :sender_name, :string
-    field :email_tracking, :boolean, default: true
 
     belongs_to :app, App
     belongs_to :email_template, EmailTemplate
@@ -39,7 +38,6 @@ defmodule Passwordless.Authenticators.Email do
     expires
     sender
     sender_name
-    email_tracking
     app_id
     email_template_id
   )a

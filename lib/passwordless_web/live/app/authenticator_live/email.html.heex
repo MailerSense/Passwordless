@@ -57,16 +57,6 @@
     <.form_separator />
     <.form_header title="Advanced" />
     <.field
-      type="checkbox"
-      field={@form[:email_tracking]}
-      help_text={
-        gettext(
-          "Track users who successfully received your email and opened it in their email clients."
-        )
-      }
-      disabled={not @enabled}
-    />
-    <.field
       field={@form[:expires]}
       type="number"
       label={gettext("Expires")}
