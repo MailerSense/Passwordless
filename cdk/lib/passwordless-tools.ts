@@ -2,15 +2,6 @@ import * as cdk from "aws-cdk-lib";
 import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
 import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
 import {
-  CachePolicy,
-  OriginRequestPolicy,
-  ViewerProtocolPolicy,
-} from "aws-cdk-lib/aws-cloudfront";
-import {
-  LoadBalancerV2Origin,
-  S3BucketOrigin,
-} from "aws-cdk-lib/aws-cloudfront-origins";
-import {
   InstanceClass,
   InstanceSize,
   InstanceType,
@@ -40,7 +31,6 @@ import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
 import { SES } from "./email/ses";
 import { Migration } from "./lambda/migration";
-import { CDN } from "./network/cdn";
 import { Certificate } from "./network/certificate";
 import { VPC } from "./network/vpc";
 import { WAF } from "./network/waf";
@@ -377,7 +367,7 @@ export class PasswordlessTools extends cdk.Stack {
       blockedPathPrefixes: ["/health"],
     });
 
-    const _cdn = new CDN(this, `${env}-app-cdn`, {
+    /*     const _cdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-cdn`,
       zone,
       cert: cdnCert,
@@ -394,8 +384,8 @@ export class PasswordlessTools extends cdk.Stack {
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
       },
-    });
-
+    }); 
+ */
     const containerScanningName = `${env}-app`;
     const _containerScanning = new ContainerScanning(
       this,
