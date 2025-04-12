@@ -179,6 +179,12 @@ defmodule PasswordlessWeb.Helpers do
         label: gettext("Code"),
         path: ~p"/emails/#{email_template}/#{language}/code",
         link_type: "live_patch"
+      },
+      %{
+        name: :files,
+        label: gettext("Files"),
+        path: ~p"/emails/#{email_template}/#{language}/files",
+        link_type: "live_patch"
       }
     ]
   end

@@ -10,7 +10,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   @components [
     edit: PasswordlessWeb.App.EmailLive.EmailComponent,
     code: PasswordlessWeb.App.EmailLive.CodeComponent,
-    styles: PasswordlessWeb.App.EmailLive.StylesComponent
+    files: PasswordlessWeb.App.EmailLive.FileComponent
   ]
 
   @impl true

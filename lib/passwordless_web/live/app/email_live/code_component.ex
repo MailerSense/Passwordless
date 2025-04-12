@@ -6,7 +6,11 @@ defmodule PasswordlessWeb.App.EmailLive.CodeComponent do
 
   @impl true
   def update(assigns, socket) do
-    styles = Enum.map(EmailTemplateVersion.styles(), fn style -> {Phoenix.Naming.humanize(style), style} end)
+    styles =
+      Enum.map(EmailTemplateVersion.styles(), fn style ->
+        {Phoenix.Naming.humanize(style), style}
+      end)
+
     {:ok, socket |> assign(assigns) |> assign(styles: styles)}
   end
 end

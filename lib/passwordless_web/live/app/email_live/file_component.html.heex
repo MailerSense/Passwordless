@@ -1,0 +1,15 @@
+<div class="px-3 pb-3 flex flex-col">
+  <.new_file_input />
+  <.file_card
+    :for={
+      file <- [
+        %{
+          file_name: "Test.png",
+          file_size: 123_456,
+          file_uploaded_at: ~U[2023-10-01 12:00:00Z]
+        }
+      ]
+    }
+    {file}
+  />
+</div>

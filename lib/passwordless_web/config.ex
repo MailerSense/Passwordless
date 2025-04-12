@@ -40,7 +40,10 @@ defmodule PasswordlessWeb.Config do
   end
 
   def corsica_options(:prod) do
-    Keyword.put(@corsica, :origins, "https://passwordless.tools")
+    Keyword.put(@corsica, :origins, [
+      ~r{^https?://(.*\.)?passwordless\.tools$},
+      ~r{^https?://(.*\.)?passwordlesstools\.com$}
+    ])
   end
 
   def corsica_options(_) do

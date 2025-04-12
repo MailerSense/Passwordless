@@ -190,6 +190,23 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create index(:apps, [:org_id], where: "deleted_at is null")
 
+    ## Media
+
+    create table(:media, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :kind, :string, null: false
+      add :name, :string, null: false
+      add :mime, :string, null: false
+      add :size, :integer, null: false
+      add :public_url, :string
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create index(:media, [:app_id])
+
     ## Auth tokens
 
     create table(:auth_tokens, primary_key: false) do
