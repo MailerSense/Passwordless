@@ -419,11 +419,11 @@ export class PasswordlessTools extends cdk.Stack {
           rufEmail: `dmarc@${comZone.zoneName}`,
         },
       ],
-      /*  tracking: {
+      tracking: {
         zone: comZone,
         cert: certificates.tracking[region][env].certificate,
         domain: domainLookup.tracking.domain,
-      }, */
+      },
       removalPolicy,
     });
 

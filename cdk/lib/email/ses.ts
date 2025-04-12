@@ -40,6 +40,7 @@ export interface TrackingIdentity {
 }
 
 const allowedEventTypes: EmailSendingEvent[] = [
+  // State changes
   EmailSendingEvent.SEND,
   EmailSendingEvent.REJECT,
   EmailSendingEvent.BOUNCE,
@@ -48,6 +49,9 @@ const allowedEventTypes: EmailSendingEvent[] = [
   EmailSendingEvent.RENDERING_FAILURE,
   EmailSendingEvent.DELIVERY_DELAY,
   EmailSendingEvent.SUBSCRIPTION,
+  // Tracking
+  EmailSendingEvent.OPEN,
+  EmailSendingEvent.CLICK,
 ];
 
 export class SES extends Construct {
