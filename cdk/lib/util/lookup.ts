@@ -154,8 +154,8 @@ export const domainLookupMap: DomainConfig = {
         domain: "www.eu.dev.passwordless.tools",
       },
       cdn: {
-        zone: ZoneType.TOOLS,
-        domain: "cdn.eu.dev.passwordless.tools",
+        zone: ZoneType.COM,
+        domain: "cdn.eu.dev.passwordlesstools.com",
       },
       com: {
         zone: ZoneType.COM,
@@ -180,8 +180,8 @@ export const domainLookupMap: DomainConfig = {
         domain: "www.eu.passwordless.tools",
       },
       cdn: {
-        zone: ZoneType.TOOLS,
-        domain: "cdn.eu.passwordless.tools",
+        zone: ZoneType.COM,
+        domain: "cdn.eu.passwordlesstools.com",
       },
       com: {
         zone: ZoneType.COM,
@@ -208,8 +208,8 @@ export const domainLookupMap: DomainConfig = {
         domain: "www.us.dev.passwordless.tools",
       },
       cdn: {
-        zone: ZoneType.TOOLS,
-        domain: "cdn.us.dev.passwordless.tools",
+        zone: ZoneType.COM,
+        domain: "cdn.us.dev.passwordlesstools.com",
       },
       com: {
         zone: ZoneType.COM,
@@ -234,8 +234,8 @@ export const domainLookupMap: DomainConfig = {
         domain: "www.us.passwordless.tools",
       },
       cdn: {
-        zone: ZoneType.TOOLS,
-        domain: "cdn.us.passwordless.tools",
+        zone: ZoneType.COM,
+        domain: "cdn.us.passwordlesstools.com",
       },
       com: {
         zone: ZoneType.COM,
