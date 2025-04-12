@@ -44,7 +44,7 @@ import { Region } from "./util/region";
 
 export interface PasswordlessToolsProps extends cdk.StackProps {
   region: Region;
-  certificates: PasswordlessToolsCertificates;
+  certificates?: PasswordlessToolsCertificates;
 }
 
 export class PasswordlessTools extends cdk.Stack {
