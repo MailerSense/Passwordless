@@ -89,11 +89,6 @@ defmodule PasswordlessWeb.CoreComponents do
             Copyright © {Timex.now().year} {Passwordless.config(:business_name) <>
               ". All rights reserved."}
           </span>
-          <span class="text-slate-600 text-xs font-normal gap-8 hidden md:flex">
-            <.a to={~p"/terms"} label={gettext("Terms of Service")} />
-            <.a to={~p"/privacy"} label={gettext("Privacy Policy")} />
-            <.a to={~p"/contact"} label={gettext("Contact")} />
-          </span>
         </div>
       </.container>
     </footer>
@@ -485,14 +480,6 @@ defmodule PasswordlessWeb.CoreComponents do
       Gettext.dngettext(PasswordlessWeb.Gettext, "backpex", msg, msg, count, opts)
     else
       Gettext.dgettext(PasswordlessWeb.Gettext, "backpex", msg, opts)
-    end
-  end
-
-  def translate_error({msg, opts}) do
-    if count = opts[:count] do
-      Gettext.dngettext(PasswordlessWeb.Gettext, "errors", msg, msg, count, opts)
-    else
-      Gettext.dgettext(PasswordlessWeb.Gettext, "errors", msg, opts)
     end
   end
 

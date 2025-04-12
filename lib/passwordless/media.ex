@@ -7,7 +7,6 @@ defmodule Passwordless.Media do
 
   import Ecto.Query
 
-  alias Database.ChangesetExt
   alias Passwordless.App
 
   @derive {
@@ -23,6 +22,7 @@ defmodule Passwordless.Media do
     belongs_to :app, App
 
     timestamps()
+    soft_delete_timestamp()
   end
 
   @doc """
@@ -33,6 +33,7 @@ defmodule Passwordless.Media do
   end
 
   @fields ~w(name mime size public_url app_id)a
+  @required_fields ~w(name size public_url app_id)a
 
   @doc """
   A media changeset.
@@ -40,6 +41,7 @@ defmodule Passwordless.Media do
   def changeset(%__MODULE__{} = media, attrs \\ %{}) do
     media
     |> cast(attrs, @fields)
+    |> validate_required(@required_fields)
     |> validate_name()
     |> validate_size()
     |> put_mime()
@@ -52,16 +54,12 @@ defmodule Passwordless.Media do
 
   defp validate_name(changeset) do
     changeset
-    |> validate_required([:name])
-    |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 160)
     |> update_change(:name, &Path.basename/1)
+    |> validate_length(:name, min: 1, max: 255)
   end
 
   defp validate_size(changeset) do
-    Sizeable.changeset()
-    |> validate_required([:size])
-    |> validate_number(:size, greater_than: 0, less_than: 10_485)
+    validate_number(changeset, :size, greater_than: 0)
   end
 
   defp validate_mime(changeset) do
@@ -72,7 +70,6 @@ defmodule Passwordless.Media do
     changeset
     |> validate_required([:public_url])
     |> validate_length(:public_url, max: 255)
-    |> validate_format(:public_url, ~r/^https?:\/\/.+/)
   end
 
   defp put_mime(changeset) do

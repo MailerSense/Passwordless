@@ -54,10 +54,12 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   defp maybe_add_logo(user_params, socket) do
     uploaded_files = FileUploads.consume_uploaded_entries(socket, :logo)
 
-    if length(uploaded_files) > 0 do
-      Map.put(user_params, "logo", hd(uploaded_files))
-    else
-      user_params
+    case uploaded_files do
+      [{path, _entry} | _] ->
+        Map.put(user_params, "logo", path)
+
+      [] ->
+        user_params
     end
   end
 
@@ -79,7 +81,4 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
     |> assign(form: to_form(changeset))
     |> assign(logo_src: Ecto.Changeset.get_field(changeset, :logo))
   end
-
-  defp append_if(list, _value, false), do: list
-  defp append_if(list, value, true), do: list ++ List.wrap(value)
 end

@@ -21,6 +21,7 @@ defmodule Passwordless do
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateVersion
   alias Passwordless.EmailUnsubscribeLinkMapping
+  alias Passwordless.Media
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
@@ -123,6 +124,39 @@ defmodule Passwordless do
 
   def delete_app(%App{} = app) do
     Repo.soft_delete(app)
+  end
+
+  ## Media
+
+  def get_media!(%App{} = app, id) when is_binary(id) do
+    app
+    |> Ecto.assoc(:media)
+    |> Repo.get!(id)
+  end
+
+  def list_media(%App{} = app) do
+    app
+    |> Ecto.assoc(:media)
+    |> Repo.all()
+  end
+
+  def create_media(%App{} = app, attrs \\ %{}) do
+    app
+    |> Ecto.build_assoc(:media)
+    |> Media.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def change_media(%Media{} = media, attrs \\ %{}) do
+    if Ecto.get_meta(media, :state) == :loaded do
+      Media.changeset(media, attrs)
+    else
+      Media.changeset(media, attrs)
+    end
+  end
+
+  def delete_media(%Media{} = media) do
+    Repo.soft_delete(media)
   end
 
   ## API Keys

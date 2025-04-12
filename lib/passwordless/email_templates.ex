@@ -50,8 +50,9 @@ defmodule Passwordless.EmailTemplates do
               <mj-section>
               <mj-column>
               <mj-image
-              width="175px"
-              src="https://www.keila.io/newsletter-assets/logo-with-text.png"
+              width="150px"
+              height="150px"
+              src="{{ app.logo }}"
               ></mj-image>
               </mj-column>
               </mj-section>
@@ -184,8 +185,9 @@ defmodule Passwordless.EmailTemplates do
               <mj-section>
               <mj-column>
               <mj-image
-              width="175px"
-              src="https://www.keila.io/newsletter-assets/logo-with-text.png"
+              width="150px"
+              height="150px"
+              src="{{ app.logo }}"
               ></mj-image>
               </mj-column>
               </mj-section>

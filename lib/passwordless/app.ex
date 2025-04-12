@@ -15,6 +15,7 @@ defmodule Passwordless.App do
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailUnsubscribeLinkMapping
   alias Passwordless.MagicLinkMapping
+  alias Passwordless.Media
   alias Passwordless.Organizations.Org
 
   @states ~w(active)a
@@ -65,6 +66,7 @@ defmodule Passwordless.App do
     has_one :passkey, Authenticators.Passkey
     has_one :recovery_codes, Authenticators.RecoveryCodes
 
+    has_many :media, Media, preload_order: [asc: :inserted_at]
     has_many :domains, Domain, preload_order: [asc: :inserted_at]
     has_many :email_templates, EmailTemplate, preload_order: [asc: :inserted_at]
     has_many :email_message_mappings, EmailMessageMapping, preload_order: [asc: :inserted_at]

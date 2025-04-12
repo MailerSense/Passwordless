@@ -43,6 +43,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
     {:ok, app} =
       Passwordless.create_app(org, %{
         name: "Demo App",
+        logo: "https://cdn.passwordlesstools.com/logos/passwordless.png",
         website: "https://passwordless.tools",
         display_name: "Demo App",
         email_tracking: true,

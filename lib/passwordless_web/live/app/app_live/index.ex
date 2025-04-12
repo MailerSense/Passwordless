@@ -119,10 +119,12 @@ defmodule PasswordlessWeb.App.AppLive.Index do
   defp maybe_add_logo(user_params, socket) do
     uploaded_files = FileUploads.consume_uploaded_entries(socket, :logo)
 
-    if length(uploaded_files) > 0 do
-      Map.put(user_params, "logo", hd(uploaded_files))
-    else
-      user_params
+    case uploaded_files do
+      [{path, _entry} | _] ->
+        Map.put(user_params, "logo", path)
+
+      [] ->
+        user_params
     end
   end
 

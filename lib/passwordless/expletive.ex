@@ -1,12 +1,12 @@
 defmodule Passwordless.Expletive do
   @moduledoc """
-
   A profanity detection and sanitization library.
-
   """
 
   alias Passwordless.Expletive.Configuration, as: Configuration
   alias Passwordless.Expletive.Replacement, as: Replacement
+
+  @configurations
 
   @type replacement ::
           :default

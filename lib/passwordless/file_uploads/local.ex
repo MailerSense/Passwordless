@@ -1,9 +1,9 @@
 defmodule Passwordless.FileUploads.Local do
   @moduledoc false
   def consume_uploaded_entries(socket, upload_name) do
-    Phoenix.LiveView.consume_uploaded_entries(socket, upload_name, fn %{path: path}, entry ->
+    Phoenix.LiveView.consume_uploaded_entries(socket, upload_name, fn %{path: path} = data, entry ->
       destination_path = move_file_into_priv(path, entry.client_name)
-      {:ok, destination_path}
+      {:ok, {destination_path, entry}}
     end)
   end
 
@@ -15,7 +15,14 @@ defmodule Passwordless.FileUploads.Local do
   end
 
   def move_file_into_priv(path, client_name) do
-    dest = Path.join([:code.priv_dir(:passwordless), "static", "uploads", Path.basename(path) <> "-" <> client_name])
+    dest =
+      Path.join([
+        :code.priv_dir(:passwordless),
+        "static",
+        "uploads",
+        Path.basename(path) <> "-" <> client_name
+      ])
+
     File.mkdir_p(Path.dirname(dest))
     File.cp!(path, dest)
     "/uploads/#{Path.basename(dest)}"

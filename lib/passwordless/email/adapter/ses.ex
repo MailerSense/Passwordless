@@ -6,13 +6,14 @@ defmodule Passwordless.Email.Adapter.SES do
 
   use Swoosh.Adapter, required_config: []
 
+  alias Passwordless.AWS.Session.Session
   alias Passwordless.Domain
   alias Swoosh.Adapters.SMTP.Helpers, as: SMTPHelper
   alias Swoosh.Email
 
   @impl true
   def deliver(%Email{} = email, config \\ []) do
-    case AWS.SES.send_raw_email(AWS.Session.get_client!(), build_request(email, config)) do
+    case AWS.SES.send_raw_email(Session.get_client!(), build_request(email, config)) do
       {:ok, %{"MessageId" => message_id}, _raw} ->
         {:ok, %{id: message_id}}
 
@@ -59,7 +60,11 @@ defmodule Passwordless.Email.Adapter.SES do
     Map.put(
       request,
       "SourceArn",
-      Domain.arn(domain, Passwordless.config([:aws_current, :region]), Passwordless.config([:aws_current, :account]))
+      Domain.arn(
+        domain,
+        Passwordless.config([:aws_current, :region]),
+        Passwordless.config([:aws_current, :account])
+      )
     )
   end
 
@@ -69,7 +74,11 @@ defmodule Passwordless.Email.Adapter.SES do
     Map.put(
       request,
       "FromArn",
-      Domain.arn(domain, Passwordless.config([:aws_current, :region]), Passwordless.config([:aws_current, :account]))
+      Domain.arn(
+        domain,
+        Passwordless.config([:aws_current, :region]),
+        Passwordless.config([:aws_current, :account])
+      )
     )
   end
 
@@ -79,7 +88,11 @@ defmodule Passwordless.Email.Adapter.SES do
     Map.put(
       request,
       "ReturnPathArn",
-      Domain.arn(domain, Passwordless.config([:aws_current, :region]), Passwordless.config([:aws_current, :account]))
+      Domain.arn(
+        domain,
+        Passwordless.config([:aws_current, :region]),
+        Passwordless.config([:aws_current, :account])
+      )
     )
   end
 

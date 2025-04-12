@@ -18,13 +18,13 @@ defmodule Passwordless.Templating.Liquid do
       {:error, %Solid.TemplateError{} = error} -> {:error, template_error_to_string(error)}
     end
   rescue
-    e -> {:error, :invalid_liquid}
+    _ -> {:error, :invalid_liquid}
   end
 
   def render(%Solid.Template{} = input, assigns, opts) when is_map(assigns) do
     {:ok, input |> Solid.render!(assigns, opts) |> to_string()}
   rescue
-    e -> {:error, :invalid_liquid}
+    _ -> {:error, :invalid_liquid}
   end
 
   # Private

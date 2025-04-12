@@ -114,8 +114,8 @@ defmodule Passwordless.FileUploads.S3 do
 
   @spec consume_uploaded_entries(Phoenix.LiveView.Socket.t(), any) :: list
   def consume_uploaded_entries(socket, uploads_key) do
-    Phoenix.LiveView.consume_uploaded_entries(socket, uploads_key, fn %{key: key}, _entry ->
-      {:ok, get_cdn_url() <> key}
+    Phoenix.LiveView.consume_uploaded_entries(socket, uploads_key, fn %{key: key}, entry ->
+      {:ok, {get_cdn_url() <> key, entry}}
     end)
   end
 
