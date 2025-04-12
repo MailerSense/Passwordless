@@ -55,5 +55,18 @@ config :logger, :console,
   level: :warning,
   compile_time_purge_level: :info
 
+# Configure session
+config :passwordless, :session,
+  secure: true,
+  domain: "eu.passwordless.tools",
+  same_site: "None"
+
+# Configure CORS
+config :passwordless, :cors,
+  origins: [
+    ~r{^https?://(.*\.)?passwordless\.tools$},
+    ~r{^https?://(.*\.)?passwordlesstools\.com$}
+  ]
+
 # Configure the environment
 config :passwordless, :env, :prod

@@ -197,8 +197,8 @@ defmodule Passwordless do
 
   # Domains
 
-  def get_domain!(%App{} = app) do
-    Repo.one!(Ecto.assoc(app, :domain))
+  def get_domain!(%App{} = app, id) do
+    Repo.get_by!(Domain, id: id, app_id: app.id)
   end
 
   def get_domain(domain_id) when is_binary(domain_id) do

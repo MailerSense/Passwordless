@@ -34,8 +34,10 @@ config :passwordless, :multitenant,
 
 # Configures the session
 config :passwordless, :session,
-  salt: "N7Amr6UvJN64wB3iLstI9fwNJGAIZpVmJDxOHWVx+VtKaT3d8nTeH5UZNJxniSse",
-  max_age: :timer.hours(24 * 30),
+  key: "_session_key",
+  store: :cookie,
+  max_age: div(:timer.hours(24 * 30), 1000),
+  http_only: true,
   signing_salt: "dp9YDk0w",
   encryption_salt: "9saWZiuk"
 
@@ -82,6 +84,12 @@ config :money,
   symbol_on_right: false,
   symbol_space: false
 
+config :passwordless, :cors,
+  allow_credentials: true,
+  allow_headers: :all,
+  allow_methods: :all,
+  max_age: 600
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
@@ -96,6 +104,9 @@ config :passwordless, :storage, adapter: Passwordless.Storage.Local
 
 # Configures the rate limit
 config :passwordless, :rate_limit, adapter: Passwordless.RateLimit.ETS
+
+# Configures the billing provider
+config :passwordless, :billing_provider, Passwordless.Billing.Providers.Stripe
 
 config :passwordless, :hammer,
   ets: [
@@ -199,71 +210,6 @@ config :ueberauth, Ueberauth,
 
 config :flop, repo: Passwordless.Repo, default_limit: 10
 config :tesla, :adapter, {Tesla.Adapter.Finch, name: Passwordless.Finch}
-
-config :passwordless, :trial_period_days, 14
-
-config :passwordless, :billing_provider, Passwordless.Billing.Providers.Stripe
-
-config :passwordless, :billing_plans, [
-  %{
-    id: "business",
-    name: "Business",
-    description: "The Business plan",
-    features: [
-      "Essential feature 1",
-      "Essential feature 2",
-      "Essential feature 3"
-    ],
-    trial_days: 14,
-    allow_promotion_codes: true,
-    prices: [
-      %{
-        id: :contacts,
-        name: "Contacts",
-        price: "price_1NLhPDIWVkWpNCp7trePDpmi1",
-        model: :usage_based,
-        interval: "month",
-        usage_type: :licensed,
-        tiers: [
-          %{from: 1_000, to: 5_000, amount: 4900},
-          %{from: 5_001, to: 10_000, amount: 9900},
-          %{from: 10_001, to: 15_000, amount: 14_900},
-          %{from: 15_001, to: 25_000, amount: 19_900},
-          %{from: 25_001, to: 50_000, amount: 24_900},
-          %{from: 50_001, to: 100_000, amount: 39_900}
-        ]
-      },
-      %{
-        id: :contacts,
-        name: "Contacts",
-        price: "price_1NLhPDIWVkWpNCp7trePDpmi2",
-        model: :usage_based,
-        interval: "year",
-        usage_type: :licensed,
-        tiers: [
-          %{from: 1_000, to: 5_000, amount: 4900},
-          %{from: 5_001, to: 10_000, amount: 9900},
-          %{from: 10_001, to: 15_000, amount: 14_900},
-          %{from: 15_001, to: 25_000, amount: 19_900},
-          %{from: 25_001, to: 50_000, amount: 24_900},
-          %{from: 50_001, to: 100_000, amount: 39_900}
-        ]
-      },
-      %{
-        id: :"transactional-emails",
-        name: "Transactional Emails",
-        price: "price_1NLhPDIWVkWpNCp7trePDpmi3",
-        model: :usage_based,
-        interval: "month",
-        usage_type: :metered,
-        rate: %{
-          amount: 2000,
-          cost: 1
-        }
-      }
-    ]
-  }
-]
 
 # Backpex admin panel
 config :backpex, :pubsub_server, Passwordless.PubSub

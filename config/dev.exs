@@ -69,4 +69,12 @@ config :libcluster,
     ]
   ]
 
+# Configure session
+config :passwordless, :session,
+  secure: false,
+  same_site: "Lax"
+
+# Configure CORS
+config :passwordless, :cors, origins: ["http://localhost:4000"]
+
 config :passwordless, :env, :dev

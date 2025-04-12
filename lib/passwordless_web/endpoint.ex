@@ -5,7 +5,6 @@ defmodule PasswordlessWeb.Endpoint do
   use Sentry.PlugCapture
   use Phoenix.Endpoint, otp_app: :passwordless
 
-  alias PasswordlessWeb.Config
   alias PasswordlessWeb.Plugs.HealthCheck
 
   if sandbox = Application.compile_env(:passwordless, :sandbox) do
@@ -15,7 +14,13 @@ defmodule PasswordlessWeb.Endpoint do
   socket "/live", Phoenix.LiveView.Socket,
     websocket: [
       compress: Mix.env() == :prod,
-      connect_info: [:peer_data, :uri, :user_agent, :x_headers, session: Config.session_options(Mix.env())]
+      connect_info: [
+        :peer_data,
+        :uri,
+        :user_agent,
+        :x_headers,
+        session: Application.compile_env!(:passwordless, :session)
+      ]
     ]
 
   plug HealthCheck
@@ -25,7 +30,6 @@ defmodule PasswordlessWeb.Endpoint do
     from: :passwordless,
     gzip: Mix.env() == :prod,
     only: PasswordlessWeb.static_paths(),
-    headers: [{"access-control-allow-origin", "*"}],
     cache_control_for_etags: "public, max-age=31536000"
 
   if code_reloading? do
@@ -56,8 +60,8 @@ defmodule PasswordlessWeb.Endpoint do
 
   plug Plug.MethodOverride
   plug Plug.Head
-  plug Plug.Session, Config.session_options(Mix.env())
-  plug Corsica, Config.corsica_options(Mix.env())
+  plug Plug.Session, Application.compile_env!(:passwordless, :session)
+  plug Corsica, Application.compile_env!(:passwordless, :cors)
 
   plug PasswordlessWeb.Router
 end
