@@ -11,7 +11,7 @@ import Config
 # before starting your production server.
 config :passwordless, PasswordlessWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
-  static_url: [scheme: "https", host: "cdn.eu.passwordlesstools.com", port: 443]
+  static_url: [scheme: "https", host: "cdn.eu.passwordless.tools", port: 443]
 
 # Configures Swoosh
 config :passwordless, Passwordless.Mailer, adapter: Swoosh.Adapters.ExAwsAmazonSES
