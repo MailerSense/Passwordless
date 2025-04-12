@@ -382,7 +382,6 @@ export class PasswordlessTools extends cdk.Stack {
 
     // Create a CDN for:
     // a) proxying the app resources from the ALB
-    // b) serving customer media from S3
     const _cdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-cdn`,
       zone,
