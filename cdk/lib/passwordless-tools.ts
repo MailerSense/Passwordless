@@ -2,15 +2,6 @@ import * as cdk from "aws-cdk-lib";
 import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
 import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
 import {
-  CachePolicy,
-  OriginRequestPolicy,
-  ViewerProtocolPolicy,
-} from "aws-cdk-lib/aws-cloudfront";
-import {
-  LoadBalancerV2Origin,
-  S3BucketOrigin,
-} from "aws-cdk-lib/aws-cloudfront-origins";
-import {
   InstanceClass,
   InstanceSize,
   InstanceType,
@@ -40,7 +31,6 @@ import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
 import { SES } from "./email/ses";
 import { Migration } from "./lambda/migration";
-import { CDN } from "./network/cdn";
 import { Certificate } from "./network/certificate";
 import { VPC } from "./network/vpc";
 import { WAF } from "./network/waf";
@@ -229,11 +219,11 @@ export class PasswordlessTools extends cdk.Stack {
       removalPolicy,
     });
 
-    const { domain: cdnDomain, certificate: cdnCert } =
+    /*     const { domain: cdnDomain, certificate: cdnCert } =
       certificates.cdn[region][env];
 
     const { domain: appCdnDomain, certificate: appCdnCert } =
-      certificates.appCdn[region][env];
+      certificates.appCdn[region][env]; */
 
     const imageName = "passwordless-tools-image";
     const cachedImage = new CachedImage(this, imageName, {
@@ -246,6 +236,8 @@ export class PasswordlessTools extends cdk.Stack {
       platform: Platform.LINUX_ARM64,
     });
 
+    const appCdnDomain = "sd";
+    const cdnDomain = "dem";
     const appEnv = {
       AWS_REGION: cdk.Stack.of(this).region,
       AWS_ACCOUNT: cdk.Stack.of(this).account,
@@ -381,7 +373,7 @@ export class PasswordlessTools extends cdk.Stack {
     });
 
     // Create a CDN for a
-    const _cdn = new CDN(this, `${env}-app-cdn`, {
+    /*     const _cdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-cdn`,
       zone,
       cert: appCdnCert,
@@ -399,7 +391,7 @@ export class PasswordlessTools extends cdk.Stack {
         },
       },
     });
-
+ */
     const containerScanningName = `${env}-app`;
     const _containerScanning = new ContainerScanning(
       this,
@@ -420,11 +412,11 @@ export class PasswordlessTools extends cdk.Stack {
           rufEmail: `dmarc@${comZone.zoneName}`,
         },
       ],
-      tracking: {
+      /*       tracking: {
         zone: comZone,
         cert: certificates.tracking[region][env].certificate,
         domain: domainLookup.tracking.domain,
-      },
+      }, */
       removalPolicy,
     });
 
