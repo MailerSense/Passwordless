@@ -39,16 +39,5 @@
     <:col :let={log} label={gettext("Happened")} field={:id}>
       <span class="line-clamp-1 break-all">{Timex.from_now(log.inserted_at)}</span>
     </:col>
-    <:col label="Actions" actions></:col>
-    <:actions :let={log}>
-      <.icon_button
-        to={apply_filters(@filters, @meta, ~p"/admin/activity/#{log}")}
-        size="sm"
-        color="light"
-        icon="remix-eye-line"
-        title={gettext("View")}
-        link_type="live_patch"
-      />
-    </:actions>
   </.stream_table>
 </.layout>

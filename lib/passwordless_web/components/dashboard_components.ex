@@ -262,7 +262,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       <.form_label>{gettext("Preview")}</.form_label>
       <.a
         to={@to}
-        class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 max-h-[280px] overflow-hidden"
+        class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 max-h-[280px] shadow-m2 overflow-hidden"
         link_type={@link_type}
       >
         <iframe
@@ -322,7 +322,7 @@ defmodule PasswordlessWeb.DashboardComponents do
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
       <.form_label>{gettext("Preview")}</.form_label>
 
-      <div class={["flex flex-col gap-y-8 flex-auto shrink-0 p-4 rounded-lg", @bg_class]}>
+      <div class={["flex flex-col gap-y-8 flex-auto shrink-0 p-4 rounded-lg shadow-m2", @bg_class]}>
         <img
           :if={@whatsapp}
           src={~p"/images/whatsapp_bg.png"}

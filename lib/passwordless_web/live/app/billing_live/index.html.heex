@@ -106,17 +106,9 @@
       </:if_empty>
       <:col field={:name} body_class="w-full" />
       <:col actions></:col>
-      <:actions :let={identity}>
+      <:actions :let={invoice}>
         <.icon_button
-          to={~p"/users/#{@actor}/edit/identity/#{identity}/delete"}
-          size="sm"
-          icon="custom-trash"
-          color="light"
-          title={gettext("Remove")}
-          link_type="live_patch"
-        />
-        <.icon_button
-          to={~p"/users/#{@actor}/edit/identity/#{identity}/edit"}
+          to={~p"/billing/#{invoice}/download"}
           size="sm"
           icon="custom-edit"
           color="light"

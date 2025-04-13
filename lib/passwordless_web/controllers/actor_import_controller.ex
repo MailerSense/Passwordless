@@ -47,8 +47,6 @@ defmodule PasswordlessWeb.ActorImportController do
   end
 
   def download_excel(conn, _params, %User{current_app: %App{} = app}) do
-    sheet = Sheet.with_name("Users")
-
     header = [
       "Name",
       "UserID",

@@ -204,6 +204,7 @@ defmodule Passwordless.Challenges.EmailOTP do
       SwooshEmail.new()
       |> SwooshEmail.from({sender_name, sender})
       |> SwooshEmail.to({recipient_name, recipient})
+      |> SwooshEmail.reply_to({reply_to_name, reply_to})
       |> SwooshEmail.subject(subject)
       |> SwooshEmail.html_body(html_content)
       |> SwooshEmail.text_body(text_content)
