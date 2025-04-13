@@ -28,7 +28,7 @@ defmodule Passwordless.DomainRecord do
     filterable: [:id], sortable: [:id, :name, :kind, :value, :verified]
   }
   schema "domain_records" do
-    field :kind, Ecto.Enum, values: ~w(mx txt cname)a
+    field :kind, Ecto.Enum, values: ~w(txt cname)a
     field :name, :string
     field :value, :string
     field :priority, :integer, default: 0

@@ -18,7 +18,7 @@ class ClipboardHook extends Hook {
         self.toggleState(el);
         setTimeout(() => {
           self.toggleState(el);
-        }, 3000);
+        }, 1500);
       });
     }
   }

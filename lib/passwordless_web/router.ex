@@ -98,6 +98,10 @@ defmodule PasswordlessWeb.Router do
     # DNS
     get "/domain/:id/dns/download", DNSController, :download
 
+    # Import
+    get "/actor-import/csv/download", ActorImportController, :download_csv
+    get "/actor-import/excel/download", ActorImportController, :download_excel
+
     # Recovery codes
     get "/recovery-codes/download/:actor_id", RecoveryCodeController, :download
 

@@ -151,6 +151,7 @@ defmodule Passwordless.MixProject do
       # Jobs / Cron
       {:oban, "~> 2.19"},
       {:oban_pro, "~> 1.5", repo: "oban"},
+      {:oban_web, "~> 2.11"},
       {:gen_stage, "~> 1.2"},
 
       # Locate

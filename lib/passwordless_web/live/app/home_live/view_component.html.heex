@@ -6,15 +6,8 @@
         size="wide"
         type="submit"
         color="light-flat"
-        label={gettext("Cancel")}
+        label={gettext("Close")}
         phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
-      />
-      <.button
-        to={~p"/action/#{@action}/download"}
-        size="wide"
-        label={gettext("Download")}
-        download
-        link_type="a"
       />
     </:actions>
     <.json_block label={gettext("Action details")} code={@action} />

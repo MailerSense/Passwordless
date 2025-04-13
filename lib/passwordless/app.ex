@@ -48,8 +48,8 @@ defmodule Passwordless.App do
     field :state, Ecto.Enum, values: @states, default: :active
     field :website, :string
     field :display_name, :string
-    field :primary_button_color, :string, default: "#1570EF"
-    field :secondary_button_color, :string, default: "#FFFFFF"
+    field :primary_button_color, :string, default: "#1570ef"
+    field :secondary_button_color, :string, default: "#ffffff"
     field :email_configuration_set, :string
     field :email_tracking, :boolean, default: false
 
@@ -112,6 +112,8 @@ defmodule Passwordless.App do
     |> validate_required(@required_fields)
     |> validate_string(:name)
     |> validate_string(:display_name)
+    |> validate_hex_color(:primary_button_color)
+    |> validate_hex_color(:secondary_button_color)
     |> validate_website()
     |> assoc_constraint(:org)
   end
@@ -122,6 +124,13 @@ defmodule Passwordless.App do
     changeset
     |> ChangesetExt.ensure_trimmed(field)
     |> validate_length(field, min: 1, max: 255)
+  end
+
+  defp validate_hex_color(changeset, field) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(field)
+    |> validate_length(field, is: 7)
+    |> validate_format(field, ~r/^#[0-9a-fA-F]{6}$/, message: "must be a hex color")
   end
 
   defp validate_website(changeset) do

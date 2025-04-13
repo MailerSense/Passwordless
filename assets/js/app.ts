@@ -1,4 +1,5 @@
 import Alpine from "@alpinejs/csp";
+import { Hooks as BackpexHooks } from "backpex";
 import hljs from "highlight.js/lib/core";
 import javascript from "highlight.js/lib/languages/javascript";
 import json from "highlight.js/lib/languages/json";
@@ -7,7 +8,6 @@ import { Socket } from "phoenix";
 import "phoenix_html";
 import { LiveSocket, SocketOptions } from "phoenix_live_view";
 import topbar from "topbar";
-import { Hooks as BackpexHooks } from "backpex";
 
 import hooks from "./hooks";
 import uploaders from "./uploaders";
@@ -134,12 +134,12 @@ Alpine.data("copyable", () => {
   return {
     copied: false,
     doCopy() {
-      const current = this;
+      const self = this;
       navigator.clipboard
         .writeText((this.$refs.copyInput as HTMLInputElement).value)
         .then(() => {
-          current.copied = true;
-          setTimeout(() => (current.copied = false), 2000);
+          self.copied = true;
+          setTimeout(() => (self.copied = false), 2000);
         });
     },
     get notCopied() {
@@ -155,8 +155,9 @@ Alpine.data("clearable", () => {
       this.showClearButton =
         (this.$refs.clearInput as HTMLInputElement).value.length > 0;
     },
-    onInput(event) {
-      this.showClearButton = event.target.value.length > 0;
+    onInput(event: Event) {
+      const input = event.target as HTMLInputElement;
+      this.showClearButton = input.value.length > 0;
     },
     doClearInput() {
       (this.$refs.clearInput as HTMLInputElement).value = "";

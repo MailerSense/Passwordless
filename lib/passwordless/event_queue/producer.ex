@@ -5,6 +5,7 @@ defmodule Passwordless.EventQueue.Producer do
 
   use GenStage
 
+  alias Passwordless.AWS.Session
   alias Passwordless.EventQueue.Message
   alias Passwordless.EventQueue.Source
 
@@ -100,11 +101,14 @@ defmodule Passwordless.EventQueue.Producer do
        when is_binary(queue_url) and is_integer(demand) do
     receive_request = demand |> receive_message_opts() |> Map.put("QueueUrl", queue_url)
 
-    with %AWS.Client{} = client <- AWS.Session.get_client!(),
+    with %AWS.Client{} = client <- Session.get_client!(),
          {:ok, body, _} when is_map(body) <- AWS.SQS.receive_message(client, receive_request) do
       case body do
-        %{"Messages" => messages} when is_list(messages) -> {:ok, wrap_messages(messages, queue_url, source)}
-        _ -> {:ok, []}
+        %{"Messages" => messages} when is_list(messages) ->
+          {:ok, wrap_messages(messages, queue_url, source)}
+
+        _ ->
+          {:ok, []}
       end
     end
   end

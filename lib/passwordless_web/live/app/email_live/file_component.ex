@@ -43,7 +43,7 @@ defmodule PasswordlessWeb.App.EmailLive.FileComponent do
 
   @impl true
   def handle_event("cancel_upload", %{"ref" => ref}, socket) do
-    {:noreply, cancel_upload(socket, :logo, ref)}
+    {:noreply, cancel_upload(socket, :new_media, ref)}
   end
 
   @impl true
@@ -170,16 +170,13 @@ defmodule PasswordlessWeb.App.EmailLive.FileComponent do
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <.icon_button
+        <.copy_button
           size="sm"
-          icon="remix-file-copy-line"
           class="invisible group-hover:visible"
           color="light"
           title={gettext("Copy")}
           variant="outline"
-          phx-click="copy_file"
-          phx-value-url={@public_url}
-          phx-target={@target}
+          value={@public_url}
         />
         <.icon_button
           :if={Util.present?(@id)}

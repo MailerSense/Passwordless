@@ -9,19 +9,15 @@
       <:if_empty>{gettext("No %{models} found", models: gettext("DNS records"))}</:if_empty>
       <:col :let={record} field={:name}>
         <div
-          id={record.name <> "-tooltip"}
+          id={record.id <> "-tooltip"}
           class="cursor-pointer"
           phx-hook="TippyHook"
           data-tippy-content={gettext("Click to copy: %{value}", value: record.name)}
         >
-          <span
-            id={record.name <> "-clipboard"}
-            phx-hook="ClipboardHook"
-            data-content={record.name}
-          >
+          <span id={record.id <> "-clipboard"} phx-hook="ClipboardHook" data-content={record.name}>
             <span class="before-copied">{record.name}</span>
             <span class="hidden text-green-600 after-copied dark:text-green-300">
-              Copied!
+              {gettext("Copied!")}
             </span>
           </span>
         </div>

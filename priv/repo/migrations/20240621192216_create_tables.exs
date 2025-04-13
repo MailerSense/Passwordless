@@ -177,8 +177,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :state, :string, null: false
       add :website, :string, null: false
       add :display_name, :string, null: false
-      add :primary_button_color, :string, null: false
-      add :secondary_button_color, :string, null: false
+      add :primary_button_color, :citext, null: false
+      add :secondary_button_color, :citext, null: false
       add :email_configuration_set, :string
       add :email_tracking, :boolean, default: false
 
@@ -280,7 +280,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :subject, :string, null: false
       add :language, :string, null: false
       add :preheader, :string, null: false
-      add :text_body, :text
       add :html_body, :text
       add :mjml_body, :text
 

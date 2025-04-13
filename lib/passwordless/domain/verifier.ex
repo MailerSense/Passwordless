@@ -70,7 +70,8 @@ defmodule Passwordless.Domain.Verifier do
 
       case Util.DNS.resolve(domain_name, record.kind) do
         records when is_list(records) ->
-          verified = Enum.any?(records, &match_record(%DomainRecord{record | name: domain_name}, &1))
+          verified =
+            Enum.any?(records, &match_record(%DomainRecord{record | name: domain_name}, &1))
 
           if record.verified != verified do
             [DomainRecord.changeset(record, %{verified: verified}) | changesets]
@@ -92,7 +93,8 @@ defmodule Passwordless.Domain.Verifier do
            |> ExAws.request() do
       changesets =
         Enum.reduce(domains, [], fn %Domain{} = domain, changesets ->
-          with {:ok, %{"VerificationStatus" => status}} when is_binary(status) <- Map.fetch(attrs, domain.name),
+          with {:ok, %{"VerificationStatus" => status}} when is_binary(status) <-
+                 Map.fetch(attrs, domain.name),
                {:ok, new_state} <- Map.fetch(Domain.aws_verification_states(), status),
                true <- new_state != domain.state do
             [Domain.changeset(domain, %{state: new_state}) | changesets]
@@ -171,9 +173,13 @@ defmodule Passwordless.Domain.Verifier do
        when is_binary(name) and is_integer(priority) and is_binary(value),
        do: true
 
-  defp match_record(%DomainRecord{kind: :txt, name: name, value: value}, {:txt, name, _ttl, entries})
+  defp match_record(%DomainRecord{kind: :txt, name: name, value: value} = record, {:txt, name, _ttl, entries})
        when is_binary(name) and is_binary(value),
-       do: Enum.member?(entries, value)
+       do:
+         if(DomainRecord.dmarc?(record),
+           do: Enum.any?(entries, &DomainRecord.dmarc?(%DomainRecord{kind: :txt, value: &1})),
+           else: Enum.member?(entries, value)
+         )
 
   defp match_record(%DomainRecord{kind: :cname, name: name, value: value}, {:cname, name, _ttl, value})
        when is_binary(name) and is_binary(value),

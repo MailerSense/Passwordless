@@ -17,6 +17,7 @@ defmodule PasswordlessWeb.App.DomainLive.DNSComponent do
 
   # Private
 
+  attr :id, :string
   attr :value, :string, required: true
   attr :priority, :string, default: nil
   attr :verified, :boolean, required: true
@@ -38,17 +39,20 @@ defmodule PasswordlessWeb.App.DomainLive.DNSComponent do
         }
       end
 
-    assigns = assign(assigns, classes)
+    assigns =
+      assigns
+      |> assign(classes)
+      |> assign_new(:id, fn -> Util.id("value-line") end)
 
     ~H"""
     <span
-      id={@value <> "-tooltip"}
+      id={@id}
       phx-hook="TippyHook"
       data-tippy-content={gettext("Click to copy: %{value}", value: @value)}
       {@rest}
     >
       <span
-        id={@value <> "-clipboard"}
+        id={@id <> "-clipboard"}
         class="flex gap-1 items-center cursor-pointer"
         phx-hook="ClipboardHook"
         data-content={@value}

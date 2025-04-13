@@ -57,17 +57,31 @@
         <% end %>
       </div>
 
-      <.icon_button
+      <div
         :if={not Enum.empty?(@uploads.new_media.entries)}
-        size="sm"
-        icon="remix-upload-line"
-        color="light"
-        title={gettext("Upload")}
-        variant="outline"
-        class="ml-auto"
-        type="submit"
-        phx-disable-with={gettext("...")}
-      />
+        class="flex items-center gap-3 ml-auto"
+      >
+        <.icon_button
+          size="sm"
+          icon="remix-upload-line"
+          color="light"
+          title={gettext("Upload")}
+          variant="outline"
+          type="submit"
+          phx-disable-with={gettext("...")}
+        />
+        <.icon_button
+          size="sm"
+          icon="remix-delete-bin-line"
+          color="danger"
+          title={gettext("Delete")}
+          variant="outline"
+          phx-click="cancel_upload"
+          phx-target={@myself}
+          phx-value-ref={hd(@uploads.new_media.entries).ref}
+          aria-label="cancel"
+        />
+      </div>
     </div>
   </.form>
 

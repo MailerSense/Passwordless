@@ -63,12 +63,12 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   end
 
   @impl true
-  def handle_event("save_template", %{"email_template" => template_params}, socket) do
+  def handle_event("validate_template", %{"email_template" => template_params}, socket) do
     save_template(socket, template_params)
   end
 
   @impl true
-  def handle_event("validate_template", %{"email_template" => template_params}, socket) do
+  def handle_event("save_template", %{"email_template" => template_params}, socket) do
     save_template(socket, template_params)
   end
 
