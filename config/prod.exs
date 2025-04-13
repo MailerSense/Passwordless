@@ -59,7 +59,7 @@ config :logger, :console,
 config :passwordless, :session,
   secure: true,
   domain: "eu.passwordless.tools",
-  same_site: "None"
+  same_site: "Lax"
 
 # Configure CORS
 config :passwordless, :cors,

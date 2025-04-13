@@ -25,6 +25,7 @@ defmodule Passwordless.FileUploads.Local do
 
     File.mkdir_p(Path.dirname(dest))
     File.cp!(path, dest)
+
     "/uploads/#{Path.basename(dest)}"
   end
 

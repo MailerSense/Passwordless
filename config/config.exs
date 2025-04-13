@@ -36,7 +36,7 @@ config :passwordless, :multitenant,
 config :passwordless, :session,
   key: "_session_key",
   store: :cookie,
-  max_age: div(:timer.hours(24 * 30), 1000),
+  max_age: div(:timer.hours(24) * 7, 1000),
   http_only: true,
   signing_salt: "dp9YDk0w",
   encryption_salt: "9saWZiuk"
