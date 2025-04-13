@@ -91,20 +91,28 @@ export class VPC extends Construct {
       service: GatewayVpcEndpointAwsService.S3,
     });
 
-    this.vpc.addInterfaceEndpoint(`${name}-ecr-docker-endpoint`, {
-      service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
+    this.vpc.addInterfaceEndpoint(`${name}-ecs-endpoint`, {
+      service: InterfaceVpcEndpointAwsService.ECS,
+    });
+
+    this.vpc.addInterfaceEndpoint(`${name}-ecs-agent-endpoint`, {
+      service: InterfaceVpcEndpointAwsService.ECS_AGENT,
+    });
+
+    this.vpc.addInterfaceEndpoint(`${name}-ecs-telementry-endpoint`, {
+      service: InterfaceVpcEndpointAwsService.ECS_TELEMETRY,
     });
 
     this.vpc.addInterfaceEndpoint(`${name}-ecr-endpoint`, {
       service: InterfaceVpcEndpointAwsService.ECR,
     });
 
-    this.vpc.addInterfaceEndpoint(`${name}-cloudwatch-logs-endpoint`, {
-      service: InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
+    this.vpc.addInterfaceEndpoint(`${name}-ecr-docker-endpoint`, {
+      service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
     });
 
-    this.vpc.addInterfaceEndpoint(`${name}-ec2-messages-endpoint`, {
-      service: InterfaceVpcEndpointAwsService.EC2_MESSAGES,
+    this.vpc.addInterfaceEndpoint(`${name}-secrets-manager-endpoint`, {
+      service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
     });
   }
 }
