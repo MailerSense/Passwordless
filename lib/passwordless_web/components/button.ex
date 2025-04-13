@@ -8,7 +8,10 @@ defmodule PasswordlessWeb.Components.Button do
 
   require Logger
 
-  attr :size, :string, default: "md", values: ["xs", "sm", "md", "lg", "xl", "wide"], doc: "button sizes"
+  attr :size, :string,
+    default: "md",
+    values: ["xs", "sm", "md", "lg", "xl", "wide"],
+    doc: "button sizes"
 
   attr :variant, :string,
     default: "solid",
@@ -236,7 +239,9 @@ defmodule PasswordlessWeb.Components.Button do
 
   attr :class, :string, default: nil, doc: "the class to add to this element"
   attr :icon, :string, default: nil, doc: "name of a Heroicon at the front of the button"
+
   attr :rest, :global, include: ~w(method download hreflang ping referrerpolicy rel target type value name form title)
+
   attr :disabled, :boolean, default: false, doc: "indicates a disabled state"
 
   def trigger_icon(assigns) do
@@ -274,51 +279,64 @@ defmodule PasswordlessWeb.Components.Button do
     """
   end
 
-  attr :size, :string, default: "md", values: ["xs", "sm", "md", "lg", "xl"], doc: "button sizes"
-
-  attr :variant, :string,
-    default: "solid",
-    values: ["solid", "outline"],
-    doc: "button variant"
+  attr :id, :string
+  attr :size, :string, default: "md", values: ["xs", "sm", "md", "lg", "xl"]
+  attr :value, :string, required: true
 
   attr :color, :string,
     default: "primary",
     values: [
-      "action",
       "primary",
       "danger",
       "light",
       "wireframe"
-    ],
-    doc: "button color"
+    ]
 
+  attr :variant, :string,
+    default: "solid",
+    values: ["solid", "outline", "rounded-sm"],
+    doc: "button variant"
+
+  attr :disabled, :boolean, default: false, doc: "indicates a disabled state"
   attr :class, :string, default: "", doc: "CSS class"
-  attr :label, :string, default: nil, doc: "labels your button"
-  attr :after_copy_label, :string, default: "Copied!", doc: "labels your button"
-  attr :value, :string, default: "", doc: "Value"
-  attr :rest, :global, include: ~w(method download hreflang ping referrerpolicy rel target type value name form title)
-  slot :inner_block, required: false
+
+  attr :rest, :global,
+    include:
+      ~w(id method download hreflang ping referrerpolicy rel target type value name form title phx-hook data-tippy-content)
 
   def copy_button(assigns) do
     assigns =
-      assign(assigns, :classes, button_classes(assigns))
+      assigns
+      |> assign_new(:id, fn -> Util.id("copy-button") end)
+      |> assign(
+        :variant_suffix,
+        if(assigns[:variant] == "solid", do: "", else: "--#{assigns[:variant]}")
+      )
 
     ~H"""
-    <span
-      id={@value <> "-copy-button"}
-      class={@classes}
+    <button
+      id={@id}
+      class={[
+        "pc-icon-button" <> @variant_suffix,
+        @disabled && "pc-button--disabled",
+        "pc-icon-button--#{@color}#{@variant_suffix}",
+        "pc-icon-button--#{@size}",
+        @class
+      ]}
+      disabled={@disabled}
       phx-hook="ClipboardHook"
       data-content={@value}
       {@rest}
     >
-      <div class="before-copied flex items-center gap-3 whitespace-nowrap">
-        <Icon.icon name="remix-clipboard-line" class={"pc-button__spinner-icon--#{@size}"} />
-        {render_slot(@inner_block) || @label}
-      </div>
-      <div class="hidden after-copied items-center gap-3 whitespace-nowrap">
-        {@after_copy_label}
-      </div>
-    </span>
+      <Icon.icon
+        name="remix-file-copy-line"
+        class={["before-copied", "pc-button__spinner-icon--#{@size}"]}
+      />
+      <Icon.icon
+        name="remix-check-line"
+        class={["hidden after-copied", "pc-button__spinner-icon--#{@size}"]}
+      />
+    </button>
     """
   end
 
