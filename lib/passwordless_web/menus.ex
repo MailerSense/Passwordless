@@ -203,7 +203,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Knowledge Base"),
-      path: ~p"/use-cases",
+      path: ~p"/pricing",
       icon: "custom-knowledge"
     }
   end
@@ -323,15 +323,6 @@ defmodule PasswordlessWeb.Menus do
       path: ~p"/support",
       icon: "remix-phone-line",
       link_type: "live_patch"
-    }
-  end
-
-  def get_link(:knowledge_base = name, _user) do
-    %{
-      name: name,
-      label: gettext("Knowledge Base"),
-      path: ~p"/use-cases",
-      icon: "custom-knowledge"
     }
   end
 

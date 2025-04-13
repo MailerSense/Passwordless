@@ -3,7 +3,7 @@ defmodule PasswordlessWeb.AdminRoutes do
   defmacro __using__(_) do
     quote do
       import Backpex.Router
-      # import Oban.Web.Router
+      import Oban.Web.Router
       import PasswordlessWeb.UserAuth
       import Phoenix.LiveDashboard.Router
 
@@ -23,8 +23,12 @@ defmodule PasswordlessWeb.AdminRoutes do
 
         backpex_routes()
 
-        live_dashboard("/live", metrics: PasswordlessWeb.Telemetry, ecto_repos: [Passwordless.Repo])
-        # oban_dashboard("/oban", resolver: PasswordlessWeb.ObanResolver)
+        live_dashboard("/live",
+          metrics: PasswordlessWeb.Telemetry,
+          ecto_repos: [Passwordless.Repo]
+        )
+
+        oban_dashboard("/oban", resolver: PasswordlessWeb.ObanResolver)
 
         get "/impersonate/:user_id", UserImpersonationController, :create
 

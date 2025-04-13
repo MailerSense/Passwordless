@@ -8,7 +8,7 @@
       :if={Util.present?(@email_domain)}
       name="email_domain"
       value={@email_domain.name}
-      label={gettext("Domain")}
+      label={gettext("Sending domain")}
       badge={domain_state_badge(@email_domain)}
       readonly
       wrapper_class="mb-0!"
@@ -52,7 +52,7 @@
       :if={@email_tracking and Util.present?(@tracking_domain)}
       name="tracking_domain"
       value={@tracking_domain.name}
-      label={gettext("Domain")}
+      label={gettext("Tracking domain")}
       badge={domain_state_badge(@tracking_domain)}
       readonly
       wrapper_class="mb-0!"

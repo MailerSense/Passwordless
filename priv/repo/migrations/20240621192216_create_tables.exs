@@ -280,7 +280,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :subject, :string, null: false
       add :language, :string, null: false
       add :preheader, :string, null: false
-      add :text_body, :text
       add :html_body, :text
       add :mjml_body, :text
 

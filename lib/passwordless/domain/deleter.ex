@@ -6,6 +6,7 @@ defmodule Passwordless.Domain.Deleter do
   use Oban.Pro.Worker, queue: :domain_opts, max_attempts: 5, tags: ["email", "domains", "deleter"]
 
   alias Passwordless.App
+  alias Passwordless.AWS.Session
   alias Passwordless.Domain
   alias Passwordless.Repo
 
@@ -29,7 +30,7 @@ defmodule Passwordless.Domain.Deleter do
         Logger.warning("Soft deleting domain #{domain.name}")
         Repo.soft_delete(domain, prefix: Database.Tenant.to_prefix(app))
 
-        case AWS.SESv2.delete_email_identity(AWS.Session.get_client!(), domain.name, %{}) do
+        case AWS.SESv2.delete_email_identity(Session.get_client!(), domain.name, %{}) do
           {:ok, %{}, _} ->
             Logger.info("Deleted domain #{domain.name} from SES")
 

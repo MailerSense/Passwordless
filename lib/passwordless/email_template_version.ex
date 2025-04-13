@@ -19,7 +19,6 @@ defmodule Passwordless.EmailTemplateVersion do
       :language,
       :subject,
       :preheader,
-      :text_body,
       :html_body,
       :mjml_body,
       :inserted_at,
@@ -37,7 +36,6 @@ defmodule Passwordless.EmailTemplateVersion do
     field :current_language, Ecto.Enum, values: @languages, default: :en, virtual: true
     field :subject, :string
     field :preheader, :string
-    field :text_body, :string
     field :html_body, :string
     field :mjml_body, :string
 
@@ -60,7 +58,6 @@ defmodule Passwordless.EmailTemplateVersion do
     current_language
     subject
     preheader
-    text_body
     html_body
     mjml_body
     email_template_id
@@ -107,7 +104,9 @@ defmodule Passwordless.EmailTemplateVersion do
   defp update_html_body(changeset) do
     with {_, mjml_body} when is_binary(mjml_body) <- fetch_field(changeset, :mjml_body),
          {:ok, html_body} <- MJML.convert(mjml_body) do
-      put_change(changeset, :html_body, html_body)
+      changeset
+      |> put_change(:html_body, html_body)
+      |> update_change(:html_content, &HtmlSanitizeEx.html5/1)
     else
       _ -> changeset
     end

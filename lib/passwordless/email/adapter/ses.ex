@@ -6,7 +6,7 @@ defmodule Passwordless.Email.Adapter.SES do
 
   use Swoosh.Adapter, required_config: []
 
-  alias Passwordless.AWS.Session.Session
+  alias Passwordless.AWS.Session
   alias Passwordless.Domain
   alias Swoosh.Adapters.SMTP.Helpers, as: SMTPHelper
   alias Swoosh.Email

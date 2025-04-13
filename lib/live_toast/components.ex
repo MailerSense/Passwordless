@@ -7,6 +7,7 @@ defmodule LiveToast.Components do
   use Phoenix.Component
 
   alias LiveToast.Utility
+  alias PasswordlessWeb.Components.Icon
   alias Phoenix.LiveView.JS
 
   attr(:id, :string, doc: "the optional id of flash container")
@@ -37,7 +38,10 @@ defmodule LiveToast.Components do
   attr(:action, :any, default: nil, doc: "the optional action to render in the flash message")
   attr(:component, :any, default: nil, doc: "the optional component to render the flash message")
 
-  attr(:flash_duration, :integer, default: 0, doc: "if provided clears flash after provided milliseconds")
+  attr(:flash_duration, :integer,
+    default: 0,
+    doc: "if provided clears flash after provided milliseconds"
+  )
 
   slot(:inner_block, doc: "the optional inner block that renders the flash message")
 
@@ -107,10 +111,7 @@ defmodule LiveToast.Components do
           ]
         }
       >
-        <Utility.svg
-          name="remix-close-line"
-          class="h-[14px] w-[14px] opacity-40 group-hover:opacity-70"
-        />
+        <Icon.icon name="remix-close-line" class="h-4 h-4 opacity-40 group-hover:opacity-70" />
       </button>
     </div>
     """
@@ -118,7 +119,10 @@ defmodule LiveToast.Components do
 
   attr(:f, :map, required: true, doc: "the map of flash messages")
 
-  attr(:client_error_delay, :integer, default: 10_000, doc: "adds a delay before the disconnected client error is shown")
+  attr(:client_error_delay, :integer,
+    default: 10_000,
+    doc: "adds a delay before the disconnected client error is shown"
+  )
 
   attr(:corner, :atom,
     values: [:top_left, :top_center, :top_right, :bottom_left, :bottom_center, :bottom_right],
@@ -133,7 +137,10 @@ defmodule LiveToast.Components do
 
   attr(:kinds, :list, required: true, doc: "the valid severity level kinds")
 
-  attr(:flash_duration, :integer, default: 0, doc: "if provided clears flash after provided milliseconds")
+  attr(:flash_duration, :integer,
+    default: 0,
+    doc: "if provided clears flash after provided milliseconds"
+  )
 
   @doc false
   def flashes(assigns) do
@@ -173,9 +180,15 @@ defmodule LiveToast.Components do
     doc: "function to override the toast classes"
   )
 
-  attr(:client_error_delay, :integer, default: 3000, doc: "adds a delay before the disconnected client error is shown")
+  attr(:client_error_delay, :integer,
+    default: 3000,
+    doc: "adds a delay before the disconnected client error is shown"
+  )
 
-  attr(:flash_duration, :integer, default: 0, doc: "if provided clears flash after provided milliseconds")
+  attr(:flash_duration, :integer,
+    default: 0,
+    doc: "if provided clears flash after provided milliseconds"
+  )
 
   # Used to render flashes-only on regular non-LV pages.
   @doc false

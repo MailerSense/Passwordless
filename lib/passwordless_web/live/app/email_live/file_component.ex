@@ -43,7 +43,7 @@ defmodule PasswordlessWeb.App.EmailLive.FileComponent do
 
   @impl true
   def handle_event("cancel_upload", %{"ref" => ref}, socket) do
-    {:noreply, cancel_upload(socket, :logo, ref)}
+    {:noreply, cancel_upload(socket, :new_media, ref)}
   end
 
   @impl true
