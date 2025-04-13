@@ -2,9 +2,14 @@
   <% origin = "right" %>
   <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
     <div class="flex flex-col gap-6">
-      <.a to={~p"/domain/dns/download"} style="link" download>
-        Download template
-      </.a>
+      <div class="flex items-center gap-3 flex-wrap">
+        <.a to={~p"/actor-import/csv/download"} style="link" download>
+          Download CSV
+        </.a>
+        <.a to={~p"/actor-import/excel/download"} style="link" download>
+          Download Excel
+        </.a>
+      </div>
       <.form_separator no_margin />
       <.form_header title="Upload" no_margin />
       <.p>
@@ -24,8 +29,9 @@
           <% end %>
         </p>
       </div>
+      <.form_separator no_margin />
+      <.form_header title={gettext("Past imports")} no_margin />
     </div>
-
     <:actions>
       <.button
         size="wide"
