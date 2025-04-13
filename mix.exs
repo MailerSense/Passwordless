@@ -130,6 +130,7 @@ defmodule Passwordless.MixProject do
       {:crontab, "~> 1.1"},
       {:cloak_ecto, "~> 1.3"},
       {:typedstruct, "~> 0.5.3"},
+      {:elixlsx, "~> 0.6.0"},
 
       # Markdown
       {:earmark, "~> 1.4"},

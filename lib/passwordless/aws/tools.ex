@@ -3,17 +3,10 @@ defmodule Passwordless.AWS.Tools do
   Provides AWS tools & utilities.
   """
 
-  alias Passwordless.AWS.Policy
-
   @aws Application.compile_env!(:passwordless, :aws)
 
   @regions @aws |> Keyword.fetch!(:regions) |> Map.keys()
   @arn_regex ~r/^arn:aws:[A-Za-z0-9_\.-]+:(#{Enum.join(@regions, "|")})?:(\d{12})?:[A-Za-z0-9_\/\.\-\*]+$/
-
-  @doc """
-  Parses an AWS IAM JSON policy.
-  """
-  def sigil_a(policy, []), do: Policy.parse!(policy)
 
   @doc """
   Provides a canonical regex format for ARNs.
