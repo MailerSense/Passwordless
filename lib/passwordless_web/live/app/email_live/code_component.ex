@@ -8,8 +8,6 @@ defmodule PasswordlessWeb.App.EmailLive.CodeComponent do
   def update(assigns, socket) do
     tags = assigns.template.tags
 
-    IO.inspect(tags)
-
     styles =
       Enum.map(EmailTemplateLocale.styles(), fn {category, styles} ->
         {translate_style(category),
