@@ -1,4 +1,4 @@
-defmodule Passwordless.EmailTemplateVersion do
+defmodule Passwordless.EmailTemplateLocale do
   @moduledoc """
   An email template to be dynamically sent.
   """
@@ -7,54 +7,60 @@ defmodule Passwordless.EmailTemplateVersion do
 
   alias Database.ChangesetExt
   alias Passwordless.EmailTemplate
+  alias Passwordless.EmailTemplateStyle
   alias Passwordless.Templating.MJML
 
-  @styles ~w(clean card)a
+  @styles [
+    email_otp: ~w(email_otp_clean email_otp_card)a,
+    magic_link: ~w(magic_link_clean magic_link_card)a
+  ]
   @languages ~w(en de fr)a
+  @styles_flat @styles |> Enum.flat_map(fn {_key, values} -> values end) |> Enum.uniq()
 
   @derive {
     Jason.Encoder,
     only: [
       :id,
+      :style,
       :language,
       :subject,
       :preheader,
       :html_body,
       :mjml_body,
       :inserted_at,
-      :updated_at,
-      :deleted_at
+      :updated_at
     ]
   }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "email_template_versions" do
+  schema "email_template_locales" do
+    field :style, Ecto.Enum, values: @styles_flat, default: :email_otp_clean
     field :language, Ecto.Enum, values: @languages, default: :en
-    field :current_style, Ecto.Enum, values: @styles, default: :clean, virtual: true
     field :current_language, Ecto.Enum, values: @languages, default: :en, virtual: true
     field :subject, :string
     field :preheader, :string
     field :html_body, :string
     field :mjml_body, :string
 
+    has_many :styles, EmailTemplateStyle
+
     belongs_to :email_template, EmailTemplate
 
     timestamps()
-    soft_delete_timestamp()
   end
 
   def styles, do: @styles
   def languages, do: @languages
 
-  def put_current_language(%__MODULE__{} = version, language) do
-    %__MODULE__{version | current_language: language}
+  def put_current_language(%__MODULE__{} = locale, language) do
+    %__MODULE__{locale | current_language: language}
   end
 
   @fields ~w(
+    style
     language
-    current_style
     current_language
     subject
     preheader
@@ -62,13 +68,7 @@ defmodule Passwordless.EmailTemplateVersion do
     mjml_body
     email_template_id
   )a
-
-  @required_fields ~w(
-    language
-    subject
-    preheader
-    email_template_id
-  )a
+  @required_fields @fields -- [:html_body]
 
   @doc """
   A changeset.

@@ -6,14 +6,14 @@ defmodule Passwordless.EmailTemplate do
   use Passwordless.Schema, prefix: "emtpl"
 
   alias Passwordless.App
-  alias Passwordless.EmailTemplateVersion
+  alias Passwordless.EmailTemplateLocale
 
   @derive {
     Jason.Encoder,
     only: [
       :id,
       :name,
-      :versions,
+      :locales,
       :inserted_at,
       :updated_at,
       :deleted_at
@@ -26,7 +26,7 @@ defmodule Passwordless.EmailTemplate do
   schema "email_templates" do
     field :name, :string
 
-    has_many :versions, EmailTemplateVersion, preload_order: [asc: :inserted_at]
+    has_many :locales, EmailTemplateLocale, preload_order: [asc: :inserted_at]
 
     belongs_to :app, App
 
@@ -46,7 +46,7 @@ defmodule Passwordless.EmailTemplate do
   def changeset(%__MODULE__{} = template, attrs \\ %{}) do
     template
     |> cast(attrs, @fields)
-    |> cast_assoc(:versions)
+    |> cast_assoc(:locales)
     |> validate_required(@required_fields)
     |> assoc_constraint(:app)
   end

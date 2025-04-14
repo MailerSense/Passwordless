@@ -50,7 +50,6 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Passkey do
          |> assign_form(changeset)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        IO.inspect(changeset)
         {:noreply, assign_form(socket, changeset)}
     end
   end

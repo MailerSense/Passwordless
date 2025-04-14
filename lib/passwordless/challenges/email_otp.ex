@@ -18,7 +18,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   alias Passwordless.Email.Renderer
   alias Passwordless.EmailMessage
   alias Passwordless.EmailTemplate
-  alias Passwordless.EmailTemplateVersion
+  alias Passwordless.EmailTemplateLocale
   alias Passwordless.EmailUnsubscribeLinkMapping
   alias Passwordless.Mailer
   alias Passwordless.MailerExecutor
@@ -42,7 +42,7 @@ defmodule Passwordless.Challenges.EmailOTP do
     with {:ok, domain} <- Passwordless.get_email_domain(app),
          {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email),
          {:ok, email_template} <- get_email_template(authenticator),
-         {:ok, email_template_version} <- get_email_template_version(actor, email_template),
+         {:ok, email_template_locale} <- get_email_template_locale(actor, email_template),
          :ok <- update_existing_messages(app, action),
          {:ok, email_message} <-
            create_email_message(
@@ -52,7 +52,7 @@ defmodule Passwordless.Challenges.EmailOTP do
              domain,
              email,
              email_template,
-             email_template_version,
+             email_template_locale,
              authenticator,
              otp_code
            ),
@@ -101,20 +101,18 @@ defmodule Passwordless.Challenges.EmailOTP do
     Repo.preload(authenticator, :email_template).email_template
   end
 
-  defp get_email_template_version(%Actor{} = actor, %EmailTemplate{} = template) do
+  defp get_email_template_locale(%Actor{} = actor, %EmailTemplate{} = template) do
     case template
-         |> Ecto.assoc(:versions)
-         |> where([v], v.language == ^actor.language)
-         |> Repo.one() do
-      %EmailTemplateVersion{} = version ->
-        {:ok, version}
+         |> Ecto.assoc(:locales)
+         |> Repo.get_by(language: actor.language) do
+      %EmailTemplateLocale{} = locale ->
+        {:ok, locale}
 
       _ ->
         case template
-             |> Ecto.assoc(:versions)
-             |> where([v], v.language == :en)
-             |> Repo.one() do
-          %EmailTemplateVersion{} = version -> {:ok, version}
+             |> Ecto.assoc(:locales)
+             |> Repo.get_by(language: :en) do
+          %EmailTemplateLocale{} = locale -> {:ok, locale}
           _ -> {:error, :template_not_found}
         end
     end
@@ -127,7 +125,7 @@ defmodule Passwordless.Challenges.EmailOTP do
          %Domain{} = domain,
          %Email{} = email,
          %EmailTemplate{} = template,
-         %EmailTemplateVersion{} = version,
+         %EmailTemplateLocale{} = locale,
          %Authenticators.Email{} = authenticator,
          otp_code
        ) do
@@ -141,10 +139,10 @@ defmodule Passwordless.Challenges.EmailOTP do
       current: true,
       email_id: email.id,
       domain_id: domain.id,
-      email_template_version_id: version.id
+      email_template_locale_id: locale.id
     }
 
-    with {:ok, message_attrs} <- Renderer.render(version, %{otp_code: otp_code}, opts) do
+    with {:ok, message_attrs} <- Renderer.render(locale, %{otp_code: otp_code}, opts) do
       attrs = Map.merge(attrs, message_attrs)
 
       challenge

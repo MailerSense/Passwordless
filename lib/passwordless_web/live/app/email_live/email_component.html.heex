@@ -1,15 +1,15 @@
 <div class="px-6 pb-6">
   <.form
-    id="edit-template-version"
-    for={@version_form}
-    phx-change="validate_version"
-    phx-submit="save_version"
+    id="edit-template-locale"
+    for={@locale_form}
+    phx-change="validate_locale"
+    phx-submit="save_locale"
   >
-    <.field field={@version_form[:subject]} required />
-    <.field field={@version_form[:preheader]} required />
+    <.field field={@locale_form[:subject]} required />
+    <.field field={@locale_form[:preheader]} required />
     <.field
       type="select"
-      field={@version_form[:current_language]}
+      field={@locale_form[:current_language]}
       label={gettext("Language")}
       options={@languages}
       icon={@flag_icon}

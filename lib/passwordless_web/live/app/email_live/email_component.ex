@@ -4,7 +4,7 @@ defmodule PasswordlessWeb.App.EmailLive.EmailComponent do
 
   alias Passwordless.Accounts.Notifier
   alias Passwordless.Email.Renderer
-  alias Passwordless.EmailTemplateVersion
+  alias Passwordless.EmailTemplateLocale
   alias Passwordless.Locale
   alias PasswordlessWeb.Email, as: EmailWeb
   alias PasswordlessWeb.Helpers
@@ -15,7 +15,7 @@ defmodule PasswordlessWeb.App.EmailLive.EmailComponent do
     language = assigns.language
 
     languages =
-      Enum.map(EmailTemplateVersion.languages(), fn code ->
+      Enum.map(EmailTemplateLocale.languages(), fn code ->
         {Keyword.fetch!(Locale.languages(), code), code}
       end)
 
@@ -27,7 +27,7 @@ defmodule PasswordlessWeb.App.EmailLive.EmailComponent do
      |> assign(
        languages: languages,
        flag_icon: get_flag_icon(language),
-       variables: Renderer.prepare_variables(assigns.version, %{}, opts)
+       variables: Renderer.prepare_variables(assigns.locale, %{}, opts)
      )}
   end
 
@@ -35,7 +35,7 @@ defmodule PasswordlessWeb.App.EmailLive.EmailComponent do
   def handle_event("send_preview", _params, socket) do
     opts = [{:app, socket.assigns.current_app} | Renderer.demo_opts()]
     user = socket.assigns.current_user
-    version = socket.assigns.version
+    locale = socket.assigns.locale
     user_name = Helpers.user_name(user)
     user_email = Helpers.user_email(user)
 
@@ -44,7 +44,7 @@ defmodule PasswordlessWeb.App.EmailLive.EmailComponent do
             subject: subject,
             html_content: html_content,
             text_content: text_content
-          }} <- Renderer.render(version, %{}, opts) do
+          }} <- Renderer.render(locale, %{}, opts) do
       EmailWeb.auth_email()
       |> SwooshEmail.to({user_name, user_email})
       |> SwooshEmail.subject(gettext("[Test] %{name}", name: subject))

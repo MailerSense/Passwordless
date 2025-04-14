@@ -4,7 +4,8 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
   alias Passwordless.Email.Renderer
   alias Passwordless.EmailTemplate
-  alias Passwordless.EmailTemplateVersion
+  alias Passwordless.EmailTemplateLocale
+  alias Passwordless.EmailTemplateStyle
 
   @default PasswordlessWeb.App.EmailLive.EmailComponent
   @components [
@@ -27,13 +28,13 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
         app = socket.assigns.current_app
         template = Passwordless.get_email_template!(app, id)
         language = String.to_existing_atom(language)
-        version = Passwordless.get_or_create_email_template_version(app, template, language)
-        version = EmailTemplateVersion.put_current_language(version, language)
+        locale = Passwordless.get_or_create_email_template_locale(app, template, language)
+        locale = EmailTemplateLocale.put_current_language(locale, language)
 
         socket
-        |> assign(version: version, template: template, language: language)
+        |> assign(locale: locale, template: template, language: language)
         |> assign_template_form(EmailTemplate.changeset(template))
-        |> assign_version_form(EmailTemplateVersion.changeset(version))
+        |> assign_locale_form(EmailTemplateLocale.changeset(locale))
       end
 
     module = Keyword.get(@components, socket.assigns.live_action, @default)
@@ -73,56 +74,80 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   end
 
   @impl true
-  def handle_event("save_version", %{"email_template_version" => version_params}, socket) do
-    version = socket.assigns.version
+  def handle_event("save_locale", %{"email_template_locale" => locale_params}, socket) do
+    locale = socket.assigns.locale
 
-    case Passwordless.update_email_template_version(version, version_params) do
-      {:ok, version} ->
+    case Passwordless.update_email_template_locale(locale, locale_params) do
+      {:ok, locale} ->
         changeset =
-          version
-          |> Passwordless.change_email_template_version()
+          locale
+          |> Passwordless.change_email_template_locale()
           |> Map.put(:action, :validate)
 
         {:noreply,
          socket
          |> put_toast(:info, "Email template saved.", title: gettext("Success"))
-         |> assign(version: version)
-         |> assign_version_form(changeset)}
+         |> assign(locale: locale)
+         |> assign_locale_form(changeset)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_version_form(socket, changeset)}
+        {:noreply, assign_locale_form(socket, changeset)}
     end
   end
 
   @impl true
-  def handle_event("validate_version", %{"email_template_version" => version_params}, socket) do
+  def handle_event("validate_locale", %{"email_template_locale" => locale_params}, socket) do
     changeset =
-      socket.assigns.version
-      |> Passwordless.change_email_template_version(version_params)
+      socket.assigns.locale
+      |> Passwordless.change_email_template_locale(locale_params)
       |> Map.put(:action, :validate)
 
     template = socket.assigns.template
     language = socket.assigns.language
+    locale = socket.assigns.locale
+    style = locale.style
+    current_style = Ecto.Changeset.get_field(changeset, :style)
     current_language = Ecto.Changeset.get_field(changeset, :current_language)
 
-    if language == current_language do
-      {:noreply, assign_version_form(socket, changeset)}
-    else
-      {:noreply,
-       socket
-       |> assign(version_form: nil)
-       |> push_patch(to: ~p"/emails/#{template}/#{current_language}/edit")}
-    end
-  end
+    socket =
+      cond do
+        style != current_style ->
+          Passwordless.persist_template_locale_style!(locale)
 
-  @impl true
-  def handle_event("send_preview", _params, socket) do
-    {:noreply, put_toast(socket, :info, "Preview email sent.", title: gettext("Success"))}
+          changeset =
+            case Passwordless.get_template_locale_style(locale, current_style) do
+              %EmailTemplateStyle{} = style ->
+                locale_params =
+                  Map.merge(locale_params, %{
+                    "mjml_body" => style.mjml_body,
+                    "html_body" => style.html_body
+                  })
+
+                socket.assigns.locale
+                |> Passwordless.change_email_template_locale(locale_params)
+                |> Map.put(:action, :validate)
+
+              _ ->
+                changeset
+            end
+
+          assign_locale_form(socket, changeset)
+
+        language != current_language ->
+          socket
+          |> assign(locale_form: nil)
+          |> push_patch(to: ~p"/emails/#{template}/#{current_language}/edit")
+
+        true ->
+          assign_locale_form(socket, changeset)
+      end
+
+    {:noreply, socket}
   end
 
   @impl true
   def handle_event("format_code", _params, socket) do
-    case get_in(socket.assigns, [Access.key(:version_form), Access.key(:source)]) do
+    case get_in(socket.assigns, [Access.key(:locale_form), Access.key(:source)]) do
       %Ecto.Changeset{valid?: true} = changeset ->
         formatted =
           changeset
@@ -147,17 +172,17 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
     assign(socket, template_form: to_form(changeset))
   end
 
-  defp assign_version_form(socket, %Ecto.Changeset{} = changeset) do
+  defp assign_locale_form(socket, %Ecto.Changeset{} = changeset) do
     opts = [{:app, socket.assigns.current_app} | Renderer.demo_opts()]
 
-    version = %EmailTemplateVersion{
+    locale = %EmailTemplateLocale{
       subject: Ecto.Changeset.get_field(changeset, :subject),
       preheader: Ecto.Changeset.get_field(changeset, :preheader),
       mjml_body: Ecto.Changeset.get_field(changeset, :mjml_body)
     }
 
     socket =
-      case Renderer.render(version, %{}, opts) do
+      case Renderer.render(locale, %{}, opts) do
         {:ok, %{html_content: html_content}} ->
           assign(socket, preview: html_content)
 
@@ -166,7 +191,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
       end
 
     assign(socket,
-      version_form: to_form(changeset)
+      locale_form: to_form(changeset)
     )
   end
 
@@ -199,7 +224,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
   defp has_unsaved_changes?(socket) do
     case get_in(socket.assigns, [
-           Access.key(:version_form),
+           Access.key(:locale_form),
            Access.key(:source),
            Access.key(:changes)
          ]) do

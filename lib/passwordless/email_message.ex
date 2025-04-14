@@ -12,7 +12,7 @@ defmodule Passwordless.EmailMessage do
   alias Passwordless.Domain
   alias Passwordless.Email
   alias Passwordless.EmailEvent
-  alias Passwordless.EmailTemplateVersion
+  alias Passwordless.EmailTemplateLocale
   alias Passwordless.MagicLink
   alias Passwordless.OTP
   alias PasswordlessWeb.Endpoint
@@ -79,7 +79,7 @@ defmodule Passwordless.EmailMessage do
     belongs_to :email, Email
     belongs_to :domain, Domain
     belongs_to :challenge, Challenge
-    belongs_to :email_template_version, EmailTemplateVersion
+    belongs_to :email_template_locale, EmailTemplateLocale
 
     timestamps()
   end
@@ -102,7 +102,7 @@ defmodule Passwordless.EmailMessage do
     email_id
     domain_id
     challenge_id
-    email_template_version_id
+    email_template_locale_id
   )a
 
   @required_fields ~w(
@@ -116,7 +116,7 @@ defmodule Passwordless.EmailMessage do
     email_id
     domain_id
     challenge_id
-    email_template_version_id
+    email_template_locale_id
   )a
 
   @doc """
@@ -137,7 +137,7 @@ defmodule Passwordless.EmailMessage do
     |> assoc_constraint(:email)
     |> assoc_constraint(:domain)
     |> assoc_constraint(:challenge)
-    |> assoc_constraint(:email_template_version)
+    |> assoc_constraint(:email_template_locale)
     |> unique_constraint([:action_id, :current], error_key: :current)
     |> unsafe_validate_unique([:action_id, :current], Passwordless.Repo,
       query: from(e in __MODULE__, where: e.current),
