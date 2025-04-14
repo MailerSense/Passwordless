@@ -41,6 +41,8 @@ jobs:
     steps:
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
+        env:
+          ImageOS: ubuntu24
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
