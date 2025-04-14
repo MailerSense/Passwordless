@@ -42,14 +42,14 @@
     />
     <div class="flex items-center gap-3 flex-wrap">
       <.a
-        to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email"}"}
-        label={gettext("Edit email template")}
+        to={~p"/pricing"}
+        label={gettext("Review pricing")}
         style="link"
         link_type="live_redirect"
       />
       <.a
-        to={~p"/pricing"}
-        label={gettext("Review pricing")}
+        to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email"}"}
+        label={gettext("Edit email template")}
         style="link"
         link_type="live_redirect"
       />
@@ -60,6 +60,7 @@
       field={@form[:expires]}
       type="number"
       label={gettext("Expires")}
+      prefix={gettext("After")}
       suffix={gettext("minutes")}
       disabled={not @enabled}
       required

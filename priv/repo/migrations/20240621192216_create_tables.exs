@@ -275,23 +275,39 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create index(:email_templates, [:app_id])
 
-    create table(:email_template_versions, primary_key: false) do
+    create table(:email_template_locales, primary_key: false) do
       add :id, :uuid, primary_key: true
+      add :style, :string, null: false
       add :subject, :string, null: false
       add :language, :string, null: false
       add :preheader, :string, null: false
-      add :html_body, :text
-      add :mjml_body, :text
+      add :html_body, :text, null: false
+      add :mjml_body, :text, null: false
 
       add :email_template_id, references(:email_templates, type: :uuid, on_delete: :delete_all),
         null: false
 
       timestamps()
-      soft_delete_column()
     end
 
-    create index(:email_template_versions, [:email_template_id])
-    create unique_index(:email_template_versions, [:email_template_id, :language])
+    create index(:email_template_locales, [:email_template_id])
+    create unique_index(:email_template_locales, [:email_template_id, :language])
+
+    create table(:email_template_styles, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :style, :string, null: false
+      add :html_body, :text, null: false
+      add :mjml_body, :text, null: false
+
+      add :email_template_locale_id,
+          references(:email_template_locales, type: :uuid, on_delete: :delete_all),
+          null: false
+
+      timestamps()
+    end
+
+    create index(:email_template_styles, [:email_template_locale_id])
+    create unique_index(:email_template_styles, [:email_template_locale_id, :style])
 
     ## Methods
 

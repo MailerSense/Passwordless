@@ -18,8 +18,9 @@ defmodule Passwordless do
   alias Passwordless.DomainRecord
   alias Passwordless.Email
   alias Passwordless.EmailTemplate
+  alias Passwordless.EmailTemplateLocale
   alias Passwordless.EmailTemplates
-  alias Passwordless.EmailTemplateVersion
+  alias Passwordless.EmailTemplateStyle
   alias Passwordless.EmailUnsubscribeLinkMapping
   alias Passwordless.Media
   alias Passwordless.Organizations.Org
@@ -670,19 +671,18 @@ defmodule Passwordless do
   def seed_email_template(%App{} = app, preset, language) do
     Repo.transact(fn ->
       settings = EmailTemplates.get_seed(app, preset, language)
-      version_settings = Map.merge(%{language: language}, settings)
+      locale_attrs = Map.merge(%{language: language}, settings)
 
       with {:ok, template} <- create_email_template(app, Map.take(settings, [:name])),
-           {:ok, version} <- create_email_template_version(template, version_settings),
-           do: {:ok, %EmailTemplate{template | versions: [version]}}
+           {:ok, locale} <- create_email_template_locale(template, locale_attrs),
+           do: {:ok, %EmailTemplate{template | locales: [locale]}}
     end)
   end
 
-  def get_email_template_version(%EmailTemplate{} = email_template, language \\ :en) do
+  def get_email_template_locale(%EmailTemplate{} = email_template, language \\ :en) do
     email_template
-    |> Ecto.assoc(:versions)
-    |> where(language: ^language)
-    |> Repo.one()
+    |> Ecto.assoc(:locales)
+    |> Repo.get_by(language: language)
   end
 
   def get_email_template!(%App{} = app, id) do
@@ -691,10 +691,10 @@ defmodule Passwordless do
     |> Repo.get!(id)
   end
 
-  def get_or_create_email_template_version(%App{} = app, %EmailTemplate{} = email_template, language) do
-    case get_email_template_version(email_template, language) do
-      %EmailTemplateVersion{} = version ->
-        version
+  def get_or_create_email_template_locale(%App{} = app, %EmailTemplate{} = email_template, language) do
+    case get_email_template_locale(email_template, language) do
+      %EmailTemplateLocale{} = locale ->
+        locale
 
       nil ->
         preset = :magic_link_sign_in
@@ -702,30 +702,30 @@ defmodule Passwordless do
         attrs = Map.merge(%{language: language}, settings)
 
         email_template
-        |> Ecto.build_assoc(:versions)
-        |> EmailTemplateVersion.changeset(attrs)
+        |> Ecto.build_assoc(:locales)
+        |> EmailTemplateLocale.changeset(attrs)
         |> Repo.insert!()
     end
   end
 
-  def create_email_template_version(%EmailTemplate{} = email_template, attrs \\ %{}) do
+  def create_email_template_locale(%EmailTemplate{} = email_template, attrs \\ %{}) do
     email_template
-    |> Ecto.build_assoc(:versions)
-    |> EmailTemplateVersion.changeset(attrs)
+    |> Ecto.build_assoc(:locales)
+    |> EmailTemplateLocale.changeset(attrs)
     |> Repo.insert()
   end
 
-  def change_email_template_version(%EmailTemplateVersion{} = version, attrs \\ %{}) do
-    if Ecto.get_meta(version, :state) == :loaded do
-      EmailTemplateVersion.changeset(version, attrs)
+  def change_email_template_locale(%EmailTemplateLocale{} = locale, attrs \\ %{}) do
+    if Ecto.get_meta(locale, :state) == :loaded do
+      EmailTemplateLocale.changeset(locale, attrs)
     else
-      EmailTemplateVersion.changeset(version, attrs)
+      EmailTemplateLocale.changeset(locale, attrs)
     end
   end
 
-  def update_email_template_version(%EmailTemplateVersion{} = version, attrs \\ %{}) do
-    version
-    |> EmailTemplateVersion.changeset(attrs)
+  def update_email_template_locale(%EmailTemplateLocale{} = locale, attrs \\ %{}) do
+    locale
+    |> EmailTemplateLocale.changeset(attrs)
     |> Repo.update()
   end
 
@@ -751,11 +751,32 @@ defmodule Passwordless do
   end
 
   def email_template_exists?(%App{} = app, kind) do
-    Repo.exists?(
-      app
-      |> Ecto.build_assoc(:email_templates)
-      |> where(kind: ^kind)
-    )
+    app
+    |> Ecto.build_assoc(:email_templates)
+    |> where(kind: ^kind)
+    |> Repo.exists?()
+  end
+
+  def get_template_locale_style(%EmailTemplateLocale{} = locale, style) do
+    locale
+    |> Ecto.assoc(:styles)
+    |> Repo.get_by(style: style)
+  end
+
+  def persist_template_locale_style!(%EmailTemplateLocale{} = locale) do
+    attrs = %{style: locale.style, mjml_body: locale.mjml_body}
+
+    changeset =
+      locale
+      |> Ecto.build_assoc(:styles)
+      |> EmailTemplateStyle.changeset(attrs)
+
+    upsert_clause = [
+      on_conflict: {:replace, [:mjml_body, :html_body, :updated_at]},
+      conflict_target: [:email_template_locale_id, :style]
+    ]
+
+    Repo.insert!(changeset, upsert_clause)
   end
 
   def get_top_actions(%App{} = app) do

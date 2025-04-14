@@ -6,7 +6,7 @@ defmodule Passwordless.Email.Renderer do
   alias Passwordless.Action
   alias Passwordless.Actor
   alias Passwordless.Email
-  alias Passwordless.EmailTemplateVersion
+  alias Passwordless.EmailTemplateLocale
   alias Passwordless.Phone
   alias Passwordless.Templating.Liquid
   alias Passwordless.Templating.MJML
@@ -41,8 +41,8 @@ defmodule Passwordless.Email.Renderer do
 
   def demo_opts, do: @example_providers
 
-  def render(%EmailTemplateVersion{mjml_body: mjml_body} = email_template_version, variables \\ %{}, opts \\ []) do
-    variables = prepare_variables(email_template_version, variables, opts)
+  def render(%EmailTemplateLocale{mjml_body: mjml_body} = email_template_locale, variables \\ %{}, opts \\ []) do
+    variables = prepare_variables(email_template_locale, variables, opts)
 
     with {:ok, subject} <- Map.fetch(variables, "subject"),
          {:ok, mjml_body} <- Liquid.render(mjml_body, variables),
@@ -52,13 +52,13 @@ defmodule Passwordless.Email.Renderer do
          subject: subject,
          html_content: html_body,
          text_content: Premailex.to_text(html_body),
-         email_template_version_id: email_template_version.id
+         email_template_locale_id: email_template_locale.id
        }}
     end
   end
 
   def prepare_variables(
-        %EmailTemplateVersion{subject: subject, preheader: preheader, mjml_body: mjml_body} = email_template_version,
+        %EmailTemplateLocale{subject: subject, preheader: preheader, mjml_body: mjml_body},
         variables \\ %{},
         opts \\ []
       ) do

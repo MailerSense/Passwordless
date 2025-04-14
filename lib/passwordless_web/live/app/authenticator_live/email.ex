@@ -17,15 +17,15 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
     changeset = Passwordless.change_email(email)
 
     email_template = Repo.preload(email, :email_template).email_template
-    email_version = Passwordless.get_email_template_version(email_template)
+    email_template_locale = Passwordless.get_email_template_locale(email_template)
 
     socket =
-      case Renderer.render(email_version, %{}, [{:app, app} | Renderer.demo_opts()]) do
+      case Renderer.render(email_template_locale, %{}, [{:app, app} | Renderer.demo_opts()]) do
         {:ok, %{html_content: html_content}} ->
           assign(socket, preview: html_content)
 
         {:error, _} ->
-          assign(socket, preview: email_version.html_body)
+          assign(socket, preview: email_template_locale.html_body)
       end
 
     {:ok,
@@ -34,8 +34,7 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
      |> assign(
        email: email,
        domain: domain,
-       email_template: email_template,
-       email_version: email_version
+       email_template: email_template
      )
      |> assign_form(changeset)}
   end

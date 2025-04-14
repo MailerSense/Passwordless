@@ -44,7 +44,7 @@ config :ex_aws, require_imds_v2: true
 
 # Configure Sentry
 config :sentry,
-  dsn: "https://eaf9d36da5cae6187b69cca1312497e3@o4507273188802560.ingest.de.sentry.io/4508026525450320",
+  dsn: "https://0157a2911131743b428228171bf74b76@o4507273188802560.ingest.de.sentry.io/4509152428687440",
   client: Passwordless.SentryClient,
   environment_name: Mix.env(),
   enable_source_code_context: true,

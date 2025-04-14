@@ -1,18 +1,17 @@
 <div id="block-container" phx-hook="EditorHook">
   <.form
-    id="edit-template-version"
-    for={@version_form}
-    phx-change="validate_version"
-    phx-submit="save_version"
+    id="edit-template-locale"
+    for={@locale_form}
+    phx-change="validate_locale"
+    phx-submit="save_locale"
     class="m-6"
   >
-    <.field type="hidden" field={@version_form[:mjml_body]} class="source" />
+    <.field type="hidden" field={@locale_form[:mjml_body]} class="source" />
     <.field
       type="select"
       icon="remix-brush-2-line"
       icon_class="pc-select-input__icon"
-      field={@version_form[:current_style]}
-      label={gettext("Style")}
+      field={@locale_form[:style]}
       options={@styles}
       required
       required_asterix={false}

@@ -28,12 +28,10 @@
           <.button
             size="md"
             type="submit"
-            form="edit-template-version"
+            form="edit-template-locale"
             icon="remix-save-line"
             label={gettext("Save")}
-            disabled={
-              not @version_form.source.valid? or Enum.empty?(@version_form.source.changes)
-            }
+            disabled={not @locale_form.source.valid? or Enum.empty?(@locale_form.source.changes)}
           />
         </div>
       </.subpage_header>
@@ -58,9 +56,9 @@
           current_user={@current_user}
           live_action={@live_action}
           template={@template}
-          version={@version}
+          locale={@locale}
           language={@language}
-          version_form={@version_form}
+          locale_form={@locale_form}
           module={@module}
         />
       </div>
