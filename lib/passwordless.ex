@@ -668,12 +668,12 @@ defmodule Passwordless do
 
   # Email templates
 
-  def seed_email_template(%App{} = app, preset, language) do
+  def seed_email_template(%App{} = app, preset, language, attrs \\ %{}) do
     Repo.transact(fn ->
-      settings = EmailTemplates.get_seed(app, preset, language)
+      settings = app |> EmailTemplates.get_seed(preset, language) |> Map.merge(attrs)
       locale_attrs = Map.merge(%{language: language}, settings)
 
-      with {:ok, template} <- create_email_template(app, Map.take(settings, [:name])),
+      with {:ok, template} <- create_email_template(app, Map.take(settings, [:name, :tags])),
            {:ok, locale} <- create_email_template_locale(template, locale_attrs),
            do: {:ok, %EmailTemplate{template | locales: [locale]}}
     end)

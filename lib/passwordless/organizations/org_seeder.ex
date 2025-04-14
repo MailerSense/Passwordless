@@ -72,8 +72,11 @@ defmodule Passwordless.Organizations.OrgSeeder do
         purpose: :tracking
       })
 
-    {:ok, magic_link_template} = Passwordless.seed_email_template(app, :magic_link_sign_in, :en)
-    {:ok, email_otp_template} = Passwordless.seed_email_template(app, :email_otp_sign_in, :en)
+    {:ok, magic_link_template} =
+      Passwordless.seed_email_template(app, :magic_link_sign_in, :en, %{tags: [:magic_link]})
+
+    {:ok, email_otp_template} =
+      Passwordless.seed_email_template(app, :email_otp_sign_in, :en, %{tags: [:email_otp]})
 
     {:ok, _authenticators} =
       Passwordless.create_authenticators(app, %{
