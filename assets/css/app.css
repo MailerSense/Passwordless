@@ -52,14 +52,14 @@
 
   --shadow-m2: 0 1px 2px 0 rgb(16 24 40 / 0.05);
   --shadow-m3: 0 1px 2px 0 rgb(16 24 40 / 0.05);
-  --shadow-0: 0 1px 3px 0 rgb(16 24 40 / 0.1),
-    0 1px 2px 0px rgb(16 24 40 / 0.06);
-  --shadow-1: 0 4px 8px -2px rgb(16 24 40 / 0.1),
-    0 2px 4px -2px rgb(16 24 40 / 0.06);
-  --shadow-2: 0 12px 16px -4px rgb(16 24 40 / 0.08),
-    0 4px 6px -2px rgb(16 24 40 / 0.03);
-  --shadow-3: 0 20px 24px -4px rgb(16 24 40 / 0.08),
-    0 8px 8px -4px rgb(16 24 40 / 0.03);
+  --shadow-0:
+    0 1px 3px 0 rgb(16 24 40 / 0.1), 0 1px 2px 0px rgb(16 24 40 / 0.06);
+  --shadow-1:
+    0 4px 8px -2px rgb(16 24 40 / 0.1), 0 2px 4px -2px rgb(16 24 40 / 0.06);
+  --shadow-2:
+    0 12px 16px -4px rgb(16 24 40 / 0.08), 0 4px 6px -2px rgb(16 24 40 / 0.03);
+  --shadow-3:
+    0 20px 24px -4px rgb(16 24 40 / 0.08), 0 8px 8px -4px rgb(16 24 40 / 0.03);
   --shadow-4: 0 24px 48px -12px rgb(16 24 40 / 0.18);
 
   --color-primary-50: #eff8ff;
@@ -874,13 +874,13 @@
   /* Text Input */
 
   .pc-text-input--lg {
-    @apply block w-full px-3.5 py-4 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
+    @apply block w-full px-3.5 py-4 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
   }
   .pc-text-input--md {
-    @apply block w-full px-3 py-2.5 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
+    @apply block w-full px-3 py-2.5 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
   }
   .pc-text-input--sm {
-    @apply block min-w-16 px-2.5 py-2 font-medium border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-xs disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
+    @apply block min-w-16 px-2.5 py-2 font-medium border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-xs disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
   }
 
   /* Password Input */
@@ -965,10 +965,10 @@
     @apply w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-900 dark:text-white;
   }
   .pc-select-input {
-    @apply ps-10 block w-full px-3.5 py-2.5 pr-10 text-base border-slate-300 rounded-lg cursor-pointer focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 disabled:bg-slate-100 disabled:cursor-not-allowed focus:outline-hidden dark:disabled:bg-slate-700 dark:text-white dark:bg-slate-900;
+    @apply ps-10 block w-full px-3.5 py-2.5 pr-10 text-base border-slate-300 rounded-lg cursor-pointer focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 disabled:bg-slate-100 disabled:cursor-not-allowed focus:outline-hidden dark:disabled:bg-slate-700 dark:text-white dark:bg-slate-800;
   }
   .pc-select {
-    @apply block w-full py-2 pl-3 pr-10 text-base border-slate-300 rounded-md cursor-pointer focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 disabled:bg-slate-100 disabled:cursor-not-allowed focus:outline-hidden sm:text-sm dark:disabled:bg-slate-700 dark:text-white dark:bg-slate-900;
+    @apply block w-full py-2 pl-3 pr-10 text-base border-slate-300 rounded-md cursor-pointer focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 disabled:bg-slate-100 disabled:cursor-not-allowed focus:outline-hidden sm:text-sm dark:disabled:bg-slate-700 dark:text-white dark:bg-slate-800;
   }
   .pc-file-input {
     @apply text-sm rounded-md cursor-pointer focus:outline-hidden file:border-0 text-slate-500 file:text-primary-700 file:font-semibold file:px-4 file:py-2 file:mr-6 file:rounded-md hover:file:bg-primary-100 file:bg-primary-200 dark:file:bg-primary-300 dark:hover:file:bg-primary-200;
@@ -1310,15 +1310,15 @@
   /* Separator */
 
   .pc-form-separator {
-    @apply w-full h-[1px] bg-slate-200 dark:bg-slate-600 block;
+    @apply w-full h-[1px] bg-slate-200 dark:bg-slate-700/40 block;
   }
 
   /* Box */
 
   .pc-box {
-    @apply bg-white dark:bg-transparent;
+    @apply bg-white dark:bg-slate-700/30;
     @apply rounded-lg shadow-1;
-    @apply border border-slate-200 dark:border-slate-700;
+    @apply border border-slate-200 dark:border-slate-700/40;
   }
 
   .pc-box__card {
@@ -1724,7 +1724,7 @@
     @apply inline-flex p-1 rounded-sm items-center bg-white dark:bg-slate-800 shadow-0 dark:bg-slate-700/50;
   }
   .pc-tabs--native {
-    @apply flex p-1 rounded-sm items-center bg-slate-100 dark:bg-slate-950;
+    @apply flex p-1 rounded-sm items-center bg-slate-100 dark:bg-slate-900;
   }
   .pc-tabs--contrast {
     @apply inline-flex items-center gap-2;
@@ -1864,9 +1864,9 @@
     @apply min-w-full table-auto;
   }
   .pc-table__wrapper {
-    @apply bg-white dark:bg-transparent;
+    @apply bg-white dark:bg-slate-700/30;
     @apply rounded-lg shadow-1;
-    @apply border border-slate-200 dark:border-slate-700;
+    @apply border border-slate-200 dark:border-slate-700/40;
   }
   .pc-data-table {
     @apply overflow-x-auto;
@@ -1889,10 +1889,10 @@
     @apply first:pl-2 first:pr-1 last:pr-2 last:pl-1 px-1 py-3;
   }
   .pc-table thead {
-    @apply border-b border-slate-200 dark:border-slate-700;
+    @apply border-b border-slate-200 dark:border-slate-700/40;
   }
   .pc-table__tr {
-    @apply border-b border-slate-200 dark:border-slate-700 last:border-none;
+    @apply border-b border-slate-200 dark:border-slate-700/40 last:border-none;
   }
   .pc-table__tr--row-click {
     @apply hover:bg-slate-50 dark:hover:bg-slate-800;
@@ -1911,7 +1911,6 @@
     @apply hover:cursor-pointer;
   }
   .pc-table__tr-striped {
-    /*  @apply even:bg-white dark:even:bg-transparent odd:bg-slate-50 dark:odd:bg-slate-900; */
     @apply hover:bg-slate-50 dark:hover:bg-slate-900/50;
   }
   .pc-table__thead-plain {
@@ -1921,7 +1920,7 @@
     @apply text-slate-600 dark:text-slate-300;
   }
   .pc-table__pagination {
-    @apply px-6 py-4 border-t border-slate-200 dark:border-slate-700;
+    @apply px-6 py-4 border-t border-slate-200 dark:border-slate-700/40;
   }
 
   /* Accordion */
