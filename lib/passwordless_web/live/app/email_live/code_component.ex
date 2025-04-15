@@ -2,18 +2,17 @@ defmodule PasswordlessWeb.App.EmailLive.CodeComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
+  alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateLocale
 
   @impl true
-  def update(assigns, socket) do
-    tags = assigns.template.tags
-
+  def update(%{template: %EmailTemplate{} = template} = assigns, socket) do
     styles =
       Enum.map(EmailTemplateLocale.styles(), fn {category, styles} ->
         {translate_style(category),
          Enum.map(
            styles,
-           &[key: translate_style(&1), value: &1, disabled: not Enum.member?(tags, category)]
+           &[key: translate_style(&1), value: &1, disabled: not Enum.member?(template.tags, category)]
          )}
       end)
 

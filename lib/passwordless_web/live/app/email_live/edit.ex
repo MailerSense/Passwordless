@@ -182,7 +182,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
     }
 
     socket =
-      case Renderer.render(locale, %{}, opts) do
+      case Renderer.render(locale, Renderer.demo_variables(), opts) do
         {:ok, %{html_content: html_content}} ->
           assign(socket, preview: html_content)
 

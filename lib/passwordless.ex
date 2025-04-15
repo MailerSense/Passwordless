@@ -17,6 +17,8 @@ defmodule Passwordless do
   alias Passwordless.Domain
   alias Passwordless.DomainRecord
   alias Passwordless.Email
+  alias Passwordless.EmailMessage
+  alias Passwordless.EmailMessageMapping
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateLocale
   alias Passwordless.EmailTemplates
@@ -59,6 +61,10 @@ defmodule Passwordless do
   end
 
   ## Apps
+
+  def get_app(id) when is_binary(id) do
+    Repo.get(App, id)
+  end
 
   def get_app(%Org{} = org, id) when is_binary(id) do
     org
@@ -199,10 +205,12 @@ defmodule Passwordless do
   # Domains
 
   def get_domain!(%App{} = app, id) do
-    Repo.get_by!(Domain, id: id, app_id: app.id)
+    app
+    |> Ecto.assoc(:domains)
+    |> Repo.get!(id)
   end
 
-  def get_domain(domain_id) when is_binary(domain_id) do
+  def fetch_domain(domain_id) when is_binary(domain_id) do
     case Repo.get(Domain, domain_id) do
       %Domain{} = domain -> {:ok, domain}
       _ -> {:error, :not_found}
@@ -300,6 +308,22 @@ defmodule Passwordless do
         {:ok, %App{app | email_domain: nil, tracking_domain: nil}}
       end
     end)
+  end
+
+  # Email Messages
+
+  def get_email_message(%App{} = app, id) when is_binary(id) do
+    EmailMessage
+    |> Repo.get(id, prefix: Tenant.to_prefix(app))
+    |> Repo.preload(:domain)
+  end
+
+  def record_email_message_mapping(%App{} = app, %EmailMessage{} = email_message, external_id) do
+    app
+    |> Ecto.build_assoc(:email_message_mappings)
+    |> Kernel.then(&%EmailMessageMapping{&1 | email_message_id: email_message.id})
+    |> EmailMessageMapping.changeset(%{external_id: external_id})
+    |> Repo.insert()
   end
 
   # Authenticators
