@@ -5,19 +5,19 @@ export abstract class Hook {
    * Attribute referencing the bound DOM node.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  el: HTMLElement;
+  protected el: HTMLElement;
 
   /**
    * The reference to the underlying `LiveSocket` instance.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  liveSocket: LiveSocket;
+  protected liveSocket: LiveSocket;
 
   /**
    * Method to push an event from the client to the LiveView server.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  pushEvent: (
+  public pushEvent: (
     event: string,
     payload: any,
     callback?: (reply: any, ref: number) => void,
@@ -31,7 +31,7 @@ export abstract class Hook {
    * even if all the elements are in the same LiveComponent or LiveView.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  pushEventTo: (
+  public pushEventTo: (
     selectorOrTarget: Element | string,
     event: string,
     payload: any,
@@ -42,13 +42,13 @@ export abstract class Hook {
    * Method to handle an event pushed from the server.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  handleEvent: (event: string, callback: (payload: any) => void) => void;
+  public handleEvent: (event: string, callback: (payload: any) => void) => void;
 
   /**
    * Method to inject a list of file-like objects into an uploader.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  upload: (name: string, files: any) => void;
+  public upload: (name: string, files: any) => void;
 
   /**
    * Method to inject a list of file-like objects into an uploader. The hook will send
@@ -60,7 +60,7 @@ export abstract class Hook {
    * live file input, an error will be logged.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  uploadTo: (
+  public uploadTo: (
     selectorOrTarget: Element | string,
     name: string,
     files: any,
@@ -70,39 +70,39 @@ export abstract class Hook {
    * The element has been added to the DOM and its server LiveView has finished mounting.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  mounted(): void {}
+  public mounted(): void {}
 
   /**
    * The element is about to be updated in the DOM. Note: any call here must be synchronous as the operation
    * cannot be deferred or cancelled.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  beforeUpdate(): void {}
+  public beforeUpdate(): void {}
 
   /**
    * The element has been updated in the DOM by the server.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  updated(): void {}
+  public updated(): void {}
 
   /**
    * The element has been removed from the page, either by a parent update, or by the parent being removed
    * entirely.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  destroyed(): void {}
+  public destroyed(): void {}
 
   /**
    * The element's parent LiveView has disconnected from the server.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  disconnected(): void {}
+  public disconnected(): void {}
 
   /**
    * The element's parent LiveView has reconnected to the server
    * [More information](https://hexdocs.pm/phoenix_live_view/0.18.0/js-interop.html#client-hooks-via-phx-hook)
    */
-  reconnected(): void {}
+  public reconnected(): void {}
 }
 
 export function makeHook(hookClass: typeof Hook): any {
@@ -110,7 +110,10 @@ export function makeHook(hookClass: typeof Hook): any {
     (name) => name !== "constructor",
   );
 
-  const methods = methodNames.map((name) => [name, hookClass.prototype[name]]);
+  const methods = methodNames.map((name) => [
+    name,
+    (hookClass.prototype as any)[name],
+  ]);
 
   return Object.fromEntries(methods);
 }
