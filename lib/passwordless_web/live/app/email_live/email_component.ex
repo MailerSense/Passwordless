@@ -27,7 +27,7 @@ defmodule PasswordlessWeb.App.EmailLive.EmailComponent do
      |> assign(
        languages: languages,
        flag_icon: get_flag_icon(language),
-       variables: Renderer.prepare_variables(assigns.locale, %{}, opts)
+       variables: Renderer.prepare_variables(assigns.locale, Renderer.demo_variables(), opts)
      )}
   end
 
@@ -44,7 +44,7 @@ defmodule PasswordlessWeb.App.EmailLive.EmailComponent do
             subject: subject,
             html_content: html_content,
             text_content: text_content
-          }} <- Renderer.render(locale, %{}, opts) do
+          }} <- Renderer.render(locale, Renderer.demo_variables(), opts) do
       EmailWeb.auth_email()
       |> SwooshEmail.to({user_name, user_email})
       |> SwooshEmail.subject(gettext("[Test] %{name}", name: subject))

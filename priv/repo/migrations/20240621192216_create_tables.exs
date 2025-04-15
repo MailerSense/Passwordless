@@ -266,6 +266,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:email_templates, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
+      add :tags, {:array, :string}, null: false, default: []
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 

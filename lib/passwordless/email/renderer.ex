@@ -30,8 +30,17 @@ defmodule Passwordless.Email.Renderer do
     },
     action: %Action{
       name: "login"
-    }
+    },
+    otp_code: "123456",
+    magic_link_url:
+      "https://eu.passwordless.tools/auth/sign-in/passwordless/complete/SFMyNTY.g2gDbQAAACAjqIsr8_fd6TsBwSqcV0GuDCesLQrEV4ohzfT9qOKJUW4GAMVHZR-WAWIAAVGA.SCmssWIvn_DD1DChLdU_LgStbWcDIqLOf1nwwMdwRzs"
   ]
+
+  @example_variables %{
+    otp_code: "123456",
+    magic_link_url:
+      "https://eu.passwordless.tools/auth/sign-in/passwordless/complete/SFMyNTY.g2gDbQAAACAjqIsr8_fd6TsBwSqcV0GuDCesLQrEV4ohzfT9qOKJUW4GAMVHZR-WAWIAAVGA.SCmssWIvn_DD1DChLdU_LgStbWcDIqLOf1nwwMdwRzs"
+  }
 
   @variable_providers [
     :app,
@@ -40,6 +49,8 @@ defmodule Passwordless.Email.Renderer do
   ]
 
   def demo_opts, do: @example_providers
+
+  def demo_variables, do: @example_variables
 
   def render(%EmailTemplateLocale{mjml_body: mjml_body} = email_template_locale, variables \\ %{}, opts \\ []) do
     variables = prepare_variables(email_template_locale, variables, opts)

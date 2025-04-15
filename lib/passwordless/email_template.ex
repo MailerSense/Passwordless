@@ -5,8 +5,11 @@ defmodule Passwordless.EmailTemplate do
 
   use Passwordless.Schema, prefix: "emtpl"
 
+  alias Database.ChangesetExt
   alias Passwordless.App
   alias Passwordless.EmailTemplateLocale
+
+  @tags ~w(email_otp magic_link)a
 
   @derive {
     Jason.Encoder,
@@ -25,6 +28,7 @@ defmodule Passwordless.EmailTemplate do
   }
   schema "email_templates" do
     field :name, :string
+    field :tags, {:array, Ecto.Enum}, values: @tags, default: []
 
     has_many :locales, EmailTemplateLocale, preload_order: [asc: :inserted_at]
 
@@ -36,6 +40,7 @@ defmodule Passwordless.EmailTemplate do
 
   @fields ~w(
     name
+    tags
     app_id
   )a
   @required_fields @fields
@@ -47,9 +52,14 @@ defmodule Passwordless.EmailTemplate do
     template
     |> cast(attrs, @fields)
     |> cast_assoc(:locales)
+    |> validate_tags()
     |> validate_required(@required_fields)
     |> assoc_constraint(:app)
   end
 
   # Private
+
+  defp validate_tags(changeset) do
+    ChangesetExt.clean_array(changeset, :tags)
+  end
 end

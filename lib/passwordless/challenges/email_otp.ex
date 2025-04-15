@@ -20,11 +20,9 @@ defmodule Passwordless.Challenges.EmailOTP do
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateLocale
   alias Passwordless.EmailUnsubscribeLinkMapping
-  alias Passwordless.Mailer
   alias Passwordless.MailerExecutor
   alias Passwordless.OTP
   alias Passwordless.Repo
-  alias Swoosh.Email, as: SwooshEmail
 
   @challenge :email_otp
 
@@ -51,7 +49,6 @@ defmodule Passwordless.Challenges.EmailOTP do
              action,
              domain,
              email,
-             email_template,
              email_template_locale,
              authenticator,
              otp_code
@@ -124,7 +121,6 @@ defmodule Passwordless.Challenges.EmailOTP do
          %Action{challenge: %Challenge{} = challenge} = action,
          %Domain{} = domain,
          %Email{} = email,
-         %EmailTemplate{} = template,
          %EmailTemplateLocale{} = locale,
          %Authenticators.Email{} = authenticator,
          otp_code
@@ -182,34 +178,8 @@ defmodule Passwordless.Challenges.EmailOTP do
     |> Repo.insert()
   end
 
-  defp enqueue_email_message(
-         %App{} = app,
-         %EmailMessage{
-           sender: sender,
-           sender_name: sender_name,
-           recipient: recipient,
-           recipient_name: recipient_name,
-           reply_to: reply_to,
-           reply_to_name: reply_to_name,
-           subject: subject,
-           html_content: html_content,
-           text_content: text_content,
-           email: %Email{} = email,
-           domain: %Domain{} = domain
-         } = email_message
-       ) do
-    swoosh_email =
-      SwooshEmail.new()
-      |> SwooshEmail.from({sender_name, sender})
-      |> SwooshEmail.to({recipient_name, recipient})
-      |> SwooshEmail.reply_to({reply_to_name, reply_to})
-      |> SwooshEmail.subject(subject)
-      |> SwooshEmail.html_body(html_content)
-      |> SwooshEmail.text_body(text_content)
-      |> SwooshEmail.header("List-Unsubscribe", unsubscribe_url(app, email))
-      |> SwooshEmail.header("List-Unsubscribe-Post", "List-Unsubscribe=One-Click")
-
-    %{email: Mailer.to_map(swoosh_email), domain_id: domain.id}
+  defp enqueue_email_message(%App{} = app, %EmailMessage{} = email_message) do
+    %{app_id: app.id, email_message_id: email_message.id}
     |> MailerExecutor.new()
     |> Oban.insert()
   end
