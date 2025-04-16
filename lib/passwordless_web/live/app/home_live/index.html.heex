@@ -38,9 +38,10 @@
     </.box>
     <.box card>
       <.form_header title={gettext("Installation")} no_margin />
-      <.alert color="info" with_icon>
-        The following code sample contains your App ID and App Secret.
-      </.alert>
+      <.code_block language={:bash} code="pnpm add @passwordless/tools" />
+      <.p>
+        Then, in the entrypoint of your application, initiate the Passwordless client:
+      </.p>
       <.code_block
         language={:typescript}
         code={
@@ -63,7 +64,7 @@
         }
       />
       <.p>
-        Get Passwordless NodeJS client library and start authenticating users in your app today. The code sample above shows a basic setup, you can customize it to fit your needs. Read our documentation to learn how to guard user actions and apply powerful workflow rules.
+        From now on you can use the client anywhere in your application to create authentication challenges and perform passwordless flows.
       </.p>
       <div class="flex items-center gap-3 flex-wrap">
         <.a

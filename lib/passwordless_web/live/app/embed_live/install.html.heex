@@ -3,22 +3,7 @@
   <.p>
     Following keys - App ID and App Secret - will allow you to authenticate API requests. Remember to never publish your App Secret, it should be securely accessed from your backend only.
   </.p>
-  <.simple_table
-    items={[
-      %{
-        id: "app_id",
-        name: "App ID",
-        token: @app.id
-      },
-      %{
-        id: "app_secret",
-        name: "App Secret",
-        token: "**********"
-      }
-    ]}
-    count={2}
-    title={gettext("API keys")}
-  >
+  <.simple_table items={@keys} count={Enum.count(@keys)} title={gettext("API keys")}>
     <:if_empty>{gettext("No %{models} defined yet", models: gettext("keys"))}</:if_empty>
     <:col field={:name} />
     <:col field={:token} />
@@ -28,6 +13,9 @@
       <% else %>
         <.badge with_dot size="sm" color="danger" label={gettext("Secret")} />
       <% end %>
+    </:col>
+    <:col :let={key} field={:inserted_at} label="Created">
+      {format_date_time(key.inserted_at)}
     </:col>
     <:col actions></:col>
     <:actions :let={key}>
@@ -41,7 +29,7 @@
   </.p>
   <.code_block language={:bash} code="pnpm add @passwordless/tools" />
   <.p>
-    Then, in the entrypoint of your application, initiate the Passwordless client.
+    Then, in the entrypoint of your application, initiate the Passwordless client:
   </.p>
   <.code_block
     language={:typescript}
