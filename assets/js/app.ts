@@ -1,6 +1,7 @@
 import Alpine from "@alpinejs/csp";
 import { Hooks as BackpexHooks } from "backpex";
 import hljs from "highlight.js/lib/core";
+import bash from "highlight.js/lib/languages/bash";
 import javascript from "highlight.js/lib/languages/javascript";
 import json from "highlight.js/lib/languages/json";
 import typescript from "highlight.js/lib/languages/typescript";
@@ -15,6 +16,7 @@ import uploaders from "./uploaders";
 hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("typescript", typescript);
 hljs.registerLanguage("json", json);
+hljs.registerLanguage("bash", bash);
 
 // Enable dark mode
 const applyScheme = (scheme: "light" | "dark") => {

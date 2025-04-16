@@ -1,14 +1,48 @@
 <div class="p-6 flex flex-col gap-6">
   <.form_header title={gettext("Installation")} no_margin />
   <.p>
-    To use Passwordless in your backend, you need to install the Passwordless SDK. We currently support NodeJS, and will continue to add support for further frameworks.
+    Following keys - App ID and App Secret - will allow you to authenticate API requests. Remember to never publish your App Secret, it should be securely accessed from your backend only.
   </.p>
-  <.a
-    to={~p"/embed/install"}
-    label={gettext("Install Passwordless SDK")}
-    style="link"
-    link_type="live_redirect"
-  />
+  <.simple_table
+    items={[
+      %{
+        id: "app_id",
+        name: "App ID",
+        token: @app.id
+      },
+      %{
+        id: "app_secret",
+        name: "App Secret",
+        token: "**********"
+      }
+    ]}
+    count={2}
+    title={gettext("API keys")}
+  >
+    <:if_empty>{gettext("No %{models} defined yet", models: gettext("keys"))}</:if_empty>
+    <:col field={:name} />
+    <:col field={:token} />
+    <:col :let={key} field={:visibility}>
+      <%= if key.id == "app_id" do %>
+        <.badge with_dot size="sm" color="success" label={gettext("Public")} />
+      <% else %>
+        <.badge with_dot size="sm" color="danger" label={gettext("Secret")} />
+      <% end %>
+    </:col>
+    <:col actions></:col>
+    <:actions :let={key}>
+      <.copy_button size="sm" color="light" title={gettext("Copy")} value={key.name} />
+    </:actions>
+  </.simple_table>
+  <.form_separator no_margin />
+  <.form_header title={gettext("Passwordless SDK")} no_margin />
+  <.p>
+    Install Passwordless SDK for NodeJS to efficiently create authentication challenges and perform passwordless flows. We continue to add support for more languages and frameworks.
+  </.p>
+  <.code_block language={:bash} code="pnpm add @passwordless/tools" />
+  <.p>
+    Then, in the entrypoint of your application, initiate the Passwordless client.
+  </.p>
   <.code_block
     language={:typescript}
     code={
@@ -17,12 +51,12 @@
 
       Passwordless.init({
         appId: '#{@app.id}',
-        appSecret: '**********', // ⚠️ Never expose this in frontend code!
+        appSecret: '**********', // ⚠️ Never publish your App Secret!
         defaultRules: [
           {
-            condition: { type: "constant", value: true },
+            condition: true,
             effects: [
-              { type: "challenge", with: Passwordless.ALL_ENABLED_AUTHENTICATORS },
+              { challenge: Passwordless.ALL_ENABLED_AUTHENTICATORS },
             ],
           },
         ]
@@ -31,37 +65,7 @@
     }
   />
   <.p>
-    Use the App ID to embed the login & authentication guards in your frontend. Never publish the App Secret, use it only when calling the API from your backend. If your secret is compromised, you can
-    regenerate it at any time.
+    From now on you can use the client anywhere in your application to create authentication challenges and perform passwordless flows.
   </.p>
-  <.alert color="warning" with_icon>
-    Never commit your App Secret or publish it anywhere.
-  </.alert>
-  <.form_separator no_margin />
-  <.form_header title={gettext("Configuration")} no_margin />
-  <.p>
-    Use the App ID to embed the login & authentication guards in your frontend. Never publish the App Secret, use it only when calling the API from your backend. If your secret is compromised, you can
-    regenerate it at any time.
-  </.p>
-  <div>
-    <.field
-      name="app_id"
-      value={@app.id}
-      label="App ID"
-      nonce={@nonce}
-      readonly
-      copyable={true}
-      class="font-mono"
-    />
-    <.field
-      name="app_secret"
-      value={@signed}
-      label="App Secret"
-      type="password"
-      nonce={@nonce}
-      readonly
-      viewable={true}
-      class="font-mono"
-    />
-  </div>
+  <.a to={~p"/embed/api"} label={gettext("Read API docs")} style="link" link_type="live_redirect" />
 </div>

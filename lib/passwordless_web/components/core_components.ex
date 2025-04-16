@@ -324,8 +324,8 @@ defmodule PasswordlessWeb.CoreComponents do
   attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
   attr :code, :any, required: true
   attr :label, :string, default: nil
-  attr :language, :atom, values: [:javascript, :typescript, :json, :html], required: true
-  attr :language_class, :string, default: nil
+  attr :language, :atom, values: [:javascript, :typescript, :json, :html, :bash], required: true
+  attr :language_class, :string
   attr :rest, :global
 
   def code_block(assigns) do

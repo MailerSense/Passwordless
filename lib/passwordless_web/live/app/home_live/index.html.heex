@@ -52,9 +52,9 @@
             appSecret: '**********', // ⚠️ Never expose this in frontend code!
             defaultRules: [
               {
-                condition: { type: "constant", value: true },
+                condition: true,
                 effects: [
-                  { type: "challenge", with: Passwordless.ALL_ENABLED_AUTHENTICATORS },
+                  { challenge: Passwordless.ALL_ENABLED_AUTHENTICATORS },
                 ],
               },
             ]

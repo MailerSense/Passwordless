@@ -14,4 +14,6 @@ defmodule Passwordless.Formatter do
   def format!(code, :json) when is_binary(code) do
     code
   end
+
+  def format!(code, _), do: code
 end
