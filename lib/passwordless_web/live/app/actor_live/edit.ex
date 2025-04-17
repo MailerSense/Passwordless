@@ -254,7 +254,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
         %Actor{} = actor ->
           app
           |> Action.get_by_actor(actor)
-          |> Action.preload_actor()
+          |> Action.preload_challenge()
 
         _ ->
           Actor.get_none(app)

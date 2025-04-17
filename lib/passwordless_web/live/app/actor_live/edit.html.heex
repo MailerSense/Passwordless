@@ -238,15 +238,9 @@
       <:col :let={action} label={gettext("Action")} field={:name}>
         {Phoenix.Naming.humanize(Macro.underscore(action.name))}
       </:col>
-      <:col :let={action} label={gettext("Region")} field={:location}>
+      <:col :let={action} label={gettext("Location")} field={:location}>
         <div class="flex items-center gap-2">
           <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
-        </div>
-      </:col>
-      <:col :let={action} label={gettext("Elapsed")} field={:location}>
-        <div class="flex items-center gap-2">
-          <.icon name="remix-timer-2-line" class="w-5 h-5" />
-          {Util.elapsed(action.inserted_at, action.updated_at)}
         </div>
       </:col>
       <:col :let={action} label={gettext("State")} field={:state}>
@@ -256,17 +250,9 @@
       <:col :let={action} label={gettext("When")} field={:inserted_at}>
         {Timex.from_now(action.inserted_at)}
       </:col>
-      <:col actions></:col>
-      <:actions :let={action}>
-        <.icon_button
-          to={~p"/home/#{action}/view"}
-          size="sm"
-          icon="custom-edit"
-          color="light"
-          title={gettext("Edit")}
-          link_type="live_patch"
-        />
-      </:actions>
+      <:col :let={action} label={gettext("Details")} field={:details}>
+        <.json_block code={action} expanded={false} compact={true} />
+      </:col>
     </.data_table>
   </div>
 </.layout>

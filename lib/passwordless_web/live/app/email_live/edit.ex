@@ -111,6 +111,17 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
     socket =
       cond do
+        not changeset.valid? and Keyword.has_key?(changeset.errors, :mjml_body) ->
+          socket
+          |> put_toast(
+            :error,
+            gettext("Failed to validate template: %{error}",
+              error: Jason.encode!(Util.humanize_changeset_errors(changeset))
+            ),
+            title: gettext("Error")
+          )
+          |> assign_locale_form(changeset)
+
         style != current_style ->
           Passwordless.persist_template_locale_style!(locale)
 

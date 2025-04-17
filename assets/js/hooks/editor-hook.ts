@@ -5,13 +5,13 @@ import { keymap } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
 import { basicSetup, EditorView } from "codemirror";
 
-import { Hook, makeHook } from "./typed-hook";
 import {
   formatCode,
   indentAndAutocompleteWithTab,
   saveUpdates,
 } from "../lib/mjml/helpers";
 import { dracula } from "../lib/mjml/theme";
+import { Hook, makeHook } from "./typed-hook";
 
 interface FormattedCodeData {
   code: string;
@@ -21,6 +21,22 @@ class EditorHook extends Hook {
   private view: EditorView | undefined;
 
   public mounted() {
+    const place: HTMLElement | null = this.el.querySelector(".editor");
+    if (place === null) {
+      throw new Error("Editor element not found");
+    }
+
+    const source: HTMLInputElement | null = this.el.querySelector(".source");
+    if (source === null) {
+      throw new Error("Editor element not found");
+    }
+
+    const editorForm: HTMLFormElement | null =
+      this.el.querySelector(".editor-form");
+    if (editorForm === null) {
+      throw new Error("Editor form not found");
+    }
+
     this.handleEvent(
       "get_formatted_code",
       (data: Partial<FormattedCodeData>) => {
@@ -33,18 +49,12 @@ class EditorHook extends Hook {
             },
           });
         }
+
+        editorForm.dispatchEvent(
+          new Event("submit", { bubbles: true, cancelable: true }),
+        );
       },
     );
-
-    const place: HTMLElement | null = this.el.querySelector(".editor");
-    if (place === null) {
-      throw new Error("Editor element not found");
-    }
-
-    const source: HTMLInputElement | null = this.el.querySelector(".source");
-    if (source === null) {
-      throw new Error("Editor element not found");
-    }
 
     const formatExt = formatCode((source) => {
       this.pushEvent("format_code", {});

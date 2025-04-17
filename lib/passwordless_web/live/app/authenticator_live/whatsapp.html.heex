@@ -78,8 +78,11 @@
         """
       }
     />
-    <.p class="mb-6">
-      {gettext("Use the following API endpoint to send whatsapp OTPs:")}
-    </.p>
+    <.a
+      to={~p"/embed/api"}
+      label={gettext("Read full documentation")}
+      style="link"
+      link_type="live_redirect"
+    />
   </.form>
 </div>

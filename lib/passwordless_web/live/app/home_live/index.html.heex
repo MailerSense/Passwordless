@@ -50,15 +50,7 @@
 
           Passwordless.init({
             appId: '#{@current_app.id}',
-            appSecret: '**********', // ⚠️ Never expose this in frontend code!
-            defaultRules: [
-              {
-                condition: true,
-                effects: [
-                  { challenge: Passwordless.ALL_ENABLED_AUTHENTICATORS },
-                ],
-              },
-            ]
+            appSecret: process.env.PASSWORDLESS_APP_SECRET // ⚠️ Never publish your App Secret!
           });
           """
         }
@@ -85,40 +77,34 @@
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
 
-      <:col :let={action} label={gettext("User")} field={:user}>
-        <.a
-          :if={Util.present?(action.actor)}
-          to={~p"/users/#{action.actor}/edit"}
-          label={Actor.handle(action.actor)}
-          style="link"
-          link_type="live_redirect"
-        />
-      </:col>
-
       <:col :let={action} label={gettext("Action")} field={:name}>
         {Phoenix.Naming.humanize(Macro.underscore(action.name))}
       </:col>
 
-      <:col :let={action} field={:state}>
+      <:col :let={action} label={gettext("Location")} field={:location}>
+        <div class="flex items-center gap-2">
+          <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
+        </div>
+      </:col>
+
+      <:col :let={action} label={gettext("State")} field={:state}>
         <% {badge_label, badge_color} = action_state_badge(action) %>
         <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
 
-      <:col :let={action} label={gettext("Elapsed")} field={:elapsed}>
-        <div class="flex items-center gap-2">
-          <.icon name="remix-timer-2-line" class="w-5 h-5" />
-          {Util.elapsed(action.inserted_at, action.updated_at)}
-        </div>
+      <:col :let={action} label={gettext("When")} field={:inserted_at}>
+        {Timex.from_now(action.inserted_at)}
       </:col>
 
-      <:col :let={action} label={gettext("Time")} field={:inserted_at}>
-        {Timex.from_now(action.inserted_at)}
+      <:col :let={action} label={gettext("Details")} field={:details}>
+        <.json_block code={action} expanded={false} compact={true} />
       </:col>
 
       <:col actions></:col>
       <:actions :let={action}>
         <.icon_button
-          to={~p"/home/#{action}/view"}
+          :if={Util.present?(action.actor)}
+          to={~p"/users/#{action.actor}/edit"}
           size="sm"
           icon="custom-edit"
           color="light"

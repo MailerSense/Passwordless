@@ -380,6 +380,8 @@ defmodule PasswordlessWeb.CoreComponents do
   attr :code, :any, required: true
   attr :label, :string, default: nil
   attr :disabled, :boolean, default: false
+  attr :expanded, :boolean, default: true
+  attr :compact, :boolean, default: false
   attr :rest, :global
 
   def json_block(assigns) do
@@ -389,6 +391,7 @@ defmodule PasswordlessWeb.CoreComponents do
       |> update(:code, fn code ->
         Passwordless.Formatter.format!(code, :json)
       end)
+      |> update(:expanded, &to_string/1)
 
     ~H"""
     <%= if Util.present?(@label) do %>
@@ -396,19 +399,21 @@ defmodule PasswordlessWeb.CoreComponents do
         <.form_label>{@label}</.form_label>
         <div class={[
           @class,
-          "text-sm rounded-lg p-2 border border-slate-300 dark:border-slate-600 shadow-m2",
-          if(@disabled, do: "bg-slate-100 dark:bg-slate-700", else: "dark:bg-slate-900")
+          "text-sm rounded-lg border border-slate-300 dark:border-slate-600 shadow-m2",
+          if(@disabled, do: "bg-slate-100 dark:bg-slate-700", else: "dark:bg-slate-900"),
+          if(@compact, do: "p-1", else: "p-2")
         ]}>
-          <code id={@id} phx-hook="JSONHook" data-json={@code}></code>
+          <code id={@id} phx-hook="JSONHook" data-json={@code} data-expand={@expanded}></code>
         </div>
       </div>
     <% else %>
       <div class={[
         @class,
-        "text-sm rounded-lg p-2 border border-slate-300 dark:border-slate-600 shadow-m2",
-        if(@disabled, do: "bg-slate-100 dark:bg-slate-800", else: "dark:bg-slate-900")
+        "text-sm rounded-lg border border-slate-300 dark:border-slate-600 shadow-m2",
+        if(@disabled, do: "bg-slate-100 dark:bg-slate-800", else: "dark:bg-slate-900"),
+        if(@compact, do: "px-2 py-0.5", else: "p-2")
       ]}>
-        <code id={@id} phx-hook="JSONHook" data-json={@code}></code>
+        <code id={@id} phx-hook="JSONHook" data-json={@code} data-expand={@expanded}></code>
       </div>
     <% end %>
     """

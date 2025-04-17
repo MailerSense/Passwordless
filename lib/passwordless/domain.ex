@@ -71,6 +71,16 @@ defmodule Passwordless.Domain do
   def purposes, do: @purposes
 
   @doc """
+  Get the base domain.
+  """
+  def base_domain(%__MODULE__{name: domain}) when is_binary(domain) do
+    {:ok, %{domain: root_domain, tld: tld}} = Domainatrex.parse(domain)
+    "#{root_domain}.#{tld}"
+  end
+
+  def base_domain(%__MODULE__{}), do: nil
+
+  @doc """
   Get the domain name.
   """
   def email_suffix(%__MODULE__{name: name}), do: "@#{name}"

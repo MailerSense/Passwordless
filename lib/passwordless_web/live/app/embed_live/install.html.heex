@@ -1,6 +1,31 @@
 <div class="p-6 flex flex-col gap-6">
   <.form_header title={gettext("Installation")} no_margin />
   <.p>
+    Install Passwordless SDK for NodeJS to efficiently create authentication challenges and perform passwordless flows:
+  </.p>
+  <.code_block language={:bash} code="pnpm add @passwordless/tools" />
+  <.p>
+    Then, in the entrypoint of your application, initiate the Passwordless client:
+  </.p>
+  <.code_block
+    language={:typescript}
+    code={
+      ~s"""
+      import { Passwordless } from '@passwordless/tools';
+
+      Passwordless.init({
+        appId: '#{@app.id}',
+        appSecret: process.env.PASSWORDLESS_APP_SECRET // ⚠️ Never publish your App Secret!
+      });
+      """
+    }
+  />
+  <.p>
+    From now on you can use the client anywhere in your application to create authentication challenges and perform passwordless flows.
+  </.p>
+  <.form_separator no_margin />
+  <.form_header title={gettext("Configuration")} no_margin />
+  <.p>
     Following keys - App ID and App Secret - will allow you to authenticate API requests. Remember to never publish your App Secret, it should be securely accessed from your backend only.
   </.p>
   <.simple_table items={@keys} count={Enum.count(@keys)} title={gettext("API keys")}>
@@ -23,37 +48,14 @@
     </:actions>
   </.simple_table>
   <.form_separator no_margin />
-  <.form_header title={gettext("Passwordless SDK")} no_margin />
+  <.form_header title={gettext("Usage")} no_margin />
   <.p>
-    Install Passwordless SDK for NodeJS to efficiently create authentication challenges and perform passwordless flows. We continue to add support for more languages and frameworks.
+    You can use the Headless API to authenticate your users directly from your backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
   </.p>
-  <.code_block language={:bash} code="pnpm add @passwordless/tools" />
-  <.p>
-    Then, in the entrypoint of your application, initiate the Passwordless client:
-  </.p>
-  <.code_block
-    language={:typescript}
-    code={
-      ~s"""
-      import { Passwordless } from '@passwordless/tools';
-
-      Passwordless.init({
-        appId: '#{@app.id}',
-        appSecret: '**********', // ⚠️ Never publish your App Secret!
-        defaultRules: [
-          {
-            condition: true,
-            effects: [
-              { challenge: Passwordless.ALL_ENABLED_AUTHENTICATORS },
-            ],
-          },
-        ]
-      });
-      """
-    }
+  <.a
+    to={~p"/embed/api"}
+    label={gettext("Read API documentation")}
+    style="link"
+    link_type="live_redirect"
   />
-  <.p>
-    From now on you can use the client anywhere in your application to create authentication challenges and perform passwordless flows.
-  </.p>
-  <.a to={~p"/embed/api"} label={gettext("Read API docs")} style="link" link_type="live_redirect" />
 </div>

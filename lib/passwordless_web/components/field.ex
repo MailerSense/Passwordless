@@ -774,10 +774,7 @@ defmodule PasswordlessWeb.Components.Field do
       >
         {@label}
       </.field_label>
-      <div class={[
-        "flex items-center gap-3 border",
-        "w-full px-3 py-2.5 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-700 z-20"
-      ]}>
+      <div class="pc-color-input">
         <input
           id={@id}
           type={@type}
@@ -992,7 +989,7 @@ defmodule PasswordlessWeb.Components.Field do
 
   defp get_class_for_type("radio", _size), do: "pc-radio"
   defp get_class_for_type("checkbox", _size), do: "pc-checkbox"
-  defp get_class_for_type("color", _size), do: "pc-color-input"
+  defp get_class_for_type("color", _size), do: "pc-color"
   defp get_class_for_type("file", _size), do: "pc-file-input"
   defp get_class_for_type("range", _size), do: "pc-range-input"
   defp get_class_for_type(_, size), do: "pc-text-input--#{size}"

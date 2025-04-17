@@ -66,35 +66,43 @@
       required
     />
     <.form_separator />
-    <.form_header title="API - Send email OTP" />
+    <.form_header title="API - Create Email OTP Challenge" />
     <.code_block
       class="mb-6"
       language={:typescript}
       code={
         ~s"""
-        import hljs from "highlight.js/lib/core";
-        import { Hook, makeHook } from "./typed-hook";
+        import { Passwordless, User, Rule } from '@passwordless/tools';
 
-        class HighlightHook extends Hook {
-          public mounted() {
-            this.run("mounted", this.el);
-          }
+        const action: string = 'login';
 
-          public updated() {
-            this.run("updated", this.el);
-          }
+        const user: User = {
+          user_id: '1234567890',
+          emails: [
+            {
+              address: "user@example.com",
+              primary: true,
+              verified: true,
+            }
+          ]
+        };
 
-          private run(_lifecycleMethod: "mounted" | "updated", el: HTMLElement) {
-            hljs.highlightElement(el.querySelector("code")!);
-          }
-        }
+        const rules: Rule[] = [
+          {
+            if: true,
+            then: [{ challenge: Passwordless.EMAIL }],
+          },
+        ];
 
-        export default makeHook(HighlightHook);
+        Passwordless.authenticate({action, user, rules});
         """
       }
     />
-    <.p class="mb-6">
-      To send an email OTP, make a POST request to the following endpoint:
-    </.p>
+    <.a
+      to={~p"/embed/api"}
+      label={gettext("Read full documentation")}
+      style="link"
+      link_type="live_redirect"
+    />
   </.form>
 </div>
