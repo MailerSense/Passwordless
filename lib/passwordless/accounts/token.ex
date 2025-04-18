@@ -24,7 +24,7 @@ defmodule Passwordless.Accounts.Token do
 
   schema "user_tokens" do
     field :email, :string
-    field :token, :binary
+    field :token, :binary, redact: true
     field :context, Ecto.Enum, values: @contexts
     field :name, :map, virtual: true
 

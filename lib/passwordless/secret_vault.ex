@@ -63,6 +63,9 @@ defmodule Passwordless.SecretVault do
         _ ->
           nil
       end)
+    else
+      error ->
+        raise "Failed to fetch secret #{secret_name}: #{inspect(error)}"
     end
   end
 end
