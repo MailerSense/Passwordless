@@ -9,6 +9,21 @@ defmodule PasswordlessWeb.App.EmbedLive.Install do
 
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
+    changeset = Passwordless.change_app(app)
+
+    actions =
+      Enum.map(App.actions(), fn action ->
+        {Phoenix.Naming.humanize(action), action}
+      end)
+
+    icon_mapping = fn
+      nil -> "remix-checkbox-circle-fill"
+      "allow" -> "remix-checkbox-circle-fill"
+      :allow -> "remix-checkbox-circle-fill"
+      "block" -> "remix-close-circle-fill"
+      :block -> "remix-close-circle-fill"
+    end
+
     case Repo.preload(app, :auth_token) do
       %App{auth_token: %AuthToken{} = auth_token} ->
         keys = [
@@ -29,7 +44,14 @@ defmodule PasswordlessWeb.App.EmbedLive.Install do
         {:ok,
          socket
          |> assign(assigns)
-         |> assign(keys: keys, reveal_secret?: false, secret: AuthToken.encode(auth_token))}
+         |> assign(
+           actions: actions,
+           icon_mapping: icon_mapping,
+           keys: keys,
+           reveal_secret?: false,
+           secret: AuthToken.encode(auth_token)
+         )
+         |> assign_form(changeset)}
 
       _ ->
         keys = [
@@ -44,7 +66,8 @@ defmodule PasswordlessWeb.App.EmbedLive.Install do
         {:ok,
          socket
          |> assign(assigns)
-         |> assign(keys: keys, reveal_secret?: false, secret: nil)}
+         |> assign(actions: actions, icon_mapping: icon_mapping, keys: keys, reveal_secret?: false, secret: nil)
+         |> assign_form(changeset)}
     end
   end
 
@@ -54,7 +77,25 @@ defmodule PasswordlessWeb.App.EmbedLive.Install do
   end
 
   @impl true
+  def handle_event("validate", %{"app" => app_params}, socket) do
+    changeset =
+      socket.assigns.app
+      |> Passwordless.change_app(app_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign_form(socket, changeset)}
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
+  end
+
+  # Private
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    socket
+    |> assign(form: to_form(changeset))
+    |> assign(default_action: Ecto.Changeset.get_field(changeset, :default_action))
   end
 end

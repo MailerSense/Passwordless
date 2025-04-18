@@ -65,6 +65,34 @@
     </:actions>
   </.simple_table>
   <.form_separator no_margin />
+  <.form_header title={gettext("Defaults")} no_margin />
+  <.p>
+    If none of the rules match, the default action will take place. You can set the default action for your app here.
+  </.p>
+  <.form
+    id="app-update-form"
+    for={@form}
+    phx-submit="save"
+    phx-change="validate"
+    phx-target={@myself}
+  >
+    <.field
+      field={@form[:default_action]}
+      type="select"
+      label={gettext("Action")}
+      options={@actions}
+      icon_class={"pc-field-icon__icon " <> (
+        case @default_action do
+          :allow -> "text-success-600 dark:text-success-300"
+          :block -> "text-danger-600 dark:text-danger-300"
+        end
+      )}
+      icon_mapping={@icon_mapping}
+      required
+      required_asterix={false}
+    />
+  </.form>
+  <.form_separator no_margin />
   <.form_header title={gettext("Usage")} no_margin />
   <.p>
     You can use the Headless API to authenticate your users directly from your backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.

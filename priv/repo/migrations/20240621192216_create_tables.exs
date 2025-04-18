@@ -181,6 +181,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :secondary_button_color, :citext, null: false
       add :email_configuration_set, :string
       add :email_tracking, :boolean, default: false
+      add :default_action, :string, null: false
 
       add :org_id, references(:orgs, type: :uuid, on_delete: :delete_all), null: false
 
