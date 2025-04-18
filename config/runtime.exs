@@ -118,6 +118,13 @@ if config_env() == :prod do
   config :passwordless, :aws_current,
     region: System.get_env("AWS_REGION"),
     account: System.get_env("AWS_ACCOUNT")
+
+  if System.get_env("DATABASE_MIGRATION") do
+    config :ex_aws,
+      access_key_id: {:system, "AWS_ACCESS_KEY_ID"},
+      security_token: {:system, "AWS_SESSION_TOKEN"},
+      secret_access_key: {:system, "AWS_SECRET_ACCESS_KEY"}
+  end
 end
 
 # Reduce XSS risks by declaring which dynamic resources are allowed to load
