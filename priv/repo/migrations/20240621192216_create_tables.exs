@@ -222,7 +222,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create unique_index(:auth_tokens, [:key], where: "deleted_at is null")
     create unique_index(:auth_tokens, [:key_hash], where: "deleted_at is null")
     create unique_index(:auth_tokens, [:app_id], where: "deleted_at is null")
 

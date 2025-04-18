@@ -135,8 +135,6 @@ defmodule Passwordless.AuthToken do
 
   defp validate_key(changeset) do
     changeset
-    |> unique_constraint(:key)
-    |> unsafe_validate_unique(:key, Passwordless.Repo)
     |> unique_constraint(:key_hash)
     |> unsafe_validate_unique(:key_hash, Passwordless.Repo)
   end
