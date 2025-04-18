@@ -71,6 +71,10 @@ defmodule Passwordless.AuthToken do
 
   def get_app_and_key(_), do: {:error, :invalid_key}
 
+  def generate_key do
+    :crypto.strong_rand_bytes(@size)
+  end
+
   @doc """
   Get the human readable key.
   """
@@ -143,10 +147,6 @@ defmodule Passwordless.AuthToken do
     changeset
     |> update_change(:scopes, &Enum.uniq/1)
     |> validate_length(:scopes, min: 1)
-  end
-
-  defp generate_key do
-    :crypto.strong_rand_bytes(@size)
   end
 
   @hashed_fields [key_hash: :key]

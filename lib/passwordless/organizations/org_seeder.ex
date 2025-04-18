@@ -51,8 +51,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
         email_configuration_set: "passwordless-tools-app-ses-config-set"
       })
 
-    {:ok, auth_token} =
-      Passwordless.create_auth_token(app, %{"scopes" => [:sync]})
+    {:ok, auth_token} = Passwordless.create_auth_token(app, %{scopes: [:sync]})
 
     Logger.warning("----------- AUTH TOKEN ------------")
     Logger.warning(AuthToken.encode(auth_token))

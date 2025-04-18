@@ -175,7 +175,11 @@ defmodule Passwordless do
   end
 
   def create_auth_token(%App{} = app, attrs \\ %{}) do
-    Repo.insert(AuthToken.new(app, attrs))
+    app
+    |> Ecto.build_assoc(:auth_token)
+    |> Kernel.then(&%AuthToken{&1 | key: AuthToken.generate_key()})
+    |> AuthToken.changeset(attrs)
+    |> Repo.insert()
   end
 
   def change_auth_token(%AuthToken{} = auth_token, attrs \\ %{}) do
