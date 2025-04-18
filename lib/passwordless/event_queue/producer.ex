@@ -131,7 +131,7 @@ defmodule Passwordless.EventQueue.Producer do
             fn ->
               delete_request = %{"QueueUrl" => queue_url, "ReceiptHandle" => receipt_handle}
 
-              with %AWS.Client{} = client <- AWS.Session.get_client!(),
+              with %AWS.Client{} = client <- Session.get_client!(),
                    {:ok, _, _} <- AWS.SQS.delete_message(client, delete_request),
                    do: :ok
             end

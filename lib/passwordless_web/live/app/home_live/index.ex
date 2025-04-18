@@ -3,7 +3,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   use PasswordlessWeb, :live_view
 
   alias Passwordless.Action
-  alias Passwordless.Actor
   alias Passwordless.App
   alias PasswordlessWeb.Components.DataTable
   alias PasswordlessWeb.Endpoint

@@ -135,7 +135,19 @@ defmodule Passwordless.Challenges.EmailOTP do
       current: true,
       email_id: email.id,
       domain_id: domain.id,
-      email_template_locale_id: locale.id
+      email_template_locale_id: locale.id,
+      metadata: %{
+        headers: [
+          %{
+            name: "List-Unsubscribe",
+            value: "<#{unsubscribe_url(app, email)}>"
+          },
+          %{
+            name: "List-Unsubscribe-Post",
+            value: "List-Unsubscribe=One-Click"
+          }
+        ]
+      }
     }
 
     with {:ok, message_attrs} <- Renderer.render(locale, %{otp_code: otp_code}, opts) do
@@ -189,14 +201,6 @@ defmodule Passwordless.Challenges.EmailOTP do
 
     challenge
     |> Challenge.state_changeset(%{state: state})
-    |> Repo.update(opts)
-  end
-
-  defp update_action_state(%App{} = app, %Action{} = action, state) do
-    opts = [prefix: Tenant.to_prefix(app)]
-
-    action
-    |> Action.state_changeset(%{state: state})
     |> Repo.update(opts)
   end
 

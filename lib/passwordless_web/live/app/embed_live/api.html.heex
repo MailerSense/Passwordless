@@ -18,25 +18,36 @@
     language={:typescript}
     code={
       ~s"""
-      import { Passwordless } from '@passwordless/tools';
+      import { Passwordless, Action } from "@passwordless/tools";
 
-      Passwordless.init({
-        appId: '#{@app.id}',
-        appSecret: '**********', // ⚠️ Never expose this in frontend code!
-        defaultRules: [
-          {
-            condition: { type: "constant", value: true },
-            effects: [
-              { type: "challenge", with: Passwordless.ALL_ENABLED_AUTHENTICATORS },
+        const action: Action = Passwordless.authenticate({
+          action: "login",
+          user: {
+            user_id: "1234567890",
+            emails: [
+              {
+                address: "user@example.com",
+                primary: true,
+              },
             ],
           },
-        ]
-      });
+          rules: [
+            {
+              if: true,
+              then: [{ challenge: Passwordless.EMAIL }],
+            },
+          ],
+        });
       """
     }
   />
   <.p>
     If the action is challenged and it requires some input from the user, for example the OTP code, you can pass the action ID along with the input to the "process" endpoint.
+  </.p>
+  <.form_separator no_margin />
+  <.form_header title={gettext("User lifecycle")} no_margin />
+  <.p>
+    Passw
   </.p>
   <.form_separator no_margin />
   <.form_header title={gettext("Rule evaluation")} no_margin />
