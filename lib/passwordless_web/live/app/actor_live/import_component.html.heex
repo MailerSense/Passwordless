@@ -14,7 +14,7 @@
       <.form_header title="Upload" no_margin />
       <.p>
         {gettext(
-          "Provide a  CSV/Excel file filled out according to our template. The file may take a moment to upload."
+          "Provide a  CSV/Excel file based on our template. The operation may take a moment to complete."
         )}
       </.p>
       <div>
@@ -30,7 +30,9 @@
         </p>
       </div>
       <.form_separator no_margin />
-      <.form_header title={gettext("Past imports")} no_margin />
+      <.alert color="warning" with_icon>
+        {gettext("Imports are coming soon.")}
+      </.alert>
     </div>
     <:actions>
       <.button
@@ -46,6 +48,7 @@
         type="submit"
         form="import-form"
         label={gettext("Import")}
+        disabled
       />
     </:actions>
   </.slide_over>

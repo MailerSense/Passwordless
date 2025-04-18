@@ -7,23 +7,20 @@ defmodule Passwordless.AuthToken do
 
   import Ecto.Query
 
-  alias Database.ChangesetExt
   alias Passwordless.App
   alias Passwordless.Security.Roles
-  alias PasswordlessWeb.Endpoint
-  alias Phoenix.Token
+  alias Util.Base58
 
-  @size 16
-  @states ~w(active revoked)a
+  @size 32
+  @prefix "sk_live_"
 
   @derive {
     Flop.Schema,
     sortable: [:id], filterable: [:id]
   }
   schema "auth_tokens" do
-    field :key, :binary, redact: true
-    field :name, :string
-    field :state, Ecto.Enum, values: @states, default: :active
+    field :key, Passwordless.EncryptedBinary, redact: true
+    field :key_hash, Passwordless.HashedBinary, redact: true
     field :scopes, {:array, Ecto.Enum}, values: Roles.auth_token_scopes(), default: []
 
     belongs_to :app, App
@@ -36,20 +33,12 @@ defmodule Passwordless.AuthToken do
   Creates a new API key for the given app.
   """
   def new(%App{} = app, attrs \\ %{}) do
-    {key, key_signed} = generate_key()
-
+    key = generate_key()
     params = Map.put(attrs, "key", key)
 
-    changeset =
-      app
-      |> Ecto.build_assoc(:auth_token)
-      |> changeset(params)
-
-    {key_signed, changeset}
-  end
-
-  def sign(%__MODULE__{key: key}) do
-    Token.sign(Endpoint, key_salt(), key)
+    app
+    |> Ecto.build_assoc(:auth_token)
+    |> changeset(params)
   end
 
   @doc """
@@ -69,15 +58,31 @@ defmodule Passwordless.AuthToken do
   @doc """
   Get the app and key for an api key.
   """
-  def get_app_and_key(auth_token) when is_binary(auth_token) do
-    with {:ok, key} <- verify_key(auth_token) do
+  def get_app_and_key(@prefix <> auth_token) when is_binary(auth_token) do
+    with {:ok, key} <- Base58.decode58(auth_token) do
       {:ok,
        from(a in App,
-         join: at in assoc(a, :auth_tokens),
-         where: at.key == ^key,
+         join: at in assoc(a, :auth_token),
+         where: at.key_hash == ^key,
          select: {a, at}
        )}
     end
+  end
+
+  def get_app_and_key(_), do: {:error, :invalid_key}
+
+  @doc """
+  Get the human readable key.
+  """
+  def preview(%__MODULE__{}) do
+    "#{@prefix}#{Enum.join(List.duplicate("*", div(@size, 2)))}"
+  end
+
+  @doc """
+  Get the human readable key.
+  """
+  def encode(%__MODULE__{key: key}) do
+    "#{@prefix}#{Base58.encode58(key)}"
   end
 
   @doc """
@@ -90,7 +95,7 @@ defmodule Passwordless.AuthToken do
 
   def can?(%__MODULE__{}, _scope), do: false
 
-  @fields ~w(key name state scopes app_id)a
+  @fields ~w(key scopes app_id)a
   @required_fields @fields
 
   @doc """
@@ -101,14 +106,14 @@ defmodule Passwordless.AuthToken do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_scopes()
-    |> validate_name()
     |> validate_key()
+    |> put_hash_fields()
     |> unique_constraint(:app_id)
     |> unsafe_validate_unique(:app_id, Passwordless.Repo)
     |> assoc_constraint(:app)
   end
 
-  @create_fields ~w(name scopes app_id)a
+  @create_fields ~w(scopes app_id)a
   @create_required_fields @create_fields
 
   @doc """
@@ -119,7 +124,8 @@ defmodule Passwordless.AuthToken do
     |> cast(attrs, @create_fields)
     |> validate_required(@create_required_fields)
     |> validate_scopes()
-    |> validate_name()
+    |> validate_key()
+    |> put_hash_fields()
     |> unique_constraint(:app_id)
     |> unsafe_validate_unique(:app_id, Passwordless.Repo)
     |> assoc_constraint(:app)
@@ -129,15 +135,10 @@ defmodule Passwordless.AuthToken do
 
   defp validate_key(changeset) do
     changeset
-    |> validate_length(:key, is: @size, count: :bytes)
     |> unique_constraint(:key)
     |> unsafe_validate_unique(:key, Passwordless.Repo)
-  end
-
-  defp validate_name(changeset) do
-    changeset
-    |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 255)
+    |> unique_constraint(:key_hash)
+    |> unsafe_validate_unique(:key_hash, Passwordless.Repo)
   end
 
   defp validate_scopes(changeset) do
@@ -147,14 +148,18 @@ defmodule Passwordless.AuthToken do
   end
 
   defp generate_key do
-    raw = :crypto.strong_rand_bytes(@size)
-    signed = Token.sign(Endpoint, key_salt(), raw)
-    {raw, signed}
+    :crypto.strong_rand_bytes(@size)
   end
 
-  defp verify_key(token) when is_binary(token) do
-    Token.verify(Endpoint, key_salt(), token)
-  end
+  @hashed_fields [key_hash: :key]
 
-  defp key_salt, do: Endpoint.config(:secret_key_base)
+  def put_hash_fields(changeset) do
+    Enum.reduce(@hashed_fields, changeset, fn {hashed_field, unhashed_field}, changeset ->
+      if value = get_field(changeset, unhashed_field) do
+        put_change(changeset, hashed_field, value)
+      else
+        changeset
+      end
+    end)
+  end
 end

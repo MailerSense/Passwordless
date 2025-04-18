@@ -2,12 +2,14 @@ defmodule PasswordlessWeb.App.DomainLive.DNSComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
+  alias Passwordless.Domain
+
   @impl true
   def update(%{domain: domain} = assigns, socket) do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(records: Passwordless.list_domain_record(domain))}
+     |> assign(records: Passwordless.list_domain_record(domain), base: Domain.base_domain(domain))}
   end
 
   @impl true

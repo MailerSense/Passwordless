@@ -78,7 +78,8 @@ defmodule Passwordless.Authenticators.MagicLink do
   defp validate_string(changeset, field) do
     changeset
     |> ChangesetExt.ensure_trimmed(field)
-    |> validate_length(field, min: 1, max: 255)
+    |> ChangesetExt.validate_profanities(field)
+    |> validate_length(field, min: 1, max: 64)
   end
 
   defp validate_sender(changeset, opts) do

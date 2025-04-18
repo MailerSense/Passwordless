@@ -130,7 +130,7 @@ defmodule PasswordlessWeb.App.EmailLive.FileComponent do
     app = socket.assigns.current_app
 
     case Passwordless.create_media(app, media_params) do
-      {:ok, media} ->
+      {:ok, _media} ->
         {:ok,
          socket
          |> put_toast(

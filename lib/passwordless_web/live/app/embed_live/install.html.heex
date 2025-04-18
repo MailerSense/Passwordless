@@ -1,14 +1,12 @@
 <div class="p-6 flex flex-col gap-6">
   <.form_header title={gettext("Installation")} no_margin />
   <.p>
-    To use Passwordless in your backend, you need to install the Passwordless SDK. We currently support NodeJS, and will continue to add support for further frameworks.
+    Install Passwordless SDK for NodeJS to efficiently create authentication challenges and perform passwordless flows:
   </.p>
-  <.a
-    to={~p"/embed/install"}
-    label={gettext("Install Passwordless SDK")}
-    style="link"
-    link_type="live_redirect"
-  />
+  <.code_block language={:bash} code="pnpm add @passwordless/tools" />
+  <.p>
+    Then, in the entrypoint of your application, initiate the Passwordless client:
+  </.p>
   <.code_block
     language={:typescript}
     code={
@@ -16,52 +14,65 @@
       import { Passwordless } from '@passwordless/tools';
 
       Passwordless.init({
-        appId: '#{@app.id}',
-        appSecret: '**********', // ⚠️ Never expose this in frontend code!
-        defaultRules: [
-          {
-            condition: { type: "constant", value: true },
-            effects: [
-              { type: "challenge", with: Passwordless.ALL_ENABLED_AUTHENTICATORS },
-            ],
-          },
-        ]
+        secret: process.env.PASSWORDLESS_APP_SECRET // ⚠️ Never publish your Secret Key!
       });
       """
     }
   />
   <.p>
-    Use the App ID to embed the login & authentication guards in your frontend. Never publish the App Secret, use it only when calling the API from your backend. If your secret is compromised, you can
-    regenerate it at any time.
+    From now on you can use the client anywhere in your application to create authentication challenges and perform passwordless flows.
   </.p>
-  <.alert color="warning" with_icon>
-    Never commit your App Secret or publish it anywhere.
-  </.alert>
   <.form_separator no_margin />
   <.form_header title={gettext("Configuration")} no_margin />
   <.p>
-    Use the App ID to embed the login & authentication guards in your frontend. Never publish the App Secret, use it only when calling the API from your backend. If your secret is compromised, you can
-    regenerate it at any time.
+    Following keys - App ID and Secret Key - will allow you to authenticate API requests. Remember to never publish your Secret Key, it should be securely accessed from your backend only.
   </.p>
-  <div>
-    <.field
-      name="app_id"
-      value={@app.id}
-      label="App ID"
-      nonce={@nonce}
-      readonly
-      copyable={true}
-      class="font-mono"
-    />
-    <.field
-      name="app_secret"
-      value={@signed}
-      label="App Secret"
-      type="password"
-      nonce={@nonce}
-      readonly
-      viewable={true}
-      class="font-mono"
-    />
-  </div>
+  <.simple_table items={@keys} count={Enum.count(@keys)} title={gettext("API keys")}>
+    <:if_empty>{gettext("No %{models} defined yet", models: gettext("keys"))}</:if_empty>
+    <:col field={:name} />
+    <:col :let={key} field={:token}>
+      <span :if={key.id == "app_secret"} class="flex items-center gap-3">
+        {if @reveal_secret?, do: @secret, else: key.token}
+        <.button
+          size="xs"
+          color="light"
+          title={if @reveal_secret?, do: gettext("Hide secret"), else: gettext("Reveal secret")}
+          phx-click="toggle_reveal_secret"
+          phx-target={@myself}
+        />
+      </span>
+
+      {if key.id == "app_id", do: key.token}
+    </:col>
+    <:col :let={key} field={:usage}>
+      <%= if key.id == "app_id" do %>
+        <.badge with_dot size="sm" color="success" label={gettext("Public")} />
+      <% else %>
+        <.badge with_dot size="sm" color="danger" label={gettext("Secret")} />
+      <% end %>
+    </:col>
+    <:col :let={key} field={:inserted_at} label="Created">
+      {format_date_time(key.inserted_at)}
+    </:col>
+    <:col actions></:col>
+    <:actions :let={key}>
+      <.copy_button
+        size="sm"
+        color="light"
+        title={gettext("Copy")}
+        value={if key.id == "app_secret", do: @secret, else: key.token}
+      />
+    </:actions>
+  </.simple_table>
+  <.form_separator no_margin />
+  <.form_header title={gettext("Usage")} no_margin />
+  <.p>
+    You can use the Headless API to authenticate your users directly from your backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
+  </.p>
+  <.a
+    to={~p"/embed/api"}
+    label={gettext("Read API documentation")}
+    style="link"
+    link_type="live_redirect"
+  />
 </div>

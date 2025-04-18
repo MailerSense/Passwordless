@@ -43,7 +43,7 @@
     />
     <div class="flex items-center gap-3 flex-wrap">
       <.a
-        to={~p"/pricing"}
+        to={~p"/pricing/free"}
         label={gettext("Review pricing")}
         style="link"
         link_type="live_redirect"
@@ -152,8 +152,11 @@
         """
       }
     />
-    <.p class="mb-6">
-      To send a magic link challenge to your users, you can use the following API endpoint.
-    </.p>
+    <.a
+      to={~p"/embed/api"}
+      label={gettext("Read full documentation")}
+      style="link"
+      link_type="live_redirect"
+    />
   </.form>
 </div>

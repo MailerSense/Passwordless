@@ -181,6 +181,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :secondary_button_color, :citext, null: false
       add :email_configuration_set, :string
       add :email_tracking, :boolean, default: false
+      add :default_action, :string, null: false
 
       add :org_id, references(:orgs, type: :uuid, on_delete: :delete_all), null: false
 
@@ -212,8 +213,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:auth_tokens, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :key, :binary, null: false
-      add :name, :string, null: false
-      add :state, :string, null: false
+      add :key_hash, :binary, null: false
       add :scopes, {:array, :string}, null: false, default: []
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
@@ -223,6 +223,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create unique_index(:auth_tokens, [:key], where: "deleted_at is null")
+    create unique_index(:auth_tokens, [:key_hash], where: "deleted_at is null")
     create unique_index(:auth_tokens, [:app_id], where: "deleted_at is null")
 
     ## Domain

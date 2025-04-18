@@ -19,6 +19,7 @@ defmodule Passwordless.App do
   alias Passwordless.Organizations.Org
 
   @states ~w(active)a
+  @actions ~w(allow block)a
 
   @derive {
     Jason.Encoder,
@@ -52,6 +53,7 @@ defmodule Passwordless.App do
     field :secondary_button_color, :string, default: "#ffffff"
     field :email_configuration_set, :string
     field :email_tracking, :boolean, default: false
+    field :default_action, Ecto.Enum, values: @actions, default: :block
 
     has_one :email_domain, Domain, where: [purpose: :email]
     has_one :tracking_domain, Domain, where: [purpose: :tracking]
@@ -81,6 +83,7 @@ defmodule Passwordless.App do
   end
 
   def states, do: @states
+  def actions, do: @actions
 
   @doc """
   Get by organization.
@@ -99,6 +102,7 @@ defmodule Passwordless.App do
     secondary_button_color
     email_configuration_set
     email_tracking
+    default_action
     org_id
   )a
   @required_fields @fields -- [:logo, :email_configuration_set]
@@ -123,7 +127,8 @@ defmodule Passwordless.App do
   defp validate_string(changeset, field) do
     changeset
     |> ChangesetExt.ensure_trimmed(field)
-    |> validate_length(field, min: 1, max: 255)
+    |> ChangesetExt.validate_profanities(field)
+    |> validate_length(field, min: 1, max: 64)
   end
 
   defp validate_hex_color(changeset, field) do

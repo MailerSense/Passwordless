@@ -10,8 +10,9 @@
     >
       <.field field={@form[:name]} required readonly />
       <.field type="email" field={@form[:email]} required readonly />
-      <.badge_select
+      <.field
         field={@form[:role]}
+        type="select"
         options={@roles}
         required
         placeholder={gettext("Select user role...")}

@@ -38,9 +38,10 @@
     </.box>
     <.box card>
       <.form_header title={gettext("Installation")} no_margin />
-      <.alert color="info" with_icon>
-        The following code sample contains your App ID and App Secret.
-      </.alert>
+      <.code_block language={:bash} code="pnpm add @passwordless/tools" />
+      <.p>
+        Then, in the entrypoint of your application, initiate the Passwordless client:
+      </.p>
       <.code_block
         language={:typescript}
         code={
@@ -48,22 +49,13 @@
           import { Passwordless } from '@passwordless/tools';
 
           Passwordless.init({
-            appId: '#{@current_app.id}',
-            appSecret: '**********', // ⚠️ Never expose this in frontend code!
-            defaultRules: [
-              {
-                condition: { type: "constant", value: true },
-                effects: [
-                  { type: "challenge", with: Passwordless.ALL_ENABLED_AUTHENTICATORS },
-                ],
-              },
-            ]
+            secret: process.env.PASSWORDLESS_APP_SECRET // ⚠️ Never publish your Secret Key!
           });
           """
         }
       />
       <.p>
-        Get Passwordless NodeJS client library and start authenticating users in your app today. The code sample above shows a basic setup, you can customize it to fit your needs. Read our documentation to learn how to guard user actions and apply powerful workflow rules.
+        From now on you can use the client anywhere in your application to create authentication challenges and perform passwordless flows.
       </.p>
       <div class="flex items-center gap-3 flex-wrap">
         <.a
@@ -84,40 +76,34 @@
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
 
-      <:col :let={action} label={gettext("User")} field={:user}>
-        <.a
-          :if={Util.present?(action.actor)}
-          to={~p"/users/#{action.actor}/edit"}
-          label={Actor.handle(action.actor)}
-          style="link"
-          link_type="live_redirect"
-        />
-      </:col>
-
       <:col :let={action} label={gettext("Action")} field={:name}>
         {Phoenix.Naming.humanize(Macro.underscore(action.name))}
       </:col>
 
-      <:col :let={action} field={:state}>
+      <:col :let={action} label={gettext("Location")} field={:location}>
+        <div class="flex items-center gap-2">
+          <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
+        </div>
+      </:col>
+
+      <:col :let={action} label={gettext("State")} field={:state}>
         <% {badge_label, badge_color} = action_state_badge(action) %>
         <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
 
-      <:col :let={action} label={gettext("Elapsed")} field={:elapsed}>
-        <div class="flex items-center gap-2">
-          <.icon name="remix-timer-2-line" class="w-5 h-5" />
-          {Util.elapsed(action.inserted_at, action.updated_at)}
-        </div>
+      <:col :let={action} label={gettext("When")} field={:inserted_at}>
+        {Timex.from_now(action.inserted_at)}
       </:col>
 
-      <:col :let={action} label={gettext("Time")} field={:inserted_at}>
-        {Timex.from_now(action.inserted_at)}
+      <:col :let={action} label={gettext("Details")} field={:details}>
+        <.json_block code={action} expanded={false} compact={true} />
       </:col>
 
       <:col actions></:col>
       <:actions :let={action}>
         <.icon_button
-          to={~p"/home/#{action}/view"}
+          :if={Util.present?(action.actor)}
+          to={~p"/users/#{action.actor}/edit"}
           size="sm"
           icon="custom-edit"
           color="light"

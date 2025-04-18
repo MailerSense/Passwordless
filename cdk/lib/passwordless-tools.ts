@@ -335,7 +335,7 @@ export class PasswordlessTools extends cdk.Stack {
 
     const scaling = app.service.service.autoScaleTaskCount({
       minCapacity: 1,
-      maxCapacity: 6,
+      maxCapacity: 3,
     });
 
     scaling.scaleOnCpuUtilization(`${env}-app-cpu-scaling`, {

@@ -9,7 +9,7 @@
   >
     <.field type="checkbox" field={@form[:enabled]} />
     <.p>
-      Email OTP allows users to sign in without a password. When enabled, users will receive an email with a one-time password that will sign them in. The password is valid for a limited time and can only be used once.
+      Email OTP is a one-time code sent to the user's email. This code can the be used to sign in. The code is valid for a limited time and can only be used once.
     </.p>
     <.form_separator />
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
@@ -42,7 +42,7 @@
     />
     <div class="flex items-center gap-3 flex-wrap">
       <.a
-        to={~p"/pricing"}
+        to={~p"/pricing/free"}
         label={gettext("Review pricing")}
         style="link"
         link_type="live_redirect"
@@ -66,35 +66,64 @@
       required
     />
     <.form_separator />
-    <.form_header title="API - Send email OTP" />
+    <.form_header title="API - Authenticate with Email OTP" />
     <.code_block
       class="mb-6"
       language={:typescript}
       code={
         ~s"""
-        import hljs from "highlight.js/lib/core";
-        import { Hook, makeHook } from "./typed-hook";
+        import { Passwordless, Action } from "@passwordless/tools";
 
-        class HighlightHook extends Hook {
-          public mounted() {
-            this.run("mounted", this.el);
-          }
-
-          public updated() {
-            this.run("updated", this.el);
-          }
-
-          private run(_lifecycleMethod: "mounted" | "updated", el: HTMLElement) {
-            hljs.highlightElement(el.querySelector("code")!);
-          }
-        }
-
-        export default makeHook(HighlightHook);
+        const action: Action = Passwordless.authenticate({
+          action: "login",
+          user: {
+            user_id: "1234567890",
+            emails: [
+              {
+                address: "user@example.com",
+                primary: true,
+                verified: true,
+              },
+            ],
+          },
+          rules: [
+            {
+              if: true,
+              then: [{ challenge: Passwordless.EMAIL }],
+            },
+          ],
+        });
         """
       }
     />
     <.p class="mb-6">
-      To send an email OTP, make a POST request to the following endpoint:
+      The code above create an Email OTP challenge and delivers the code to the user. Then, the user provides the code back to the application:
     </.p>
+    <.code_block
+      class="mb-6"
+      language={:typescript}
+      code={
+        ~s"""
+        import { Passwordless, Action } from "@passwordless/tools";
+
+        const action: Action = Passwordless.continue({
+          action: {id: action.id},
+          data: {
+            otp_code: "123456",
+          },
+        });
+
+        if (action.state === Passwordless.ALLOW) {
+          console.log("User is allowed to continue");
+        }
+        """
+      }
+    />
+    <.a
+      to={~p"/embed/api"}
+      label={gettext("Read full documentation")}
+      style="link"
+      link_type="live_redirect"
+    />
   </.form>
 </div>

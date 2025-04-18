@@ -17,13 +17,7 @@
       <.a
         :if={not Domain.verified?(@email_domain)}
         to={~p"/domain/email/dns"}
-        label={gettext("DNS records")}
-        style="link"
-        link_type="live_patch"
-      />
-      <.a
-        to={~p"/domain/email/change"}
-        label={gettext("Use another domain")}
+        label={gettext("Setup DNS records")}
         style="link"
         link_type="live_patch"
       />
@@ -57,24 +51,13 @@
       readonly
       wrapper_class="mb-0!"
     />
-    <div
-      :if={@email_tracking and Util.present?(@tracking_domain)}
-      class="flex items-center gap-3 flex-wrap"
-    >
-      <.a
-        :if={not Domain.verified?(@tracking_domain)}
-        to={~p"/domain/tracking/dns"}
-        label={gettext("DNS records")}
-        style="link"
-        link_type="live_patch"
-      />
-      <.a
-        to={~p"/domain/tracking/change"}
-        label={gettext("Use another domain")}
-        style="link"
-        link_type="live_patch"
-      />
-    </div>
+    <.a
+      :if={@email_tracking and not Domain.verified?(@tracking_domain)}
+      to={~p"/domain/tracking/dns"}
+      label={gettext("Setup DNS records")}
+      style="link"
+      link_type="live_patch"
+    />
     <.a
       :if={@email_tracking and not Util.present?(@tracking_domain)}
       to={~p"/domain/tracking/new"}
@@ -87,13 +70,30 @@
     <.p :if={Util.present?(@email_domain)}>
       Email domains can be changed or removed at any time. Be aware that a domain will continue to be active for 1 day after you remove it. This is to ensure that any emails sent during that time are not lost.
     </.p>
-    <.a
-      :if={Util.present?(@email_domain)}
-      to={~p"/domain/delete"}
-      label={gettext("Delete domain")}
-      style="delete"
-      link_type="live_patch"
-    />
+    <div
+      :if={Util.present?(@email_domain) or Util.present?(@tracking_domain)}
+      class="flex items-center gap-3 flex-wrap"
+    >
+      <.a
+        to={~p"/domain/email/change"}
+        label={gettext("Change sending domain")}
+        style="link"
+        link_type="live_patch"
+      />
+      <.a
+        :if={Util.present?(@tracking_domain)}
+        to={~p"/domain/tracking/change"}
+        label={gettext("Change tracking domain")}
+        style="link"
+        link_type="live_patch"
+      />
+      <.a
+        to={~p"/domain/delete"}
+        label={gettext("Delete domain")}
+        style="delete"
+        link_type="live_patch"
+      />
+    </div>
   </div>
 </.tabbed_settings_layout>
 

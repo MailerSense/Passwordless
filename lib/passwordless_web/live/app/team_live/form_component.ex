@@ -14,8 +14,8 @@ defmodule PasswordlessWeb.Org.TeamLive.FormComponent do
     changeset = Organizations.change_membership(assigns.membership)
 
     roles =
-      Enum.map(Roles.org_role_descriptions(), fn {role, {description, color}} ->
-        %{name: description, label: String.capitalize(Atom.to_string(role)), value: role, color: color}
+      Enum.map(Roles.org_role_descriptions(), fn {role, _desc} ->
+        {Phoenix.Naming.humanize(role), role}
       end)
 
     {:ok,

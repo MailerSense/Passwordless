@@ -4,7 +4,7 @@
     <.simple_table
       items={@records}
       count={Enum.count(@records)}
-      title={gettext("Required records")}
+      title={gettext("Records - %{domain}", domain: @base)}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("DNS records"))}</:if_empty>
       <:col :let={record} field={:name}>

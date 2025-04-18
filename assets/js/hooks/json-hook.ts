@@ -1,5 +1,5 @@
-import { Hook, makeHook } from "./typed-hook";
 import { create, expand, render } from "../lib/json";
+import { Hook, makeHook } from "./typed-hook";
 
 class JSONHook extends Hook {
   public mounted() {
@@ -16,9 +16,14 @@ class JSONHook extends Hook {
       throw new Error("No JSON");
     }
 
+    const shouldExpand = this.el.dataset.expand === "true";
+
     const tree = create(json);
     render(tree, el);
-    expand(tree);
+
+    if (shouldExpand) {
+      expand(tree);
+    }
   }
 }
 

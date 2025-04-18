@@ -102,13 +102,25 @@ defmodule Passwordless.EmailTemplateLocale do
   end
 
   defp update_html_body(changeset) do
-    with {_, mjml_body} when is_binary(mjml_body) <- fetch_field(changeset, :mjml_body),
-         {:ok, html_body} <- MJML.convert(mjml_body) do
-      changeset
-      |> put_change(:html_body, html_body)
-      |> update_change(:html_content, &HtmlSanitizeEx.html5/1)
-    else
-      _ -> changeset
+    case fetch_field(changeset, :mjml_body) do
+      {_, mjml_body} when is_binary(mjml_body) ->
+        case MJML.convert(mjml_body) do
+          {:ok, html_body} ->
+            changeset
+            |> put_change(:html_body, html_body)
+            |> update_change(:html_content, &HtmlSanitizeEx.html5/1)
+
+          {:error, error} ->
+            add_error(
+              changeset,
+              :mjml_body,
+              "invalid syntax: %{error}",
+              error: error
+            )
+        end
+
+      _ ->
+        changeset
     end
   end
 end

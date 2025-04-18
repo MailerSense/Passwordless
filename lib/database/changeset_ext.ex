@@ -149,11 +149,11 @@ defmodule Database.ChangesetExt do
     |> validate_length(field, min: 1, max: 1024)
     |> validate_change(field, fn ^field, url ->
       case URI.parse(url) do
+        %URI{host: nil} ->
+          [{field, "is missing a host (e.g. example.com)"}]
+
         %URI{scheme: scheme} when not is_nil(scheme) and scheme not in ["http", "https"] ->
           [{field, "is missing a scheme (e.g. https)"}]
-
-        %URI{host: nil} ->
-          [{field, "is missing a host"}]
 
         %URI{} ->
           []

@@ -3,7 +3,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   use PasswordlessWeb, :live_view
 
   alias Passwordless.Action
-  alias Passwordless.Actor
   alias Passwordless.App
   alias PasswordlessWeb.Components.DataTable
   alias PasswordlessWeb.Endpoint
@@ -207,6 +206,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     |> Action.get_by_app()
     |> Action.get_by_states([:allow, :timeout, :block])
     |> Action.preload_actor()
+    |> Action.preload_challenge()
   end
 
   defp update_top_actions(socket, %Action{name: action_name, state: state}) do

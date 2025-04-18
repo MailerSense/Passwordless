@@ -56,13 +56,6 @@ defmodule PasswordlessWeb.Helpers do
         icon: "remix-code-s-slash-line",
         path: ~p"/embed/api",
         link_type: "live_patch"
-      },
-      %{
-        name: :ui,
-        label: "UI Components",
-        icon: "remix-window-line",
-        path: ~p"/embed/ui",
-        link_type: "live_patch"
       }
     ]
   end
