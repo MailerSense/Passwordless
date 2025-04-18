@@ -15,8 +15,8 @@ defmodule Passwordless.SecretManager.Amazon do
       {:ok, %{"SecretString" => secret_string}} ->
         {:ok, {:secret, secret_name, secret_string}}
 
-      _ ->
-        {:error, :secret_not_found}
+      response ->
+        {:error, "failed to fetch secret #{secret_name}: #{inspect(response)}"}
     end
   end
 
