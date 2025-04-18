@@ -26,8 +26,6 @@ defmodule Passwordless.Accounts.Token do
     field :email, :string
     field :token, :binary
     field :context, Ecto.Enum, values: @contexts
-
-    # Virtual
     field :name, :map, virtual: true
 
     belongs_to :user, User
