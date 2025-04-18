@@ -14,6 +14,8 @@ defmodule Passwordless.Application do
         [
           {Finch, name: Passwordless.Finch},
           {Finch, name: Passwordless.Finch.AWS},
+          {Passwordless.SecretVault, app_secret()},
+          Passwordless.Vault,
           Passwordless.Repo,
           PasswordlessWeb.Endpoint,
           Passwordless.AWS.Lambda.Monitor.Server,
