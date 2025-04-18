@@ -14,7 +14,7 @@
       import { Passwordless } from '@passwordless/tools';
 
       Passwordless.init({
-        secret: process.env.PASSWORDLESS_APP_SECRET // ⚠️ Never publish your App Secret!
+        secret: process.env.PASSWORDLESS_APP_SECRET // ⚠️ Never publish your Secret Key!
       });
       """
     }
@@ -25,7 +25,7 @@
   <.form_separator no_margin />
   <.form_header title={gettext("Configuration")} no_margin />
   <.p>
-    Following keys - App ID and App Secret - will allow you to authenticate API requests. Remember to never publish your App Secret, it should be securely accessed from your backend only.
+    Following keys - App ID and Secret Key - will allow you to authenticate API requests. Remember to never publish your Secret Key, it should be securely accessed from your backend only.
   </.p>
   <.simple_table items={@keys} count={Enum.count(@keys)} title={gettext("API keys")}>
     <:if_empty>{gettext("No %{models} defined yet", models: gettext("keys"))}</:if_empty>
@@ -64,34 +64,6 @@
       />
     </:actions>
   </.simple_table>
-  <.form_separator no_margin />
-  <.form_header title={gettext("Defaults")} no_margin />
-  <.p>
-    If none of the rules match, the default action will take place. You can set the default action for your app here.
-  </.p>
-  <.form
-    id="app-update-form"
-    for={@form}
-    phx-submit="save"
-    phx-change="validate"
-    phx-target={@myself}
-  >
-    <.field
-      field={@form[:default_action]}
-      type="select"
-      label={gettext("Action")}
-      options={@actions}
-      icon_class={"pc-field-icon__icon " <> (
-        case @default_action do
-          :allow -> "text-success-600 dark:text-success-300"
-          :block -> "text-danger-600 dark:text-danger-300"
-        end
-      )}
-      icon_mapping={@icon_mapping}
-      required
-      required_asterix={false}
-    />
-  </.form>
   <.form_separator no_margin />
   <.form_header title={gettext("Usage")} no_margin />
   <.p>

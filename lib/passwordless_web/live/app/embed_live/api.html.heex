@@ -52,8 +52,30 @@
   <.form_separator no_margin />
   <.form_header title={gettext("Rule evaluation")} no_margin />
   <.p>
-    Passwordless comes with a powerful rules engine that allows you to define complex rules for your authentication flows. You can use the rules engine to define conditions and effects for your actions.
+    Passwordless comes with a powerful rules engine that allows you to define complex rules for your authentication flows. You can use the rules engine to define conditions and effects for your actions. If none of the rules match, the default action will take place. You can set the default action for your app here.
   </.p>
+  <.form
+    id="app-update-form"
+    for={@form}
+    phx-submit="save"
+    phx-change="validate"
+    phx-target={@myself}
+  >
+    <.field
+      field={@form[:default_action]}
+      type="select"
+      options={@actions}
+      icon_class={"pc-field-icon__icon " <> (
+        case @default_action do
+          :allow -> "text-success-600 dark:text-success-300"
+          :block -> "text-danger-600 dark:text-danger-300"
+        end
+      )}
+      icon_mapping={@icon_mapping}
+      required
+      required_asterix={false}
+    />
+  </.form>
   <.form_separator no_margin />
   <.form_header title={gettext("Webhooks")} no_margin />
   <.p>
@@ -64,5 +86,4 @@
   <.p>
     Passwordless uses industry-standard security practices to protect your data. All data is encrypted in transit and at rest. We also support two-factor authentication for added security.
   </.p>
-  <.form_separator no_margin />
 </div>
