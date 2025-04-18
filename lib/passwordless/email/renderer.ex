@@ -68,11 +68,7 @@ defmodule Passwordless.Email.Renderer do
     end
   end
 
-  def prepare_variables(
-        %EmailTemplateLocale{subject: subject, preheader: preheader, mjml_body: mjml_body},
-        variables \\ %{},
-        opts \\ []
-      ) do
+  def prepare_variables(%EmailTemplateLocale{subject: subject, preheader: preheader}, variables \\ %{}, opts \\ []) do
     provider_variables =
       opts
       |> Keyword.take(@variable_providers)

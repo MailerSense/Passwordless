@@ -15,8 +15,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
   attr :upload, :map, required: true
   attr :current_image_src, :string, default: nil
 
-  attr :current_image_class, :string,
-    default: "h-16 w-16 rounded-md border border-slate-300 dark:border-slate-600 shadow-m2"
+  attr :current_image_class, :string, default: "h-16 w-16 rounded-md shadow-m2"
 
   attr :new_image_class, :string, doc: "classes for the new image. Defaults to current_image_class"
 

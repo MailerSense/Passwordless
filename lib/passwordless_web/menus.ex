@@ -48,7 +48,8 @@ defmodule PasswordlessWeb.Menus do
 
   def section_menu_items(_user), do: []
 
-  def footer_menu_items, do: [%{label: gettext("Home"), path: ~p"/"}, %{label: gettext("Pricing"), path: ~p"/pricing"}]
+  def footer_menu_items,
+    do: [%{label: gettext("Home"), path: ~p"/"}, %{label: gettext("Pricing"), path: ~p"/pricing/free"}]
 
   def build_menu(menu_items, current_user \\ nil) do
     menu_items
@@ -203,7 +204,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Knowledge Base"),
-      path: ~p"/pricing",
+      path: ~p"/pricing/free",
       icon: "custom-knowledge"
     }
   end
@@ -310,8 +311,38 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Pricing"),
-      path: ~p"/pricing",
-      icon: "remix-coin-line",
+      path: ~p"/pricing/free",
+      icon: "remix-price-tag-3-line",
+      link_type: "live_patch"
+    }
+  end
+
+  def get_link(:pricing_free = name, _user) do
+    %{
+      name: name,
+      label: gettext("Free"),
+      path: ~p"/pricing/free",
+      icon: "remix-seedling-line",
+      link_type: "live_patch"
+    }
+  end
+
+  def get_link(:pricing_pro = name, _user) do
+    %{
+      name: name,
+      label: gettext("Essential"),
+      path: ~p"/pricing/essential",
+      icon: "remix-line-chart-line",
+      link_type: "live_patch"
+    }
+  end
+
+  def get_link(:pricing_enterprise = name, _user) do
+    %{
+      name: name,
+      label: gettext("Enterprise"),
+      path: ~p"/pricing/enterprise",
+      icon: "remix-award-line",
       link_type: "live_patch"
     }
   end

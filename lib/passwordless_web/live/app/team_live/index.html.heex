@@ -4,15 +4,12 @@
     <.p>
       You can invite new teammates to your organization. They will receive an email with a link to join. You can also resend or remove invitations.
     </.p>
-    <div class="flex items-center gap-3">
-      <.a
-        to={~p"/team/invite"}
-        label={gettext("Invite teammate")}
-        style="link"
-        link_type="live_redirect"
-      />
-    </div>
-    <.form_separator no_margin />
+    <.a
+      to={~p"/team/invite"}
+      label={gettext("Invite teammate")}
+      style="link"
+      link_type="live_redirect"
+    />
     <.data_table meta={@meta} items={@memberships} title={gettext("Members")}>
       <:if_empty>{gettext("No %{models} found", models: gettext("members"))}</:if_empty>
       <:col :let={membership} field={:name}>

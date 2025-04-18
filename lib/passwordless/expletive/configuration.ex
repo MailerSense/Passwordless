@@ -1,10 +1,14 @@
 defmodule Passwordless.Expletive.Configuration do
   @moduledoc false
 
-  defstruct whitelist: [],
-            blacklist: [],
-            replacement: :default,
-            regex: nil
+  use TypedStruct
+
+  typedstruct do
+    field :whitelist, list(), default: []
+    field :blacklist, list(), default: []
+    field :replacement, atom(), default: :default
+    field :regex, Regex.t(), default: nil
+  end
 
   def new(options) do
     update(%__MODULE__{}, options)

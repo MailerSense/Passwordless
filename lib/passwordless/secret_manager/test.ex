@@ -9,7 +9,7 @@ defmodule Passwordless.SecretManager.Test do
 
   @impl true
   def get(secret_name, _opts \\ []) do
-    value = Jason.encode!(%{CLOAK_KEY: cloak_key()})
+    value = Jason.encode!(%{CLOAK_KEY: cloak_key(), CLOAK_HMAC_SECRET: cloak_hmac_secret()})
     {:ok, {:secret, secret_name, value}}
   end
 
@@ -21,6 +21,12 @@ defmodule Passwordless.SecretManager.Test do
   defpersistent(cloak_key: test_cloak_key())
 
   def test_cloak_key do
+    32 |> :crypto.strong_rand_bytes() |> Base.encode64()
+  end
+
+  defpersistent(cloak_hmac_secret: test_cloak_hmac_secret())
+
+  def test_cloak_hmac_secret do
     32 |> :crypto.strong_rand_bytes() |> Base.encode64()
   end
 end

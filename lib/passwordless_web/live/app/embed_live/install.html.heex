@@ -14,8 +14,7 @@
       import { Passwordless } from '@passwordless/tools';
 
       Passwordless.init({
-        appId: '#{@app.id}',
-        appSecret: process.env.PASSWORDLESS_APP_SECRET // ⚠️ Never publish your App Secret!
+        secret: process.env.PASSWORDLESS_APP_SECRET // ⚠️ Never publish your App Secret!
       });
       """
     }
@@ -31,8 +30,21 @@
   <.simple_table items={@keys} count={Enum.count(@keys)} title={gettext("API keys")}>
     <:if_empty>{gettext("No %{models} defined yet", models: gettext("keys"))}</:if_empty>
     <:col field={:name} />
-    <:col field={:token} />
-    <:col :let={key} field={:visibility}>
+    <:col :let={key} field={:token}>
+      <span :if={key.id == "app_secret"} class="flex items-center gap-3">
+        {if @reveal_secret?, do: @secret, else: key.token}
+        <.button
+          size="xs"
+          color="light"
+          title={if @reveal_secret?, do: gettext("Hide secret"), else: gettext("Reveal secret")}
+          phx-click="toggle_reveal_secret"
+          phx-target={@myself}
+        />
+      </span>
+
+      {if key.id == "app_id", do: key.token}
+    </:col>
+    <:col :let={key} field={:usage}>
       <%= if key.id == "app_id" do %>
         <.badge with_dot size="sm" color="success" label={gettext("Public")} />
       <% else %>
@@ -44,7 +56,12 @@
     </:col>
     <:col actions></:col>
     <:actions :let={key}>
-      <.copy_button size="sm" color="light" title={gettext("Copy")} value={key.name} />
+      <.copy_button
+        size="sm"
+        color="light"
+        title={gettext("Copy")}
+        value={if key.id == "app_secret", do: @secret, else: key.token}
+      />
     </:actions>
   </.simple_table>
   <.form_separator no_margin />

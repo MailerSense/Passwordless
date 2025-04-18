@@ -4,9 +4,21 @@ defmodule PasswordlessWeb.Knowledge.PricingLive do
   """
   use PasswordlessWeb, :live_view
 
+  @page_mapping [
+    free: :pricing_free,
+    essential: :pricing_pro,
+    enterprise: :pricing_enterprise
+  ]
+
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, page_title: gettext("Pricing"), pricing: pricing())}
+    {:ok,
+     assign(socket,
+       page_title: gettext("Pricing"),
+       pricing: pricing(),
+       menu_items: menu_items(),
+       current_page: Keyword.fetch!(@page_mapping, socket.assigns.live_action)
+     )}
   end
 
   @impl true
@@ -17,46 +29,62 @@ defmodule PasswordlessWeb.Knowledge.PricingLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <.layout current_user={@current_user} current_page={:pricing} current_section={:knowledge}>
-      <div class="flex flex-col gap-6">
-        <.form_header title={gettext("Pricing")} no_margin />
-        <.p>
-          Following tables show the pricing for different services. The baseline plans are dependent on the number of monthly active users (MAU). You are also charged for the communication services if you exceed the allotted free tiers.
-        </.p>
-        <.simple_table
-          :for={item <- @pricing}
-          items={item.items}
-          count={Enum.count(item.items)}
-          title={item.name}
-        >
-          <:if_empty>
-            {gettext("No %{models} found", models: gettext("billing items"))}
-          </:if_empty>
-          <:col field={:name} />
-          <:col field={:price} />
-          <:col field={:description} />
-          <:col :let={iitem} field={:kind}>
-            <.badge
-              size="sm"
-              label={Phoenix.Naming.humanize(iitem.kind)}
-              color={random_color(iitem.kind)}
-            />
-          </:col>
+    <.layout
+      current_user={@current_user}
+      current_page={:pricing}
+      current_section={:knowledge}
+      current_subpage={@current_page}
+      padded={false}
+    >
+      <.tabbed_layout current_page={@current_page} menu_items={@menu_items} inner_class="p-6">
+        <div class="flex flex-col gap-6">
+          <.form_header title={gettext("Free")} no_margin />
+          <.p>
+            Following tables show the pricing for different services. The baseline plans are dependent on the number of monthly active users (MAU). You are also charged for the communication services if you exceed the allotted free tiers.
+          </.p>
+          <.simple_table
+            :for={item <- @pricing}
+            items={item.items}
+            count={Enum.count(item.items)}
+            title={item.name}
+          >
+            <:if_empty>
+              {gettext("No %{models} found", models: gettext("billing items"))}
+            </:if_empty>
+            <:col field={:name} />
+            <:col field={:price} />
+            <:col field={:service} />
+            <:col :let={iitem} field={:kind}>
+              <.badge
+                size="sm"
+                label={Phoenix.Naming.humanize(iitem.kind)}
+                color={random_color(iitem.kind)}
+              />
+            </:col>
 
-          <:col actions></:col>
-          <:actions :let={item}>
-            <.icon_button
-              size="sm"
-              icon="custom-edit"
-              color="light"
-              title={gettext("Edit")}
-              link_type="live_patch"
-            />
-          </:actions>
-        </.simple_table>
-      </div>
+            <:col actions></:col>
+            <:actions :let={item}>
+              <.icon_button
+                size="sm"
+                icon="custom-edit"
+                color="light"
+                title={gettext("Edit")}
+                link_type="live_patch"
+              />
+            </:actions>
+          </.simple_table>
+        </div>
+      </.tabbed_layout>
     </.layout>
     """
+  end
+
+  defp menu_items do
+    PasswordlessWeb.Menus.build_menu([
+      :pricing_free,
+      :pricing_pro,
+      :pricing_enterprise
+    ])
   end
 
   defp pricing do
@@ -70,14 +98,14 @@ defmodule PasswordlessWeb.Knowledge.PricingLive do
             name: gettext("Free"),
             kind: :free_tier,
             price: Money.new(0),
-            description: gettext("up to 5,000 MAU / month")
+            service: gettext("up to 5,000 MAU / month")
           },
           %{
             id: Uniq.UUID.uuid7(),
             name: gettext("Essential"),
             kind: :flat_monthly_fee,
             price: Money.parse!("49.99"),
-            description: gettext("up to 50,000 MAU / month")
+            service: gettext("up to 50,000 MAU / month")
           }
         ]
       },
@@ -90,14 +118,14 @@ defmodule PasswordlessWeb.Knowledge.PricingLive do
             name: gettext("Free"),
             kind: :free_tier,
             price: Money.new(0),
-            description: gettext("up to 5,000 emails / month")
+            service: gettext("up to 5,000 emails / month")
           },
           %{
             id: Uniq.UUID.uuid7(),
             name: gettext("Outbound"),
             kind: :pay_as_you_go,
             price: Money.parse!("1.0"),
-            description: gettext("per 1,000 emails")
+            service: gettext("per 1,000 emails")
           }
         ]
       }

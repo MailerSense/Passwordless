@@ -6,6 +6,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
   alias Database.Tenant
   alias Passwordless.Accounts.User
   alias Passwordless.Action
+  alias Passwordless.AuthToken
   alias Passwordless.Challenge
   alias Passwordless.Organizations
 
@@ -50,11 +51,11 @@ defmodule Passwordless.Organizations.OrgSeeder do
         email_configuration_set: "passwordless-tools-app-ses-config-set"
       })
 
-    {:ok, auth_token, _signed_api_key} =
-      Passwordless.create_auth_token(app, %{"name" => "App Secret", "scopes" => [:sync]})
+    {:ok, auth_token} =
+      Passwordless.create_auth_token(app, %{"scopes" => [:sync]})
 
     Logger.warning("----------- AUTH TOKEN ------------")
-    Logger.warning(auth_token)
+    Logger.warning(AuthToken.encode(auth_token))
 
     {:ok, domain} =
       Passwordless.create_email_domain(app, %{

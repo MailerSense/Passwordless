@@ -175,11 +175,7 @@ defmodule Passwordless do
   end
 
   def create_auth_token(%App{} = app, attrs \\ %{}) do
-    {signed_key, changeset} = AuthToken.new(app, attrs)
-
-    with {:ok, auth_token} <- Repo.insert(changeset) do
-      {:ok, auth_token, signed_key}
-    end
+    Repo.insert(AuthToken.new(app, attrs))
   end
 
   def change_auth_token(%AuthToken{} = auth_token, attrs \\ %{}) do

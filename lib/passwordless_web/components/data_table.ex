@@ -302,6 +302,10 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
 
+  attr :wrapper_class, :any,
+    default: "pc-table__wrapper pc-data-table__wrapper",
+    doc: "CSS class to add to the table"
+
   slot :col, required: true do
     attr :label, :string
     attr :class, :string
@@ -326,7 +330,7 @@ defmodule PasswordlessWeb.Components.DataTable do
     assigns = assign_new(assigns, :id, fn -> Util.id("simple-table") end)
 
     ~H"""
-    <section class={["pc-table__wrapper", "pc-data-table__wrapper", @class]}>
+    <section class={[@wrapper_class, @class]}>
       <.table_header :if={@title} title={@title} count={@count} />
       <.table class="pc-data-table">
         <thead class="pc-table__thead-striped">
