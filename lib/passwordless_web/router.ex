@@ -161,6 +161,7 @@ defmodule PasswordlessWeb.Router do
       live "/embed/install", App.EmbedLive.Index, :install
       live "/embed/api", App.EmbedLive.Index, :api
       live "/embed/ui", App.EmbedLive.Index, :ui
+      live "/embed/access-log", App.EmbedLive.Index, :access_log
 
       # Team
       live "/team", App.TeamLive.Index, :index

@@ -52,12 +52,23 @@ defmodule Passwordless.AuthToken do
        from(a in App,
          join: at in assoc(a, :auth_token),
          where: at.key_hash == ^key,
-         select: {a, at}
+         select: {struct(a, [:id]), at}
        )}
     end
   end
 
   def get_app_and_key(_), do: {:error, :invalid_key}
+
+  @doc """
+  Get the app and key for an api key.
+  """
+  def get_app_by_token(@prefix <> auth_token) when is_binary(auth_token) do
+    with {:ok, key} <- Base58.decode58(auth_token) do
+      {:ok, from(a in App, join: at in assoc(a, :auth_token), where: at.key_hash == ^key, select: [:id])}
+    end
+  end
+
+  def get_app_by_token(_), do: {:error, :invalid_key}
 
   def generate_key do
     :crypto.strong_rand_bytes(@size)

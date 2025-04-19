@@ -56,6 +56,13 @@ defmodule PasswordlessWeb.Helpers do
         icon: "remix-code-s-slash-line",
         path: ~p"/embed/api",
         link_type: "live_patch"
+      },
+      %{
+        name: :access_log,
+        label: "Access Log",
+        icon: "remix-shield-flash-line",
+        path: ~p"/embed/access-log",
+        link_type: "live_patch"
       }
     ]
   end
