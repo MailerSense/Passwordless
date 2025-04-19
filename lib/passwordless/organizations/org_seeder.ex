@@ -115,7 +115,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
         Passwordless.create_actor(app, %{
           name: Faker.Person.name(),
           state: Util.pick(active: 80, locked: 20),
-          user_id: Uniq.UUID.uuid7(),
+          username: Uniq.UUID.uuid7(),
           properties: %{
             "email" => email,
             "phone" => phone

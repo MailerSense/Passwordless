@@ -34,12 +34,34 @@ defmodule PasswordlessWeb.App.EmbedLive.API do
 
   @impl true
   def handle_event("validate", %{"app" => app_params}, socket) do
-    changeset =
-      socket.assigns.app
-      |> Passwordless.change_app(app_params)
-      |> Map.put(:action, :validate)
+    case Passwordless.update_app(socket.assigns.app, app_params) do
+      {:ok, app} ->
+        socket =
+          socket
+          |> assign(app: app)
+          |> assign_form(Passwordless.change_app(app))
 
-    {:noreply, assign_form(socket, changeset)}
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
+  end
+
+  @impl true
+  def handle_event("save", %{"app" => app_params}, socket) do
+    case Passwordless.update_app(socket.assigns.app, app_params) do
+      {:ok, app} ->
+        socket =
+          socket
+          |> assign(app: app)
+          |> assign_form(Passwordless.change_app(app))
+
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
   end
 
   @impl true

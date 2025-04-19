@@ -320,7 +320,7 @@ defmodule PasswordlessWeb.Menus do
   def get_link(:pricing_free = name, _user) do
     %{
       name: name,
-      label: gettext("Free"),
+      label: gettext("Free Plan"),
       path: ~p"/pricing/free",
       icon: "remix-seedling-line",
       link_type: "live_patch"
@@ -330,7 +330,7 @@ defmodule PasswordlessWeb.Menus do
   def get_link(:pricing_pro = name, _user) do
     %{
       name: name,
-      label: gettext("Essential"),
+      label: gettext("Essential Plan"),
       path: ~p"/pricing/essential",
       icon: "remix-line-chart-line",
       link_type: "live_patch"
@@ -340,9 +340,9 @@ defmodule PasswordlessWeb.Menus do
   def get_link(:pricing_enterprise = name, _user) do
     %{
       name: name,
-      label: gettext("Enterprise"),
+      label: gettext("Enterprise Plan"),
       path: ~p"/pricing/enterprise",
-      icon: "remix-award-line",
+      icon: "remix-global-line",
       link_type: "live_patch"
     }
   end

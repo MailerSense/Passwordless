@@ -12,7 +12,7 @@ defmodule Passwordless.Accounts.Token do
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
 
-  @size 32
+  @size 16
   @lifetimes [
     session: :timer.hours(7 * 24),
     email_change: :timer.hours(6),

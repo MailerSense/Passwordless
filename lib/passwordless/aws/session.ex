@@ -21,6 +21,18 @@ defmodule Passwordless.AWS.Session do
   Get the AWS client.
   """
   def get_client! do
-    struct!(AWS.Client, Keyword.merge(@client_defaults, get()))
+    %{
+      region: region,
+      access_key_id: access_key_id,
+      secret_access_key: secret_access_key,
+      security_token: token
+    } = ExAws.Config.new(:s3)
+
+    AWS.Client.create(
+      access_key_id,
+      secret_access_key,
+      token,
+      region
+    )
   end
 end

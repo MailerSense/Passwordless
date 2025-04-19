@@ -13,7 +13,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :name, :text
       add :state, :string, null: false
-      add :user_id, :text
+      add :username, :string
       add :language, :string, null: false
       add :properties, :map, null: false, default: %{}
 
@@ -22,11 +22,11 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create index(:actors, [:state], where: "deleted_at is null")
-    create unique_index(:actors, [:user_id], where: "deleted_at is null")
+    create unique_index(:actors, [:username], where: "deleted_at is null")
 
     execute "create index actors_name_gin_trgm_idx on #{prefix()}.actors using gin (name gin_trgm_ops) where deleted_at is null;"
 
-    execute "create index actors_user_id_gin_trgm_idx on #{prefix()}.actors using gin (user_id gin_trgm_ops) where deleted_at is null;"
+    execute "create index actors_username_gin_trgm_idx on #{prefix()}.actors using gin (username gin_trgm_ops) where deleted_at is null;"
 
     execute "create index actors_properties_gin_trgm_idx on #{prefix()}.actors using gin ((properties::text) gin_trgm_ops) where deleted_at is null;"
 

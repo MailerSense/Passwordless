@@ -2,7 +2,7 @@
   <.form id="edit-app-form" for={@form} phx-submit="save" phx-change="validate">
     <.form_header title={gettext("App")} />
     <.p class="mb-6">
-      App represents a single software project - a website, mobile app or an API. You can create multiple apps under a single organization e.g. for dev, staging, prod. Apps are separate from each other.
+      App is a single software project - a website, mobile app or an API. You can create multiple apps under a single organization e.g. for dev, staging, prod. Apps are separate from each other.
     </.p>
     <.image_input
       upload={@uploads.logo}

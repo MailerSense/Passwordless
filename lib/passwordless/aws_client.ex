@@ -91,8 +91,6 @@ defmodule Passwordless.AWSClient do
     end
   end
 
-  defp error_retryable?(_), do: false
-
   defp attempt_again?(attempt, result) when attempt > 0 do
     if attempt >= @max_attempts do
       {:give_up, result}

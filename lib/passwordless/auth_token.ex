@@ -30,18 +30,6 @@ defmodule Passwordless.AuthToken do
   end
 
   @doc """
-  Creates a new API key for the given app.
-  """
-  def new(%App{} = app, attrs \\ %{}) do
-    key = generate_key()
-    params = Map.put(attrs, "key", key)
-
-    app
-    |> Ecto.build_assoc(:auth_token)
-    |> changeset(params)
-  end
-
-  @doc """
   Get invitations for an app.
   """
   def get_by_app(query \\ __MODULE__, %App{} = app) do
@@ -112,24 +100,7 @@ defmodule Passwordless.AuthToken do
     |> validate_scopes()
     |> validate_key()
     |> put_hash_fields()
-    |> unique_constraint(:app_id)
-    |> unsafe_validate_unique(:app_id, Passwordless.Repo)
-    |> assoc_constraint(:app)
-  end
-
-  @create_fields ~w(scopes app_id)a
-  @create_required_fields @create_fields
-
-  @doc """
-  A api key changeset.
-  """
-  def create_changeset(%__MODULE__{} = auth_token, attrs \\ %{}) do
-    auth_token
-    |> cast(attrs, @create_fields)
-    |> validate_required(@create_required_fields)
-    |> validate_scopes()
-    |> validate_key()
-    |> put_hash_fields()
+    |> validate_key_hash()
     |> unique_constraint(:app_id)
     |> unsafe_validate_unique(:app_id, Passwordless.Repo)
     |> assoc_constraint(:app)
@@ -138,6 +109,10 @@ defmodule Passwordless.AuthToken do
   # Private
 
   defp validate_key(changeset) do
+    validate_length(changeset, :key, is: @size, count: :bytes)
+  end
+
+  defp validate_key_hash(changeset) do
     changeset
     |> unique_constraint(:key_hash)
     |> unsafe_validate_unique(:key_hash, Passwordless.Repo)

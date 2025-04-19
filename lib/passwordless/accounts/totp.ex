@@ -10,7 +10,7 @@ defmodule Passwordless.Accounts.TOTP do
   alias Passwordless.Accounts.User
 
   schema "user_totps" do
-    field :secret, :binary
+    field :secret, :binary, redact: true
     field :code, :string, virtual: true
 
     embeds_many :backup_codes, BackupCode, on_replace: :delete do

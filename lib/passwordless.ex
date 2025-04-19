@@ -186,7 +186,7 @@ defmodule Passwordless do
     if Ecto.get_meta(auth_token, :state) == :loaded do
       AuthToken.changeset(auth_token, attrs)
     else
-      AuthToken.create_changeset(auth_token, attrs)
+      AuthToken.changeset(auth_token, attrs)
     end
   end
 
@@ -416,6 +416,49 @@ defmodule Passwordless do
     |> Repo.preload([:email, :phone])
     |> Actor.put_active()
     |> Actor.put_text_properties()
+  end
+
+  def resolve_actor(%App{} = app, params) when is_map(params) do
+    actor =
+      case params do
+        %{id: id} when is_binary(id) ->
+          Repo.get(Actor, id, prefix: Tenant.to_prefix(app))
+
+        %{user_id: user_id} when is_binary(user_id) ->
+          Repo.get_by(Actor, [user_id: user_id], prefix: Tenant.to_prefix(app))
+
+        _ ->
+          nil
+      end
+
+    actor =
+      case actor do
+        %Actor{} = actor ->
+          actor
+
+        _ ->
+          case create_actor(app, params) do
+            {:ok, actor} -> actor
+            error -> error
+          end
+      end
+
+    case params do
+      %{id: id} when is_binary(id) ->
+        get_actor!(app, id)
+
+      %{user_id: user_id} when is_binary(user_id) ->
+        lookup_actor(app, user_id)
+
+      %{email: email} when is_binary(email) ->
+        lookup_actor(app, email)
+
+      %{phone: phone} when is_binary(phone) ->
+        lookup_actor(app, phone)
+
+      _ ->
+        {:error, :not_found}
+    end
   end
 
   def lookup_actor(%App{} = app, key) when is_binary(key) do

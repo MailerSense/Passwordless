@@ -48,11 +48,11 @@
         </.p>
         <.form_separator />
         <.field
-          field={@form[:user_id]}
-          label={gettext("User ID")}
+          field={@form[:username]}
           disabled={not @user_active}
           copyable={true}
           nonce={get_csp_nonce()}
+          autocomplete="username"
         />
         <.field
           field={@form[:language]}

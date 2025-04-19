@@ -31,7 +31,7 @@
     <:if_empty>{gettext("No %{models} defined yet", models: gettext("keys"))}</:if_empty>
     <:col field={:name} />
     <:col :let={key} field={:token}>
-      <span :if={key.id == "app_secret"} class="flex items-center gap-3">
+      <span :if={key.id == "app_secret"} class="flex items-center gap-2">
         {if @reveal_secret?, do: @secret, else: key.token}
         <.button
           size="xs"

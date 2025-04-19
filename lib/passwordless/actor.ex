@@ -64,7 +64,7 @@ defmodule Passwordless.Actor do
   schema "actors" do
     field :name, :string
     field :state, Ecto.Enum, values: @states, default: :active
-    field :user_id, :string
+    field :username, :string
     field :language, Ecto.Enum, values: Locale.language_codes(), default: :en
     field :properties, :map, default: %{}
     field :properties_text, :string, virtual: true
@@ -93,11 +93,9 @@ defmodule Passwordless.Actor do
   Get the handle of the actor.
   """
   def handle(%__MODULE__{name: name}) when is_binary(name), do: name
+  def handle(%__MODULE__{username: username}) when is_binary(username), do: username
   def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
-
   def handle(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical), do: canonical
-
-  def handle(%__MODULE__{user_id: user_id}) when is_binary(user_id), do: user_id
   def handle(%__MODULE__{id: id}) when is_binary(id), do: id
   def handle(%__MODULE__{}), do: nil
 
@@ -188,7 +186,7 @@ defmodule Passwordless.Actor do
     name
     state
     language
-    user_id
+    username
     properties
     properties_text
     active
@@ -208,7 +206,7 @@ defmodule Passwordless.Actor do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields ++ [:name])
     |> validate_name()
-    |> validate_user_id(opts)
+    |> validate_username(opts)
     |> validate_text_properties()
     |> validate_properties()
     |> cast_assoc(:emails,
@@ -231,7 +229,7 @@ defmodule Passwordless.Actor do
     |> validate_required(@required_fields)
     |> validate_name()
     |> validate_active()
-    |> validate_user_id(opts)
+    |> validate_username(opts)
     |> validate_text_properties()
     |> validate_properties()
   end
@@ -256,7 +254,7 @@ defmodule Passwordless.Actor do
       query,
       [actor: a, email: e, phone: p],
       ilike(a.name, ^value) or
-        ilike(a.user_id, ^value) or
+        ilike(a.username, ^value) or
         ilike(fragment("?::text", a.properties), ^value) or
         ilike(e.email, ^value) or
         ilike(p.phone, ^value)
@@ -279,12 +277,12 @@ defmodule Passwordless.Actor do
     end
   end
 
-  defp validate_user_id(changeset, opts) do
+  defp validate_username(changeset, opts) do
     changeset
-    |> ChangesetExt.ensure_trimmed(:user_id)
-    |> validate_length(:user_id, max: 1024)
-    |> unique_constraint(:user_id)
-    |> unsafe_validate_unique(:user_id, Passwordless.Repo, opts)
+    |> ChangesetExt.ensure_trimmed(:username)
+    |> validate_length(:username, max: 255)
+    |> unique_constraint(:username)
+    |> unsafe_validate_unique(:username, Passwordless.Repo, opts)
   end
 
   defp validate_properties(changeset) do
