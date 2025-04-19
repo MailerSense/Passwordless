@@ -25,6 +25,8 @@ defmodule Passwordless.Action do
       :state,
       :challenge,
       :action_events,
+      :actor,
+      :rule,
       :inserted_at,
       :updated_at
     ]
@@ -101,7 +103,13 @@ defmodule Passwordless.Action do
   Preload associations.
   """
   def preload_challenge(query \\ __MODULE__) do
-    from q in query, preload: [{:challenge, [:email_message]}, :action_events]
+    from q in query,
+      preload: [
+        :rule,
+        {:actor, [:totps, :email, :emails, :phone, :phones]},
+        {:challenge, [:email_message]},
+        :action_events
+      ]
   end
 
   @fields ~w(

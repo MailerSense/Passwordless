@@ -54,6 +54,13 @@ defmodule Passwordless.App do
     field :email_configuration_set, :string
     field :email_tracking, :boolean, default: false
     field :default_action, Ecto.Enum, values: @actions, default: :block
+    field :whitelist_ip_access, :boolean, default: false
+
+    embeds_many :whitelisted_ip_addresses, IPAddress, on_replace: :delete do
+      @derive Jason.Encoder
+
+      field :address, :string
+    end
 
     has_one :email_domain, Domain, where: [purpose: :email]
     has_one :tracking_domain, Domain, where: [purpose: :tracking]
@@ -103,6 +110,7 @@ defmodule Passwordless.App do
     email_configuration_set
     email_tracking
     default_action
+    whitelist_ip_access
     org_id
   )a
   @required_fields @fields -- [:logo, :email_configuration_set]
@@ -113,6 +121,11 @@ defmodule Passwordless.App do
   def changeset(org, attrs \\ %{}, _metadata \\ []) do
     org
     |> cast(attrs, @fields)
+    |> cast_embed(:whitelisted_ip_addresses,
+      with: &whitelisted_ip_changeset/2,
+      sort_param: :whitelisted_ip_addresses_sort,
+      drop_param: :whitelisted_ip_addresses_drop
+    )
     |> validate_required(@required_fields)
     |> validate_string(:name)
     |> validate_string(:display_name)
@@ -140,5 +153,12 @@ defmodule Passwordless.App do
 
   defp validate_website(changeset) do
     ChangesetExt.validate_url(changeset, :website)
+  end
+
+  defp whitelisted_ip_changeset(%__MODULE__.IPAddress{} = ip_address, attrs) do
+    ip_address
+    |> cast(attrs, [:address])
+    |> validate_required([:address])
+    |> ChangesetExt.validate_cidr(:address)
   end
 end

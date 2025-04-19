@@ -75,5 +75,6 @@ defmodule PasswordlessWeb.App.EmbedLive.API do
     socket
     |> assign(form: to_form(changeset))
     |> assign(default_action: Ecto.Changeset.get_field(changeset, :default_action))
+    |> assign(whitelist_ip_access: Ecto.Changeset.get_field(changeset, :whitelist_ip_access))
   end
 end

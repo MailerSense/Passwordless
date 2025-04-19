@@ -1,7 +1,7 @@
 <div class="p-6 flex flex-col gap-6">
-  <.form_header title={gettext("Headless API")} no_margin />
+  <.form_header title={gettext("Backend API")} no_margin />
   <.p>
-    You can use the Headless API to authenticate your users directly from your backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
+    You can use the Backend API to authenticate your users directly from your own backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
   </.p>
   <.a
     to={~p"/embed/install"}
@@ -87,10 +87,69 @@
   <.p>
     Passwordless uses industry-standard security practices to protect your data. All data is encrypted in transit and at rest. We also support two-factor authentication for added security.
   </.p>
-  <.a
-    to={~p"/embed/access-log"}
-    label={gettext("Open Access Log")}
-    style="link"
-    link_type="live_redirect"
-  />
+  <.form
+    id="app-security-form"
+    for={@form}
+    phx-submit="save"
+    phx-change="validate"
+    phx-target={@myself}
+  >
+    <.field
+      type="checkbox"
+      field={@form[:whitelist_ip_access]}
+      label={gettext("Whitelist IP addresses")}
+      help_text={
+        gettext(
+          "Permit only specified IP addresses to make API calls. CIDR and IP notation is accepted."
+        )
+      }
+    />
+    <div :if={@whitelist_ip_access} class="pc-form-field-wrapper">
+      <.field_label>{gettext("Whitelisted IPs")}</.field_label>
+      <div class="flex flex-col gap-y-2">
+        <.inputs_for :let={f} field={@form[:whitelisted_ip_addresses]}>
+          <input type="hidden" name="app[whitelisted_ip_addresses_sort][]" value={f.index} />
+          <div class="flex items-center grow gap-2">
+            <.field
+              type="text"
+              minlength="7"
+              maxlength="15"
+              pattern="^(?>(\d|[1-9]\d{2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?1)$"
+              label=""
+              field={f[:address]}
+              required
+              class="font-mono"
+              wrapper_class="mb-0! w-full grow"
+            >
+              <:action>
+                <.icon_form_button
+                  size="sm"
+                  name="app[whitelisted_ip_addresses_drop][]"
+                  type="button"
+                  icon="custom-trash"
+                  color="light"
+                  title={gettext("Remove")}
+                  value={f.index}
+                  event={JS.dispatch("change")}
+                />
+              </:action>
+            </.field>
+          </div>
+        </.inputs_for>
+      </div>
+      <div class="flex mt-4">
+        <.button
+          size="xs"
+          type="button"
+          color="light"
+          icon="remix-add-circle-line"
+          label={gettext("Add IP address or CIDR")}
+          name="app[whitelisted_ip_addresses_sort][]"
+          value="new"
+          phx-click={JS.dispatch("change")}
+        />
+      </div>
+      <input type="hidden" name="app[whitelisted_ip_addresses_drop][]" />
+    </div>
+  </.form>
 </div>

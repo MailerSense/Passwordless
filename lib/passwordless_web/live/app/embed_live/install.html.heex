@@ -25,7 +25,7 @@
   <.form_separator no_margin />
   <.form_header title={gettext("Configuration")} no_margin />
   <.p>
-    Following keys - App ID and Secret Key - will allow you to authenticate API requests. Remember to never publish your Secret Key, it should be securely accessed from your backend only.
+    Following keys - App ID and Secret Key - will allow you to authenticate API requests. Remember to never publish your Secret Key, it should be securely accessed from your own backend only.
   </.p>
   <.simple_table items={@keys} count={Enum.count(@keys)} title={gettext("API keys")}>
     <:if_empty>{gettext("No %{models} defined yet", models: gettext("keys"))}</:if_empty>
@@ -67,7 +67,7 @@
   <.form_separator no_margin />
   <.form_header title={gettext("Usage")} no_margin />
   <.p>
-    You can use the Headless API to authenticate your users directly from your backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
+    You can use the Backend API to authenticate your users directly from your own backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
   </.p>
   <.a
     to={~p"/embed/api"}

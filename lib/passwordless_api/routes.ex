@@ -30,10 +30,14 @@ defmodule PasswordlessApi.Routes do
       scope "/api/v1", PasswordlessApi do
         pipe_through [:api, :api_authenticated]
 
-        scope "/action" do
+        scope "/actions" do
           pipe_through :api_idempotent
 
           post "/authenticate", ActionController, :authenticate
+        end
+
+        scope "/users" do
+          get "/:id", ActorController, :get
         end
       end
     end

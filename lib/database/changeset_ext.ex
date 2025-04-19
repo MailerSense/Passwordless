@@ -142,6 +142,9 @@ defmodule Database.ChangesetExt do
     end)
   end
 
+  @doc """
+  Validates a URL by ensuring it is trimmed, is lowercase, has a valid format and scheme.
+  """
   def validate_url(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
     changeset
     |> ensure_trimmed(field)
@@ -157,6 +160,40 @@ defmodule Database.ChangesetExt do
 
         %URI{} ->
           []
+      end
+    end)
+  end
+
+  @doc """
+  Validates an IP address by ensuring it is trimmed, is lowercase, has a valid format and is a public IP.
+  """
+  def validate_ip_address(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
+    changeset
+    |> ensure_trimmed(field)
+    |> validate_change(field, fn ^field, value ->
+      IO.inspect(value)
+
+      with {:ok, ip_address} <- InetCidr.parse_address(value), true <- public_ip?(ip_address) do
+        []
+      else
+        _ -> [{field, "is invalid"}]
+      end
+    end)
+  end
+
+  @doc """
+  Validates a CIDR by ensuring it is trimmed, is lowercase, has a valid format and is a public IP.
+  """
+  def validate_cidr(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
+    changeset
+    |> ensure_trimmed(field)
+    |> validate_change(field, fn ^field, value ->
+      case Util.CIDR.parse(value) do
+        %Util.CIDR{} ->
+          []
+
+        {:error, _} ->
+          [{field, "is invalid"}]
       end
     end)
   end
@@ -358,4 +395,17 @@ defmodule Database.ChangesetExt do
   defp sensitive?(key) when is_atom(key) and key in @sensitive_keys, do: true
   defp sensitive?(key) when is_binary(key) and key in @sensitive_keys_s, do: true
   defp sensitive?(_key), do: false
+
+  defp public_ip?({_, _, _, _} = ip_address) do
+    case ip_address do
+      {10, _, _, _} -> false
+      {192, 168, _, _} -> false
+      {172, second, _, _} when second >= 16 and second <= 31 -> false
+      {127, 0, 0, _} -> false
+      {_, _, _, _} -> true
+      :einval -> false
+    end
+  end
+
+  defp public_ip?(_ip_address), do: true
 end

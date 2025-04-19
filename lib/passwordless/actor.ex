@@ -26,6 +26,7 @@ defmodule Passwordless.Actor do
       :id,
       :name,
       :state,
+      :username,
       :language,
       :totps,
       :emails,

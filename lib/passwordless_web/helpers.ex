@@ -52,16 +52,9 @@ defmodule PasswordlessWeb.Helpers do
       },
       %{
         name: :api,
-        label: "Headless API",
-        icon: "remix-code-s-slash-line",
+        label: "Backend API",
+        icon: "remix-server-line",
         path: ~p"/embed/api",
-        link_type: "live_patch"
-      },
-      %{
-        name: :access_log,
-        label: "Access Log",
-        icon: "remix-shield-flash-line",
-        path: ~p"/embed/access-log",
         link_type: "live_patch"
       }
     ]
