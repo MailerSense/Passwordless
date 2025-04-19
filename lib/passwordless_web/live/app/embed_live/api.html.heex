@@ -45,11 +45,6 @@
     If the action is challenged and it requires some input from the user, for example the OTP code, you can pass the action ID along with the input to the "process" endpoint.
   </.p>
   <.form_separator no_margin />
-  <.form_header title={gettext("User lifecycle")} no_margin />
-  <.p>
-    Passw
-  </.p>
-  <.form_separator no_margin />
   <.form_header title={gettext("Rule evaluation")} no_margin />
   <.p>
     Passwordless comes with a powerful rules engine that allows you to define complex rules for your authentication flows. You can use the rules engine to define conditions and effects for your actions. If none of the rules match, the default action will take place. You can set the default action for your app here.
@@ -77,10 +72,16 @@
     />
   </.form>
   <.form_separator no_margin />
-  <.form_header title={gettext("Webhooks")} no_margin />
+  <.form_header title={gettext("Redirect URLs")} no_margin />
   <.p>
-    Passwordless supports webhooks for various events, such as user login, user registration, and password reset. You can use webhooks to trigger actions in your application when these events occur.
+    Passwordless supports webhooks for various events, such as user login, user registration, and password reset. You can use webhooks to trigger actions in your application when these events occur. For now, we support whitelisting the Magic Link redirect URLs.
   </.p>
+  <.a
+    to={~p"/authenticators/magic-link"}
+    label={gettext("Edit Magic Link")}
+    style="link"
+    link_type="live_redirect"
+  />
   <.form_separator no_margin />
   <.form_header title={gettext("Security")} no_margin />
   <.p>
