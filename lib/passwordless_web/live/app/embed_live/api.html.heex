@@ -152,4 +152,24 @@
       <input type="hidden" name="app[whitelisted_ip_addresses_drop][]" />
     </div>
   </.form>
+  <div class="flex flex-col gap-2">
+    <.p class="font-mono text-success-600 dark:text-success-300">
+      {gettext("Whitelisted IP ranges:")}
+    </.p>
+    <.ul :if={@whitelist_ip_access and Util.present?(@whitelisted_ip_addresses)}>
+      <li
+        :for={{first, last, hosts} <- @whitelisted_ip_addresses}
+        class="font-mono text-success-600 dark:text-success-300"
+      >
+        {ngettext(
+          "%{first} - %{last} (%{count} host)",
+          "%{first} - %{last} (%{count} hosts)",
+          hosts,
+          first: first,
+          last: last,
+          count: hosts
+        )}
+      </li>
+    </.ul>
+  </div>
 </div>
