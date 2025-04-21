@@ -302,9 +302,8 @@ defmodule Passwordless do
            {:ok, app} <-
              app
              |> change_app(%{email_tracking: false, email_configuration_set: nil})
-             |> Repo.update() do
-        {:ok, %App{app | email_domain: nil, tracking_domain: nil}}
-      end
+             |> Repo.update(),
+           do: {:ok, %App{app | email_domain: nil, tracking_domain: nil}}
     end)
   end
 
@@ -736,7 +735,7 @@ defmodule Passwordless do
 
   def create_event(%App{} = app, %Action{} = action, attrs \\ %{}) do
     action
-    |> Ecto.build_assoc(:action_events)
+    |> Ecto.build_assoc(:events)
     |> ActionEvent.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
