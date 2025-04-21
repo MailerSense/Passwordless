@@ -9,8 +9,15 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   alias Passwordless.Repo
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, apply_action(socket, socket.assigns.live_action)}
+  def mount(params, _session, socket) do
+    domain_kind =
+      case Map.get(params, "kind", "email") do
+        "email" -> :email_domain
+        "tracking" -> :tracking_domain
+        _ -> nil
+      end
+
+    {:ok, apply_action(socket, socket.assigns.live_action, domain_kind)}
   end
 
   @impl true
@@ -44,7 +51,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
      )
      |> assign(domain_assigns)
      |> assign_form(changeset)
-     |> apply_action(socket.assigns.live_action)}
+     |> apply_action(socket.assigns.live_action, domain_kind)}
   end
 
   @impl true
@@ -104,21 +111,21 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
     |> assign(email_tracking: settings.email_tracking)
   end
 
-  defp apply_action(socket, :index) do
+  defp apply_action(socket, :index, _kind) do
     assign(socket,
       page_title: gettext("Domain"),
       page_subtitle: gettext("Manage domain.")
     )
   end
 
-  defp apply_action(socket, :new) do
+  defp apply_action(socket, :new, _kind) do
     assign(socket,
       page_title: gettext("New domain"),
       page_subtitle: gettext("Register your own domain to improve deliverability of Email OTPs and Magic Links.")
     )
   end
 
-  defp apply_action(socket, :dns) do
+  defp apply_action(socket, :dns, _kind) do
     assign(socket,
       page_title: gettext("DNS records"),
       page_subtitle:
@@ -128,9 +135,9 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
     )
   end
 
-  defp apply_action(socket, :change) do
+  defp apply_action(socket, :change, :email_domain) do
     assign(socket,
-      page_title: gettext("Change domain"),
+      page_title: gettext("Change sending domain"),
       page_subtitle:
         gettext(
           "If you change the domain, the previous one will be deleted after 1 day. Keep in mind the new one still needs to be validated."
@@ -138,7 +145,17 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
     )
   end
 
-  defp apply_action(socket, :delete) do
+  defp apply_action(socket, :change, :tracking_domain) do
+    assign(socket,
+      page_title: gettext("Change tracking domain"),
+      page_subtitle:
+        gettext(
+          "If you change the domain, the previous one will be deleted after 1 day. Keep in mind the new one still needs to be validated."
+        )
+    )
+  end
+
+  defp apply_action(socket, :delete, _kind) do
     assign(socket,
       page_title: gettext("Delete domain"),
       page_subtitle: gettext("Are you sure you want to delete this domain? This action cannot be undone.")

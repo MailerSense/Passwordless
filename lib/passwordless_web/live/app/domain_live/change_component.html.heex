@@ -1,6 +1,6 @@
 <div>
   <% origin = "right" %>
-  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin} max_width="md">
     <.form
       id="change-domain-form"
       for={@form}
@@ -15,7 +15,7 @@
           gettext(
             "e.g. %{prefix}.%{root}",
             prefix: @prefix,
-            root: URI.parse(@app.website).host
+            root: URI.parse(@app.settings.website).host
           )
         }
         help_text={
