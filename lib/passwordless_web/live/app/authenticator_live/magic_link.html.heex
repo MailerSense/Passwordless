@@ -9,7 +9,7 @@
   >
     <.field type="checkbox" field={@form[:enabled]} />
     <.p>
-      Magic link allows users to sign in without a password. Users will receive a link to securely open a specific page. The link is valid for a limited time and can only be used once.
+      Magic link is sent to user via email and allows to securely sign into a webapp. The link is valid for a limited time and can only be used once.
     </.p>
     <.form_separator />
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
@@ -120,7 +120,7 @@
       <input type="hidden" name="magic_link[redirect_urls_drop][]" />
     </div>
     <.form_separator />
-    <.form_header title="API - Send magic link" />
+    <.form_header title="API - Authenticate with Magic link" />
     <.code_block
       class="mb-6"
       language={:typescript}

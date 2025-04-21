@@ -117,7 +117,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
         </div>
 
         <div class="flex flex-col gap-6 mt-auto p-3">
-          <.usage_box plan={gettext("Pro")} usage={1240} usage_max={2000} />
+          <.usage_box plan={gettext("Essential")} usage={1240} usage_max={2000} />
           <.wide_theme_switch />
         </div>
       </aside>
