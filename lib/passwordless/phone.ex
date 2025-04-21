@@ -148,7 +148,7 @@ defmodule Passwordless.Phone do
 
   defp validate_canonical_phone_number(changeset), do: changeset
 
-  defp base_changeset(changeset, opts \\ []) do
+  defp base_changeset(changeset, opts) do
     changeset
     |> validate_channels()
     |> unique_constraint([:actor_id, :primary], error_key: :primary)
