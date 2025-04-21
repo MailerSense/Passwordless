@@ -25,9 +25,10 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create table(:user_tokens, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :email, :citext
-      add :token, :binary, null: false
+      add :key, :binary, null: false
+      add :key_hash, :binary, null: false
       add :context, :string, null: false
+      add :email, :citext
 
       add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
@@ -35,9 +36,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create index(:user_tokens, [:user_id])
-    create index(:user_tokens, [:user_id, :context, :token])
-    create index(:user_tokens, [:context, :token])
-    create unique_index(:user_tokens, [:token])
+    create index(:user_tokens, [:user_id, :context, :key_hash])
+    create index(:user_tokens, [:context, :key_hash])
+    create unique_index(:user_tokens, [:key_hash])
 
     create table(:user_credentials, primary_key: false) do
       add :id, :uuid, primary_key: true

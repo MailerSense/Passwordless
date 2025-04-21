@@ -5,7 +5,7 @@ defmodule PasswordlessApi.Routes do
 
   defmacro __using__(_) do
     quote do
-      import PasswordlessApi.Auth
+      import PasswordlessApi.Plugs
 
       pipeline :api do
         plug :accepts, ["json"]

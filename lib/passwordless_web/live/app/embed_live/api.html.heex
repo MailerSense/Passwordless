@@ -10,7 +10,7 @@
     link_type="live_redirect"
   />
   <.form_separator no_margin />
-  <.form_header title={gettext("Basic usage")} no_margin />
+  <.form_header title={gettext("Email OTP")} no_margin />
   <.p>
     You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
   </.p>
@@ -18,23 +18,22 @@
     language={:typescript}
     code={
       ~s"""
-      import { Passwordless, Action } from "@passwordless/tools";
+      import { Passwordless } from "@passwordless/tools";
 
-        const action: Action = Passwordless.authenticate({
+        const action = Passwordless.authenticate({
           action: "login",
           user: {
             username: "1234567890",
             emails: [
-              {
-                address: "user@example.com",
-                primary: true,
-              },
+              { address: "user@example.com" },
             ],
           },
           rules: [
             {
               if: true,
-              then: [{ challenge: Passwordless.EMAIL }],
+              then: [
+                { challenge: Passwordless.EMAIL }
+              ],
             },
           ],
         });
@@ -42,7 +41,31 @@
     }
   />
   <.p>
-    If the action is challenged and it requires some input from the user, for example the OTP code, you can pass the action ID along with the input to the "process" endpoint.
+    The code above create an Email OTP challenge and delivers the code to the user. Then, the user provides the code back to the application:
+  </.p>
+  <.code_block
+    language={:typescript}
+    code={
+      ~s"""
+      import { Passwordless } from "@passwordless/tools";
+
+      const action = Passwordless.continue({
+        action: {id: action.id},
+        data: {
+          otp_code: "123456",
+        },
+      });
+
+      if (action.state === Passwordless.ALLOW) {
+        console.log("User is allowed to continue");
+      }
+      """
+    }
+  />
+  <.form_separator no_margin />
+  <.form_header title={gettext("Magic link")} no_margin />
+  <.p>
+    You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
   </.p>
   <.form_separator no_margin />
   <.form_header title={gettext("Rule evaluation")} no_margin />
@@ -143,7 +166,7 @@
           type="button"
           color="light"
           icon="remix-add-circle-line"
-          label={gettext("Add IP address or CIDR")}
+          label={gettext("Add IP or CIDR")}
           name="app[whitelisted_ip_addresses_sort][]"
           value="new"
           phx-click={JS.dispatch("change")}
@@ -152,11 +175,14 @@
       <input type="hidden" name="app[whitelisted_ip_addresses_drop][]" />
     </div>
   </.form>
-  <div class="flex flex-col gap-2">
+  <div
+    :if={@whitelist_ip_access and Util.present?(@whitelisted_ip_addresses)}
+    class="flex flex-col gap-2"
+  >
     <.p class="font-mono text-success-600 dark:text-success-300">
       {gettext("Whitelisted IP ranges:")}
     </.p>
-    <.ul :if={@whitelist_ip_access and Util.present?(@whitelisted_ip_addresses)}>
+    <.ul>
       <li
         :for={{first, last, hosts} <- @whitelisted_ip_addresses}
         class="font-mono text-success-600 dark:text-success-300"

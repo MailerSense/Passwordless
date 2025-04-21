@@ -1,4 +1,4 @@
-defmodule PasswordlessApi.Auth do
+defmodule PasswordlessApi.Plugs do
   @moduledoc """
   A set of plugs related to user authentication.
   This module is imported into the router and thus any function can be called there as a plug.
