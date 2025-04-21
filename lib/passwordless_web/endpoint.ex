@@ -2,6 +2,7 @@ defmodule PasswordlessWeb.Endpoint do
   @moduledoc """
   The endpoint for the Passwordless application
   """
+
   use Sentry.PlugCapture
   use Phoenix.Endpoint, otp_app: :passwordless
 

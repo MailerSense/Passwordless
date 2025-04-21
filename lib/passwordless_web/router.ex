@@ -26,23 +26,12 @@ defmodule PasswordlessWeb.Router do
     plug PasswordlessWeb.Plugs.SetLocale, gettext: PasswordlessWeb.Gettext
   end
 
-  pipeline :public_browser do
-    plug :parse_ip
-    plug :accepts, ["html"]
-    plug :put_root_layout, {MailerSenseWeb.Layouts, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
-
-    plug :put_content_security_policy,
-         {:config, :content_security_policy}
+  pipeline :public_api do
+    plug :accepts, ["json"]
   end
 
   pipeline :public_layout do
     plug :put_layout, html: {PasswordlessWeb.Layouts, :public}
-  end
-
-  pipeline :unsubscribe_layout do
-    plug :put_layout, html: {PasswordlessWeb.Layouts, :unsubscribe}
   end
 
   pipeline :authenticated do
@@ -66,7 +55,7 @@ defmodule PasswordlessWeb.Router do
   end
 
   scope "/unsubscribe", PasswordlessWeb do
-    pipe_through [:public_browser, :unsubscribe_layout]
+    pipe_through :public_api
 
     post "/email/:token", EmailSubscriptionController, :unsubscribe_email
   end
@@ -123,7 +112,6 @@ defmodule PasswordlessWeb.Router do
       ] do
       # Home
       live "/home", App.HomeLive.Index, :index
-      live "/home/:id/view", App.HomeLive.Index, :view
 
       # Users
       live "/users", App.ActorLive.Index, :index
@@ -161,7 +149,6 @@ defmodule PasswordlessWeb.Router do
       live "/embed/install", App.EmbedLive.Index, :install
       live "/embed/api", App.EmbedLive.Index, :api
       live "/embed/ui", App.EmbedLive.Index, :ui
-      live "/embed/access-log", App.EmbedLive.Index, :access_log
 
       # Team
       live "/team", App.TeamLive.Index, :index
