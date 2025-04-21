@@ -15,7 +15,7 @@ defmodule Passwordless.Authenticators.SMS do
   }
   schema "sms_authenticators" do
     field :enabled, :boolean, default: true
-    field :expires, :integer, default: 15
+    field :expires, :integer, default: 5
     field :language, Ecto.Enum, values: @languages, default: :en, virtual: true
 
     belongs_to :app, App

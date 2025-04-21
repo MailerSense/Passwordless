@@ -94,7 +94,7 @@ defmodule Passwordless.Challenges.EmailOTP do
 
   # Private
 
-  defp get_email_template(%Authenticators.Email{} = authenticator) do
+  defp get_email_template(%Authenticators.EmailOTP{} = authenticator) do
     Repo.preload(authenticator, :email_template).email_template
   end
 
@@ -122,13 +122,13 @@ defmodule Passwordless.Challenges.EmailOTP do
          %Domain{} = domain,
          %Email{} = email,
          %EmailTemplateLocale{} = locale,
-         %Authenticators.Email{} = authenticator,
+         %Authenticators.EmailOTP{} = authenticator,
          otp_code
        ) do
     opts = [app: app, actor: actor, action: action]
 
     attrs = %{
-      sender: Authenticators.Email.sender_email(authenticator, domain),
+      sender: Authenticators.EmailOTP.sender_email(authenticator, domain),
       sender_name: authenticator.sender_name,
       recipient: email.address,
       recipient_name: Actor.handle(actor),
@@ -180,7 +180,7 @@ defmodule Passwordless.Challenges.EmailOTP do
     end
   end
 
-  defp create_otp(%Authenticators.Email{} = authenticator, %EmailMessage{} = email_message, otp_code)
+  defp create_otp(%Authenticators.EmailOTP{} = authenticator, %EmailMessage{} = email_message, otp_code)
        when is_binary(otp_code) do
     expires_at = DateTime.add(DateTime.utc_now(), authenticator.expires, :minute)
 

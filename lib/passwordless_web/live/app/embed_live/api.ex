@@ -79,7 +79,7 @@ defmodule PasswordlessWeb.App.EmbedLive.API do
     settings = Ecto.Changeset.get_field(changeset, :settings)
 
     addresses =
-      settings.whitelisted_ip_addresses
+      settings.allowlisted_ip_addresses
       |> Enum.map(fn %AppSettings.IPAddress{address: addr} -> Util.CIDR.parse(addr) end)
       |> Enum.filter(&match?(%Util.CIDR{}, &1))
       |> Enum.map(fn %Util.CIDR{first: first, last: last, hosts: hosts} ->
@@ -89,8 +89,8 @@ defmodule PasswordlessWeb.App.EmbedLive.API do
     socket
     |> assign(form: to_form(changeset))
     |> assign(default_action: settings.default_action)
-    |> assign(whitelist_ip_access: settings.whitelist_ip_access)
-    |> assign(whitelisted_ip_addresses: addresses)
+    |> assign(allowlist_api_access: settings.allowlist_api_access)
+    |> assign(allowlisted_ip_addresses: addresses)
   end
 
   defp format_ip(ip), do: String.pad_trailing(to_string(:inet.ntoa(ip)), 16)

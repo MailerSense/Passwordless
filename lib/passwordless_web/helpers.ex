@@ -70,10 +70,10 @@ defmodule PasswordlessWeb.Helpers do
   def authenticator_menu_items do
     [
       %{
-        name: :email,
+        name: :email_otp,
         label: "Email OTP",
         icon: "remix-mail-open-line",
-        path: ~p"/authenticators/email",
+        path: ~p"/authenticators/email-otp",
         link_type: "live_patch"
       },
       %{

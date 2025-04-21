@@ -38,9 +38,9 @@ defmodule Passwordless.AppSettings do
     field :email_configuration_set, :string
     field :email_tracking, :boolean, default: false
     field :default_action, Ecto.Enum, values: @actions, default: :block
-    field :whitelist_ip_access, :boolean, default: false
+    field :allowlist_api_access, :boolean, default: false
 
-    embeds_many :whitelisted_ip_addresses, IPAddress, on_replace: :delete do
+    embeds_many :allowlisted_ip_addresses, IPAddress, on_replace: :delete do
       @derive Jason.Encoder
 
       field :address, :string
@@ -62,7 +62,7 @@ defmodule Passwordless.AppSettings do
     email_configuration_set
     email_tracking
     default_action
-    whitelist_ip_access
+    allowlist_api_access
     app_id
   )a
   @required_fields @fields -- [:logo, :email_configuration_set, :app_id]
@@ -73,10 +73,10 @@ defmodule Passwordless.AppSettings do
   def changeset(org, attrs \\ %{}, _metadata \\ []) do
     org
     |> cast(attrs, @fields)
-    |> cast_embed(:whitelisted_ip_addresses,
+    |> cast_embed(:allowlisted_ip_addresses,
       with: &whitelisted_ip_changeset/2,
-      sort_param: :whitelisted_ip_addresses_sort,
-      drop_param: :whitelisted_ip_addresses_drop
+      sort_param: :allowlisted_ip_addresses_sort,
+      drop_param: :allowlisted_ip_addresses_drop
     )
     |> validate_required(@required_fields)
     |> validate_string(:display_name)

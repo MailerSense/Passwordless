@@ -15,7 +15,7 @@ defmodule Passwordless.Authenticators.WhatsApp do
   }
   schema "whatsapp_authenticators" do
     field :enabled, :boolean, default: true
-    field :expires, :integer, default: 15
+    field :expires, :integer, default: 5
     field :language, Ecto.Enum, values: @languages, default: :en, virtual: true
 
     belongs_to :app, App

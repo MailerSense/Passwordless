@@ -128,13 +128,11 @@ defmodule PasswordlessWeb.Router do
       live "/users/:id/delete", App.ActorLive.Index, :delete
 
       # Authenticators
-      live "/authenticators/email", App.AuthenticatorLive.Index, :email
-      live "/authenticators/sms", App.AuthenticatorLive.Index, :sms
-      live "/authenticators/whatsapp", App.AuthenticatorLive.Index, :whatsapp
+      live "/authenticators/email-otp", App.AuthenticatorLive.Index, :email_otp
       live "/authenticators/magic-link", App.AuthenticatorLive.Index, :magic_link
-      live "/authenticators/totp", App.AuthenticatorLive.Index, :totp
-      live "/authenticators/security-key", App.AuthenticatorLive.Index, :security_key
       live "/authenticators/passkey", App.AuthenticatorLive.Index, :passkey
+      live "/authenticators/security-key", App.AuthenticatorLive.Index, :security_key
+      live "/authenticators/totp", App.AuthenticatorLive.Index, :totp
       live "/authenticators/recovery-codes", App.AuthenticatorLive.Index, :recovery_codes
 
       # Email

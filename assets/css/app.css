@@ -1354,6 +1354,9 @@
     @apply bg-slate-900 w-64 xl:w-64;
     @apply relative;
   }
+  .pc-sidebar__tabs {
+    @apply flex h-screen overflow-y-hidden bg-white dark:bg-transparent;
+  }
   .pc-sidebar__nav {
     @apply p-3 pt-6 w-64 xl:w-64 flex flex-col select-none shrink-0 border-r border-slate-200 dark:border-slate-700;
   }

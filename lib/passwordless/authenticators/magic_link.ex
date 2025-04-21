@@ -16,10 +16,11 @@ defmodule Passwordless.Authenticators.MagicLink do
   }
   schema "magic_link_authenticators" do
     field :enabled, :boolean, default: true
-    field :expires, :integer, default: 15
+    field :expires, :integer, default: 5
     field :sender, :string
     field :sender_name, :string
     field :fingerprint_device, :boolean, default: false
+    field :required_security_question, :boolean, default: false
 
     embeds_many :redirect_urls, RedirectURL, on_replace: :delete do
       @derive Jason.Encoder
@@ -46,6 +47,7 @@ defmodule Passwordless.Authenticators.MagicLink do
     sender
     sender_name
     fingerprint_device
+    required_security_question
     app_id
     email_template_id
   )a

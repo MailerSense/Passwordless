@@ -9,20 +9,20 @@
   >
     <.field type="checkbox" field={@form[:enabled]} />
     <.p>
-      Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in. The link is valid for a limited time and can only be used once.
+      Magic link allows users to sign in without a password. Users will receive a link to securely open a specific page. The link is valid for a limited time and can only be used once.
     </.p>
     <.form_separator />
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
-      Do you want to send emails from your own domain?
+      Do you want to send branded emails?
       <.a
         to={~p"/domain"}
-        label={gettext("Set up domain")}
+        label={gettext("Set up custom domain")}
         style="link"
         class="inline"
         link_type="live_redirect"
       />
     </.alert>
-    <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2 mb-6">
+    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
       <.field field={@form[:sender_name]} disabled={not @enabled} required wrapper_class="mb-0!" />
       <.field
         field={@form[:sender]}
@@ -34,7 +34,6 @@
         wrapper_class="mb-0!"
       />
     </div>
-
     <.email_preview
       to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/magic-link"}"}
       name={gettext("Edit email template")}
@@ -43,12 +42,6 @@
     />
     <div class="flex items-center gap-3 flex-wrap">
       <.a
-        to={~p"/pricing/free"}
-        label={gettext("Review pricing")}
-        style="link"
-        link_type="live_redirect"
-      />
-      <.a
         to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/magic-link"}"}
         label={gettext("Edit email template")}
         style="link"
@@ -56,17 +49,10 @@
       />
     </div>
     <.form_separator />
-    <.form_header title="Advanced" />
-    <.field
-      type="checkbox"
-      field={@form[:fingerprint_device]}
-      help_text={
-        gettext(
-          "This cookie will then be sent automatically by the browser when the user clicks on the magic link, and we can verify the link was opened in the same browser it was requested."
-        )
-      }
-      disabled={not @enabled}
-    />
+    <.form_header title={gettext("Validity")} />
+    <.p class="mb-6">
+      It is recommended to set a short expiration time for the magic link. This will help prevent unauthorized access if someone else gets hold of the link.
+    </.p>
     <.field
       field={@form[:expires]}
       type="number"
@@ -76,7 +62,17 @@
       disabled={not @enabled}
       required
     />
-
+    <.form_separator />
+    <.form_header title={gettext("Security")} />
+    <.p class="mb-6">
+      You can enable device fingerprinting to track the device used to request the magic link. This will ensure the user who requested the link is the one who opened it.
+    </.p>
+    <.field type="checkbox" field={@form[:fingerprint_device]} disabled={not @enabled} />
+    <.form_separator />
+    <.form_header title={gettext("Redirect Allowlist")} />
+    <.p class="mb-6">
+      Magic link will redirect the user to a URL of your choosing. You can restrict these URLs below. This will help prevent phishing attacks.
+    </.p>
     <div class="pc-form-field-wrapper">
       <.field_label required>{gettext("Redirect URLs")}</.field_label>
       <div class="flex flex-col gap-y-2">
@@ -123,7 +119,6 @@
       </div>
       <input type="hidden" name="magic_link[redirect_urls_drop][]" />
     </div>
-
     <.form_separator />
     <.form_header title="API - Send magic link" />
     <.code_block

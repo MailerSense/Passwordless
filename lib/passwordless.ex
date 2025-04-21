@@ -33,7 +33,7 @@ defmodule Passwordless do
   alias Passwordless.Rule
 
   @authenticators [
-    email: Authenticators.Email,
+    email_otp: Authenticators.EmailOTP,
     magic_link: Authenticators.MagicLink,
     passkey: Authenticators.Passkey,
     security_key: Authenticators.SecurityKey,
@@ -98,20 +98,20 @@ defmodule Passwordless do
                  sender_name: app.name,
                  redirect_urls: [%{url: app.settings.website}]
                },
-               email: %{
+               email_otp: %{
                  sender: "verify",
                  sender_name: app.name
                },
-               totp: %{
-                 issuer_name: app.name
+               passkey: %{
+                 relying_party_id: URI.parse(app.settings.website).host,
+                 expected_origins: [%{url: app.settings.website}]
                },
                security_key: %{
                  relying_party_id: URI.parse(app.settings.website).host,
                  expected_origins: [%{url: app.settings.website}]
                },
-               passkey: %{
-                 relying_party_id: URI.parse(app.settings.website).host,
-                 expected_origins: [%{url: app.settings.website}]
+               totp: %{
+                 issuer_name: app.name
                }
              }),
            do: {:ok, app}
@@ -401,13 +401,11 @@ defmodule Passwordless do
     end
   end
 
+  crud(:email_otp, :email, Passwordless.Authenticators.EmailOTP)
   crud(:magic_link, :magic_link, Passwordless.Authenticators.MagicLink)
-  crud(:email, :email, Passwordless.Authenticators.Email)
-  crud(:sms, :sms, Passwordless.Authenticators.SMS)
-  crud(:whatsapp, :whatsapp, Passwordless.Authenticators.WhatsApp)
-  crud(:totp, :totp, Passwordless.Authenticators.TOTP)
-  crud(:security_key, :security_key, Passwordless.Authenticators.SecurityKey)
   crud(:passkey, :passkey, Passwordless.Authenticators.Passkey)
+  crud(:security_key, :security_key, Passwordless.Authenticators.SecurityKey)
+  crud(:totp, :totp, Passwordless.Authenticators.TOTP)
   crud(:recovery_codes, :recovery_codes, Passwordless.Authenticators.RecoveryCodes)
 
   # Actor

@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
+defmodule PasswordlessWeb.App.AuthenticatorLive.EmailOTP do
   @moduledoc false
 
   use PasswordlessWeb, :live_component
@@ -10,13 +10,13 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
 
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
-    app = Repo.preload(app, [:email])
+    app = Repo.preload(app, [:email_otp])
 
-    email = app.email
+    email_otp = app.email_otp
     domain = Passwordless.get_email_domain!(app)
-    changeset = Passwordless.change_email(email)
+    changeset = Passwordless.change_email_otp(email_otp)
 
-    email_template = Repo.preload(email, :email_template).email_template
+    email_template = Repo.preload(email_otp, :email_template).email_template
     email_template_locale = Passwordless.get_email_template_locale(email_template)
 
     socket =
@@ -32,20 +32,20 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
      socket
      |> assign(assigns)
      |> assign(
-       email: email,
        domain: domain,
+       email_otp: email_otp,
        email_template: email_template
      )
      |> assign_form(changeset)}
   end
 
   @impl true
-  def handle_event("save", %{"email" => email_params}, socket) do
+  def handle_event("save", %{"email_otp" => email_params}, socket) do
     save_email(socket, email_params)
   end
 
   @impl true
-  def handle_event("validate", %{"email" => email_params}, socket) do
+  def handle_event("validate", %{"email_otp" => email_params}, socket) do
     save_email(socket, email_params)
   end
 
@@ -54,16 +54,16 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Email do
   defp save_email(socket, params) do
     opts = [domain: socket.assigns[:domain]]
 
-    case Passwordless.update_email(socket.assigns.email, params, opts) do
-      {:ok, email} ->
+    case Passwordless.update_email_otp(socket.assigns.email_otp, params, opts) do
+      {:ok, email_otp} ->
         changeset =
-          email
-          |> Passwordless.change_email()
+          email_otp
+          |> Passwordless.change_email_otp()
           |> Map.put(:action, :validate)
 
         {:noreply,
          socket
-         |> assign(email: email)
+         |> assign(email_otp: email_otp)
          |> assign_form(changeset)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

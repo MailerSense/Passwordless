@@ -8,8 +8,8 @@
       phx-change="validate"
       phx-target={@myself}
     >
-      <.field field={@form[:name]} required readonly />
-      <.field type="email" field={@form[:email]} required readonly />
+      <.field field={@form[:name]} required required_asterix={false} readonly />
+      <.field type="email" field={@form[:email]} required required_asterix={false} readonly />
       <.field
         field={@form[:role]}
         type="select"

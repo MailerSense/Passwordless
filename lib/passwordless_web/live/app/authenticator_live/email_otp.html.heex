@@ -13,16 +13,16 @@
     </.p>
     <.form_separator />
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
-      Do you want to send emails from your own domain?
+      Do you want to send branded emails?
       <.a
         to={~p"/domain"}
-        label={gettext("Set up domain")}
+        label={gettext("Set up custom domain")}
         style="link"
         class="inline"
         link_type="live_redirect"
       />
     </.alert>
-    <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2 mb-6">
+    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
       <.field field={@form[:sender_name]} disabled={not @enabled} required wrapper_class="mb-0!" />
       <.field
         field={@form[:sender]}
@@ -35,27 +35,24 @@
       />
     </div>
     <.email_preview
-      to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email"}"}
+      to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email-otp"}"}
       name={gettext("Edit email template")}
       preview={@preview}
       link_type="live_redirect"
     />
     <div class="flex items-center gap-3 flex-wrap">
       <.a
-        to={~p"/pricing/free"}
-        label={gettext("Review pricing")}
-        style="link"
-        link_type="live_redirect"
-      />
-      <.a
-        to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email"}"}
+        to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email-otp"}"}
         label={gettext("Edit email template")}
         style="link"
         link_type="live_redirect"
       />
     </div>
     <.form_separator />
-    <.form_header title="Advanced" />
+    <.form_header title={gettext("Validity")} />
+    <.p class="mb-6">
+      It is recommended to set a short expiration time for the OTP code. This will help prevent unauthorized access if someone else gets hold of the code.
+    </.p>
     <.field
       field={@form[:expires]}
       type="number"
@@ -76,12 +73,10 @@
 
         const action: Action = Passwordless.authenticate({
           action: "login",
-          user: {
+          actor: {
             username: "1234567890",
             emails: [
-              {
-                address: "user@example.com",
-              },
+              { address: "user@example.com" },
             ],
           },
           rules: [
@@ -102,9 +97,9 @@
       language={:typescript}
       code={
         ~s"""
-        import { Passwordless, Action } from "@passwordless/tools";
+        import { Passwordless } from "@passwordless/tools";
 
-        const action: Action = Passwordless.continue({
+        const action = Passwordless.continue({
           action: {id: action.id},
           data: {
             otp_code: "123456",
