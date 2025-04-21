@@ -94,9 +94,9 @@ defmodule Passwordless.Actor do
   Get the handle of the actor.
   """
   def handle(%__MODULE__{name: name}) when is_binary(name), do: name
-  def handle(%__MODULE__{username: username}) when is_binary(username), do: username
   def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
   def handle(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical), do: canonical
+  def handle(%__MODULE__{username: username}) when is_binary(username), do: username
   def handle(%__MODULE__{id: id}) when is_binary(id), do: id
   def handle(%__MODULE__{}), do: nil
 
@@ -267,7 +267,7 @@ defmodule Passwordless.Actor do
   defp validate_name(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 1024)
+    |> validate_length(:name, min: 1, max: 255)
   end
 
   defp validate_active(changeset) do

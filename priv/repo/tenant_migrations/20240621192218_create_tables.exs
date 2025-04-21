@@ -11,7 +11,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create table(:actors, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :name, :text
+      add :name, :string
       add :state, :string, null: false
       add :username, :string
       add :language, :string, null: false
