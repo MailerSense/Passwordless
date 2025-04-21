@@ -10,9 +10,10 @@
     >
       <.field field={@form[:name]} autocomplete="name" required />
       <.field
-        field={@form[:user_id]}
-        label={gettext("User ID")}
+        field={@form[:username]}
         help_text={gettext("Unique external ID you can assign to each user")}
+        autocomplete="username"
+        required
       />
       <.field
         field={@form[:language]}
@@ -23,6 +24,7 @@
         required
         required_asterix={false}
       />
+      <.field field={@form[:properties_text]} type="hidden" value="{}" />
     </.form>
 
     <:actions>

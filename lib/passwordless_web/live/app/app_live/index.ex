@@ -6,6 +6,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   alias Passwordless.Accounts.User
   alias Passwordless.FileUploads
+  alias Passwordless.Repo
 
   @impl true
   def mount(_params, _session, socket) do
@@ -14,6 +15,9 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
+    current_app = socket.assigns.current_app
+    current_app = Repo.preload(current_app, :settings)
+
     upload_opts =
       FileUploads.prepare(
         accept: ~w(.jpg .jpeg .png .svg .webp),
@@ -23,9 +27,9 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
     {:noreply,
      socket
-     |> assign(uploaded_files: [])
+     |> assign(uploaded_files: [], current_app: current_app)
      |> apply_action(socket.assigns.live_action, params)
-     |> assign_form(Passwordless.change_app(socket.assigns.current_app))
+     |> assign_form(Passwordless.change_app(current_app))
      |> allow_upload(:logo, upload_opts)}
   end
 
@@ -121,7 +125,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
     case uploaded_files do
       [{path, _entry} | _] ->
-        Map.put(user_params, "logo", path)
+        put_in(user_params, [Access.key("settings", %{}), Access.key("logo")], path)
 
       [] ->
         user_params

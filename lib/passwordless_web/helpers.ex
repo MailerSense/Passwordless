@@ -52,9 +52,16 @@ defmodule PasswordlessWeb.Helpers do
       },
       %{
         name: :api,
-        label: "Headless API",
-        icon: "remix-code-s-slash-line",
+        label: "Backend API",
+        icon: "remix-server-line",
         path: ~p"/embed/api",
+        link_type: "live_patch"
+      },
+      %{
+        name: :ui,
+        label: "Web Components",
+        icon: "remix-reactjs-line",
+        path: ~p"/embed/ui",
         link_type: "live_patch"
       }
     ]
@@ -64,23 +71,9 @@ defmodule PasswordlessWeb.Helpers do
     [
       %{
         name: :email,
-        label: "Email",
+        label: "Email OTP",
         icon: "remix-mail-open-line",
         path: ~p"/authenticators/email",
-        link_type: "live_patch"
-      },
-      %{
-        name: :sms,
-        label: "SMS",
-        icon: "remix-message-2-line",
-        path: ~p"/authenticators/sms",
-        link_type: "live_patch"
-      },
-      %{
-        name: :whatsapp,
-        label: "WhatsApp",
-        icon: "remix-whatsapp-line",
-        path: ~p"/authenticators/whatsapp",
         link_type: "live_patch"
       },
       %{
@@ -91,10 +84,10 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
-        name: :totp,
-        label: "Time-based OTP",
-        icon: "remix-qr-code-line",
-        path: ~p"/authenticators/totp",
+        name: :passkey,
+        label: "Passkey",
+        icon: "remix-fingerprint-line",
+        path: ~p"/authenticators/passkey",
         link_type: "live_patch"
       },
       %{
@@ -105,10 +98,10 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
-        name: :passkey,
-        label: "Passkey",
-        icon: "remix-fingerprint-line",
-        path: ~p"/authenticators/passkey",
+        name: :totp,
+        label: "Time-based OTP",
+        icon: "remix-qr-code-line",
+        path: ~p"/authenticators/totp",
         link_type: "live_patch"
       },
       %{

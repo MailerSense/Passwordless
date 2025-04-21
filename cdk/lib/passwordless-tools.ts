@@ -168,7 +168,7 @@ export class PasswordlessTools extends cdk.Stack {
                 AmiHardwareType.ARM,
               ),
               minCapacity: 2,
-              maxCapacity: 6,
+              maxCapacity: 3,
             },
           ),
           enableManagedTerminationProtection: true,

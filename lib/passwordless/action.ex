@@ -24,7 +24,9 @@ defmodule Passwordless.Action do
       :name,
       :state,
       :challenge,
-      :action_events,
+      :events,
+      :actor,
+      :rule,
       :inserted_at,
       :updated_at
     ]
@@ -39,8 +41,8 @@ defmodule Passwordless.Action do
 
     has_one :challenge, Challenge, where: [current: true]
 
+    has_many :events, ActionEvent, preload_order: [asc: :inserted_at]
     has_many :challenges, Challenge, preload_order: [asc: :inserted_at]
-    has_many :action_events, ActionEvent, preload_order: [asc: :inserted_at]
 
     belongs_to :rule, Rule
     belongs_to :actor, Actor
@@ -52,7 +54,7 @@ defmodule Passwordless.Action do
 
   def topic_for(%App{} = app), do: "#{prefix()}:#{app.id}"
 
-  def first_event(%__MODULE__{action_events: [_ | _] = events}) do
+  def first_event(%__MODULE__{events: [_ | _] = events}) do
     events
     |> Enum.sort_by(& &1.inserted_at, :asc)
     |> Enum.find(fn %ActionEvent{city: city, country: country} ->
@@ -101,7 +103,13 @@ defmodule Passwordless.Action do
   Preload associations.
   """
   def preload_challenge(query \\ __MODULE__) do
-    from q in query, preload: [{:challenge, [:email_message]}, :action_events]
+    from q in query,
+      preload: [
+        :rule,
+        {:actor, [:totps, :email, :emails, :phone, :phones]},
+        {:challenge, [:email_message]},
+        :events
+      ]
   end
 
   @fields ~w(

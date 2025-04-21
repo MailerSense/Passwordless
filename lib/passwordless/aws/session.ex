@@ -3,10 +3,6 @@ defmodule Passwordless.AWS.Session do
   Represents a session with AWS or other cloud provider.
   """
 
-  @client_defaults [
-    http_client: {Passwordless.AWSClient, []}
-  ]
-
   @doc """
   Get the AWS configuration.
   """
@@ -21,6 +17,15 @@ defmodule Passwordless.AWS.Session do
   Get the AWS client.
   """
   def get_client! do
-    struct!(AWS.Client, Keyword.merge(@client_defaults, get()))
+    %{
+      region: region,
+      access_key_id: access_key_id,
+      secret_access_key: secret_access_key,
+      security_token: token
+    } = ExAws.Config.new(:s3)
+
+    access_key_id
+    |> AWS.Client.create(secret_access_key, token, region)
+    |> AWS.Client.put_http_client({Passwordless.AWSClient, []})
   end
 end

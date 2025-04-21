@@ -7,9 +7,6 @@
     phx-change="validate"
     class="p-6"
   >
-    <.alert color="warning" class="mb-6" with_icon>
-      This authenticator is not yet available yet.
-    </.alert>
     <.field type="checkbox" field={@form[:enabled]} />
     <.p>
       Time-based OTP (TOTP) is a method that uses a time-based one-time password to sign in. The user scans a QR code with an authenticator app, such as Authy, and then enters the code displayed in the app to sign in. The code is valid for a limited time and can only be used once.

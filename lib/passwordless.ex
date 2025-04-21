@@ -11,6 +11,7 @@ defmodule Passwordless do
   alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
+  alias Passwordless.AppSettings
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
@@ -33,12 +34,10 @@ defmodule Passwordless do
 
   @authenticators [
     email: Authenticators.Email,
-    sms: Authenticators.SMS,
-    whatsapp: Authenticators.WhatsApp,
     magic_link: Authenticators.MagicLink,
-    totp: Authenticators.TOTP,
-    security_key: Authenticators.SecurityKey,
     passkey: Authenticators.Passkey,
+    security_key: Authenticators.SecurityKey,
+    totp: Authenticators.TOTP,
     recovery_codes: Authenticators.RecoveryCodes
   ]
 
@@ -83,6 +82,10 @@ defmodule Passwordless do
     |> Ecto.build_assoc(:apps)
     |> App.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, app} -> {:ok, Repo.preload(app, :settings)}
+      error -> error
+    end
   end
 
   def create_full_app(%Org{} = org, attrs \\ %{}) do
@@ -93,7 +96,7 @@ defmodule Passwordless do
                magic_link: %{
                  sender: "verify",
                  sender_name: app.name,
-                 redirect_urls: [%{url: app.website}]
+                 redirect_urls: [%{url: app.settings.website}]
                },
                email: %{
                  sender: "verify",
@@ -103,12 +106,12 @@ defmodule Passwordless do
                  issuer_name: app.name
                },
                security_key: %{
-                 relying_party_id: URI.parse(app.website).host,
-                 expected_origins: [%{url: app.website}]
+                 relying_party_id: URI.parse(app.settings.website).host,
+                 expected_origins: [%{url: app.settings.website}]
                },
                passkey: %{
-                 relying_party_id: URI.parse(app.website).host,
-                 expected_origins: [%{url: app.website}]
+                 relying_party_id: URI.parse(app.settings.website).host,
+                 expected_origins: [%{url: app.settings.website}]
                }
              }),
            do: {:ok, app}
@@ -186,7 +189,7 @@ defmodule Passwordless do
     if Ecto.get_meta(auth_token, :state) == :loaded do
       AuthToken.changeset(auth_token, attrs)
     else
-      AuthToken.create_changeset(auth_token, attrs)
+      AuthToken.changeset(auth_token, attrs)
     end
   end
 
@@ -304,9 +307,8 @@ defmodule Passwordless do
            {:ok, app} <-
              app
              |> change_app(%{email_tracking: false, email_configuration_set: nil})
-             |> Repo.update() do
-        {:ok, %App{app | email_domain: nil, tracking_domain: nil}}
-      end
+             |> Repo.update(),
+           do: {:ok, %App{app | email_domain: nil, tracking_domain: nil}}
     end)
   end
 
@@ -390,8 +392,8 @@ defmodule Passwordless do
   end
 
   def get_tracking_domain(%App{} = app) do
-    case Repo.preload(app, :tracking_domain) do
-      %App{email_tracking: true, tracking_domain: %Domain{purpose: :tracking} = domain} ->
+    case Repo.preload(app, [:settings, :tracking_domain]) do
+      %App{settings: %AppSettings{email_tracking: true}, tracking_domain: %Domain{purpose: :tracking} = domain} ->
         {:ok, domain}
 
       _ ->
@@ -418,26 +420,91 @@ defmodule Passwordless do
     |> Actor.put_text_properties()
   end
 
-  def lookup_actor(%App{} = app, key) when is_binary(key) do
+  def resolve_actor(%App{} = app, params) when is_map(params) do
+    prefix = Actor.prefix()
+
+    actor_query =
+      case params do
+        %{"id" => id} when is_binary(id) ->
+          case Database.PrefixedUUID.slug_to_uuid(id) do
+            {:ok, ^prefix, _uuid} -> dynamic([a], a.id == ^id)
+            _ -> false
+          end
+
+        %{"username" => username} when is_binary(username) ->
+          dynamic([a], a.username == ^username)
+
+        _ ->
+          false
+      end
+
+    actor_result =
+      case Repo.one(from(a in Actor, where: ^actor_query), prefix: Tenant.to_prefix(app)) do
+        %Actor{} = actor -> update_actor(app, actor, params)
+        nil -> create_actor(app, params)
+      end
+
+    with {:ok, %Actor{} = actor} <- actor_result,
+         {:ok, %Actor{} = actor} <- resolve_actor_emails(app, actor, params),
+         do: {:ok, actor}
+  end
+
+  def resolve_actor_emails(%App{} = app, %Actor{} = actor, %{"emails" => [_ | _] = emails}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+    old_emails = Repo.preload(actor, :emails).emails
+    old_email_addresses = Map.new(old_emails, fn e -> {e.address, {:old, e}} end)
+    new_email_addresses = Map.new(emails, fn %{"address" => a} = e -> {a, {:new, e}} end)
+
+    diffs =
+      Map.merge(old_email_addresses, new_email_addresses, fn _a, {:old, old}, {:new, new} ->
+        {:changed, old, new}
+      end)
+
+    diffs
+    |> Map.values()
+    |> Enum.reduce_while([], fn
+      {:new, attrs}, acc ->
+        case actor
+             |> Ecto.build_assoc(:emails)
+             |> Email.changeset(attrs, opts)
+             |> Repo.insert(opts) do
+          {:ok, email} -> {:cont, [email | acc]}
+          {:error, changeset} -> {:halt, changeset}
+        end
+
+      {:changed, old, attrs}, acc ->
+        case old
+             |> Email.changeset(attrs, opts)
+             |> Repo.update() do
+          {:ok, email} -> {:cont, [email | acc]}
+          {:error, changeset} -> {:halt, changeset}
+        end
+
+      {:old, email}, acc ->
+        {:cont, [email | acc]}
+    end)
+    |> case do
+      emails when is_list(emails) -> {:ok, %Actor{actor | emails: emails}}
+      %Ecto.Changeset{} = changeset -> {:error, changeset}
+    end
+  end
+
+  def resolve_actor_emails(%Actor{} = actor, _params) do
+    {:ok, Repo.preload(actor, :emails)}
+  end
+
+  def lookup_actor(%App{} = app, id) when is_binary(id) do
+    prefix = Actor.prefix()
+
     query =
-      if String.starts_with?(key, Actor.prefix()),
-        do: [id: key],
-        else: [user_id: key]
+      case Database.PrefixedUUID.slug_to_uuid(id) do
+        {:ok, ^prefix, _uuid} -> [id: id]
+        _ -> [username: id]
+      end
 
-    actor =
-      Actor
-      |> Repo.get_by(query, prefix: Tenant.to_prefix(app))
-      |> Repo.preload([:email, :phone])
-
-    case actor do
-      %Actor{} = actor ->
-        {:ok,
-         actor
-         |> Actor.put_active()
-         |> Actor.put_text_properties()}
-
-      nil ->
-        {:error, :not_found}
+    case Actor |> Repo.get_by(query, prefix: Tenant.to_prefix(app)) |> Repo.preload([:emails, :phones, :totps]) do
+      %Actor{} = actor -> {:ok, actor}
+      nil -> {:error, :not_found}
     end
   end
 
@@ -673,7 +740,7 @@ defmodule Passwordless do
 
   def create_event(%App{} = app, %Action{} = action, attrs \\ %{}) do
     action
-    |> Ecto.build_assoc(:action_events)
+    |> Ecto.build_assoc(:events)
     |> ActionEvent.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
@@ -694,6 +761,7 @@ defmodule Passwordless do
 
   def seed_email_template(%App{} = app, preset, language, attrs \\ %{}) do
     Repo.transact(fn ->
+      app = Repo.preload(app, :settings)
       settings = app |> EmailTemplates.get_seed(preset, language) |> Map.merge(attrs)
       locale_attrs = Map.merge(%{language: language}, settings)
 
@@ -721,6 +789,7 @@ defmodule Passwordless do
         locale
 
       nil ->
+        app = Repo.preload(app, :settings)
         preset = :magic_link_sign_in
         settings = EmailTemplates.get_seed(app, preset, language)
         attrs = Map.merge(%{language: language}, settings)

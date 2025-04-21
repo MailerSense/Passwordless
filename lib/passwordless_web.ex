@@ -58,6 +58,29 @@ defmodule PasswordlessWeb do
     end
   end
 
+  def authenticated_api_controller do
+    quote do
+      use Phoenix.Controller,
+        namespace: PasswordlessWeb,
+        formats: [:html, :json, :xml],
+        layouts: [html: PasswordlessWeb.Layouts]
+
+      use Gettext, backend: PasswordlessWeb.Gettext
+
+      import Phoenix.Component, only: [to_form: 2]
+      import Plug.Conn
+
+      unquote(verified_routes())
+
+      def action(conn, _) do
+        current_app = Map.fetch!(conn.assigns, :current_app)
+        args = [conn, conn.params, current_app]
+
+        apply(__MODULE__, action_name(conn), args)
+      end
+    end
+  end
+
   def view do
     quote do
       use Phoenix.Component, global_prefixes: ~w(x-)

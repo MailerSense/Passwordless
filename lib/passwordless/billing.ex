@@ -70,7 +70,7 @@ defmodule Passwordless.Billing do
   def reconcile_subscription_items(%Subscription{} = subscription, subscription_items_attrs) do
     old_items = Map.new(subscription.items, fn i -> {i.provider_id, {:old, i}} end)
     new_items = Map.new(subscription_items_attrs, fn i -> {i.provider_id, {:new, i}} end)
-    diffs = Map.merge(old_items, new_items, fn id, {:old, old}, {:new, new} -> {id, {:changed, old, new}} end)
+    diffs = Map.merge(old_items, new_items, fn _id, {:old, old}, {:new, new} -> {:changed, old, new} end)
 
     results =
       diffs

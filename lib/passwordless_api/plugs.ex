@@ -1,4 +1,4 @@
-defmodule PasswordlessApi.Auth do
+defmodule PasswordlessApi.Plugs do
   @moduledoc """
   A set of plugs related to user authentication.
   This module is imported into the router and thus any function can be called there as a plug.
@@ -14,36 +14,14 @@ defmodule PasswordlessApi.Auth do
   alias PasswordlessWeb.FallbackController
 
   @doc """
-  Fetches the org by API key
+  Authenticates API requests
   """
-  def fetch_org(%Plug.Conn{} = conn, _opts) do
+  def authenticate_api(%Plug.Conn{} = conn, _opts) do
     with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
-         {:ok, query} <- AuthToken.get_app_and_key(token),
-         {%App{} = app, %AuthToken{} = token} <- Repo.one(query) do
-      conn
-      |> assign(:current_app, app)
-      |> assign(:current_auth_token, token)
+         {:ok, query} <- AuthToken.get_app_by_token(token),
+         %App{} = app <- Repo.one(query) do
+      assign(conn, :current_app, app)
     else
-      _ ->
-        conn
-        |> FallbackController.call({:error, :unauthorized})
-        |> halt()
-    end
-  end
-
-  @doc """
-  Checks if the current API key has access to the given scopes.
-  """
-  def scope_access(%Plug.Conn{} = conn, scopes \\ []) do
-    case conn.assigns[:current_auth_token] do
-      %AuthToken{} = auth_token ->
-        if AuthToken.can?(auth_token, scopes),
-          do: conn,
-          else:
-            conn
-            |> FallbackController.call({:error, :forbidden})
-            |> halt()
-
       _ ->
         conn
         |> FallbackController.call({:error, :unauthorized})
@@ -55,9 +33,9 @@ defmodule PasswordlessApi.Auth do
   Rate limits the API requests to 200 requests per minute.
   """
   def rate_limit_api(conn, _opts) do
-    key = "api:authenticated:" <> get_current_app_id(conn)
+    key = "api:" <> get_current_app_id(conn)
     scale = :timer.minutes(1)
-    limit = 200
+    limit = 150
 
     case Passwordless.RateLimit.hit(key, scale, limit) do
       {:allow, _count} ->

@@ -10,7 +10,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   @data_table_opts [
     for: Action,
     count: 0,
-    default_limit: 25,
+    default_limit: 10,
     default_order: %{
       order_by: [:id],
       order_directions: [:desc]
@@ -25,12 +25,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   @impl true
   def handle_params(params, _url, socket) do
     app = socket.assigns.current_app
-
-    action =
-      case Map.get(params, "id") do
-        id when is_binary(id) -> Passwordless.get_action!(app, id)
-        nil -> nil
-      end
 
     if connected?(socket), do: Endpoint.subscribe(Action.topic_for(app))
 
@@ -71,12 +65,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
     {:noreply,
      socket
-     |> assign(
-       top_actions: top_actions,
-       action: action,
-       count: estimate_count(app),
-       authenticators: authenticators
-     )
+     |> assign(top_actions: top_actions, authenticators: authenticators)
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}
   end
@@ -188,10 +177,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
       end
 
     %{actions: actions, meta: meta, cursor: cursor}
-  end
-
-  defp estimate_count(%App{} = app) do
-    Database.QueryExt.count_estimate(app, Action)
   end
 
   defp has_filters?(socket) do

@@ -1,7 +1,7 @@
 <div class="p-6 flex flex-col gap-6">
-  <.form_header title={gettext("Headless API")} no_margin />
+  <.form_header title={gettext("Backend API")} no_margin />
   <.p>
-    You can use the Headless API to authenticate your users directly from your backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
+    You can use the Backend API to authenticate your users directly from your own backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
   </.p>
   <.a
     to={~p"/embed/install"}
@@ -10,7 +10,7 @@
     link_type="live_redirect"
   />
   <.form_separator no_margin />
-  <.form_header title={gettext("Basic usage")} no_margin />
+  <.form_header title={gettext("Email OTP")} no_margin />
   <.p>
     You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
   </.p>
@@ -18,23 +18,22 @@
     language={:typescript}
     code={
       ~s"""
-      import { Passwordless, Action } from "@passwordless/tools";
+      import { Passwordless } from "@passwordless/tools";
 
-        const action: Action = Passwordless.authenticate({
+        const action = Passwordless.authenticate({
           action: "login",
           user: {
-            user_id: "1234567890",
+            username: "1234567890",
             emails: [
-              {
-                address: "user@example.com",
-                primary: true,
-              },
+              { address: "user@example.com" },
             ],
           },
           rules: [
             {
               if: true,
-              then: [{ challenge: Passwordless.EMAIL }],
+              then: [
+                { challenge: Passwordless.EMAIL }
+              ],
             },
           ],
         });
@@ -42,12 +41,31 @@
     }
   />
   <.p>
-    If the action is challenged and it requires some input from the user, for example the OTP code, you can pass the action ID along with the input to the "process" endpoint.
+    The code above create an Email OTP challenge and delivers the code to the user. Then, the user provides the code back to the application:
   </.p>
+  <.code_block
+    language={:typescript}
+    code={
+      ~s"""
+      import { Passwordless } from "@passwordless/tools";
+
+      const action = Passwordless.continue({
+        action: {id: action.id},
+        data: {
+          otp_code: "123456",
+        },
+      });
+
+      if (action.state === Passwordless.ALLOW) {
+        console.log("User is allowed to continue");
+      }
+      """
+    }
+  />
   <.form_separator no_margin />
-  <.form_header title={gettext("User lifecycle")} no_margin />
+  <.form_header title={gettext("Magic link")} no_margin />
   <.p>
-    Passw
+    You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
   </.p>
   <.form_separator no_margin />
   <.form_header title={gettext("Rule evaluation")} no_margin />
@@ -61,29 +79,131 @@
     phx-change="validate"
     phx-target={@myself}
   >
-    <.field
-      field={@form[:default_action]}
-      type="select"
-      options={@actions}
-      icon_class={"pc-field-icon__icon " <> (
+    <.inputs_for :let={settings} field={@form[:settings]}>
+      <.field
+        field={settings[:default_action]}
+        type="select"
+        options={@actions}
+        icon_class={"pc-field-icon__icon " <> (
         case @default_action do
           :allow -> "text-success-600 dark:text-success-300"
           :block -> "text-danger-600 dark:text-danger-300"
         end
       )}
-      icon_mapping={@icon_mapping}
-      required
-      required_asterix={false}
-    />
+        icon_mapping={@icon_mapping}
+        required
+        required_asterix={false}
+      />
+    </.inputs_for>
   </.form>
   <.form_separator no_margin />
-  <.form_header title={gettext("Webhooks")} no_margin />
+  <.form_header title={gettext("Redirect URLs")} no_margin />
   <.p>
-    Passwordless supports webhooks for various events, such as user login, user registration, and password reset. You can use webhooks to trigger actions in your application when these events occur.
+    Passwordless supports webhooks for various events, such as user login, user registration, and password reset. You can use webhooks to trigger actions in your application when these events occur. For now, we support whitelisting the Magic Link redirect URLs.
   </.p>
+  <.a
+    to={~p"/authenticators/magic-link"}
+    label={gettext("Edit Magic Link")}
+    style="link"
+    link_type="live_redirect"
+  />
   <.form_separator no_margin />
   <.form_header title={gettext("Security")} no_margin />
   <.p>
     Passwordless uses industry-standard security practices to protect your data. All data is encrypted in transit and at rest. We also support two-factor authentication for added security.
   </.p>
+  <.form
+    id="app-security-form"
+    for={@form}
+    phx-submit="save"
+    phx-change="validate"
+    phx-target={@myself}
+  >
+    <.inputs_for :let={settings} field={@form[:settings]}>
+      <.field
+        type="checkbox"
+        field={settings[:whitelist_ip_access]}
+        label={gettext("Whitelist IP addresses")}
+        help_text={
+          gettext(
+            "Permit only specified IP addresses to make API calls. CIDR and IP notation is accepted."
+          )
+        }
+      />
+      <div :if={@whitelist_ip_access} class="pc-form-field-wrapper">
+        <.field_label>{gettext("Whitelisted IPs")}</.field_label>
+        <div class="flex flex-col gap-y-2">
+          <.inputs_for :let={f} field={settings[:whitelisted_ip_addresses]}>
+            <input
+              type="hidden"
+              name="app[settings][whitelisted_ip_addresses_sort][]"
+              value={f.index}
+            />
+            <div class="flex items-center grow gap-2">
+              <.field
+                type="text"
+                minlength="7"
+                maxlength="15"
+                pattern="^(?>(\d|[1-9]\d{2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?1)$"
+                label=""
+                field={f[:address]}
+                required
+                class="font-mono"
+                wrapper_class="mb-0! w-full grow"
+              >
+                <:action>
+                  <.icon_form_button
+                    size="sm"
+                    name="app[settings][whitelisted_ip_addresses_drop][]"
+                    type="button"
+                    icon="custom-trash"
+                    color="light"
+                    title={gettext("Remove")}
+                    value={f.index}
+                    event={JS.dispatch("change")}
+                  />
+                </:action>
+              </.field>
+            </div>
+          </.inputs_for>
+        </div>
+        <div class="flex mt-4">
+          <.button
+            size="xs"
+            type="button"
+            color="light"
+            icon="remix-add-circle-line"
+            label={gettext("Add IP or CIDR")}
+            name="app[settings][whitelisted_ip_addresses_sort][]"
+            value="new"
+            phx-click={JS.dispatch("change")}
+          />
+        </div>
+        <input type="hidden" name="app[settings][whitelisted_ip_addresses_drop][]" />
+      </div>
+    </.inputs_for>
+  </.form>
+  <div
+    :if={@whitelist_ip_access and Util.present?(@whitelisted_ip_addresses)}
+    class="flex flex-col gap-2"
+  >
+    <.p class="font-mono text-success-600 dark:text-success-300">
+      {gettext("Whitelisted IP ranges:")}
+    </.p>
+    <.ul>
+      <li
+        :for={{first, last, hosts} <- @whitelisted_ip_addresses}
+        class="font-mono text-success-600 dark:text-success-300"
+      >
+        {ngettext(
+          "%{first} - %{last} (%{count} host)",
+          "%{first} - %{last} (%{count} hosts)",
+          hosts,
+          first: first,
+          last: last,
+          count: hosts
+        )}
+      </li>
+    </.ul>
+  </div>
 </div>

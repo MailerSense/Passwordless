@@ -5,7 +5,7 @@ defmodule PasswordlessApi.Routes do
 
   defmacro __using__(_) do
     quote do
-      import PasswordlessApi.Auth
+      import PasswordlessApi.Plugs
 
       pipeline :api do
         plug :accepts, ["json"]
@@ -13,10 +13,12 @@ defmodule PasswordlessApi.Routes do
       end
 
       pipeline :api_authenticated do
-        plug :fetch_org
+        plug :authenticate_api
         plug :rate_limit_api
+      end
 
-        plug OneAndDone.Plug, cache: Cache
+      pipeline :api_idempotent do
+        plug OneAndDone.Plug, cache: Passwordless.Cache
       end
 
       scope "/api" do
@@ -27,6 +29,16 @@ defmodule PasswordlessApi.Routes do
 
       scope "/api/v1", PasswordlessApi do
         pipe_through [:api, :api_authenticated]
+
+        scope "/actions" do
+          pipe_through :api_idempotent
+
+          post "/authenticate", ActionController, :authenticate
+        end
+
+        scope "/users" do
+          get "/:id", ActorController, :get
+        end
       end
     end
   end

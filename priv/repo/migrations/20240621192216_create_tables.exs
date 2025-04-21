@@ -25,9 +25,10 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create table(:user_tokens, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :email, :citext
-      add :token, :binary, null: false
+      add :key, :binary, null: false
+      add :key_hash, :binary, null: false
       add :context, :string, null: false
+      add :email, :citext
 
       add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
@@ -35,9 +36,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create index(:user_tokens, [:user_id])
-    create index(:user_tokens, [:user_id, :context, :token])
-    create index(:user_tokens, [:context, :token])
-    create unique_index(:user_tokens, [:token])
+    create index(:user_tokens, [:user_id, :context, :key_hash])
+    create index(:user_tokens, [:context, :key_hash])
+    create unique_index(:user_tokens, [:key_hash])
 
     create table(:user_credentials, primary_key: false) do
       add :id, :uuid, primary_key: true
@@ -173,15 +174,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:apps, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
-      add :logo, :string
       add :state, :string, null: false
-      add :website, :string, null: false
-      add :display_name, :string, null: false
-      add :primary_button_color, :citext, null: false
-      add :secondary_button_color, :citext, null: false
-      add :email_configuration_set, :string
-      add :email_tracking, :boolean, default: false
-      add :default_action, :string, null: false
 
       add :org_id, references(:orgs, type: :uuid, on_delete: :delete_all), null: false
 
@@ -190,6 +183,28 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create index(:apps, [:org_id], where: "deleted_at is null")
+
+    ## App settings
+
+    create table(:app_settings, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :logo, :string
+      add :website, :string, null: false
+      add :display_name, :string, null: false
+      add :primary_button_color, :citext, null: false
+      add :secondary_button_color, :citext, null: false
+      add :email_configuration_set, :string
+      add :email_tracking, :boolean, default: false
+      add :default_action, :string, null: false
+      add :whitelist_ip_access, :boolean, default: false
+      add :whitelisted_ip_addresses, :map
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:app_settings, [:app_id])
 
     ## Media
 

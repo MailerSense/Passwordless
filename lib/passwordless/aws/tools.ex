@@ -6,7 +6,7 @@ defmodule Passwordless.AWS.Tools do
   @aws Application.compile_env!(:passwordless, :aws)
 
   @regions @aws |> Keyword.fetch!(:regions) |> Map.keys()
-  @arn_regex ~r/^arn:aws:[A-Za-z0-9_\.-]+:(#{Enum.join(@regions, "|")})?:(\d{12})?:[A-Za-z0-9_\/\.\-\*]+$/
+  @arn_regex ~r/^arn:aws:[A-Za-z0-9_\.-]+:(#{Enum.map_join(@regions, "|", &Regex.escape/1)})?:(\d{12})?:[A-Za-z0-9_\/\.\-\*]+$/
 
   @doc """
   Provides a canonical regex format for ARNs.

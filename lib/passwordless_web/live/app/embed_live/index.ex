@@ -5,7 +5,8 @@ defmodule PasswordlessWeb.App.EmbedLive.Index do
   @tabs [
     install: PasswordlessWeb.App.EmbedLive.Install,
     api: PasswordlessWeb.App.EmbedLive.API,
-    ui: PasswordlessWeb.App.EmbedLive.UI
+    ui: PasswordlessWeb.App.EmbedLive.UI,
+    access_log: PasswordlessWeb.App.EmbedLive.AccessLog
   ]
 
   @impl true

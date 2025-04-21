@@ -1,6 +1,6 @@
 defmodule Passwordless.Accounts.Token do
   @moduledoc """
-  A token is assigned to a user for a specific context (purpose).
+  A key is assigned to a user for a specific context (purpose).
   """
 
   use Passwordless.Schema, prefix: "acctkn"
@@ -12,9 +12,9 @@ defmodule Passwordless.Accounts.Token do
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
 
-  @size 32
+  @size 16
   @lifetimes [
-    session: :timer.hours(7 * 24),
+    session: :timer.hours(24) * 7,
     email_change: :timer.hours(6),
     email_confirmation: :timer.hours(6),
     password_reset: :timer.hours(6),
@@ -23,10 +23,10 @@ defmodule Passwordless.Accounts.Token do
   @contexts Keyword.keys(@lifetimes)
 
   schema "user_tokens" do
-    field :email, :string
-    field :token, :binary, redact: true
+    field :key, Passwordless.EncryptedBinary, redact: true
+    field :key_hash, Passwordless.HashedBinary, redact: true
     field :context, Ecto.Enum, values: @contexts
-    field :name, :map, virtual: true
+    field :email, :string
 
     belongs_to :user, User
 
@@ -36,53 +36,36 @@ defmodule Passwordless.Accounts.Token do
   def contexts, do: @contexts
 
   @doc """
-  Creates a new token for the given user and context.
+  Creates a new key for the given user and context.
   """
   def new(%User{} = user, context, attrs \\ %{}) when context in @contexts do
-    {token, token_signed} = generate_token(context)
+    {key, key_signed} = generate_key(context)
 
-    params = Map.merge(attrs, %{token: token, context: context})
+    params = Map.merge(attrs, %{key: key, context: context})
 
     changeset =
       user
       |> Ecto.build_assoc(:tokens)
       |> changeset(params)
 
-    {token_signed, changeset}
+    {key_signed, changeset}
   end
 
-  def hash(%__MODULE__{token: token}), do: :crypto.hash(:sha256, token)
+  def hash(%__MODULE__{key_hash: key_hash}), do: key_hash
 
-  @excluded_time_unites ~w(second seconds millisecond milliseconds)
-
-  def readable_expiry_time(%__MODULE__{context: context, inserted_at: inserted_at}) do
-    now = DateTime.utc_now()
-    expires_at = Timex.shift(inserted_at, milliseconds: Keyword.fetch!(@lifetimes, context))
-
-    now
-    |> Timex.diff(expires_at, :seconds)
-    |> Timex.Duration.from_seconds()
-    |> Timex.Format.Duration.Formatters.Humanized.format()
-    |> String.split(", ")
-    |> Enum.reject(fn s -> Enum.any?(@excluded_time_unites, &String.ends_with?(s, &1)) end)
-    |> Enum.join(", ")
-  end
-
-  def readable_name(%__MODULE__{context: context} = token) do
-    "#{Phoenix.Naming.humanize(context)} (expires in #{readable_expiry_time(token)})"
-  end
-
-  @fields ~w(token email context user_id)a
-  @required_fields ~w(token context user_id)a
+  @fields ~w(key email context user_id)a
+  @required_fields @fields -- [:email]
 
   @doc """
-  A user token changeset.
+  A user key changeset.
   """
-  def changeset(%__MODULE__{} = token, attrs \\ %{}) do
-    token
+  def changeset(%__MODULE__{} = key, attrs \\ %{}) do
+    key
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> validate_token()
+    |> validate_key()
+    |> put_hash_fields()
+    |> validate_key_hash()
     |> validate_email()
     |> assoc_constraint(:user)
   end
@@ -91,10 +74,10 @@ defmodule Passwordless.Accounts.Token do
   @edit_required_fields @edit_fields
 
   @doc """
-  An edit user token changeset.
+  An edit user key changeset.
   """
-  def edit_changeset(token, attrs \\ %{}, _metadata) do
-    token
+  def edit_changeset(key, attrs \\ %{}, _metadata) do
+    key
     |> cast(attrs, @edit_fields)
     |> validate_required(@edit_required_fields)
     |> validate_email()
@@ -102,15 +85,15 @@ defmodule Passwordless.Accounts.Token do
   end
 
   @doc """
-  Query for getting user by token and context.
+  Query for getting user by key and context.
   """
-  def get_user_by_token_and_context(token_signed, context) when is_binary(token_signed) and context in @contexts do
-    with {:ok, token} <- verify_token(token_signed, context) do
+  def get_user_by_token_and_context(key_signed, context) when is_binary(key_signed) and context in @contexts do
+    with {:ok, key} <- verify_key(key_signed, context) do
       {:ok,
        from(t in __MODULE__,
          where:
            t.context == ^context and
-             t.token == ^token and
+             t.key_hash == ^key and
              t.inserted_at > ago(^Keyword.fetch!(@lifetimes, context), "millisecond"),
          join: u in assoc(t, :user),
          select: u
@@ -119,16 +102,16 @@ defmodule Passwordless.Accounts.Token do
   end
 
   @doc """
-  Query for getting token by user and token and context.
+  Query for getting key by user and key and context.
   """
-  def get_by_user_and_token_and_context(%User{id: user_id}, token_signed, context)
-      when is_binary(token_signed) and context in @contexts do
-    with {:ok, token} <- verify_token(token_signed, context) do
+  def get_by_user_and_token_and_context(%User{id: user_id}, key_signed, context)
+      when is_binary(key_signed) and context in @contexts do
+    with {:ok, key} <- verify_key(key_signed, context) do
       {:ok,
        from(t in __MODULE__,
          where:
            t.user_id == ^user_id and
-             t.token == ^token and
+             t.key_hash == ^key and
              t.context == ^context and
              t.inserted_at > ago(^Keyword.fetch!(@lifetimes, context), "millisecond")
        )}
@@ -136,11 +119,11 @@ defmodule Passwordless.Accounts.Token do
   end
 
   @doc """
-  Query for getting token by token and context.
+  Query for getting key by key and context.
   """
-  def get_by_token_and_context(token_signed, context) when is_binary(token_signed) and context in @contexts do
-    with {:ok, token} <- verify_token(token_signed, context) do
-      {:ok, from(t in __MODULE__, where: t.token == ^token and t.context == ^context)}
+  def get_by_token_and_context(key_signed, context) when is_binary(key_signed) and context in @contexts do
+    with {:ok, key} <- verify_key(key_signed, context) do
+      {:ok, from(t in __MODULE__, where: t.key_hash == ^key and t.context == ^context)}
     end
   end
 
@@ -155,26 +138,42 @@ defmodule Passwordless.Accounts.Token do
 
   # Private
 
-  defp validate_token(changeset) do
+  defp validate_key(changeset) do
+    validate_length(changeset, :key, is: @size, count: :bytes)
+  end
+
+  defp validate_key_hash(changeset) do
     changeset
-    |> validate_length(:token, is: @size, count: :bytes)
-    |> unique_constraint(:token)
-    |> unsafe_validate_unique(:token, Passwordless.Repo)
+    |> validate_required(:key_hash)
+    |> unique_constraint(:key_hash)
+    |> unsafe_validate_unique(:key_hash, Passwordless.Repo)
   end
 
   defp validate_email(changeset) do
     ChangesetExt.validate_email(changeset, :email)
   end
 
-  defp generate_token(context) when context in @contexts do
+  @hashed_fields [key_hash: :key]
+
+  def put_hash_fields(changeset) do
+    Enum.reduce(@hashed_fields, changeset, fn {hashed_field, unhashed_field}, changeset ->
+      if value = get_field(changeset, unhashed_field) do
+        put_change(changeset, hashed_field, value)
+      else
+        changeset
+      end
+    end)
+  end
+
+  defp generate_key(context) when context in @contexts do
     raw = :crypto.strong_rand_bytes(@size)
-    signed = Token.sign(Endpoint, token_salt(), raw)
+    signed = Token.sign(Endpoint, key_salt(), raw)
     {raw, signed}
   end
 
-  defp verify_token(token, context) when is_binary(token) and context in @contexts do
-    Token.verify(Endpoint, token_salt(), token, max_age: div(Keyword.fetch!(@lifetimes, context), 1000))
+  defp verify_key(key, context) when is_binary(key) and context in @contexts do
+    Token.verify(Endpoint, key_salt(), key, max_age: div(Keyword.fetch!(@lifetimes, context), 1000))
   end
 
-  defp token_salt, do: Endpoint.config(:secret_key_base)
+  defp key_salt, do: Endpoint.config(:secret_key_base)
 end

@@ -30,18 +30,6 @@ defmodule Passwordless.AuthToken do
   end
 
   @doc """
-  Creates a new API key for the given app.
-  """
-  def new(%App{} = app, attrs \\ %{}) do
-    key = generate_key()
-    params = Map.put(attrs, "key", key)
-
-    app
-    |> Ecto.build_assoc(:auth_token)
-    |> changeset(params)
-  end
-
-  @doc """
   Get invitations for an app.
   """
   def get_by_app(query \\ __MODULE__, %App{} = app) do
@@ -64,12 +52,23 @@ defmodule Passwordless.AuthToken do
        from(a in App,
          join: at in assoc(a, :auth_token),
          where: at.key_hash == ^key,
-         select: {a, at}
+         select: {struct(a, [:id]), at}
        )}
     end
   end
 
   def get_app_and_key(_), do: {:error, :invalid_key}
+
+  @doc """
+  Get the app and key for an api key.
+  """
+  def get_app_by_token(@prefix <> auth_token) when is_binary(auth_token) do
+    with {:ok, key} <- Base58.decode58(auth_token) do
+      {:ok, from(a in App, join: at in assoc(a, :auth_token), where: at.key_hash == ^key, select: [:id])}
+    end
+  end
+
+  def get_app_by_token(_), do: {:error, :invalid_key}
 
   def generate_key do
     :crypto.strong_rand_bytes(@size)
@@ -112,24 +111,7 @@ defmodule Passwordless.AuthToken do
     |> validate_scopes()
     |> validate_key()
     |> put_hash_fields()
-    |> unique_constraint(:app_id)
-    |> unsafe_validate_unique(:app_id, Passwordless.Repo)
-    |> assoc_constraint(:app)
-  end
-
-  @create_fields ~w(scopes app_id)a
-  @create_required_fields @create_fields
-
-  @doc """
-  A api key changeset.
-  """
-  def create_changeset(%__MODULE__{} = auth_token, attrs \\ %{}) do
-    auth_token
-    |> cast(attrs, @create_fields)
-    |> validate_required(@create_required_fields)
-    |> validate_scopes()
-    |> validate_key()
-    |> put_hash_fields()
+    |> validate_key_hash()
     |> unique_constraint(:app_id)
     |> unsafe_validate_unique(:app_id, Passwordless.Repo)
     |> assoc_constraint(:app)
@@ -138,7 +120,12 @@ defmodule Passwordless.AuthToken do
   # Private
 
   defp validate_key(changeset) do
+    validate_length(changeset, :key, is: @size, count: :bytes)
+  end
+
+  defp validate_key_hash(changeset) do
     changeset
+    |> validate_required(:key_hash)
     |> unique_constraint(:key_hash)
     |> unsafe_validate_unique(:key_hash, Passwordless.Repo)
   end

@@ -15,7 +15,7 @@ defmodule Passwordless.Email.Renderer do
   @example_providers [
     actor: %Actor{
       name: "John Doe",
-      user_id: "1234567890",
+      username: "1234567890",
       language: :en,
       properties: %{
         "key1" => "value1",

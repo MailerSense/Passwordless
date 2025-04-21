@@ -9,7 +9,7 @@ defmodule Passwordless.TOTP do
 
   schema "totps" do
     field :name, :string
-    field :secret, :binary, redact: true
+    field :secret, Passwordless.EncryptedBinary, redact: true
     field :code, :string, virtual: true
 
     belongs_to :actor, Actor

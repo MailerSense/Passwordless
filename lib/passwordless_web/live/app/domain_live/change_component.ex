@@ -3,14 +3,19 @@ defmodule PasswordlessWeb.App.DomainLive.ChangeComponent do
   use PasswordlessWeb, :live_component
 
   alias Database.ChangesetExt
+  alias Passwordless.App
   alias Passwordless.Domain
+  alias Passwordless.Repo
 
   @impl true
-  def update(assigns, socket) do
+  def update(%{app: %App{} = app} = assigns, socket) do
+    app = Repo.preload(app, :settings)
+
     {:ok,
      socket
      |> assign(assigns)
      |> assign(
+       app: app,
        prefix:
          case assigns.domain_kind do
            :email_domain -> "auth"

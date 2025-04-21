@@ -9,7 +9,7 @@ defmodule PasswordlessWeb.App.HomeLive.ViewComponent do
   def update(%{action: %Action{} = action} = assigns, socket) do
     action =
       Repo.preload(action, [
-        :action_events,
+        :events,
         {:challenge, [:email_message]},
         actor: [:email, :phone]
       ])

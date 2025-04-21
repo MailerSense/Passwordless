@@ -7,14 +7,14 @@
     phx-change="validate"
     class="p-6"
   >
-    <.alert color="warning" class="mb-6" with_icon>
-      This authenticator is not yet available yet.
-    </.alert>
     <.field type="checkbox" field={@form[:enabled]} />
     <.p>
       Passkeys are a method that allows users to sign in without a password. When enabled, users will receive a prompt to add a passkey to their device. The passkey is valid for a limited time and can only be used once.
     </.p>
     <.form_separator />
+    <.alert color="warning" class="mb-6" with_icon>
+      {gettext("This authenticator will be available soon.")}
+    </.alert>
     <.field
       field={@form[:relying_party_id]}
       label={gettext("Relying Party ID")}

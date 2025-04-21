@@ -12,8 +12,12 @@ end
 
 defimpl Passwordless.Templating.VariableProvider, for: Passwordless.App do
   alias Passwordless.App
+  alias Passwordless.Repo
 
   @keys ~w(
+    name
+  )a
+  @settings_keys ~w(
     name
     logo
     website
@@ -28,9 +32,17 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.App do
   Provide the app variables.
   """
   def variables(%App{} = app) do
+    app = Repo.preload(app, :settings)
+
+    settings_keys =
+      app.settings
+      |> Map.from_struct()
+      |> Map.take(@settings_keys)
+
     app
     |> Map.from_struct()
     |> Map.take(@keys)
+    |> Map.merge(settings_keys)
   end
 end
 
