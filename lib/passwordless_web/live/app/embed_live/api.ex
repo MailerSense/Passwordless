@@ -4,13 +4,16 @@ defmodule PasswordlessWeb.App.EmbedLive.API do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.App
+  alias Passwordless.AppSettings
+  alias Passwordless.Repo
 
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
+    app = Repo.preload(app, :settings)
     changeset = Passwordless.change_app(app)
 
     actions =
-      Enum.map(App.actions(), fn action ->
+      Enum.map(AppSettings.actions(), fn action ->
         {Phoenix.Naming.humanize(action), action}
       end)
 
@@ -26,6 +29,7 @@ defmodule PasswordlessWeb.App.EmbedLive.API do
      socket
      |> assign(assigns)
      |> assign(
+       app: app,
        actions: actions,
        icon_mapping: icon_mapping
      )
@@ -72,10 +76,11 @@ defmodule PasswordlessWeb.App.EmbedLive.API do
   # Private
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    settings = Ecto.Changeset.get_field(changeset, :settings)
+
     addresses =
-      changeset
-      |> Ecto.Changeset.get_field(:whitelisted_ip_addresses, [])
-      |> Enum.map(fn %App.IPAddress{address: addr} -> Util.CIDR.parse(addr) end)
+      settings.whitelisted_ip_addresses
+      |> Enum.map(fn %AppSettings.IPAddress{address: addr} -> Util.CIDR.parse(addr) end)
       |> Enum.filter(&match?(%Util.CIDR{}, &1))
       |> Enum.map(fn %Util.CIDR{first: first, last: last, hosts: hosts} ->
         {format_ip(first), format_ip(last), hosts}
@@ -83,8 +88,8 @@ defmodule PasswordlessWeb.App.EmbedLive.API do
 
     socket
     |> assign(form: to_form(changeset))
-    |> assign(default_action: Ecto.Changeset.get_field(changeset, :default_action))
-    |> assign(whitelist_ip_access: Ecto.Changeset.get_field(changeset, :whitelist_ip_access))
+    |> assign(default_action: settings.default_action)
+    |> assign(whitelist_ip_access: settings.whitelist_ip_access)
     |> assign(whitelisted_ip_addresses: addresses)
   end
 

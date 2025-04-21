@@ -38,10 +38,6 @@ defmodule PasswordlessWeb.Knowledge.PricingLive do
     >
       <.tabbed_layout current_page={@current_page} menu_items={@menu_items} inner_class="p-6">
         <div class="flex flex-col gap-6">
-          <.form_header title={gettext("Free")} no_margin />
-          <.p>
-            Following tables show the pricing for different services. The baseline plans are dependent on the number of monthly active users (MAU). You are also charged for the communication services if you exceed the allotted free tiers.
-          </.p>
           <.simple_table
             :for={item <- @pricing}
             items={item.items}

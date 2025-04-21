@@ -12,6 +12,7 @@ defmodule Passwordless.Actor do
   alias Passwordless.Action
   alias Passwordless.App
   alias Passwordless.Email
+  alias Passwordless.Enrollment
   alias Passwordless.Locale
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
@@ -67,7 +68,7 @@ defmodule Passwordless.Actor do
     field :state, Ecto.Enum, values: @states, default: :active
     field :username, :string
     field :language, Ecto.Enum, values: Locale.language_codes(), default: :en
-    field :properties, :map, default: %{}
+    field :properties, Passwordless.EncryptedMap
     field :properties_text, :string, virtual: true
 
     field :active, :boolean, default: true, virtual: true
@@ -81,6 +82,7 @@ defmodule Passwordless.Actor do
     has_many :emails, Email, preload_order: [asc: :inserted_at]
     has_many :phones, Phone, preload_order: [asc: :inserted_at]
     has_many :actions, Action, preload_order: [asc: :inserted_at]
+    has_many :enrollments, Enrollment, preload_order: [asc: :inserted_at]
 
     timestamps()
     soft_delete_timestamp()
@@ -195,7 +197,6 @@ defmodule Passwordless.Actor do
   @required_fields ~w(
     state
     language
-    properties
     active
   )a
 

@@ -174,8 +174,21 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:apps, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
-      add :logo, :string
       add :state, :string, null: false
+
+      add :org_id, references(:orgs, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create index(:apps, [:org_id], where: "deleted_at is null")
+
+    ## App settings
+
+    create table(:app_settings, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :logo, :string
       add :website, :string, null: false
       add :display_name, :string, null: false
       add :primary_button_color, :citext, null: false
@@ -186,13 +199,12 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :whitelist_ip_access, :boolean, default: false
       add :whitelisted_ip_addresses, :map
 
-      add :org_id, references(:orgs, type: :uuid, on_delete: :delete_all), null: false
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
-      soft_delete_column()
     end
 
-    create index(:apps, [:org_id], where: "deleted_at is null")
+    create unique_index(:app_settings, [:app_id])
 
     ## Media
 

@@ -15,7 +15,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    current_app = Repo.preload(socket.assigns.current_app, [:email_domain, :tracking_domain])
+    current_app = Repo.preload(socket.assigns.current_app, [:settings, :email_domain, :tracking_domain])
     changeset = Passwordless.change_app(current_app)
 
     domain_kind =
@@ -97,9 +97,11 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   # Private
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    settings = Ecto.Changeset.get_field(changeset, :settings)
+
     socket
     |> assign(form: to_form(changeset))
-    |> assign(email_tracking: Ecto.Changeset.get_field(changeset, :email_tracking))
+    |> assign(email_tracking: settings.email_tracking)
   end
 
   defp apply_action(socket, :index) do

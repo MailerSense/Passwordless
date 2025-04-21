@@ -15,7 +15,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :state, :string, null: false
       add :username, :string
       add :language, :string, null: false
-      add :properties, :map, null: false, default: %{}
+      add :properties, :binary, null: false
 
       timestamps()
       soft_delete_column()
@@ -27,8 +27,6 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     execute "create index actors_name_gin_trgm_idx on #{prefix()}.actors using gin (name gin_trgm_ops) where deleted_at is null;"
 
     execute "create index actors_username_gin_trgm_idx on #{prefix()}.actors using gin (username gin_trgm_ops) where deleted_at is null;"
-
-    execute "create index actors_properties_gin_trgm_idx on #{prefix()}.actors using gin ((properties::text) gin_trgm_ops) where deleted_at is null;"
 
     ## Action Behavior
 
@@ -92,7 +90,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create unique_index(:emails, [:actor_id, :primary], where: "\"primary\"")
     create unique_index(:emails, [:actor_id, :address], where: "deleted_at is null")
 
-    execute "create index emails_email_gin_trgm_idx on #{prefix()}.emails using gin (address gin_trgm_ops);"
+    execute "create index emails_address_gin_trgm_idx on #{prefix()}.emails using gin (address gin_trgm_ops);"
 
     ## Email messages
 
@@ -300,6 +298,19 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       soft_delete_column()
     end
 
+    ## Enrollments
+
+    create table(:enrollments, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :state, :string, null: false
+
+      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+
+      add :totp_id, references(:totps, type: :uuid, on_delete: :nilify_all)
+
+      timestamps()
+    end
+
     ## Action details
 
     create table(:otps, primary_key: false) do
@@ -320,7 +331,8 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create table(:magic_links, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :token, :binary, null: false
+      add :key, :binary, null: false
+      add :key_hash, :binary, null: false
       add :expires_at, :utc_datetime_usec, null: false
       add :accepted_at, :utc_datetime_usec
 

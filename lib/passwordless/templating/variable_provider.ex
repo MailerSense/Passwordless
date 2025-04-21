@@ -15,6 +15,9 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.App do
 
   @keys ~w(
     name
+  )a
+  @settings_keys ~w(
+    name
     logo
     website
     display_name
@@ -28,9 +31,15 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.App do
   Provide the app variables.
   """
   def variables(%App{} = app) do
+    settings_keys =
+      app.settings
+      |> Map.from_struct()
+      |> Map.take(@settings_keys)
+
     app
     |> Map.from_struct()
     |> Map.take(@keys)
+    |> Map.merge(settings_keys)
   end
 end
 

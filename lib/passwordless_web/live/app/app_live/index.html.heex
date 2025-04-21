@@ -4,48 +4,60 @@
     <.p class="mb-6">
       App is a single software project - a website, mobile app or an API. You can create multiple apps under a single organization e.g. for dev, staging, prod. Apps are separate from each other.
     </.p>
-    <.image_input
-      upload={@uploads.logo}
-      label={gettext("Logo")}
-      current_image_src={@current_app.logo}
-      placeholder_icon="remix-image-line"
-      on_delete="clear_logo"
-      automatic_help_text
-    />
-    <.field
-      field={@form[:name]}
-      placeholder={gettext("e.g. YourSite")}
-      autocomplete="organization"
-      required
-    />
-    <.field
-      type="url"
-      field={@form[:website]}
-      placeholder={gettext("e.g. https://gmail.com")}
-      autocomplete="url"
-      required
-    />
-    <.field
-      field={@form[:display_name]}
-      placeholder={gettext("e.g. YourApp")}
-      autocomplete="organization"
-      required
-    />
-    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
-      <.field field={@form[:primary_button_color]} type="color" required wrapper_class="mb-0!" />
-      <.field field={@form[:secondary_button_color]} type="color" required wrapper_class="mb-0!" />
-    </div>
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-3 flex-wrap">
-        <.a
-          to={~p"/app/new"}
-          label={gettext("Create new app")}
-          style="link"
-          link_type="live_redirect"
+    <.inputs_for :let={settings} field={@form[:settings]}>
+      <.image_input
+        upload={@uploads.logo}
+        label={gettext("Logo")}
+        current_image_src={@current_app.settings.logo}
+        placeholder_icon="remix-image-line"
+        on_delete="clear_logo"
+        automatic_help_text
+      />
+      <.field
+        field={@form[:name]}
+        placeholder={gettext("e.g. YourSite")}
+        autocomplete="organization"
+        required
+      />
+      <.field
+        type="url"
+        field={settings[:website]}
+        placeholder={gettext("e.g. https://gmail.com")}
+        autocomplete="url"
+        required
+      />
+      <.field
+        field={settings[:display_name]}
+        placeholder={gettext("e.g. YourApp")}
+        autocomplete="organization"
+        required
+      />
+      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+        <.field
+          field={settings[:primary_button_color]}
+          type="color"
+          required
+          wrapper_class="mb-0!"
+        />
+        <.field
+          field={settings[:secondary_button_color]}
+          type="color"
+          required
+          wrapper_class="mb-0!"
         />
       </div>
-      <.button icon="remix-save-line" label={gettext("Save")} />
-    </div>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3 flex-wrap">
+          <.a
+            to={~p"/app/new"}
+            label={gettext("Create new app")}
+            style="link"
+            link_type="live_redirect"
+          />
+        </div>
+        <.button icon="remix-save-line" label={gettext("Save")} />
+      </div>
+    </.inputs_for>
   </.form>
 </.tabbed_settings_layout>
 

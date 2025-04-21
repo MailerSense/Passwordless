@@ -31,40 +31,42 @@
     />
     <.form_separator no_margin />
     <.form_header title={gettext("Advanced")} no_margin />
-    <.form id="edit-app-form" for={@form} phx-submit="save_app" phx-change="validate_app">
+    <.inputs_for :let={settings} field={@form[:settings]}>
+      <.form id="edit-app-form" for={@form} phx-submit="save_app" phx-change="validate_app">
+        <.field
+          type="checkbox"
+          field={settings[:email_tracking]}
+          help_text={
+            gettext(
+              "Track users who successfully received your email and opened it in their email clients."
+            )
+          }
+        />
+      </.form>
       <.field
-        type="checkbox"
-        field={@form[:email_tracking]}
-        help_text={
-          gettext(
-            "Track users who successfully received your email and opened it in their email clients."
-          )
-        }
+        :if={@email_tracking and Util.present?(@tracking_domain)}
+        name="tracking_domain"
+        value={@tracking_domain.name}
+        label={gettext("Tracking domain")}
+        badge={domain_state_badge(@tracking_domain)}
+        readonly
+        wrapper_class="mb-0!"
       />
-    </.form>
-    <.field
-      :if={@email_tracking and Util.present?(@tracking_domain)}
-      name="tracking_domain"
-      value={@tracking_domain.name}
-      label={gettext("Tracking domain")}
-      badge={domain_state_badge(@tracking_domain)}
-      readonly
-      wrapper_class="mb-0!"
-    />
-    <.a
-      :if={@email_tracking and not Domain.verified?(@tracking_domain)}
-      to={~p"/domain/tracking/dns"}
-      label={gettext("Setup DNS records")}
-      style="link"
-      link_type="live_patch"
-    />
-    <.a
-      :if={@email_tracking and not Util.present?(@tracking_domain)}
-      to={~p"/domain/tracking/new"}
-      label={gettext("Set up tracking domain")}
-      style="link"
-      link_type="live_patch"
-    />
+      <.a
+        :if={@email_tracking and not Domain.verified?(@tracking_domain)}
+        to={~p"/domain/tracking/dns"}
+        label={gettext("Setup DNS records")}
+        style="link"
+        link_type="live_patch"
+      />
+      <.a
+        :if={@email_tracking and not Util.present?(@tracking_domain)}
+        to={~p"/domain/tracking/new"}
+        label={gettext("Set up tracking domain")}
+        style="link"
+        link_type="live_patch"
+      />
+    </.inputs_for>
     <.form_separator :if={Util.present?(@email_domain)} no_margin />
     <.form_header :if={Util.present?(@email_domain)} title={gettext("Danger zone")} no_margin />
     <.p :if={Util.present?(@email_domain)}>

@@ -44,11 +44,13 @@ defmodule Passwordless.Organizations.OrgSeeder do
     {:ok, app} =
       Passwordless.create_app(org, %{
         name: "Demo App",
-        logo: "https://cdn.passwordlesstools.com/logos/passwordless.png",
-        website: "https://passwordless.tools",
-        display_name: "Demo App",
-        email_tracking: true,
-        email_configuration_set: "passwordless-tools-app-ses-config-set"
+        settings: %{
+          logo: "https://cdn.passwordlesstools.com/logos/passwordless.png",
+          website: "https://passwordless.tools",
+          display_name: "Demo App",
+          email_tracking: true,
+          email_configuration_set: "passwordless-tools-app-ses-config-set"
+        }
       })
 
     {:ok, auth_token} = Passwordless.create_auth_token(app, %{scopes: [:sync]})
@@ -84,7 +86,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
           sender: "verify",
           sender_name: app.name,
           email_template_id: magic_link_template.id,
-          redirect_urls: [%{url: app.website}]
+          redirect_urls: [%{url: app.settings.website}]
         },
         email: %{
           sender: "verify",
@@ -95,12 +97,12 @@ defmodule Passwordless.Organizations.OrgSeeder do
           issuer_name: app.name
         },
         security_key: %{
-          relying_party_id: URI.parse(app.website).host,
-          expected_origins: [%{url: app.website}]
+          relying_party_id: URI.parse(app.settings.website).host,
+          expected_origins: [%{url: app.settings.website}]
         },
         passkey: %{
-          relying_party_id: URI.parse(app.website).host,
-          expected_origins: [%{url: app.website}]
+          relying_party_id: URI.parse(app.settings.website).host,
+          expected_origins: [%{url: app.settings.website}]
         }
       })
 

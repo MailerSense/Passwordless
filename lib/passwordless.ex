@@ -11,6 +11,7 @@ defmodule Passwordless do
   alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
+  alias Passwordless.AppSettings
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
@@ -81,6 +82,10 @@ defmodule Passwordless do
     |> Ecto.build_assoc(:apps)
     |> App.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, app} -> {:ok, Repo.preload(app, :settings)}
+      error -> error
+    end
   end
 
   def create_full_app(%Org{} = org, attrs \\ %{}) do
@@ -91,7 +96,7 @@ defmodule Passwordless do
                magic_link: %{
                  sender: "verify",
                  sender_name: app.name,
-                 redirect_urls: [%{url: app.website}]
+                 redirect_urls: [%{url: app.settings.website}]
                },
                email: %{
                  sender: "verify",
@@ -101,12 +106,12 @@ defmodule Passwordless do
                  issuer_name: app.name
                },
                security_key: %{
-                 relying_party_id: URI.parse(app.website).host,
-                 expected_origins: [%{url: app.website}]
+                 relying_party_id: URI.parse(app.settings.website).host,
+                 expected_origins: [%{url: app.settings.website}]
                },
                passkey: %{
-                 relying_party_id: URI.parse(app.website).host,
-                 expected_origins: [%{url: app.website}]
+                 relying_party_id: URI.parse(app.settings.website).host,
+                 expected_origins: [%{url: app.settings.website}]
                }
              }),
            do: {:ok, app}
@@ -387,8 +392,8 @@ defmodule Passwordless do
   end
 
   def get_tracking_domain(%App{} = app) do
-    case Repo.preload(app, :tracking_domain) do
-      %App{email_tracking: true, tracking_domain: %Domain{purpose: :tracking} = domain} ->
+    case Repo.preload(app, [:settings, :tracking_domain]) do
+      %App{settings: %AppSettings{email_tracking: true}, tracking_domain: %Domain{purpose: :tracking} = domain} ->
         {:ok, domain}
 
       _ ->
@@ -756,6 +761,7 @@ defmodule Passwordless do
 
   def seed_email_template(%App{} = app, preset, language, attrs \\ %{}) do
     Repo.transact(fn ->
+      app = Repo.preload(app, :settings)
       settings = app |> EmailTemplates.get_seed(preset, language) |> Map.merge(attrs)
       locale_attrs = Map.merge(%{language: language}, settings)
 
@@ -783,6 +789,7 @@ defmodule Passwordless do
         locale
 
       nil ->
+        app = Repo.preload(app, :settings)
         preset = :magic_link_sign_in
         settings = EmailTemplates.get_seed(app, preset, language)
         attrs = Map.merge(%{language: language}, settings)

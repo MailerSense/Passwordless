@@ -3,11 +3,14 @@ defmodule PasswordlessWeb.App.EmailLive.FileComponent do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.App
+  alias Passwordless.AppSettings
   alias Passwordless.FileUploads
   alias Passwordless.Media
+  alias Passwordless.Repo
 
   @impl true
   def update(%{current_app: %App{} = app} = assigns, socket) do
+    app = Repo.preload(app, :settings)
     media = Enum.reject([logo_to_media(app) | Passwordless.list_media(app)], &is_nil/1)
 
     changeset =
@@ -25,7 +28,7 @@ defmodule PasswordlessWeb.App.EmailLive.FileComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(media: media, uploaded_files: [])
+     |> assign(app: app, media: media, uploaded_files: [])
      |> assign_form(changeset)
      |> allow_upload(:new_media, upload_opts)}
   end
@@ -112,9 +115,9 @@ defmodule PasswordlessWeb.App.EmailLive.FileComponent do
     end
   end
 
-  defp logo_to_media(%App{logo: nil}), do: nil
+  defp logo_to_media(%App{settings: %AppSettings{logo: nil}}), do: nil
 
-  defp logo_to_media(%App{logo: logo} = app) do
+  defp logo_to_media(%App{settings: %AppSettings{logo: logo}} = app) do
     %Media{
       name: Path.basename(logo),
       size: 1000,

@@ -20,7 +20,7 @@ defmodule Passwordless.EmailTemplates do
         en: %{
           name: gettext("Magic link template"),
           style: :magic_link_clean,
-          subject: gettext("Sign in to %{name}", name: app.display_name),
+          subject: gettext("Sign in to %{name}", name: app.settings.display_name),
           preheader: gettext("Click the link below to sign in."),
           mjml_body:
             Passwordless.Formatter.format!(
@@ -149,7 +149,7 @@ defmodule Passwordless.EmailTemplates do
         en: %{
           name: gettext("Email OTP template"),
           style: :email_otp_clean,
-          subject: gettext("Sign in to %{name}", name: app.display_name),
+          subject: gettext("Sign in to %{name}", name: app.settings.display_name),
           preheader: gettext("Use the code below to sign in."),
           mjml_body:
             Passwordless.Formatter.format!(

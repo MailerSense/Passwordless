@@ -79,20 +79,22 @@
     phx-change="validate"
     phx-target={@myself}
   >
-    <.field
-      field={@form[:default_action]}
-      type="select"
-      options={@actions}
-      icon_class={"pc-field-icon__icon " <> (
+    <.inputs_for :let={settings} field={@form[:settings]}>
+      <.field
+        field={settings[:default_action]}
+        type="select"
+        options={@actions}
+        icon_class={"pc-field-icon__icon " <> (
         case @default_action do
           :allow -> "text-success-600 dark:text-success-300"
           :block -> "text-danger-600 dark:text-danger-300"
         end
       )}
-      icon_mapping={@icon_mapping}
-      required
-      required_asterix={false}
-    />
+        icon_mapping={@icon_mapping}
+        required
+        required_asterix={false}
+      />
+    </.inputs_for>
   </.form>
   <.form_separator no_margin />
   <.form_header title={gettext("Redirect URLs")} no_margin />
@@ -117,63 +119,69 @@
     phx-change="validate"
     phx-target={@myself}
   >
-    <.field
-      type="checkbox"
-      field={@form[:whitelist_ip_access]}
-      label={gettext("Whitelist IP addresses")}
-      help_text={
-        gettext(
-          "Permit only specified IP addresses to make API calls. CIDR and IP notation is accepted."
-        )
-      }
-    />
-    <div :if={@whitelist_ip_access} class="pc-form-field-wrapper">
-      <.field_label>{gettext("Whitelisted IPs")}</.field_label>
-      <div class="flex flex-col gap-y-2">
-        <.inputs_for :let={f} field={@form[:whitelisted_ip_addresses]}>
-          <input type="hidden" name="app[whitelisted_ip_addresses_sort][]" value={f.index} />
-          <div class="flex items-center grow gap-2">
-            <.field
-              type="text"
-              minlength="7"
-              maxlength="15"
-              pattern="^(?>(\d|[1-9]\d{2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?1)$"
-              label=""
-              field={f[:address]}
-              required
-              class="font-mono"
-              wrapper_class="mb-0! w-full grow"
-            >
-              <:action>
-                <.icon_form_button
-                  size="sm"
-                  name="app[whitelisted_ip_addresses_drop][]"
-                  type="button"
-                  icon="custom-trash"
-                  color="light"
-                  title={gettext("Remove")}
-                  value={f.index}
-                  event={JS.dispatch("change")}
-                />
-              </:action>
-            </.field>
-          </div>
-        </.inputs_for>
+    <.inputs_for :let={settings} field={@form[:settings]}>
+      <.field
+        type="checkbox"
+        field={settings[:whitelist_ip_access]}
+        label={gettext("Whitelist IP addresses")}
+        help_text={
+          gettext(
+            "Permit only specified IP addresses to make API calls. CIDR and IP notation is accepted."
+          )
+        }
+      />
+      <div :if={@whitelist_ip_access} class="pc-form-field-wrapper">
+        <.field_label>{gettext("Whitelisted IPs")}</.field_label>
+        <div class="flex flex-col gap-y-2">
+          <.inputs_for :let={f} field={settings[:whitelisted_ip_addresses]}>
+            <input
+              type="hidden"
+              name="app[settings][whitelisted_ip_addresses_sort][]"
+              value={f.index}
+            />
+            <div class="flex items-center grow gap-2">
+              <.field
+                type="text"
+                minlength="7"
+                maxlength="15"
+                pattern="^(?>(\d|[1-9]\d{2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?1)$"
+                label=""
+                field={f[:address]}
+                required
+                class="font-mono"
+                wrapper_class="mb-0! w-full grow"
+              >
+                <:action>
+                  <.icon_form_button
+                    size="sm"
+                    name="app[settings][whitelisted_ip_addresses_drop][]"
+                    type="button"
+                    icon="custom-trash"
+                    color="light"
+                    title={gettext("Remove")}
+                    value={f.index}
+                    event={JS.dispatch("change")}
+                  />
+                </:action>
+              </.field>
+            </div>
+          </.inputs_for>
+        </div>
+        <div class="flex mt-4">
+          <.button
+            size="xs"
+            type="button"
+            color="light"
+            icon="remix-add-circle-line"
+            label={gettext("Add IP or CIDR")}
+            name="app[settings][whitelisted_ip_addresses_sort][]"
+            value="new"
+            phx-click={JS.dispatch("change")}
+          />
+        </div>
+        <input type="hidden" name="app[settings][whitelisted_ip_addresses_drop][]" />
       </div>
-      <div class="flex mt-4">
-        <.button
-          size="xs"
-          type="button"
-          color="light"
-          icon="remix-add-circle-line"
-          label={gettext("Add IP or CIDR")}
-          name="app[whitelisted_ip_addresses_sort][]"
-          value="new"
-          phx-click={JS.dispatch("change")}
-        />
-      </div>
-      <input type="hidden" name="app[whitelisted_ip_addresses_drop][]" />
-    </div>
+    </.inputs_for>
   </.form>
   <div
     :if={@whitelist_ip_access and Util.present?(@whitelisted_ip_addresses)}
