@@ -5,7 +5,6 @@ defmodule Passwordless.Enrollment do
 
   use Passwordless.Schema, prefix: "enrlmnt"
 
-
   alias Passwordless.Actor
   alias Passwordless.TOTP
 
@@ -28,8 +27,7 @@ defmodule Passwordless.Enrollment do
   schema "enrollments" do
     field :state, Ecto.Enum, values: @states
 
-    has_one :totp, TOTP
-
+    belongs_to :totp, TOTP
     belongs_to :actor, Actor
 
     timestamps()
