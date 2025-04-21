@@ -9,7 +9,7 @@
   >
     <.field type="checkbox" field={@form[:enabled]} />
     <.p>
-      Email OTP is a one-time code sent to the user's email. This code can the be used to sign in. The code is valid for a limited time and can only be used once.
+      Email OTP is a one-time code sent to the user via email. This code can the be used to sign in. The code is valid for a limited time and can only be used once.
     </.p>
     <.form_separator />
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
@@ -81,8 +81,7 @@
           },
           rules: [
             {
-              if: true,
-              then: [{ challenge: Passwordless.EMAIL }],
+              if: true, then: [{ challenge: Passwordless.EMAIL }],
             },
           ],
         });
