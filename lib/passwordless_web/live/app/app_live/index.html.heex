@@ -67,7 +67,7 @@
       id={@live_action}
       title={@page_title}
       subtitle={@page_subtitle}
-      app={Ecto.build_assoc(@current_org, :apps)}
+      app={@new_app}
       module={PasswordlessWeb.App.AppLive.FormComponent}
       return_to={~p"/app"}
       live_action={@live_action}

@@ -314,6 +314,7 @@ defmodule Util do
 
   def cast_simple_property("true"), do: true
   def cast_simple_property("false"), do: false
+  def cast_simple_property(value) when is_map(value), do: cast_property_map(value)
   def cast_simple_property(value), do: value
 
   def validate_property_map(map) when is_map(map) do
@@ -324,9 +325,8 @@ defmodule Util do
 
   def simple_type?(v) when is_integer(v) or is_float(v) or is_boolean(v), do: true
   def simple_type?(v) when is_binary(v), do: String.length(v) <= @max_string_length
-
   def simple_type?(v) when is_list(v), do: Enum.filter(v, fn v -> not is_list(v) and simple_type?(v) end)
-
+  def simple_type?(v) when is_map(v), do: validate_property_map(v)
   def simple_type?(_), do: false
 
   @doc """
@@ -495,6 +495,27 @@ defmodule Util do
   end
 
   def stringify_keys(other), do: other
+
+  @doc """
+  Count the number of lines in a JSON object.
+  """
+  def count_json_lines(json) when is_struct(json) do
+    count_json_lines(Map.from_struct(json))
+  end
+
+  def count_json_lines(json) when is_map(json) do
+    Enum.reduce(json, 2, fn {_key, value}, acc ->
+      acc + count_json_lines(value)
+    end)
+  end
+
+  def count_json_lines(json) when is_list(json) do
+    Enum.reduce(json, 2, fn value, acc ->
+      acc + count_json_lines(value)
+    end)
+  end
+
+  def count_json_lines(_json), do: 1
 
   # Private
 

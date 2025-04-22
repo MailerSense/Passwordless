@@ -2,10 +2,11 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
   use Ecto.Migration
 
   import Database.SoftDelete.Migration
+  import SqlFmt.Helpers
 
   def change do
-    execute "create extension if not exists citext", ""
-    execute "create extension if not exists pg_trgm", ""
+    execute ~SQL"CREATE extension IF NOT EXISTS citext", ""
+    execute ~SQL"CREATE extension IF NOT EXISTS pg_trgm", ""
 
     ## Accounts
 
@@ -196,8 +197,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :email_configuration_set, :string
       add :email_tracking, :boolean, default: false
       add :default_action, :string, null: false
-      add :whitelist_ip_access, :boolean, default: false
-      add :whitelisted_ip_addresses, :map
+      add :allowlist_api_access, :boolean, default: false
+      add :allowlisted_ip_addresses, :map, null: false, default: %{}
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 
@@ -335,6 +336,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :sender_name, :string, null: false
       add :email_tracking, :boolean, null: false, default: false
       add :fingerprint_device, :boolean, null: false, default: false
+      add :required_security_question, :boolean, null: false, default: false
       add :redirect_urls, :map, null: false, default: %{}
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
@@ -369,7 +371,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create unique_index(:whatsapp_authenticators, [:app_id])
 
-    create table(:email_authenticators, primary_key: false) do
+    create table(:email_otp_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :expires, :integer, null: false, default: 15
@@ -383,7 +385,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create unique_index(:email_authenticators, [:app_id])
+    create unique_index(:email_otp_authenticators, [:app_id])
 
     create table(:totp_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
@@ -456,7 +458,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     ## Magic Link mapping
 
     create table(:magic_link_mappings, primary_key: false) do
-      add :token, :binary, primary_key: true
+      add :key, :binary, null: false
+      add :key_hash, :binary, null: false
       add :magic_link_id, :uuid, null: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
@@ -465,6 +468,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create index(:magic_link_mappings, [:app_id])
+    create unique_index(:magic_link_mappings, [:key_hash])
     create unique_index(:magic_link_mappings, [:magic_link_id])
 
     ## Email Unsubscribe Link mapping
@@ -545,6 +549,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create index(:activity_logs, [:billing_subscription_id])
     create index(:activity_logs, [:domain_id])
 
-    execute "create index activity_logs_happened_at_idx on activity_logs ((happened_at::date));"
+    execute ~SQL"CREATE INDEX activity_logs_happened_at_idx ON activity_logs ((happened_at :: date));"
   end
 end

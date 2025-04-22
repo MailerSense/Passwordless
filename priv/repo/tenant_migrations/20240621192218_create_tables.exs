@@ -2,10 +2,11 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
   use Ecto.Migration
 
   import Database.SoftDelete.Migration
+  import SqlFmt.Helpers
 
   def change do
-    execute "create extension if not exists citext", ""
-    execute "create extension if not exists pg_trgm", ""
+    execute ~SQL"CREATE extension IF NOT EXISTS citext", ""
+    execute ~SQL"CREATE extension IF NOT EXISTS pg_trgm", ""
 
     ## Actors
 
@@ -28,7 +29,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     execute "create index actors_username_gin_trgm_idx on #{prefix()}.actors using gin (username gin_trgm_ops) where deleted_at is null;"
 
-    ## Action Behavior
+    ## Action rules
 
     create table(:rules, primary_key: false) do
       add :id, :uuid, primary_key: true
@@ -311,7 +312,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       timestamps()
     end
 
-    ## Action details
+    ## OTPs
 
     create table(:otps, primary_key: false) do
       add :id, :uuid, primary_key: true
@@ -328,6 +329,8 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create unique_index(:otps, [:email_message_id])
     create unique_index(:otps, [:phone_message_id])
+
+    ## Magic links
 
     create table(:magic_links, primary_key: false) do
       add :id, :uuid, primary_key: true

@@ -38,7 +38,7 @@ defmodule PasswordlessWeb.Components.UsageBox do
           {Passwordless.Locale.Number.to_string!(@usage)}
         </span>
         <span class="text-slate-400 text-xs font-normal">
-          / {Passwordless.Locale.Number.to_string!(@usage_max)} {gettext("contacts")}
+          / {Passwordless.Locale.Number.to_string!(@usage_max)} {gettext("MAU")}
         </span>
       </div>
       <span class="text-slate-400 text-xs font-medium underline">

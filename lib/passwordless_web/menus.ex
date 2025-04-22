@@ -174,7 +174,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Authenticators"),
-      path: ~p"/authenticators/email",
+      path: ~p"/authenticators/email-otp",
       icon: "remix-shield-user-line",
       link_type: "live_patch"
     }

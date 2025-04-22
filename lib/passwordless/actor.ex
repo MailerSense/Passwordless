@@ -206,7 +206,7 @@ defmodule Passwordless.Actor do
   def create_changeset(%__MODULE__{} = actor, attrs \\ %{}, opts \\ []) do
     actor
     |> cast(attrs, @fields)
-    |> validate_required(@required_fields ++ [:name])
+    |> validate_required(@required_fields ++ [:name, :username])
     |> validate_name()
     |> validate_username(opts)
     |> validate_text_properties()
@@ -257,7 +257,6 @@ defmodule Passwordless.Actor do
       [actor: a, email: e, phone: p],
       ilike(a.name, ^value) or
         ilike(a.username, ^value) or
-        ilike(fragment("?::text", a.properties), ^value) or
         ilike(e.email, ^value) or
         ilike(p.phone, ^value)
     )

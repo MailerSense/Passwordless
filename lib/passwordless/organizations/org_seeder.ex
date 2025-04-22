@@ -49,7 +49,10 @@ defmodule Passwordless.Organizations.OrgSeeder do
           website: "https://passwordless.tools",
           display_name: "Demo App",
           email_tracking: true,
-          email_configuration_set: "passwordless-tools-app-ses-config-set"
+          email_configuration_set: "passwordless-tools-app-ses-config-set",
+          allowlisted_ip_addresses: [
+            %{address: "0.0.0.0/0"}
+          ]
         }
       })
 
@@ -88,7 +91,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
           email_template_id: magic_link_template.id,
           redirect_urls: [%{url: app.settings.website}]
         },
-        email: %{
+        email_otp: %{
           sender: "verify",
           sender_name: app.name,
           email_template_id: email_otp_template.id

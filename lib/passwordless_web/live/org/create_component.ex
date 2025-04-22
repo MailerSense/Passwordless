@@ -17,7 +17,7 @@ defmodule PasswordlessWeb.Org.CreateComponent do
   end
 
   @impl true
-  def handle_event("validate", %{"org" => org_params}, socket) do
+  def handle_event("validate", %{"new_org" => org_params}, socket) do
     changeset =
       socket.assigns.org
       |> Organizations.change_org(org_params)
@@ -27,7 +27,7 @@ defmodule PasswordlessWeb.Org.CreateComponent do
   end
 
   @impl true
-  def handle_event("save", %{"org" => org_params}, socket) do
+  def handle_event("save", %{"new_org" => org_params}, socket) do
     save_org(socket, socket.assigns.live_action, org_params)
   end
 
@@ -47,7 +47,7 @@ defmodule PasswordlessWeb.Org.CreateComponent do
   end
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    assign(socket, form: to_form(changeset))
+    assign(socket, form: to_form(changeset, as: :new_org))
   end
 
   defp assign_current_org(%User{current_org: %Org{id: id}} = user, %Org{id: id} = updated_org) do

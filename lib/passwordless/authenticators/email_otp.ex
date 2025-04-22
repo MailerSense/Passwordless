@@ -1,4 +1,4 @@
-defmodule Passwordless.Authenticators.Email do
+defmodule Passwordless.Authenticators.EmailOTP do
   @moduledoc """
   An Email authenticator.
   """
@@ -14,9 +14,9 @@ defmodule Passwordless.Authenticators.Email do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "email_authenticators" do
+  schema "email_otp_authenticators" do
     field :enabled, :boolean, default: true
-    field :expires, :integer, default: 15
+    field :expires, :integer, default: 5
     field :sender, :string
     field :sender_name, :string
 

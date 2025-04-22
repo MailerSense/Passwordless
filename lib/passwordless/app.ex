@@ -46,13 +46,11 @@ defmodule Passwordless.App do
     has_one :tracking_domain, Domain, where: [purpose: :tracking]
     has_one :auth_token, AuthToken
 
-    has_one :email, Authenticators.Email
-    has_one :sms, Authenticators.SMS
-    has_one :whatsapp, Authenticators.WhatsApp
+    has_one :email_otp, Authenticators.EmailOTP
     has_one :magic_link, Authenticators.MagicLink
-    has_one :totp, Authenticators.TOTP
-    has_one :security_key, Authenticators.SecurityKey
     has_one :passkey, Authenticators.Passkey
+    has_one :security_key, Authenticators.SecurityKey
+    has_one :totp, Authenticators.TOTP
     has_one :recovery_codes, Authenticators.RecoveryCodes
 
     has_many :media, Media, preload_order: [asc: :inserted_at]

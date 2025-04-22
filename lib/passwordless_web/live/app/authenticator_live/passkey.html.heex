@@ -8,10 +8,9 @@
     class="p-6"
   >
     <.field type="checkbox" field={@form[:enabled]} />
-    <.p>
-      Passkeys are a method that allows users to sign in without a password. When enabled, users will receive a prompt to add a passkey to their device. The passkey is valid for a limited time and can only be used once.
+    <.p class="mb-6">
+      Passkeys are a method that allows users to sign in without a password. When enabled, users will receive a prompt to add a passkey to their device.
     </.p>
-    <.form_separator />
     <.alert color="warning" class="mb-6" with_icon>
       {gettext("This authenticator will be available soon.")}
     </.alert>
@@ -20,32 +19,24 @@
       label={gettext("Relying Party ID")}
       disabled={not @enabled}
       required
-      help_text={
-        gettext(
-          "The relying party ID is a unique identifier for your application. It is used to generate the passkey and must be the same across all devices."
-        )
-      }
     />
     <.form_separator />
-    <.form_header title="Advanced" />
-    <.field
-      type="checkbox"
-      field={@form[:require_user_verification]}
-      help_text={
-        gettext(
-          "When required, an additional authentication factor - such as biometric auth, pin or password - must always be provided when using the passkey."
-        )
-      }
-      disabled={not @enabled}
-    />
+    <.form_header title={gettext("Uplift")} />
+    <.p class="mb-6">
+      The passkey uplift is a prompt that asks users to add a passkey to their device. This prompt will be shown to users when they sign in with a password. The prompt will be shown only once per user.
+    </.p>
     <.field
       type="select"
       field={@form[:uplift_prompt_interval]}
       options={@intervals}
       required
       disabled={not @enabled}
-      help_text={gettext("Specifies how frequently users will be asked to add a passkey.")}
     />
+    <.form_separator />
+    <.form_header title={gettext("Origins")} />
+    <.p class="mb-6">
+      The expected origins are the domains that the passkey can be used on. This is used to prevent phishing attacks. The passkey will only be valid for the specified domains.
+    </.p>
     <div class="pc-form-field-wrapper">
       <.field_label required>{gettext("Expected origins")}</.field_label>
       <div class="flex flex-col gap-y-2">
@@ -81,7 +72,7 @@
           </div>
         </.inputs_for>
       </div>
-      <div class="flex mt-4">
+      <div class="flex mt-2">
         <.button
           size="xs"
           type="button"
@@ -96,5 +87,17 @@
       </div>
       <input type="hidden" name="passkey[expected_origins_drop][]" />
     </div>
+    <.form_separator />
+    <.form_header title="Advanced" />
+    <.field
+      type="checkbox"
+      field={@form[:require_user_verification]}
+      help_text={
+        gettext(
+          "When required, an additional authentication factor - such as biometric auth, pin or password - must always be provided when using the passkey."
+        )
+      }
+      disabled={not @enabled}
+    />
   </.form>
 </div>

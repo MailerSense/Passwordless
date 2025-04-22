@@ -24,7 +24,7 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   end
 
   @impl true
-  def handle_event("validate", %{"app" => app_params}, socket) do
+  def handle_event("validate", %{"new_app" => app_params}, socket) do
     changeset =
       socket.assigns.app
       |> Passwordless.change_app(app_params)
@@ -34,7 +34,7 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   end
 
   @impl true
-  def handle_event("save", %{"app" => app_params}, socket) do
+  def handle_event("save", %{"new_app" => app_params}, socket) do
     app_params = maybe_add_logo(app_params, socket)
     save_app(socket, app_params)
   end
@@ -77,8 +77,10 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   end
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    settings = Ecto.Changeset.get_field(changeset, :settings)
+
     socket
-    |> assign(form: to_form(changeset))
-    |> assign(logo_src: Ecto.Changeset.get_field(changeset, :logo))
+    |> assign(form: to_form(changeset, as: :new_app))
+    |> assign(logo_src: settings.logo)
   end
 end

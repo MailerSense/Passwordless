@@ -5,6 +5,8 @@ defmodule PasswordlessWeb.App.AppLive.Index do
   import PasswordlessWeb.SettingsLayoutComponent
 
   alias Passwordless.Accounts.User
+  alias Passwordless.App
+  alias Passwordless.AppSettings
   alias Passwordless.FileUploads
   alias Passwordless.Repo
 
@@ -15,8 +17,14 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
+    current_org = socket.assigns.current_org
     current_app = socket.assigns.current_app
     current_app = Repo.preload(current_app, :settings)
+
+    new_app =
+      current_org
+      |> Ecto.build_assoc(:apps)
+      |> Kernel.then(&%App{&1 | settings: %AppSettings{}})
 
     upload_opts =
       FileUploads.prepare(
@@ -27,7 +35,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
     {:noreply,
      socket
-     |> assign(uploaded_files: [], current_app: current_app)
+     |> assign(uploaded_files: [], current_app: current_app, new_app: new_app)
      |> apply_action(socket.assigns.live_action, params)
      |> assign_form(Passwordless.change_app(current_app))
      |> allow_upload(:logo, upload_opts)}

@@ -8,12 +8,11 @@
     class="p-6"
   >
     <.field type="checkbox" field={@form[:enabled]} />
-    <.p>
-      Email OTP is a one-time code sent to the user's email. This code can the be used to sign in. The code is valid for a limited time and can only be used once.
+    <.p class="mb-6">
+      Email OTP is a one-time code sent to the user via email. This code can the be used to sign in. The code is valid for a limited time and can only be used once.
     </.p>
-    <.form_separator />
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
-      Do you want to send emails from your own domain?
+      Do you want to send branded emails?
       <.a
         to={~p"/domain"}
         label={gettext("Set up domain")}
@@ -22,7 +21,7 @@
         link_type="live_redirect"
       />
     </.alert>
-    <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2 mb-6">
+    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
       <.field field={@form[:sender_name]} disabled={not @enabled} required wrapper_class="mb-0!" />
       <.field
         field={@form[:sender]}
@@ -35,35 +34,34 @@
       />
     </div>
     <.email_preview
-      to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email"}"}
+      to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email-otp"}"}
       name={gettext("Edit email template")}
       preview={@preview}
       link_type="live_redirect"
     />
     <div class="flex items-center gap-3 flex-wrap">
       <.a
-        to={~p"/pricing/free"}
-        label={gettext("Review pricing")}
-        style="link"
-        link_type="live_redirect"
-      />
-      <.a
-        to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email"}"}
+        to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email-otp"}"}
         label={gettext("Edit email template")}
         style="link"
         link_type="live_redirect"
       />
     </div>
     <.form_separator />
-    <.form_header title="Advanced" />
+    <.form_header title={gettext("Lifetime")} />
+    <.p class="mb-6">
+      The expiration time is the time after which the OTP code will no longer be valid. It is recommended to set a short expiration time for the OTP code. This will help prevent unauthorized access.
+    </.p>
     <.field
       field={@form[:expires]}
       type="number"
-      label={gettext("Expires")}
+      min="0"
+      max="60"
       prefix={gettext("After")}
       suffix={gettext("minutes")}
       disabled={not @enabled}
       required
+      help_text={gettext("Between 1 and 60 minutes.")}
     />
     <.form_separator />
     <.form_header title="API - Authenticate with Email OTP" />
@@ -76,18 +74,15 @@
 
         const action: Action = Passwordless.authenticate({
           action: "login",
-          user: {
+          actor: {
             username: "1234567890",
             emails: [
-              {
-                address: "user@example.com",
-              },
+              { address: "user@example.com" },
             ],
           },
           rules: [
             {
-              if: true,
-              then: [{ challenge: Passwordless.EMAIL }],
+              if: true, then: [{ challenge: Passwordless.EMAIL }],
             },
           ],
         });
@@ -102,9 +97,9 @@
       language={:typescript}
       code={
         ~s"""
-        import { Passwordless, Action } from "@passwordless/tools";
+        import { Passwordless } from "@passwordless/tools";
 
-        const action: Action = Passwordless.continue({
+        const action = Passwordless.continue({
           action: {id: action.id},
           data: {
             otp_code: "123456",

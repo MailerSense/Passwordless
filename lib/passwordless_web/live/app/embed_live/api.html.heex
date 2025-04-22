@@ -22,7 +22,7 @@
 
         const action = Passwordless.authenticate({
           action: "login",
-          user: {
+          actor: {
             username: "1234567890",
             emails: [
               { address: "user@example.com" },
@@ -30,10 +30,7 @@
           },
           rules: [
             {
-              if: true,
-              then: [
-                { challenge: Passwordless.EMAIL }
-              ],
+              if: true, then: [ { challenge: Passwordless.EMAIL } ],
             },
           ],
         });
@@ -122,21 +119,21 @@
     <.inputs_for :let={settings} field={@form[:settings]}>
       <.field
         type="checkbox"
-        field={settings[:whitelist_ip_access]}
-        label={gettext("Whitelist IP addresses")}
+        field={settings[:allowlist_api_access]}
+        label={gettext("Allowlist API access")}
         help_text={
           gettext(
             "Permit only specified IP addresses to make API calls. CIDR and IP notation is accepted."
           )
         }
       />
-      <div :if={@whitelist_ip_access} class="pc-form-field-wrapper">
-        <.field_label>{gettext("Whitelisted IPs")}</.field_label>
+      <div :if={@allowlist_api_access} class="pc-form-field-wrapper">
+        <.field_label>{gettext("Allowlisted IP ranges")}</.field_label>
         <div class="flex flex-col gap-y-2">
-          <.inputs_for :let={f} field={settings[:whitelisted_ip_addresses]}>
+          <.inputs_for :let={f} field={settings[:allowlisted_ip_addresses]}>
             <input
               type="hidden"
-              name="app[settings][whitelisted_ip_addresses_sort][]"
+              name="app[settings][allowlisted_ip_addresses_sort][]"
               value={f.index}
             />
             <div class="flex items-center grow gap-2">
@@ -154,7 +151,7 @@
                 <:action>
                   <.icon_form_button
                     size="sm"
-                    name="app[settings][whitelisted_ip_addresses_drop][]"
+                    name="app[settings][allowlisted_ip_addresses_drop][]"
                     type="button"
                     icon="custom-trash"
                     color="light"
@@ -167,24 +164,24 @@
             </div>
           </.inputs_for>
         </div>
-        <div class="flex mt-4">
+        <div class="flex mt-2">
           <.button
             size="xs"
             type="button"
             color="light"
             icon="remix-add-circle-line"
-            label={gettext("Add IP or CIDR")}
-            name="app[settings][whitelisted_ip_addresses_sort][]"
+            label={gettext("Add IP range")}
+            name="app[settings][allowlisted_ip_addresses_sort][]"
             value="new"
             phx-click={JS.dispatch("change")}
           />
         </div>
-        <input type="hidden" name="app[settings][whitelisted_ip_addresses_drop][]" />
+        <input type="hidden" name="app[settings][allowlisted_ip_addresses_drop][]" />
       </div>
     </.inputs_for>
   </.form>
   <div
-    :if={@whitelist_ip_access and Util.present?(@whitelisted_ip_addresses)}
+    :if={@allowlist_api_access and Util.present?(@allowlisted_ip_addresses)}
     class="flex flex-col gap-2"
   >
     <.p class="font-mono text-success-600 dark:text-success-300">
@@ -192,7 +189,7 @@
     </.p>
     <.ul>
       <li
-        :for={{first, last, hosts} <- @whitelisted_ip_addresses}
+        :for={{first, last, hosts} <- @allowlisted_ip_addresses}
         class="font-mono text-success-600 dark:text-success-300"
       >
         {ngettext(

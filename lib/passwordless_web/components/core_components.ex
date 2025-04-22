@@ -20,7 +20,7 @@ defmodule PasswordlessWeb.CoreComponents do
 
   def tabbed_layout(assigns) do
     ~H"""
-    <div class={["flex h-screen overflow-y-hidden bg-white dark:bg-transparent", @class]}>
+    <div class={["pc-sidebar__tabs", @class]}>
       <nav class="pc-sidebar__nav">
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </nav>

@@ -13,7 +13,7 @@ defmodule Passwordless.Challenge do
   The authenticator that can be used to authenticate the user.
   """
   @type authenticator ::
-          Passwordless.Authenticators.Email.t()
+          Passwordless.Authenticators.EmailOTP.t()
           | Passwordless.Authenticators.SMS.t()
           | Passwordless.Authenticators.WhatsApp.t()
           | Passwordless.Authenticators.MagicLink.t()
@@ -44,14 +44,6 @@ defmodule Passwordless.Challenge do
 
   @state_machines [
     email_otp: [
-      started: [:otp_sent],
-      otp_sent: [:otp_sent, :otp_validated]
-    ],
-    sms_otp: [
-      started: [:otp_sent],
-      otp_sent: [:otp_sent, :otp_validated]
-    ],
-    whatsapp_otp: [
       started: [:otp_sent],
       otp_sent: [:otp_sent, :otp_validated]
     ],

@@ -71,7 +71,7 @@
             label={gettext("Properties")}
             disabled={not @user_active}
             class="font-mono"
-            rows="6"
+            rows={Util.count_json_lines(@user_properties)}
           />
           <.a
             label={gettext("Finish editing properties")}

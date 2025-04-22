@@ -70,10 +70,10 @@ defmodule PasswordlessWeb.Helpers do
   def authenticator_menu_items do
     [
       %{
-        name: :email,
+        name: :email_otp,
         label: "Email OTP",
         icon: "remix-mail-open-line",
-        path: ~p"/authenticators/email",
+        path: ~p"/authenticators/email-otp",
         link_type: "live_patch"
       },
       %{
@@ -133,23 +133,6 @@ defmodule PasswordlessWeb.Helpers do
 
   def flow_details(%Action{}) do
     %{label: gettext("None"), icon: "remix-fingerprint-line"}
-  end
-
-  def actor_menu_items(%Actor{} = actor) do
-    [
-      %{
-        name: :details,
-        label: "Details",
-        path: ~p"/users/#{actor}/edit",
-        link_type: "live_patch"
-      },
-      %{
-        name: :activity,
-        label: "Authenticators",
-        path: ~p"/users/#{actor}/activity",
-        link_type: "live_patch"
-      }
-    ]
   end
 
   def email_menu_items(%EmailTemplate{} = email_template, language \\ :en) do

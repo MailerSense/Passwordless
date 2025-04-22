@@ -12,7 +12,12 @@ class HighlightHook extends Hook {
   }
 
   private run(_lifecycleMethod: "mounted" | "updated", el: HTMLElement) {
-    hljs.highlightElement(el.querySelector("code")!);
+    const code = el.querySelector("code");
+    if (!code) {
+      throw new Error("No code element found");
+    }
+
+    hljs.highlightElement(code);
   }
 }
 

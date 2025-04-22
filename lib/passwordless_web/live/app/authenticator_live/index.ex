@@ -2,15 +2,15 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
+  alias PasswordlessWeb.App.AuthenticatorLive
+
   @authenticators [
-    magic_link: PasswordlessWeb.App.AuthenticatorLive.MagicLink,
-    sms: PasswordlessWeb.App.AuthenticatorLive.SMS,
-    whatsapp: PasswordlessWeb.App.AuthenticatorLive.Whatsapp,
-    email: PasswordlessWeb.App.AuthenticatorLive.Email,
-    totp: PasswordlessWeb.App.AuthenticatorLive.TOTP,
-    security_key: PasswordlessWeb.App.AuthenticatorLive.SecurityKey,
-    passkey: PasswordlessWeb.App.AuthenticatorLive.Passkey,
-    recovery_codes: PasswordlessWeb.App.AuthenticatorLive.RecoveryCodes
+    email_otp: AuthenticatorLive.EmailOTP,
+    magic_link: AuthenticatorLive.MagicLink,
+    passkey: AuthenticatorLive.Passkey,
+    security_key: AuthenticatorLive.SecurityKey,
+    totp: AuthenticatorLive.TOTP,
+    recovery_codes: AuthenticatorLive.RecoveryCodes
   ]
 
   @impl true
