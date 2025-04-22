@@ -8,10 +8,9 @@
     class="p-6"
   >
     <.field type="checkbox" field={@form[:enabled]} />
-    <.p>
+    <.p class="mb-6">
       Magic link is sent to user via email and allows to securely sign into a webapp. The link is valid for a limited time and can only be used once.
     </.p>
-    <.form_separator />
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
       Do you want to send branded emails?
       <.a
@@ -49,9 +48,9 @@
       />
     </div>
     <.form_separator />
-    <.form_header title={gettext("Validity")} />
+    <.form_header title={gettext("Lifetime")} />
     <.p class="mb-6">
-      It is recommended to set a short expiration time for the magic link. This will help prevent unauthorized access if someone else gets hold of the link.
+      The expiration time is the time after which the magic link will no longer be valid. It is recommended to set a short expiration time for the magic link. This will help prevent unauthorized access.
     </.p>
     <.field
       field={@form[:expires]}
@@ -61,17 +60,12 @@
       suffix={gettext("minutes")}
       disabled={not @enabled}
       required
+      help_text={gettext("Between 1 and 60 minutes.")}
     />
     <.form_separator />
-    <.form_header title={gettext("Security")} />
+    <.form_header title={gettext("Redirection")} />
     <.p class="mb-6">
-      You can enable device fingerprinting to track the device used to request the magic link. This will ensure the user who requested the link is the one who opened it.
-    </.p>
-    <.field type="checkbox" field={@form[:fingerprint_device]} disabled={not @enabled} />
-    <.form_separator />
-    <.form_header title={gettext("Redirect Allowlist")} />
-    <.p class="mb-6">
-      Magic link will redirect the user to a URL of your choosing. You can restrict these URLs below. This will help prevent phishing attacks.
+      The redirect URL is the URL to which the user will be redirected after clicking the magic link. You can restrict the redirect URLs to a specific domain. This will help prevent phishing attacks.
     </.p>
     <div class="pc-form-field-wrapper">
       <.field_label required>{gettext("Redirect URLs")}</.field_label>
@@ -119,6 +113,18 @@
       </div>
       <input type="hidden" name="magic_link[redirect_urls_drop][]" />
     </div>
+    <.form_separator />
+    <.form_header title={gettext("Advanced")} />
+    <.field
+      type="checkbox"
+      field={@form[:fingerprint_device]}
+      disabled={not @enabled}
+      help_text={
+        gettext(
+          "You can enable device fingerprinting to track the device used to request the magic link. This will ensure the user who requested the link is the one who opened it."
+        )
+      }
+    />
     <.form_separator />
     <.form_header title="API - Authenticate with Magic link" />
     <.code_block

@@ -8,10 +8,9 @@
     class="p-6"
   >
     <.field type="checkbox" field={@form[:enabled]} />
-    <.p>
+    <.p class="mb-6">
       Security keys (WebAuthn, FIDO) are physical devices that can be used to sign in. They are often in the form of a USB key or a Bluetooth device. When enabled, users can use a security key to sign in by plugging it into their computer or tapping it to their phone.
     </.p>
-    <.form_separator />
     <.alert color="warning" class="mb-6" with_icon>
       {gettext("This authenticator will be available soon.")}
     </.alert>
@@ -20,14 +19,13 @@
       label={gettext("Relying Party ID")}
       disabled={not @enabled}
       required
-      help_text={
-        gettext(
-          "The relying party ID is a unique identifier for your application. It is used to generate the passkey and must be the same across all devices."
-        )
-      }
+      help_text={gettext("Must be a unique identifier for your application.")}
     />
     <.form_separator />
-    <.form_header title="Advanced" />
+    <.form_header title={gettext("Origins")} />
+    <.p class="mb-6">
+      The expected origins are the domains that the security key can be used on. This is used to prevent phishing attacks. The security key will only be valid for the specified domains.
+    </.p>
     <div class="pc-form-field-wrapper">
       <.field_label required>{gettext("Expected origins")}</.field_label>
       <div class="flex flex-col gap-y-2">

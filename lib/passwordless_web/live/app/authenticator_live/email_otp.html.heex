@@ -8,10 +8,9 @@
     class="p-6"
   >
     <.field type="checkbox" field={@form[:enabled]} />
-    <.p>
+    <.p class="mb-6">
       Email OTP is a one-time code sent to the user via email. This code can the be used to sign in. The code is valid for a limited time and can only be used once.
     </.p>
-    <.form_separator />
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
       Do you want to send branded emails?
       <.a
@@ -49,9 +48,9 @@
       />
     </div>
     <.form_separator />
-    <.form_header title={gettext("Validity")} />
+    <.form_header title={gettext("Lifetime")} />
     <.p class="mb-6">
-      It is recommended to set a short expiration time for the OTP code. This will help prevent unauthorized access if someone else gets hold of the code.
+      The expiration time is the time after which the OTP code will no longer be valid. It is recommended to set a short expiration time for the OTP code. This will help prevent unauthorized access.
     </.p>
     <.field
       field={@form[:expires]}
@@ -61,6 +60,7 @@
       suffix={gettext("minutes")}
       disabled={not @enabled}
       required
+      help_text={gettext("Between 1 and 60 minutes.")}
     />
     <.form_separator />
     <.form_header title="API - Authenticate with Email OTP" />
