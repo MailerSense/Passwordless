@@ -3,6 +3,7 @@ defmodule Database.QueryExt do
   Helpful query functions. Similar to the QueryBuilder lib, but for cases where you don't want to use QueryBuilder.
   """
   import Ecto.Query
+  import SqlFmt.Helpers
 
   alias Database.Tenant
   alias Passwordless.App
@@ -81,7 +82,7 @@ defmodule Database.QueryExt do
     result =
       Ecto.Adapters.SQL.query!(
         Passwordless.Repo,
-        "SELECT reltuples AS estimate FROM pg_class WHERE relname = $1",
+        ~SQL"SELECT reltuples AS estimate FROM pg_class WHERE relname = $1",
         [schema.__schema__(:source)],
         prefix: Tenant.to_prefix(app)
       )

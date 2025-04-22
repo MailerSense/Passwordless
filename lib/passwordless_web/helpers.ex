@@ -135,23 +135,6 @@ defmodule PasswordlessWeb.Helpers do
     %{label: gettext("None"), icon: "remix-fingerprint-line"}
   end
 
-  def actor_menu_items(%Actor{} = actor) do
-    [
-      %{
-        name: :details,
-        label: "Details",
-        path: ~p"/users/#{actor}/edit",
-        link_type: "live_patch"
-      },
-      %{
-        name: :activity,
-        label: "Authenticators",
-        path: ~p"/users/#{actor}/activity",
-        link_type: "live_patch"
-      }
-    ]
-  end
-
   def email_menu_items(%EmailTemplate{} = email_template, language \\ :en) do
     [
       %{

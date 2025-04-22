@@ -76,7 +76,8 @@ defmodule Passwordless.AppSettings do
     |> cast_embed(:allowlisted_ip_addresses,
       with: &whitelisted_ip_changeset/2,
       sort_param: :allowlisted_ip_addresses_sort,
-      drop_param: :allowlisted_ip_addresses_drop
+      drop_param: :allowlisted_ip_addresses_drop,
+      required: true
     )
     |> validate_required(@required_fields)
     |> validate_string(:display_name)
