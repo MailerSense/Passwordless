@@ -55,7 +55,8 @@
     <.field
       field={@form[:expires]}
       type="number"
-      label={gettext("Expires")}
+      min="0"
+      max="60"
       prefix={gettext("After")}
       suffix={gettext("minutes")}
       disabled={not @enabled}

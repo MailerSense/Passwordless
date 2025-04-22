@@ -206,7 +206,7 @@ defmodule Passwordless.Actor do
   def create_changeset(%__MODULE__{} = actor, attrs \\ %{}, opts \\ []) do
     actor
     |> cast(attrs, @fields)
-    |> validate_required(@required_fields ++ [:name])
+    |> validate_required(@required_fields ++ [:name, :username])
     |> validate_name()
     |> validate_username(opts)
     |> validate_text_properties()

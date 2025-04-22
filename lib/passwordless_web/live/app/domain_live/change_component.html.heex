@@ -19,7 +19,8 @@
           )
         }
         help_text={
-          if @replacement, do: gettext("Current domain: %{domain}", domain: @domain.name)
+          if @replacement,
+            do: gettext("Current domain: %{domain}", domain: @domain.name)
         }
       />
     </.form>
