@@ -6,6 +6,7 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   import PasswordlessWeb.Components.Avatar
   import PasswordlessWeb.Components.Badge
+  import PasswordlessWeb.Components.Field
   import PasswordlessWeb.Components.Form
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Link
@@ -259,7 +260,7 @@ defmodule PasswordlessWeb.DashboardComponents do
 
     ~H"""
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
-      <.form_label>{gettext("Preview")}</.form_label>
+      <.field_label required>{gettext("Email template")}</.field_label>
       <.a
         to={@to}
         class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 max-h-[280px] shadow-m2 overflow-hidden"
