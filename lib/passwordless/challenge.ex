@@ -55,9 +55,7 @@ defmodule Passwordless.Challenge do
       started: [:password_validated]
     ]
   ]
-  @starting_states Keyword.new(@state_machines, fn {machine, [{state, _trans} | _]} ->
-                     {machine, state}
-                   end)
+  @starting_states Keyword.new(@state_machines, fn {machine, [{state, _trans} | _]} -> {machine, state} end)
   @end_states [
     :otp_validated,
     :magic_link_validated,
