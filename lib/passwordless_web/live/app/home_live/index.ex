@@ -2,6 +2,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
+  alias Database.QueryExt
   alias Passwordless.Action
   alias Passwordless.App
   alias PasswordlessWeb.Components.DataTable
@@ -63,9 +64,11 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
         Map.merge(%{id: key, enabled: authenticator.enabled}, params)
       end)
 
+    count = QueryExt.count_estimate(app, Action)
+
     {:noreply,
      socket
-     |> assign(top_actions: top_actions, authenticators: authenticators)
+     |> assign(count: count, top_actions: top_actions, authenticators: authenticators)
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}
   end
@@ -104,7 +107,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   @impl true
   def handle_info(%{event: _event, payload: %Action{} = action}, socket) do
     socket = if(has_filters?(socket), do: socket, else: stream_insert(socket, :actions, action, at: 0))
-    socket = update_top_actions(socket, action)
+    socket = socket |> update_top_actions(action) |> update(:count, &(&1 + 1))
 
     {:noreply, socket}
   end

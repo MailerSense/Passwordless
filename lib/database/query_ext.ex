@@ -82,9 +82,17 @@ defmodule Database.QueryExt do
     result =
       Ecto.Adapters.SQL.query!(
         Passwordless.Repo,
-        ~SQL"SELECT reltuples AS estimate FROM pg_class WHERE relname = $1",
-        [schema.__schema__(:source)],
-        prefix: Tenant.to_prefix(app)
+        ~SQL"""
+        SELECT
+          c.reltuples AS estimate
+        FROM
+          pg_class c
+          JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE
+          c.relname = $1
+          AND n.nspname = $2
+        """,
+        [schema.__schema__(:source), Tenant.to_prefix(app)]
       )
 
     case result do
