@@ -715,11 +715,8 @@ defmodule Passwordless do
     |> Repo.get(id, prefix: Tenant.to_prefix(app))
     |> Repo.preload(actor: [:email, :phone])
     |> case do
-      %Action{} = action ->
-        {:ok, action}
-
-      nil ->
-        {:error, :not_found}
+      %Action{} = action -> {:ok, action}
+      nil -> {:error, :not_found}
     end
   end
 
