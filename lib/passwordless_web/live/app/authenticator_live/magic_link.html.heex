@@ -7,10 +7,11 @@
     phx-change="validate"
     class="p-6"
   >
-    <.field type="checkbox" field={@form[:enabled]} />
+    <.form_header title={gettext("Magic link")} />
     <.p class="mb-6">
       Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in. The link is valid for a limited time and can only be used once.
     </.p>
+    <.field type="checkbox" field={@form[:enabled]} />
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
       Do you want to send branded emails?
       <.a

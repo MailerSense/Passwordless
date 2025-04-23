@@ -190,16 +190,9 @@ defmodule Passwordless.EmailTemplates do
                   <mj-section background-color="#ffffff">
                     <mj-column>
                       <mj-text>
-                        Hey {{user.name | default: "there" }}, here is your login for <strong>{{ app.display_name }}</strong>:
+                        Hey {{user.name | default: "there" }}, here is your OTP for <strong>{{ app.display_name }}</strong>:
                       </mj-text>
-                      <mj-button color="#ffffff" font-weight="600" border-radius="8px" href="{{ magic_link_url }}">
-                        Sign in to {{ app.display_name }}
-                      </mj-button>
-                      <mj-text>Or, copy and paste this link into your browser:</mj-text>
-                      <mj-text color="#1570ef"><a href="{{ magic_link_url }}" target="_blank">{{ magic_link_url }}</a></mj-text>
-                      <mj-text color="#999999"
-                      >This email was sent by <a href="https://appfarm.io" target="_blank" style="color: #999999;">Passwordless</a> on behalf of {{ app.display_name }}. If
-                        you did not request this email, please reply and let us know.</mj-text>
+                      <mj-text align="center" letter-spacing="8px" font-weight="500" font-size="56px" >{{ otp_code }}</mj-text>
                     </mj-column>
                   </mj-section>
                   <mj-section
