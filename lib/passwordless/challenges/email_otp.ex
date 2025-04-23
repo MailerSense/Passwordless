@@ -55,7 +55,7 @@ defmodule Passwordless.Challenges.EmailOTP do
            ),
          {:ok, otp} <- create_otp(app, authenticator, email_message, otp_code),
          {:ok, challenge} <- update_challenge_state(app, challenge, :otp_sent),
-         {:ok, _job} <- enqueue_email_message(app, email_message),
+         {:ok, _job} <- enqueue_email_message(app, domain, email_message),
          do:
            {:ok,
             Repo.preload(
@@ -134,7 +134,7 @@ defmodule Passwordless.Challenges.EmailOTP do
       sender: Authenticators.EmailOTP.sender_email(authenticator, domain),
       sender_name: authenticator.sender_name,
       recipient: email.address,
-      recipient_name: Actor.handle(actor),
+      recipient_name: actor.name || "#{app.name} User",
       reply_to: "hello@passwordless.tools",
       reply_to_name: "Passwordless Support",
       current: true,
@@ -197,8 +197,8 @@ defmodule Passwordless.Challenges.EmailOTP do
     |> Repo.insert(opts)
   end
 
-  defp enqueue_email_message(%App{} = app, %EmailMessage{} = email_message) do
-    %{app_id: app.id, email_message_id: email_message.id}
+  defp enqueue_email_message(%App{} = app, %Domain{} = domain, %EmailMessage{} = email_message) do
+    %{app_id: app.id, domain_id: domain.id, email_message_id: email_message.id}
     |> MailerExecutor.new()
     |> Oban.insert()
   end
@@ -212,12 +212,12 @@ defmodule Passwordless.Challenges.EmailOTP do
   end
 
   defp unsubscribe_url(%App{} = app, %Email{} = email) do
-    with {:ok, link} <- Passwordless.create_email_unsubscribe_link(app, email) do
-      PasswordlessWeb.Router.Helpers.email_subscription_url(
-        PasswordlessWeb.Endpoint,
-        :unsubscribe_email,
-        EmailUnsubscribeLinkMapping.sign_token(link)
-      )
-    end
+    link = Passwordless.create_email_unsubscribe_link!(app, email)
+
+    PasswordlessWeb.Router.Helpers.email_subscription_url(
+      PasswordlessWeb.Endpoint,
+      :unsubscribe_email,
+      EmailUnsubscribeLinkMapping.sign_token(link)
+    )
   end
 end

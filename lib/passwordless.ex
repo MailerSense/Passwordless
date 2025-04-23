@@ -213,6 +213,10 @@ defmodule Passwordless do
 
   # Domains
 
+  def get_domain(id) when is_binary(id) do
+    Repo.get(Domain, id)
+  end
+
   def get_domain!(%App{} = app, id) do
     app
     |> Ecto.assoc(:domains)
@@ -321,9 +325,7 @@ defmodule Passwordless do
   # Email Messages
 
   def get_email_message(%App{} = app, id) when is_binary(id) do
-    EmailMessage
-    |> Repo.get(id, prefix: Tenant.to_prefix(app))
-    |> Repo.preload(:domain)
+    Repo.get(EmailMessage, id, prefix: Tenant.to_prefix(app))
   end
 
   def record_email_message_mapping(%App{} = app, %EmailMessage{} = email_message, external_id) do
@@ -605,7 +607,7 @@ defmodule Passwordless do
     |> Repo.all(prefix: Tenant.to_prefix(app))
   end
 
-  def create_email_unsubscribe_link(%App{} = app, %Email{} = email) do
+  def create_email_unsubscribe_link!(%App{} = app, %Email{} = email) do
     attrs = %{token: EmailUnsubscribeLinkMapping.generate_token(), email_id: email.id}
 
     changeset =
@@ -619,7 +621,7 @@ defmodule Passwordless do
       conflict_target: [:email_id]
     ]
 
-    Repo.insert(changeset, upsert_clause)
+    Repo.insert!(changeset, upsert_clause)
   end
 
   @doc """
