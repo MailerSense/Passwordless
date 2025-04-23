@@ -48,13 +48,37 @@ defmodule PasswordlessApi.ActionController do
       current: true
     }
 
+    event_params = fn old_action, new_action ->
+      %{
+        event: "send_otp",
+        user_agent: Map.get(params, "user_agent"),
+        ip_address: Map.get(params, "ip_address"),
+        country: Map.get(params, "country"),
+        city: Map.get(params, "city"),
+        metadata: %{
+          before: %{
+            name: old_action.name,
+            state: old_action.state
+          },
+          after: %{
+            name: new_action.name,
+            state: new_action.state
+          },
+          attrs: %{}
+        }
+      }
+    end
+
     {:ok, action} =
       Repo.transact(fn ->
         with {:ok, rule} <- Passwordless.create_rule(app, %{conditions: %{}, effects: %{}}),
              {:ok, actor} <- Passwordless.resolve_actor(app, actor_params),
              {:ok, action} <- Passwordless.create_action(app, actor, Map.put(action_params, :rule_id, rule.id)),
              {:ok, challenge} <- Passwordless.create_challenge(app, action, challenge_params),
-             do: Passwordless.handle_challenge(app, actor, action, challenge, "send_otp", %{email: actor.email})
+             {:ok, new_action} <-
+               Passwordless.handle_challenge(app, actor, action, challenge, "send_otp", %{email: actor.email}),
+             {:ok, _event} <- Passwordless.create_event(app, action, event_params.(action, new_action)),
+             do: {:ok, new_action}
       end)
 
     PasswordlessWeb.Endpoint.broadcast(Action.topic_for(app), "inserted", action)

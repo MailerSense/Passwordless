@@ -37,8 +37,7 @@ defmodule PasswordlessWeb.Plugs.ParseIP do
       {127, 0, 0, _} -> false
       {_, _, _, _} -> true
       :einval -> false
+      _ -> false
     end
   end
-
-  defp public_ip?(_ip_address), do: true
 end
