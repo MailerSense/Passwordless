@@ -1,7 +1,7 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
   <.form id="edit-actor-form" for={@form} phx-change="validate" phx-submit="save">
     <div class="flex flex-col gap-6">
-      <.subpage_header field={@form[:name]}>
+      <.subpage_header field={@form[:name]} placeholder={gettext("User's display name")}>
         <div class="flex gap-3">
           <.button
             to={@return_to}
@@ -52,6 +52,7 @@
           disabled={not @user_active}
           copyable={true}
           nonce={get_csp_nonce()}
+          placeholder={gettext("Unique user ID from your own system")}
           autocomplete="username"
         />
         <.field
