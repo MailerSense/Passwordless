@@ -70,6 +70,39 @@ defmodule Passwordless.EmailEvent do
   )a
 
   @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :kind,
+      :happened_at,
+      :feedback_id,
+      :open_ip_address,
+      :open_user_agent,
+      :click_url,
+      :click_url_tags,
+      :click_ip_address,
+      :click_user_agent,
+      :bounce_type,
+      :bounce_subtype,
+      :complaint_type,
+      :complaint_subtype,
+      :complaint_user_agent,
+      :delivery_smtp_response,
+      :delivery_reporting_mta,
+      :delivery_processing_time_millis,
+      :reject_reason,
+      :delay_reason,
+      :delay_reporting_mta,
+      :delay_expiration_time,
+      :subscription_source,
+      :subscription_contact_list,
+      :rendering_error_message,
+      :rendering_teplate_name,
+      :suspend_reason,
+      :inserted_at
+    ]
+  }
+  @derive {
     Flop.Schema,
     sortable: [:id], filterable: [:id]
   }
