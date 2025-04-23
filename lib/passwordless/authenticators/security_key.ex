@@ -16,10 +16,10 @@ defmodule Passwordless.Authenticators.SecurityKey do
     field :enabled, :boolean, default: true
     field :relying_party_id, :string
 
-    embeds_many :expected_origins, ExpectedOrigin, on_replace: :delete do
+    embeds_many :expected_origins, ExpectedOrigin, on_replace: :delete, primary_key: false do
       @derive Jason.Encoder
 
-      field :url, :string
+      field :url, :string, primary_key: true
     end
 
     belongs_to :app, App

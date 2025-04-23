@@ -30,7 +30,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   def handle(
         %App{} = app,
         %Actor{} = actor,
-        %Action{challenge: %Challenge{type: @challenge, state: state} = challenge} = action,
+        %Action{challenge: %Challenge{kind: @challenge, state: state} = challenge} = action,
         event: "send_otp",
         attrs: %{email: %Email{} = email}
       )
@@ -72,7 +72,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   def handle(
         %App{} = app,
         %Actor{} = _actor,
-        %Action{challenge: %Challenge{type: @type, state: state} = challenge} = action,
+        %Action{challenge: %Challenge{kind: @challenge, state: state} = challenge} = action,
         event: "validate_otp",
         attrs: %{code: code}
       )

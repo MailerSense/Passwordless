@@ -26,10 +26,10 @@ defmodule Passwordless.Authenticators.Passkey do
     field :uplift_prompt_interval, Ecto.Enum, values: @uplift_intervals, default: :every_challenge
     field :require_user_verification, :boolean, default: false
 
-    embeds_many :expected_origins, ExpectedOrigin, on_replace: :delete do
+    embeds_many :expected_origins, ExpectedOrigin, on_replace: :delete, primary_key: false do
       @derive Jason.Encoder
 
-      field :url, :string
+      field :url, :string, primary_key: true
     end
 
     belongs_to :app, App

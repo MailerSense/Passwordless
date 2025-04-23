@@ -18,7 +18,7 @@ defmodule Passwordless.MagicLinkMapping do
 
   schema "magic_link_mappings" do
     field :key, Passwordless.EncryptedBinary, redact: true
-    field :key_hash, Passwordless.HashedBinary, redact: true
+    field :key_hash, Passwordless.HashedBinary, primary_key: true
     field :magic_link_id, :binary_id
 
     belongs_to :app, App

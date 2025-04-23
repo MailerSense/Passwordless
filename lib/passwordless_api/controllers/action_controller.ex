@@ -25,10 +25,26 @@ defmodule PasswordlessApi.ActionController do
       unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}
     ]
 
+  def get(%Plug.Conn{} = conn, %{"id" => id}, %App{} = app) do
+    with {:ok, action} <- Passwordless.get_action(app, id) do
+      action =
+        Repo.preload(
+          action,
+          [:rule, {:actor, [:totps, :email, :emails, :phone, :phones]}, {:challenge, [:email_message]}, :events]
+        )
+
+      render(conn, :get, action: action)
+    end
+  end
+
   def authenticate(%Plug.Conn{} = conn, params, %App{} = app) do
     with {:ok, actor} <- Passwordless.resolve_actor(app, params["user"]) do
       action = Repo.one(Action.preload_challenge(from(a in Action, prefix: ^Tenant.to_prefix(app), limit: 1)))
       render(conn, :authenticate, action: action)
     end
+  end
+
+  def continue(%Plug.Conn{} = conn, params, %App{} = app) do
+    render(conn, :continue, action: nil)
   end
 end

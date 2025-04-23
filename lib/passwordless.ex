@@ -436,6 +436,8 @@ defmodule Passwordless do
           false
       end
 
+    params = Map.put_new(params, "properties", %{})
+
     actor_result =
       case Repo.one(from(a in Actor, where: ^actor_query), prefix: Tenant.to_prefix(app)) do
         %Actor{} = actor -> update_actor(app, actor, params)
@@ -700,6 +702,19 @@ defmodule Passwordless do
     Action
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
     |> Repo.preload(actor: [:email, :phone])
+  end
+
+  def get_action(%App{} = app, id) do
+    Action
+    |> Repo.get(id, prefix: Tenant.to_prefix(app))
+    |> Repo.preload(actor: [:email, :phone])
+    |> case do
+      %Action{} = action ->
+        {:ok, action}
+
+      nil ->
+        {:error, :not_found}
+    end
   end
 
   def create_action(%App{} = app, %Actor{} = actor, attrs \\ %{}) do

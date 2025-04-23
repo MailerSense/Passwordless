@@ -17,7 +17,7 @@
         to={~p"/domain"}
         label={gettext("Set up domain")}
         style="link"
-        class="inline"
+        class="inline-flex"
         link_type="live_redirect"
       />
     </.alert>
@@ -61,7 +61,6 @@
       suffix={gettext("minutes")}
       disabled={not @enabled}
       required
-      help_text={gettext("Between 1 and 60 minutes.")}
     />
     <.form_separator />
     <.form_header title="API - Authenticate with Email OTP" />

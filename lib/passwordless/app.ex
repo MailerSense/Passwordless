@@ -29,8 +29,7 @@ defmodule Passwordless.App do
       :state,
       :settings,
       :inserted_at,
-      :updated_at,
-      :deleted_at
+      :updated_at
     ]
   }
   @derive {

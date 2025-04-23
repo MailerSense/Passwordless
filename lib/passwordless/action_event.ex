@@ -3,7 +3,7 @@ defmodule Passwordless.ActionEvent do
   An action avent.
   """
 
-  use Passwordless.Schema, prefix: "aevnt"
+  use Passwordless.Schema, prefix: "event"
 
   alias Database.ChangesetExt
   alias Passwordless.Action

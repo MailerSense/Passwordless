@@ -124,21 +124,21 @@ config :passwordless, :file_uploads, adapter: Passwordless.FileUploads.Local
 # Configures the emails
 config :passwordless, :emails,
   auth: [
-    name: "Passwordless",
+    name: "Passwordless Auth",
     email: "noreply@auth.eu.passwordlesstools.com",
     domain: "auth.eu.passwordlesstools.com",
     reply_to: "hello@passwordless.tools",
     reply_to_name: "Passwordless Support"
   ],
   support: [
-    name: "Passwordless",
+    name: "Passwordless Support",
     email: "noreply@support.passwordlesstools.com",
     domain: "support.passwordlesstools.com",
     reply_to: "hello@passwordless.tools",
     reply_to_name: "Passwordless Support"
   ],
   alerts: [
-    name: "Passwordless Alert",
+    name: "Passwordless Alerts",
     email: "noreply@alerts.passwordlesstools.com",
     domain: "alerts.passwordlesstools.com",
     reply_to: "hello@passwordless.tools",

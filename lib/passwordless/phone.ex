@@ -24,8 +24,7 @@ defmodule Passwordless.Phone do
       :channels,
       :opted_out_at,
       :inserted_at,
-      :updated_at,
-      :deleted_at
+      :updated_at
     ]
   }
   @derive {

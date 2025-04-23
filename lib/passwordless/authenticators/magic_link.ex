@@ -22,10 +22,10 @@ defmodule Passwordless.Authenticators.MagicLink do
     field :fingerprint_device, :boolean, default: false
     field :required_security_question, :boolean, default: false
 
-    embeds_many :redirect_urls, RedirectURL, on_replace: :delete do
+    embeds_many :redirect_urls, RedirectURL, on_replace: :delete, primary_key: false do
       @derive Jason.Encoder
 
-      field :url, :string
+      field :url, :string, primary_key: true
     end
 
     belongs_to :app, App
