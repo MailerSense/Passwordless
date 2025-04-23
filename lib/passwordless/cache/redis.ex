@@ -9,7 +9,7 @@ defmodule Passwordless.Cache.Redis do
 
   @impl true
   def get(key) do
-    case @redix.command(["GET", key]) do
+    case @redix.command(["GET", format_key(key)]) do
       {:ok, nil} -> nil
       {:ok, value} -> load(value)
       _ -> :failed
@@ -18,6 +18,8 @@ defmodule Passwordless.Cache.Redis do
 
   @impl true
   def put(key, value, opts \\ []) do
+    key = format_key(key)
+
     command =
       case Keyword.fetch(opts, :ttl) do
         {:ok, ttl} -> ["SETEX", key, div(ttl, 1000), dump(value)]
@@ -35,7 +37,7 @@ defmodule Passwordless.Cache.Redis do
 
   @impl true
   def delete(key) do
-    case @redix.command(["DEL", key]) do
+    case @redix.command(["DEL", format_key(key)]) do
       {:ok, _} -> :ok
       _ -> :failed
     end
@@ -43,7 +45,7 @@ defmodule Passwordless.Cache.Redis do
 
   @impl true
   def push(key, value) do
-    case @redix.command(["LPUSH", key, dump(value)]) do
+    case @redix.command(["LPUSH", format_key(key), dump(value)]) do
       {:ok, _} -> :ok
       _ -> :failed
     end
@@ -51,7 +53,7 @@ defmodule Passwordless.Cache.Redis do
 
   @impl true
   def pop(key) do
-    case @redix.command(["RPOP", key]) do
+    case @redix.command(["RPOP", format_key(key)]) do
       {:ok, nil} -> :empty
       {:ok, value} -> {:ok, load(value)}
       _ -> {:error, :failed}
@@ -60,7 +62,7 @@ defmodule Passwordless.Cache.Redis do
 
   @impl true
   def exists?(key) do
-    case @redix.command(["EXISTS", key]) do
+    case @redix.command(["EXISTS", format_key(key)]) do
       {:ok, 1} -> true
       {:ok, 0} -> false
       _ -> false
@@ -76,4 +78,8 @@ defmodule Passwordless.Cache.Redis do
   defp dump(entity) do
     :erlang.term_to_binary(entity)
   end
+
+  defp format_key(key) when is_atom(key), do: Atom.to_string(key)
+  defp format_key(key) when is_tuple(key), do: key |> Tuple.to_list() |> Enum.map_join(":", &inspect/1)
+  defp format_key(key) when is_binary(key), do: key
 end
