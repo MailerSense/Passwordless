@@ -20,8 +20,7 @@ defmodule Passwordless.Email do
       :verified,
       :opted_out_at,
       :inserted_at,
-      :updated_at,
-      :deleted_at
+      :updated_at
     ]
   }
   @derive {

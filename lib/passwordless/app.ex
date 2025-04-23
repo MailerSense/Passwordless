@@ -29,8 +29,7 @@ defmodule Passwordless.App do
       :state,
       :settings,
       :inserted_at,
-      :updated_at,
-      :deleted_at
+      :updated_at
     ]
   }
   @derive {
@@ -58,7 +57,6 @@ defmodule Passwordless.App do
     has_many :email_templates, EmailTemplate, preload_order: [asc: :inserted_at]
     has_many :email_message_mappings, EmailMessageMapping, preload_order: [asc: :inserted_at]
     has_many :magic_link_mappings, MagicLinkMapping, preload_order: [asc: :inserted_at]
-
     has_many :email_unsubscribe_link_mappings, EmailUnsubscribeLinkMapping, preload_order: [asc: :inserted_at]
 
     belongs_to :org, Org

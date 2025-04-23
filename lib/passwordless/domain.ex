@@ -42,8 +42,7 @@ defmodule Passwordless.Domain do
       :verified,
       :records,
       :inserted_at,
-      :updated_at,
-      :deleted_at
+      :updated_at
     ]
   }
   @derive {

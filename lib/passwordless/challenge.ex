@@ -38,7 +38,7 @@ defmodule Passwordless.Challenge do
               app :: Passwordless.App.t(),
               actor :: Passwordless.Actor.t(),
               action :: Passwordless.Action.t(),
-              event: atom(),
+              event: binary(),
               attrs: handle_attrs()
             ) :: {:ok, Passwordless.Action.t()} | {:error, atom()}
 
@@ -55,13 +55,13 @@ defmodule Passwordless.Challenge do
       started: [:password_validated]
     ]
   ]
+  @starting_states Keyword.new(@state_machines, fn {machine, [{state, _trans} | _]} -> {machine, state} end)
   @end_states [
     :otp_validated,
     :magic_link_validated,
     :password_validated
   ]
-
-  @types Keyword.keys(@state_machines)
+  @kinds Keyword.keys(@state_machines)
   @states @state_machines
           |> Keyword.values()
           |> Enum.flat_map(&Enum.flat_map(&1, fn {s, f} -> [s | f] end))
@@ -71,9 +71,9 @@ defmodule Passwordless.Challenge do
     Jason.Encoder,
     only: [
       :id,
-      :type,
+      :kind,
       :state,
-      :current,
+      :options,
       :email_message,
       :inserted_at,
       :updated_at
@@ -84,9 +84,16 @@ defmodule Passwordless.Challenge do
     filterable: [:id], sortable: [:id]
   }
   schema "challenges" do
-    field :type, Ecto.Enum, values: @types
+    field :kind, Ecto.Enum, values: @kinds
     field :state, Ecto.Enum, values: @states
     field :current, :boolean, default: false
+
+    embeds_many :options, Option, on_replace: :delete, primary_key: false do
+      @derive Jason.Encoder
+
+      field :name, :string, primary_key: true
+      field :info, :map, default: %{}
+    end
 
     has_one :email_message, EmailMessage, where: [current: true]
 
@@ -97,14 +104,15 @@ defmodule Passwordless.Challenge do
     timestamps()
   end
 
-  def types, do: @types
+  def kinds, do: @kinds
   def states, do: @states
+  def starting_state!(machine), do: Keyword.fetch!(@starting_states, machine)
 
   def validated?(%__MODULE__{state: state}) when state in @end_states, do: true
   def validated?(_), do: false
 
   @fields ~w(
-    type
+    kind
     state
     current
     action_id
@@ -117,6 +125,7 @@ defmodule Passwordless.Challenge do
   def changeset(%__MODULE__{} = challenge, attrs \\ %{}, opts \\ []) do
     challenge
     |> cast(attrs, @fields)
+    |> cast_embed(:options, with: &option_changeset/2)
     |> validate_required(@required_fields)
     |> validate_state()
     |> assoc_constraint(:action)
@@ -141,11 +150,25 @@ defmodule Passwordless.Challenge do
   # Private
 
   defp validate_state(changeset) do
-    with {_, type} <- fetch_field(changeset, :type),
-         {:ok, machine} <- Keyword.fetch(@state_machines, type) do
+    with {_, kind} <- fetch_field(changeset, :kind),
+         {:ok, machine} <- Keyword.fetch(@state_machines, kind) do
       ChangesetExt.validate_state(changeset, machine)
     else
-      _ -> add_error(changeset, :state, "state machine for type not found")
+      _ -> add_error(changeset, :state, "state machine for kind not found")
     end
+  end
+
+  defp validate_string(changeset, field) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(field)
+    |> validate_length(field, min: 1, max: 255)
+  end
+
+  defp option_changeset(%__MODULE__.Option{} = option, attrs) do
+    option
+    |> cast(attrs, [:name, :info])
+    |> validate_required([:name, :info])
+    |> validate_string(:name)
+    |> ChangesetExt.validate_property_map(:info)
   end
 end

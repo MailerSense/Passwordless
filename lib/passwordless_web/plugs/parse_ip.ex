@@ -29,7 +29,7 @@ defmodule PasswordlessWeb.Plugs.ParseIP do
 
   defp format_ip(ip), do: to_string(:inet.ntoa(ip))
 
-  defp public_ip?({_, _, _, _} = ip_address) do
+  defp public_ip?(ip_address) do
     case ip_address do
       {10, _, _, _} -> false
       {192, 168, _, _} -> false
@@ -37,8 +37,7 @@ defmodule PasswordlessWeb.Plugs.ParseIP do
       {127, 0, 0, _} -> false
       {_, _, _, _} -> true
       :einval -> false
+      _ -> false
     end
   end
-
-  defp public_ip?(_ip_address), do: true
 end

@@ -186,6 +186,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :meta, Flop.Meta, required: true
   attr :items, :any, required: true
   attr :title, :string, default: nil
+  attr :count, :integer, default: nil
   attr :subtitle, :string, default: nil
   attr :badge, :string, default: nil
   attr :head, :boolean, default: true
@@ -231,7 +232,7 @@ defmodule PasswordlessWeb.Components.DataTable do
       @class,
       unless(@finished, do: "pb-[calc(200vh)]")
     ]}>
-      <.table_header :if={@title} badge={@badge} title={@title} subtitle={@subtitle} />
+      <.table_header :if={@title} count={@count} badge={@badge} title={@title} subtitle={@subtitle} />
       <.table>
         <thead :if={@head} class="pc-table__thead-striped">
           <.tr>

@@ -7,17 +7,18 @@
     phx-change="validate"
     class="p-6"
   >
-    <.field type="checkbox" field={@form[:enabled]} />
+    <.form_header title={gettext("Magic link")} />
     <.p class="mb-6">
       Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in. The link is valid for a limited time and can only be used once.
     </.p>
+    <.field type="checkbox" field={@form[:enabled]} />
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
       Do you want to send branded emails?
       <.a
         to={~p"/domain"}
         label={gettext("Set up domain")}
         style="link"
-        class="inline"
+        class="inline-flex"
         link_type="live_redirect"
       />
     </.alert>
@@ -61,7 +62,6 @@
       suffix={gettext("minutes")}
       disabled={not @enabled}
       required
-      help_text={gettext("Between 1 and 60 minutes.")}
     />
     <.form_separator />
     <.form_header title={gettext("Link targets")} />

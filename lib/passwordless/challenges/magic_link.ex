@@ -16,7 +16,7 @@ defmodule Passwordless.Challenges.MagicLink do
   def handle(
         %App{} = app,
         %Actor{} = actor,
-        %Action{challenge: %Challenge{type: @challenge, state: state} = challenge} = action,
+        %Action{challenge: %Challenge{kind: @challenge, state: state} = challenge} = action,
         event: :send_magic_link,
         attrs: %{email: %Email{} = email, authenticator: %Authenticators.MagicLink{} = authenticator}
       ) do

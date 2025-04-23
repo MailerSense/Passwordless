@@ -18,8 +18,7 @@ defmodule Passwordless.EmailTemplate do
       :name,
       :locales,
       :inserted_at,
-      :updated_at,
-      :deleted_at
+      :updated_at
     ]
   }
   @derive {

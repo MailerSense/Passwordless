@@ -224,7 +224,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
 
   defp apply_action(socket, :invite, _params) do
     assign(socket,
-      page_title: gettext("Invite"),
+      page_title: gettext("Invite teammate"),
       page_subtitle:
         gettext(
           "Invite a new user to join your organization. They will join as a member, and you can later grant them more permissions."

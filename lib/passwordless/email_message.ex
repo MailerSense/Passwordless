@@ -32,6 +32,23 @@ defmodule Passwordless.EmailMessage do
   )a
 
   @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :state,
+      :sender,
+      :sender_name,
+      :recipient,
+      :recipient_name,
+      :reply_to,
+      :reply_to_name,
+      :subject,
+      :metadata,
+      :inserted_at,
+      :updated_at
+    ]
+  }
+  @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id], custom_fields: []
   }
@@ -213,8 +230,8 @@ defmodule Passwordless.EmailMessage do
     |> ChangesetExt.ensure_trimmed(:source)
     |> ChangesetExt.ensure_trimmed(:source_arn)
     |> ChangesetExt.ensure_trimmed(:sending_account_id)
-    |> cast_assoc(:tags, with: &metadata_tag_changeset/2)
-    |> cast_assoc(:headers, with: &metadata_header_changeset/2)
+    |> cast_embed(:tags, with: &metadata_tag_changeset/2)
+    |> cast_embed(:headers, with: &metadata_header_changeset/2)
   end
 
   defp metadata_tag_changeset(%__MODULE__.Metadata.Tag{} = tag, attrs) do

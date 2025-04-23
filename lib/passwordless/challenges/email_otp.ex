@@ -30,7 +30,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   def handle(
         %App{} = app,
         %Actor{} = actor,
-        %Action{challenge: %Challenge{type: @challenge, state: state} = challenge} = action,
+        %Action{challenge: %Challenge{kind: @challenge, state: state} = challenge} = action,
         event: "send_otp",
         attrs: %{email: %Email{} = email}
       )
@@ -38,8 +38,8 @@ defmodule Passwordless.Challenges.EmailOTP do
     otp_code = OTP.generate_code()
 
     with {:ok, domain} <- Passwordless.get_email_domain(app),
-         {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email),
-         {:ok, email_template} <- get_email_template(authenticator),
+         {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email_otp),
+         %EmailTemplate{} = email_template <- get_email_template(authenticator),
          {:ok, email_template_locale} <- get_email_template_locale(actor, email_template),
          :ok <- update_existing_messages(app, action),
          {:ok, email_message} <-
@@ -53,26 +53,29 @@ defmodule Passwordless.Challenges.EmailOTP do
              authenticator,
              otp_code
            ),
-         {:ok, otp} <- create_otp(authenticator, email_message, otp_code),
+         {:ok, otp} <- create_otp(app, authenticator, email_message, otp_code),
          {:ok, challenge} <- update_challenge_state(app, challenge, :otp_sent),
          {:ok, _job} <- enqueue_email_message(app, email_message),
          do:
            {:ok,
-            %Action{
-              action
-              | challenge: %Challenge{
-                  challenge
-                  | email_message: %EmailMessage{email_message | otp: otp},
-                    email_messages: [email_message | challenge.email_messages]
-                }
-            }}
+            Repo.preload(
+              %Action{
+                action
+                | challenge: %Challenge{
+                    challenge
+                    | email_message: %EmailMessage{email_message | otp: otp},
+                      email_messages: [email_message | challenge.email_messages]
+                  }
+              },
+              [:rule, {:actor, [:totps, :email, :emails, :phone, :phones]}, {:challenge, [:email_message]}, :events]
+            )}
   end
 
   @impl true
   def handle(
         %App{} = app,
         %Actor{} = _actor,
-        %Action{challenge: %Challenge{type: @type, state: state} = challenge} = action,
+        %Action{challenge: %Challenge{kind: @challenge, state: state} = challenge} = action,
         event: "validate_otp",
         attrs: %{code: code}
       )
@@ -132,6 +135,8 @@ defmodule Passwordless.Challenges.EmailOTP do
       sender_name: authenticator.sender_name,
       recipient: email.address,
       recipient_name: Actor.handle(actor),
+      reply_to: "hello@passwordless.tools",
+      reply_to_name: "Passwordless Support",
       current: true,
       email_id: email.id,
       domain_id: domain.id,
@@ -151,12 +156,13 @@ defmodule Passwordless.Challenges.EmailOTP do
     }
 
     with {:ok, message_attrs} <- Renderer.render(locale, %{otp_code: otp_code}, opts) do
+      opts = [prefix: Tenant.to_prefix(app)]
       attrs = Map.merge(attrs, message_attrs)
 
       challenge
-      |> Ecto.build_assoc(:email_messages)
+      |> Ecto.build_assoc(:email_messages, opts)
       |> EmailMessage.changeset(attrs)
-      |> Repo.insert()
+      |> Repo.insert(opts)
       |> case do
         {:ok, %EmailMessage{} = message} ->
           {:ok, %EmailMessage{message | email: email, domain: domain}}
@@ -180,14 +186,15 @@ defmodule Passwordless.Challenges.EmailOTP do
     end
   end
 
-  defp create_otp(%Authenticators.EmailOTP{} = authenticator, %EmailMessage{} = email_message, otp_code)
+  defp create_otp(%App{} = app, %Authenticators.EmailOTP{} = authenticator, %EmailMessage{} = email_message, otp_code)
        when is_binary(otp_code) do
+    opts = [prefix: Tenant.to_prefix(app)]
     expires_at = DateTime.add(DateTime.utc_now(), authenticator.expires, :minute)
 
     email_message
     |> Ecto.build_assoc(:otp)
-    |> OTP.changeset(%{code: otp_code, expires_at: expires_at})
-    |> Repo.insert()
+    |> OTP.changeset(%{code: otp_code, expires_at: expires_at}, opts)
+    |> Repo.insert(opts)
   end
 
   defp enqueue_email_message(%App{} = app, %EmailMessage{} = email_message) do

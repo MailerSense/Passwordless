@@ -6,12 +6,10 @@ defmodule PasswordlessApi.ActionController do
   use PasswordlessWeb, :authenticated_api_controller
   use OpenApiSpex.ControllerSpecs
 
-  import Ecto.Query
-
-  alias Database.Tenant
   alias OpenApiSpex.Reference
   alias Passwordless.Action
   alias Passwordless.App
+  alias Passwordless.Challenge
   alias Passwordless.Repo
   alias PasswordlessApi.Schemas
 
@@ -25,10 +23,70 @@ defmodule PasswordlessApi.ActionController do
       unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}
     ]
 
-  def authenticate(%Plug.Conn{} = conn, params, %App{} = app) do
-    with {:ok, actor} <- Passwordless.resolve_actor(app, params["user"]) do
-      action = Repo.one(Action.preload_challenge(from(a in Action, prefix: ^Tenant.to_prefix(app), limit: 1)))
-      render(conn, :authenticate, action: action)
+  def get(%Plug.Conn{} = conn, %{"id" => id}, %App{} = app) do
+    with {:ok, action} <- Passwordless.get_action(app, id) do
+      action =
+        Repo.preload(
+          action,
+          [:rule, {:actor, [:totps, :email, :emails, :phone, :phones]}, {:challenge, [:email_message]}, :events]
+        )
+
+      render(conn, :get, action: action)
     end
+  end
+
+  def authenticate(%Plug.Conn{} = conn, params, %App{} = app) do
+    actor_params = Map.get(params, "user")
+
+    action_params = %{
+      name: Map.get(params, "action")
+    }
+
+    challenge_params = %{
+      kind: :email_otp,
+      state: Challenge.starting_state!(:email_otp),
+      current: true
+    }
+
+    event_params = fn old_action, new_action ->
+      %{
+        event: "send_otp",
+        user_agent: Map.get(params, "user_agent"),
+        ip_address: Map.get(params, "ip_address"),
+        country: Map.get(params, "country"),
+        city: Map.get(params, "city"),
+        metadata: %{
+          before: %{
+            name: old_action.name,
+            state: old_action.state
+          },
+          after: %{
+            name: new_action.name,
+            state: new_action.state
+          },
+          attrs: %{}
+        }
+      }
+    end
+
+    {:ok, action} =
+      Repo.transact(fn ->
+        with {:ok, rule} <- Passwordless.create_rule(app, %{conditions: %{}, effects: %{}}),
+             {:ok, actor} <- Passwordless.resolve_actor(app, actor_params),
+             {:ok, action} <- Passwordless.create_action(app, actor, Map.put(action_params, :rule_id, rule.id)),
+             {:ok, challenge} <- Passwordless.create_challenge(app, action, challenge_params),
+             {:ok, new_action} <-
+               Passwordless.handle_challenge(app, actor, action, challenge, "send_otp", %{email: actor.email}),
+             {:ok, _event} <- Passwordless.create_event(app, action, event_params.(action, new_action)),
+             do: {:ok, new_action}
+      end)
+
+    PasswordlessWeb.Endpoint.broadcast(Action.topic_for(app), "inserted", action)
+
+    render(conn, :authenticate, action: action)
+  end
+
+  def continue(%Plug.Conn{} = conn, params, %App{} = app) do
+    render(conn, :continue, action: nil)
   end
 end

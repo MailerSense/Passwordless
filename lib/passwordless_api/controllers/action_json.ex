@@ -5,6 +5,10 @@ defmodule PasswordlessApi.ActionJSON do
 
   alias Passwordless.Action
 
+  def get(%{action: %Action{} = action}) do
+    %{action: action}
+  end
+
   def authenticate(%{action: %Action{} = action}) do
     %{action: action}
   end

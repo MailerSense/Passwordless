@@ -15,6 +15,7 @@ defmodule Passwordless do
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
+  alias Passwordless.Challenges
   alias Passwordless.Domain
   alias Passwordless.DomainRecord
   alias Passwordless.Email
@@ -39,6 +40,11 @@ defmodule Passwordless do
     security_key: Authenticators.SecurityKey,
     totp: Authenticators.TOTP,
     recovery_codes: Authenticators.RecoveryCodes
+  ]
+
+  @challenges [
+    email_otp: Challenges.EmailOTP,
+    magic_link: Challenges.MagicLink
   ]
 
   @doc """
@@ -436,6 +442,8 @@ defmodule Passwordless do
           false
       end
 
+    params = Map.put_new(params, "properties", %{})
+
     actor_result =
       case Repo.one(from(a in Actor, where: ^actor_query), prefix: Tenant.to_prefix(app)) do
         %Actor{} = actor -> update_actor(app, actor, params)
@@ -482,7 +490,7 @@ defmodule Passwordless do
         {:cont, [email | acc]}
     end)
     |> case do
-      emails when is_list(emails) -> {:ok, %Actor{actor | emails: emails}}
+      emails when is_list(emails) -> {:ok, Repo.preload(%Actor{actor | emails: emails}, :email)}
       %Ecto.Changeset{} = changeset -> {:error, changeset}
     end
   end
@@ -702,6 +710,16 @@ defmodule Passwordless do
     |> Repo.preload(actor: [:email, :phone])
   end
 
+  def get_action(%App{} = app, id) do
+    Action
+    |> Repo.get(id, prefix: Tenant.to_prefix(app))
+    |> Repo.preload(actor: [:email, :phone])
+    |> case do
+      %Action{} = action -> {:ok, action}
+      nil -> {:error, :not_found}
+    end
+  end
+
   def create_action(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
     actor
     |> Ecto.build_assoc(:actions)
@@ -732,6 +750,19 @@ defmodule Passwordless do
     |> Ecto.build_assoc(:challenges)
     |> Challenge.changeset(attrs, opts)
     |> Repo.insert(opts)
+  end
+
+  def handle_challenge(
+        %App{} = app,
+        %Actor{} = actor,
+        %Action{} = action,
+        %Challenge{kind: kind} = challenge,
+        event,
+        attrs \\ %{}
+      ) do
+    action = %Action{action | challenge: challenge}
+    mod = Keyword.fetch!(@challenges, kind)
+    mod.handle(app, actor, action, event: event, attrs: attrs)
   end
 
   # Event

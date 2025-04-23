@@ -160,9 +160,23 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
         {:ok, _challenge} =
           Passwordless.create_challenge(app, action, %{
-            type: Enum.random(Challenge.types()),
+            kind: Enum.random(Challenge.kinds()),
             state: :started,
-            current: true
+            current: true,
+            options: [
+              %{
+                name: "validate_email_otp",
+                info: %{
+                  "email" => "m******@opentide.com"
+                }
+              },
+              %{
+                name: "resend_email_otp",
+                info: %{
+                  "email" => "m******@opentide.com"
+                }
+              }
+            ]
           })
 
         {:ok, _event} =

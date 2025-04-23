@@ -10,8 +10,7 @@ defmodule Passwordless.RecoveryCodes do
     only: [
       :id,
       :inserted_at,
-      :updated_at,
-      :deleted_at
+      :updated_at
     ]
   }
   @derive {

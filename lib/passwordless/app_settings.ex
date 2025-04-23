@@ -40,10 +40,10 @@ defmodule Passwordless.AppSettings do
     field :default_action, Ecto.Enum, values: @actions, default: :block
     field :allowlist_api_access, :boolean, default: false
 
-    embeds_many :allowlisted_ip_addresses, IPAddress, on_replace: :delete do
+    embeds_many :allowlisted_ip_addresses, IPAddress, on_replace: :delete, primary_key: false do
       @derive Jason.Encoder
 
-      field :address, :string
+      field :address, :string, primary_key: true
     end
 
     belongs_to :app, App
@@ -111,7 +111,7 @@ defmodule Passwordless.AppSettings do
   defp whitelisted_ip_changeset(%__MODULE__.IPAddress{} = ip_address, attrs) do
     ip_address
     |> cast(attrs, [:address])
-    |> validate_required([:address])
+    |> validate_required(:address)
     |> ChangesetExt.validate_cidr(:address)
   end
 end

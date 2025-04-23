@@ -37,7 +37,7 @@ defmodule Passwordless.Action do
   }
   schema "actions" do
     field :name, :string
-    field :state, Ecto.Enum, values: @states
+    field :state, Ecto.Enum, values: @states, default: :pending
 
     has_one :challenge, Challenge, where: [current: true]
 

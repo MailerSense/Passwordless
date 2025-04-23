@@ -61,9 +61,10 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create table(:challenges, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :type, :string, null: false
+      add :kind, :string, null: false
       add :state, :string, null: false
       add :current, :boolean, null: false, default: false
+      add :options, :map
 
       add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
 
