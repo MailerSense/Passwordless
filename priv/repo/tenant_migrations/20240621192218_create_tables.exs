@@ -64,7 +64,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :kind, :string, null: false
       add :state, :string, null: false
       add :current, :boolean, null: false, default: false
-      add :options, :map, null: false, default: %{}
+      add :options, :map
 
       add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
 

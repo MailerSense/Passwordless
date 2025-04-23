@@ -7,6 +7,7 @@ defmodule PasswordlessApi.ActionController do
   use OpenApiSpex.ControllerSpecs
 
   alias OpenApiSpex.Reference
+  alias Passwordless.Action
   alias Passwordless.App
   alias Passwordless.Challenge
   alias Passwordless.Repo
@@ -44,22 +45,21 @@ defmodule PasswordlessApi.ActionController do
     challenge_params = %{
       kind: :email_otp,
       state: Challenge.starting_state!(:email_otp),
-      current: true,
-      options: []
+      current: true
     }
 
-    res =
-      with {:ok, rule} <- Passwordless.create_rule(app, %{conditions: %{}, effects: %{}}),
-           {:ok, actor} <- Passwordless.resolve_actor(app, actor_params),
-           {:ok, action} <- Passwordless.create_action(app, actor, Map.put(action_params, :rule_id, rule.id)),
-           {:ok, challenge} <- Passwordless.create_challenge(app, action, challenge_params),
-           {:ok, action} <-
-             Passwordless.handle_challenge(app, actor, action, challenge, "send_otp", %{email: actor.email}) do
-        render(conn, :authenticate, action: action)
-      end
+    {:ok, action} =
+      Repo.transact(fn ->
+        with {:ok, rule} <- Passwordless.create_rule(app, %{conditions: %{}, effects: %{}}),
+             {:ok, actor} <- Passwordless.resolve_actor(app, actor_params),
+             {:ok, action} <- Passwordless.create_action(app, actor, Map.put(action_params, :rule_id, rule.id)),
+             {:ok, challenge} <- Passwordless.create_challenge(app, action, challenge_params),
+             do: Passwordless.handle_challenge(app, actor, action, challenge, "send_otp", %{email: actor.email})
+      end)
 
-    IO.inspect(res, label: "Authenticate Result")
-    res
+    PasswordlessWeb.Endpoint.broadcast(Action.topic_for(app), "inserted", action)
+
+    render(conn, :authenticate, action: action)
   end
 
   def continue(%Plug.Conn{} = conn, params, %App{} = app) do
