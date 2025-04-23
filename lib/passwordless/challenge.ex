@@ -55,6 +55,9 @@ defmodule Passwordless.Challenge do
       started: [:password_validated]
     ]
   ]
+  @starting_states Keyword.new(@state_machines, fn {machine, [{state, _trans} | _]} ->
+                     {machine, state}
+                   end)
   @end_states [
     :otp_validated,
     :magic_link_validated,
@@ -105,6 +108,7 @@ defmodule Passwordless.Challenge do
 
   def kinds, do: @kinds
   def states, do: @states
+  def starting_state!(machine), do: Keyword.fetch!(@starting_states, machine)
 
   def validated?(%__MODULE__{state: state}) when state in @end_states, do: true
   def validated?(_), do: false
@@ -123,10 +127,7 @@ defmodule Passwordless.Challenge do
   def changeset(%__MODULE__{} = challenge, attrs \\ %{}, opts \\ []) do
     challenge
     |> cast(attrs, @fields)
-    |> cast_embed(:options,
-      with: &option_changeset/2,
-      required: true
-    )
+    |> cast_embed(:options, with: &option_changeset/2)
     |> validate_required(@required_fields)
     |> validate_state()
     |> assoc_constraint(:action)

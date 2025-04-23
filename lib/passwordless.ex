@@ -15,6 +15,7 @@ defmodule Passwordless do
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
+  alias Passwordless.Challenges
   alias Passwordless.Domain
   alias Passwordless.DomainRecord
   alias Passwordless.Email
@@ -39,6 +40,11 @@ defmodule Passwordless do
     security_key: Authenticators.SecurityKey,
     totp: Authenticators.TOTP,
     recovery_codes: Authenticators.RecoveryCodes
+  ]
+
+  @challenges [
+    email_otp: Challenges.EmailOTP,
+    magic_link: Challenges.MagicLink
   ]
 
   @doc """
@@ -484,7 +490,7 @@ defmodule Passwordless do
         {:cont, [email | acc]}
     end)
     |> case do
-      emails when is_list(emails) -> {:ok, %Actor{actor | emails: emails}}
+      emails when is_list(emails) -> {:ok, Repo.preload(%Actor{actor | emails: emails}, :email)}
       %Ecto.Changeset{} = changeset -> {:error, changeset}
     end
   end
@@ -747,6 +753,19 @@ defmodule Passwordless do
     |> Ecto.build_assoc(:challenges)
     |> Challenge.changeset(attrs, opts)
     |> Repo.insert(opts)
+  end
+
+  def handle_challenge(
+        %App{} = app,
+        %Actor{} = actor,
+        %Action{} = action,
+        %Challenge{kind: kind} = challenge,
+        event,
+        attrs \\ %{}
+      ) do
+    action = %Action{action | challenge: challenge}
+    mod = Keyword.fetch!(@challenges, kind)
+    mod.handle(app, actor, action, event: event, attrs: attrs)
   end
 
   # Event

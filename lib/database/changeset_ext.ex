@@ -170,9 +170,8 @@ defmodule Database.ChangesetExt do
   def validate_ip_address(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
     changeset
     |> ensure_trimmed(field)
+    |> ensure_lowercase(field)
     |> validate_change(field, fn ^field, value ->
-      IO.inspect(value)
-
       with {:ok, ip_address} <- InetCidr.parse_address(value), true <- public_ip?(ip_address) do
         []
       else
@@ -187,13 +186,11 @@ defmodule Database.ChangesetExt do
   def validate_cidr(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
     changeset
     |> ensure_trimmed(field)
+    |> ensure_lowercase(field)
     |> validate_change(field, fn ^field, value ->
       case Util.CIDR.parse(value) do
-        %Util.CIDR{} ->
-          []
-
-        {:error, _} ->
-          [{field, "is invalid"}]
+        %Util.CIDR{} -> []
+        {:error, _} -> [{field, "is invalid"}]
       end
     end)
   end
@@ -396,7 +393,7 @@ defmodule Database.ChangesetExt do
   defp sensitive?(key) when is_binary(key) and key in @sensitive_keys_s, do: true
   defp sensitive?(_key), do: false
 
-  defp public_ip?({_, _, _, _} = ip_address) do
+  defp public_ip?(ip_address) do
     case ip_address do
       {10, _, _, _} -> false
       {192, 168, _, _} -> false

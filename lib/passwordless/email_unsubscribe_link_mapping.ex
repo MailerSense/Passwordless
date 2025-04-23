@@ -41,8 +41,8 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
     message_mapping
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> decode_email_id()
     |> unique_constraint(:email_id)
-    |> unsafe_validate_unique(:email_id, Passwordless.Repo)
     |> assoc_constraint(:app)
   end
 
@@ -70,6 +70,15 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
   end
 
   # Private
+
+  defp decode_email_id(changeset) do
+    update_change(changeset, :email_id, fn email_id ->
+      case Database.PrefixedUUID.slug_to_uuid(email_id) do
+        {:ok, _prefix, uuid} -> uuid
+        _ -> email_id
+      end
+    end)
+  end
 
   defp verify_token(token) when is_binary(token) do
     Token.verify(Endpoint, key_salt(), token)

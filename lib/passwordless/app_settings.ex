@@ -111,7 +111,7 @@ defmodule Passwordless.AppSettings do
   defp whitelisted_ip_changeset(%__MODULE__.IPAddress{} = ip_address, attrs) do
     ip_address
     |> cast(attrs, [:address])
-    |> validate_required([:address])
+    |> validate_required(:address)
     |> ChangesetExt.validate_cidr(:address)
   end
 end
