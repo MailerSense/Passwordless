@@ -137,7 +137,7 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
       page_title: gettext("Delete user"),
       page_subtitle:
         gettext(
-          "Are you sure you want to delete user \"%{name}\"? This action is irreversible.",
+          "Are you sure you want to delete user \"%{name}\"? This action is irreversible. User will lose access to their TOTPs and other authentication methods.",
           name: Actor.handle(actor)
         )
     )

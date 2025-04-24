@@ -6,6 +6,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateLocale
   alias Passwordless.EmailTemplateStyle
+  alias Passwordless.Locale
 
   @default PasswordlessWeb.App.EmailLive.EmailComponent
   @components [
@@ -196,6 +197,9 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
       mjml_body: Ecto.Changeset.get_field(changeset, :mjml_body)
     }
 
+    current_style = Ecto.Changeset.get_field(changeset, :style)
+    current_language = Ecto.Changeset.get_field(changeset, :current_language)
+
     socket =
       case Renderer.render(locale, Renderer.demo_variables(), opts) do
         {:ok, %{html_content: html_content}} ->
@@ -205,7 +209,13 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
           assign(socket, preview: Ecto.Changeset.get_field(changeset, :html_body))
       end
 
-    assign(socket, locale_form: to_form(changeset))
+    socket
+    |> assign(locale_form: to_form(changeset))
+    |> assign(
+      current_style: current_style,
+      current_language: current_language,
+      current_language_readable: Keyword.fetch!(Locale.languages(), current_language)
+    )
   end
 
   defp apply_action(socket, _action, %{"delete" => _}) do

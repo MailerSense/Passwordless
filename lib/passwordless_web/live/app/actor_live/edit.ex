@@ -171,10 +171,14 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     assign(socket, page_title: actor.name)
   end
 
-  defp apply_action(socket, :delete, _actor) do
+  defp apply_action(socket, :delete, actor) do
     assign(socket,
-      page_title: gettext("Are you sure?"),
-      page_subtitle: gettext("Are you sure you want to delete this actor? This action cannot be undone.")
+      page_title: gettext("Delete user"),
+      page_subtitle:
+        gettext(
+          "Are you sure you want to delete user \"%{name}\"? This action is irreversible. User will lose access to their TOTPs and other authentication methods.",
+          name: Actor.handle(actor)
+        )
     )
   end
 
@@ -194,7 +198,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   defp apply_action(socket, :delete_email, _actor) do
     assign(socket,
-      page_title: gettext("Are you sure?"),
+      page_title: gettext("Delete email"),
       page_subtitle: gettext("Are you sure you want to delete this email? This action cannot be undone.")
     )
   end
@@ -215,7 +219,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   defp apply_action(socket, :delete_phone, _actor) do
     assign(socket,
-      page_title: gettext("Are you sure?"),
+      page_title: gettext("Delete phone"),
       page_subtitle: gettext("Are you sure you want to delete this phone? This action cannot be undone.")
     )
   end
