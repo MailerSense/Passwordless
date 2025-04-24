@@ -239,7 +239,7 @@ defmodule Passwordless.EmailMessage do
     tag
     |> cast(attrs, [:name, :value])
     |> ChangesetExt.ensure_trimmed(:name)
-    |> ChangesetExt.ensure_trimmed(:value)
+    |> ChangesetExt.clean_array(:value)
   end
 
   defp metadata_header_changeset(%__MODULE__.Metadata.Header{} = header, attrs) do

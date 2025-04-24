@@ -83,7 +83,7 @@ defmodule Passwordless.Email.Adapter.SESParser do
          do: {:ok, Map.merge(message, message_details), event_details}
   end
 
-  def parse(_), do: {:error, :invalid_payload}
+  def parse(_), do: {:error, :invalid_message_payload}
 
   # Private
   defp parse_object("Bounce", %{"bouncedRecipients" => bounced_recipients, "timestamp" => timestamp} = payload)
@@ -177,7 +177,7 @@ defmodule Passwordless.Email.Adapter.SESParser do
 
     {:ok, %{state: :complaint_received},
      %{
-       kind: :complain,
+       kind: :complaint,
        feedback_id: feedback_id,
        complaint_type: complaint_type,
        complaint_subtype: complaint_subtype,
@@ -221,7 +221,7 @@ defmodule Passwordless.Email.Adapter.SESParser do
 
     {:ok, %{state: :delivered},
      %{
-       kind: :deliver,
+       kind: :delivery,
        recipients: recipients,
        delivery_smtp_response: smtp_response,
        delivery_reporting_mta: reporting_mta,
@@ -230,10 +230,10 @@ defmodule Passwordless.Email.Adapter.SESParser do
      }}
   end
 
-  defp parse_object("Send", %{}), do: {:ok, %{state: :sent}, %{kind: :sent}}
+  defp parse_object("Send", %{}), do: {:ok, %{state: :sent}, %{kind: :send, happened_at: DateTime.utc_now()}}
 
   defp parse_object("Reject", %{"reason" => reason}) when is_binary(reason),
-    do: {:ok, %{state: :rejected}, %{kind: :reject, reject_reason: :bad_request}}
+    do: {:ok, %{state: :rejected}, %{kind: :reject, reject_reason: :bad_request, happened_at: DateTime.utc_now()}}
 
   defp parse_object("Open", %{"timestamp" => timestamp} = payload) when is_binary(timestamp) do
     timestamp =
@@ -378,7 +378,7 @@ defmodule Passwordless.Email.Adapter.SESParser do
 
     {:ok, %{},
      %{
-       kind: :subscribe,
+       kind: :subscription,
        source: source,
        contact_list: contact_list,
        happened_at: timestamp
@@ -400,20 +400,17 @@ defmodule Passwordless.Email.Adapter.SESParser do
 
     {:ok, %{},
      %{
-       kind: :fail_rendering,
+       kind: :rendering_failure,
        error_message: error_message,
        teplate_name: teplate_name,
        happened_at: DateTime.utc_now()
      }}
   end
 
-  defp parse_object(_kind, _payload), do: {:error, :invalid_payload}
+  defp parse_object(_kind, _payload), do: {:error, :invalid_object_payload}
 
-  defp parse_mail(
-         %{"messageId" => message_id, "destination" => destination, "source" => source, "sourceArn" => source_arn} =
-           payload
-       )
-       when is_binary(message_id) and is_binary(source) and is_binary(source_arn) do
+  defp parse_mail(%{"messageId" => message_id, "destination" => destination, "source" => source} = payload)
+       when is_binary(message_id) and is_binary(source) do
     sending_account_id =
       case payload["sendingAccountId"] do
         sai when is_binary(sai) -> sai
@@ -426,12 +423,18 @@ defmodule Passwordless.Email.Adapter.SESParser do
         _ -> nil
       end
 
+    source_arn =
+      case payload["sourceArn"] do
+        arn when is_binary(arn) -> arn
+        _ -> nil
+      end
+
     tags = parse_tags(Map.get(payload, "tags"))
 
     headers =
       case Map.get(payload, "headers") do
         h when is_list(h) -> h
-        _ -> []
+        _ -> nil
       end
 
     headers_truncated =
@@ -442,15 +445,18 @@ defmodule Passwordless.Email.Adapter.SESParser do
 
     parsed_message = %{
       external_id: message_id,
-      metadata: %{
-        tags: tags,
-        source: source,
-        source_ip: source_ip,
-        source_arn: source_arn,
-        sending_account_id: sending_account_id,
-        headers: headers,
-        headers_truncated: headers_truncated
-      }
+      metadata:
+        %{
+          tags: tags,
+          source: source,
+          source_ip: source_ip,
+          source_arn: source_arn,
+          sending_account_id: sending_account_id,
+          headers: headers,
+          headers_truncated: headers_truncated
+        }
+        |> Enum.reject(fn {_, v} -> Util.blank?(v) end)
+        |> Map.new()
     }
 
     parsed_message =
@@ -472,7 +478,7 @@ defmodule Passwordless.Email.Adapter.SESParser do
     {:ok, parsed_message}
   end
 
-  defp parse_mail(_), do: {:error, :invalid_payload}
+  defp parse_mail(_), do: {:error, :invalid_mail_payload}
 
   defp parse_email_list([d]) when is_binary(d) do
     parse_full_email(d)
@@ -523,7 +529,7 @@ defmodule Passwordless.Email.Adapter.SESParser do
     |> Enum.map(fn {k, v} -> %{name: k, value: v} end)
   end
 
-  defp parse_tags(_), do: []
+  defp parse_tags(_), do: nil
 
   @full_email_regex ~r/^(?:"?(?<name>[^"]*)"?\s)?<?(?<email>.+@[^>]+)>?$/
 

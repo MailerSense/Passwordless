@@ -82,7 +82,7 @@ defmodule Database.PrefixedUUID do
     end
   end
 
-  defp uuid_to_slug(uuid, params) do
+  def uuid_to_slug(uuid, params) do
     "#{prefix(params)}_#{encode_base62_uuid(uuid)}"
   end
 

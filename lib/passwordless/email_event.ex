@@ -10,6 +10,7 @@ defmodule Passwordless.EmailEvent do
 
   @kinds ~w(
     open
+    send
     click
     bounce
     complaint

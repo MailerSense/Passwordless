@@ -5,6 +5,7 @@ defmodule Passwordless.Email.EventDecoder do
 
   use Oban.Pro.Worker, queue: :queue_processor, max_attempts: 5, tags: ["event", "decoder"]
 
+  alias Database.PrefixedUUID
   alias Database.Tenant
   alias Passwordless.App
   alias Passwordless.Email.Adapter.SESParser
@@ -40,7 +41,7 @@ defmodule Passwordless.Email.EventDecoder do
     opts = [prefix: Tenant.to_prefix(app)]
 
     message
-    |> EmailMessage.external_changeset(attrs)
+    |> EmailMessage.changeset(attrs, opts)
     |> Repo.update(opts)
   end
 
@@ -48,6 +49,9 @@ defmodule Passwordless.Email.EventDecoder do
     case Repo.one(EmailMessageMapping.get_by_external_id(external_id)) do
       {%EmailMessageMapping{email_message_id: email_message_id}, %App{} = app} ->
         opts = [prefix: Tenant.to_prefix(app)]
+
+        email_message_id =
+          PrefixedUUID.uuid_to_slug(email_message_id, %{primary_key: true, prefix: EmailMessage.prefix()})
 
         case Repo.get(EmailMessage, email_message_id, opts) do
           %EmailMessage{} = message -> {:ok, app, message}
