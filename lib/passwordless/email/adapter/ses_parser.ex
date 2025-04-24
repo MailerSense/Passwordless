@@ -79,7 +79,6 @@ defmodule Passwordless.Email.Adapter.SESParser do
          {:ok, object_name} <- Map.fetch(@objects, kind),
          {:ok, message} <- parse_mail(payload["mail"]),
          {:ok, message_details, event_details} <- parse_object(kind, payload[object_name]),
-         :ok <- message_valid?(message),
          do: {:ok, Map.merge(message, message_details), event_details}
   end
 
@@ -543,7 +542,4 @@ defmodule Passwordless.Email.Adapter.SESParser do
         {nil, nil}
     end
   end
-
-  defp message_valid?(%{recipient: nil}), do: {:error, :recipient_missing}
-  defp message_valid?(%{}), do: :ok
 end
