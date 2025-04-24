@@ -833,17 +833,17 @@ defmodule Passwordless do
     |> Repo.insert()
   end
 
-  def change_email_template_locale(%EmailTemplateLocale{} = locale, attrs \\ %{}) do
+  def change_email_template_locale(%EmailTemplateLocale{} = locale, attrs \\ %{}, opts \\ []) do
     if Ecto.get_meta(locale, :state) == :loaded do
-      EmailTemplateLocale.changeset(locale, attrs)
+      EmailTemplateLocale.changeset(locale, attrs, opts)
     else
-      EmailTemplateLocale.changeset(locale, attrs)
+      EmailTemplateLocale.changeset(locale, attrs, opts)
     end
   end
 
-  def update_email_template_locale(%EmailTemplateLocale{} = locale, attrs \\ %{}) do
+  def update_email_template_locale(%EmailTemplateLocale{} = locale, attrs \\ %{}, opts \\ []) do
     locale
-    |> EmailTemplateLocale.changeset(attrs)
+    |> EmailTemplateLocale.changeset(attrs, opts)
     |> Repo.update()
   end
 

@@ -75,13 +75,14 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
   @impl true
   def handle_event("save_locale", %{"email_template_locale" => locale_params}, socket) do
+    opts = [{:app, socket.assigns.current_app} | Renderer.demo_opts()]
     locale = socket.assigns.locale
 
-    case Passwordless.update_email_template_locale(locale, locale_params) do
+    case Passwordless.update_email_template_locale(locale, locale_params, opts) do
       {:ok, locale} ->
         changeset =
           locale
-          |> Passwordless.change_email_template_locale()
+          |> Passwordless.change_email_template_locale(%{}, opts)
           |> Map.put(:action, :validate)
 
         {:noreply,
@@ -97,9 +98,11 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
   @impl true
   def handle_event("validate_locale", %{"email_template_locale" => locale_params}, socket) do
+    opts = [{:app, socket.assigns.current_app} | Renderer.demo_opts()]
+
     changeset =
       socket.assigns.locale
-      |> Passwordless.change_email_template_locale(locale_params)
+      |> Passwordless.change_email_template_locale(locale_params, opts)
       |> Map.put(:action, :validate)
 
     template = socket.assigns.template
@@ -123,6 +126,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
           |> assign_locale_form(changeset)
 
         style != current_style ->
+          opts = [{:app, socket.assigns.current_app} | Renderer.demo_opts()]
           Passwordless.persist_template_locale_style!(locale)
 
           changeset =
@@ -135,7 +139,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
                   })
 
                 socket.assigns.locale
-                |> Passwordless.change_email_template_locale(locale_params)
+                |> Passwordless.change_email_template_locale(locale_params, opts)
                 |> Map.put(:action, :validate)
 
               _ ->
@@ -201,9 +205,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
           assign(socket, preview: Ecto.Changeset.get_field(changeset, :html_body))
       end
 
-    assign(socket,
-      locale_form: to_form(changeset)
-    )
+    assign(socket, locale_form: to_form(changeset))
   end
 
   defp apply_action(socket, _action, %{"delete" => _}) do

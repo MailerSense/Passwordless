@@ -6,9 +6,9 @@ defmodule Passwordless.EmailTemplateLocale do
   use Passwordless.Schema, prefix: "emtplver"
 
   alias Database.ChangesetExt
+  alias Passwordless.Email.Renderer
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateStyle
-  alias Passwordless.Templating.MJML
 
   @styles [
     email_otp: ~w(email_otp_clean email_otp_card)a,
@@ -73,11 +73,11 @@ defmodule Passwordless.EmailTemplateLocale do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = template, attrs \\ %{}) do
+  def changeset(%__MODULE__{} = template, attrs \\ %{}, opts \\ []) do
     template
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> update_html_body()
+    |> update_html_body(opts)
     |> validate_subject()
     |> validate_preheader()
     |> unique_constraint([:email_template_id, :language], error_key: :language)
@@ -101,25 +101,22 @@ defmodule Passwordless.EmailTemplateLocale do
     |> validate_length(:preheader, min: 1, max: 255)
   end
 
-  defp update_html_body(changeset) do
-    case fetch_field(changeset, :mjml_body) do
-      {_, mjml_body} when is_binary(mjml_body) ->
-        case MJML.convert(mjml_body) do
-          {:ok, html_body} ->
-            changeset
-            |> put_change(:html_body, html_body)
-            |> update_change(:html_content, &HtmlSanitizeEx.html5/1)
+  defp update_html_body(changeset, opts \\ []) do
+    opts = opts ++ Renderer.demo_opts()
 
-          {:error, error} ->
-            add_error(
-              changeset,
-              :mjml_body,
-              "invalid syntax: %{error}",
-              error: error
-            )
-        end
+    mod = %__MODULE__{
+      subject: get_field(changeset, :subject),
+      preheader: get_field(changeset, :preheader),
+      mjml_body: get_field(changeset, :mjml_body)
+    }
 
-      _ ->
+    case Renderer.render(mod, Renderer.demo_variables(), opts) do
+      {:ok, %{html_content: html_content}} ->
+        put_change(changeset, :html_body, html_content)
+
+      # |> update_change(:html_body, &HtmlSanitizeEx.html5/1)
+
+      {:error, _} ->
         changeset
     end
   end
