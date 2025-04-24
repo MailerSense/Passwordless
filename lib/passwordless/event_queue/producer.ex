@@ -105,6 +105,9 @@ defmodule Passwordless.EventQueue.Producer do
       {:ok, %{"Messages" => messages}, _} when is_list(messages) ->
         {:ok, wrap_messages(messages, queue_url, source)}
 
+      {:ok, _, _} ->
+        {:ok, []}
+
       value ->
         Logger.error("Failed to receive messages: #{inspect(value)}")
         {:error, value}

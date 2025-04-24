@@ -20,7 +20,7 @@ defmodule Passwordless.EventQueue.ConsumerManager do
     children = [
       %{
         id: Consumer,
-        start: {Consumer, :start_link, [source]},
+        start: {Consumer, :start_link, []},
         restart: :transient
       }
     ]
