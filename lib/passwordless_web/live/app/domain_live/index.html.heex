@@ -13,15 +13,13 @@
       readonly
       wrapper_class="mb-0!"
     />
-    <div :if={Util.present?(@email_domain)} class="flex items-center gap-3 flex-wrap">
-      <.a
-        :if={not Domain.verified?(@email_domain)}
-        to={~p"/domain/email/dns"}
-        label={gettext("Setup DNS records")}
-        style="link"
-        link_type="live_patch"
-      />
-    </div>
+    <.a
+      :if={Util.present?(@email_domain) and not Domain.verified?(@email_domain)}
+      to={~p"/domain/email/dns"}
+      label={gettext("Setup DNS records")}
+      style="link"
+      link_type="live_patch"
+    />
     <.a
       :if={Util.blank?(@email_domain)}
       to={~p"/domain/email/new"}

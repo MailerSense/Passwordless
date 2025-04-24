@@ -66,7 +66,8 @@ defmodule Passwordless.Organizations.OrgSeeder do
         name: "auth.eu.passwordlesstools.com",
         kind: :sub_domain,
         tags: [:system, :default],
-        purpose: :email
+        purpose: :email,
+        verified: true
       })
 
     {:ok, tracking_domain} =
@@ -216,11 +217,12 @@ defmodule Passwordless.Organizations.OrgSeeder do
     {:ok, %{subdomain: subdomain}} = Domainatrex.parse(domain)
 
     [
-      %{kind: :txt, name: "envelope.#{subdomain}", value: "v=spf1 include:amazonses.com ~all"},
+      %{kind: :txt, name: "envelope.#{subdomain}", value: "v=spf1 include:amazonses.com ~all", verified: true},
       %{
         kind: :txt,
-        name: "envelope.#{subdomain}",
-        value: "v=DMARC1; p=none; rua=mailto:dmarc@mailersense.com;"
+        name: "_dmarc.#{subdomain}",
+        value: "v=DMARC1; p=none; rua=mailto:dmarc@mailersense.com;",
+        verified: true
       },
       %{
         kind: :cname,
