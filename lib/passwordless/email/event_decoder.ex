@@ -3,6 +3,8 @@ defmodule Passwordless.Email.EventDecoder do
   Decodes email events from SES.
   """
 
+  use Oban.Pro.Worker, queue: :queue_processor, max_attempts: 5, tags: ["event", "decoder"]
+
   alias Database.Tenant
   alias Passwordless.App
   alias Passwordless.Email.Adapter.SESParser
@@ -11,18 +13,17 @@ defmodule Passwordless.Email.EventDecoder do
   alias Passwordless.EmailMessageMapping
   alias Passwordless.Repo
 
-  def create_message_from_event(raw_message) when is_map(raw_message) do
-    with {:ok, parsed_message, parsed_event} <- SESParser.parse(raw_message) do
+  @impl true
+  def process(%Oban.Job{args: %{"message" => message}}) when is_map(message) do
+    with {:ok, parsed_message, parsed_event} <- SESParser.parse(message) do
       Repo.transact(fn ->
         with {:ok, app, message} <- get_message_by_external_id(parsed_message),
              {:ok, message} <- update_message(app, message, parsed_message),
-             {:ok, event} <- create_message_event(app, message, parsed_event),
-             do: {:ok, message, event}
+             {:ok, _event} <- create_message_event(app, message, parsed_event),
+             do: :ok
       end)
     end
   end
-
-  def create_message_from_event(_), do: {:error, :message_parse_failed}
 
   # Private
 

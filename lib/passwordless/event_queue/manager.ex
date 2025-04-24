@@ -12,15 +12,14 @@ defmodule Passwordless.EventQueue.Manager do
   require Logger
 
   @registry Passwordless.EventQueue.Registry
-  @queues Application.compile_env!(:passwordless, :queues)
   @env Application.compile_env!(:passwordless, :env)
 
-  def start_link(_opts) do
-    Supervisor.start_link(__MODULE__, nil, name: __MODULE__)
+  def start_link(queues) do
+    Supervisor.start_link(__MODULE__, queues, name: __MODULE__)
   end
 
   @impl true
-  def init(_opts) do
+  def init(queues) do
     children = [
       {Registry, keys: :unique, name: @registry},
       {Monitor, []},
@@ -28,8 +27,8 @@ defmodule Passwordless.EventQueue.Manager do
       {Agent,
        fn ->
          if @env != :test && is_nil(System.get_env("DATABASE_MIGRATION")) do
-           @queues
-           |> Enum.map(fn {k, v} -> struct!(Source, Map.put(v, :id, k)) end)
+           queues
+           |> Enum.map(&struct!(Source, &1))
            |> Enum.each(&start_pipeline/1)
          end
        end}
