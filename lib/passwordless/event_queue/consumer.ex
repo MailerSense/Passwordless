@@ -8,9 +8,10 @@ defmodule Passwordless.EventQueue.Consumer do
 
   def start_link(%Message{data: data} = message) do
     Task.start_link(fn ->
-      %{messsage: data}
-      |> EventDecoder.new()
-      |> Oban.insert!()
+      with %{"Message" => raw_message} <- data,
+           {:ok, decoded} <- Jason.decode(raw_message),
+           {:ok, _job} <- %{message: decoded} |> EventDecoder.new() |> Oban.insert(),
+           do: :ok
 
       Message.ack(message)
     end)
