@@ -40,8 +40,8 @@ defmodule Passwordless.Application do
           {Task.Supervisor, name: Passwordless.BackgroundTask},
           Passwordless.Cache,
           Passwordless.RateLimit,
-          Passwordless.EventQueue.Manager,
           {Oban, Application.fetch_env!(:passwordless, Oban)},
+          {Passwordless.EventQueue.Manager, queues()},
           {Passwordless.HealthCheck, health_checks()},
           PasswordlessWeb.Endpoint
         ])
@@ -79,6 +79,15 @@ defmodule Passwordless.Application do
 
   defp app_secret do
     Passwordless.config([:secret_manager, :secret_name])
+  end
+
+  defp queues do
+    [
+      %{
+        id: :ses_sns_notifications,
+        sqs_queue_url: System.get_env("SES_QUEUE_URL")
+      }
+    ]
   end
 
   defp append_if(list, _value, false), do: list

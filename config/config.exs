@@ -67,7 +67,8 @@ config :passwordless, Oban,
     mailer: [local_limit: 10, global_limit: 20],
     executor: [local_limit: 10, global_limit: 20],
     scheduler: [local_limit: 10, global_limit: 10],
-    statistics: [local_limit: 10, global_limit: 10]
+    statistics: [local_limit: 10, global_limit: 10],
+    queue_processor: [local_limit: 50, global_limit: 200]
   ],
   engine: Oban.Pro.Engines.Smart,
   notifier: Oban.Notifiers.PG,
@@ -144,8 +145,6 @@ config :passwordless, :emails,
     reply_to: "hello@passwordless.tools",
     reply_to_name: "Passwordless Support"
   ]
-
-config :passwordless, :queues, email_notifications: %{sqs_queue_url: ""}
 
 # Configure esbuild (the version is required)
 config :esbuild,

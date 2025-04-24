@@ -235,6 +235,25 @@ export class PasswordlessTools extends cdk.Stack {
     const { domain: appCdnDomain, certificate: appCdnCert } =
       certificates.appCdn[region][env];
 
+    const ses = new SES(this, `${env}-app-ses`, {
+      name: `${appName}-app-ses`,
+      domains: [
+        {
+          zone: comZone,
+          domain: domainLookup.email.domain,
+          domainFromPrefix: "envelope",
+          ruaEmail: `dmarc@${comZone.zoneName}`,
+          rufEmail: `dmarc@${comZone.zoneName}`,
+        },
+      ],
+      tracking: {
+        zone: comZone,
+        cert: certificates.tracking[region][env].certificate,
+        domain: domainLookup.tracking.domain,
+      },
+      removalPolicy,
+    });
+
     const imageName = "passwordless-tools-image";
     const cachedImage = new CachedImage(this, imageName, {
       exclude: ["node_modules", "deps", "_build", ".git"],
@@ -252,6 +271,7 @@ export class PasswordlessTools extends cdk.Stack {
       CDN_HOST: appCdnDomain,
       CUSTOMER_MEDIA_BUCKET: customerMedia.bucket.bucketName,
       CUSTOMER_MEDIA_CDN_URL: `https://${cdnDomain}/`,
+      SES_QUEUE_URL: ses.eventQueue.queueUrl,
     };
 
     const appContainer: AppContainer = {
@@ -368,6 +388,16 @@ export class PasswordlessTools extends cdk.Stack {
       `Allow traffic from app to Redis on port ${redis.port}`,
     );
 
+    for (const domain of ses.domainIdentities) {
+      domain.grant(
+        app.service.taskDefinition.taskRole,
+        "ses:SendEmail",
+        "ses:SendRawEmail",
+      );
+    }
+
+    ses.eventQueue.grantConsumeMessages(app.service.taskDefinition.taskRole);
+
     const _waf = new WAF(this, "main-waf", {
       name: `${appName}-waf`,
       associationArns: [
@@ -414,32 +444,5 @@ export class PasswordlessTools extends cdk.Stack {
         name: containerScanningName,
       },
     );
-
-    const ses = new SES(this, `${env}-app-ses`, {
-      name: `${appName}-app-ses`,
-      domains: [
-        {
-          zone: comZone,
-          domain: domainLookup.email.domain,
-          domainFromPrefix: "envelope",
-          ruaEmail: `dmarc@${comZone.zoneName}`,
-          rufEmail: `dmarc@${comZone.zoneName}`,
-        },
-      ],
-      tracking: {
-        zone: comZone,
-        cert: certificates.tracking[region][env].certificate,
-        domain: domainLookup.tracking.domain,
-      },
-      removalPolicy,
-    });
-
-    for (const domain of ses.domainIdentities) {
-      domain.grant(
-        app.service.taskDefinition.taskRole,
-        "ses:SendEmail",
-        "ses:SendRawEmail",
-      );
-    }
   }
 }

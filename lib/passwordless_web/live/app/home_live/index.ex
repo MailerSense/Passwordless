@@ -12,7 +12,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   @data_table_opts [
     for: Action,
     count: 0,
-    default_limit: 10,
+    default_limit: 25,
     default_order: %{
       order_by: [:id],
       order_directions: [:desc]
@@ -90,7 +90,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
       {:noreply, socket}
     else
       query = actor_query(socket.assigns.current_app)
-
       assigns = Map.take(socket.assigns, ~w(cursor)a)
 
       {:noreply,
@@ -149,9 +148,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   defp assign_actions(socket, params) do
     query = actor_query(socket.assigns.current_app)
-
     params = Map.take(params, ~w(filters order_by order_directions))
-
     {actions, meta} = DataTable.search(query, params, @data_table_opts)
 
     cursor =
@@ -166,7 +163,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   end
 
   defp load_actions(query, %{cursor: cursor}) do
-    filters = %{"first" => 25, "after" => cursor}
+    filters = %{"first" => 50, "after" => cursor}
     {actions, meta} = DataTable.search(query, filters, @data_table_opts)
 
     cursor =
@@ -188,7 +185,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   defp actor_query(%App{} = app) do
     app
     |> Action.get_by_app()
-    |> Action.get_by_states([:allow, :timeout, :block, :pending])
     |> Action.preload_actor()
   end
 
