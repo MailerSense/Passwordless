@@ -72,7 +72,7 @@ defmodule Passwordless.EventQueue.Producer do
     {:noreply, [], state}
   end
 
-  def via(source_id, index) when is_binary(source_id) and is_integer(index) do
+  def via(source_id, index) when is_integer(index) do
     {:via, Registry, {@registry, {__MODULE__, source_id, index}}}
   end
 

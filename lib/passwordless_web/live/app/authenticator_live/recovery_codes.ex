@@ -7,6 +7,7 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.RecoveryCodes do
   alias Passwordless.Repo
 
   @impl true
+  @spec update(%{:app => Passwordless.App.t(), optional(any()) => any()}, any()) :: {:ok, any()}
   def update(%{app: %App{} = app} = assigns, socket) do
     recovery_codes = Repo.preload(app, :recovery_codes).recovery_codes
     changeset = Passwordless.change_recovery_codes(recovery_codes)

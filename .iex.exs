@@ -17,6 +17,7 @@ alias Phoenix.LiveView
 
 Mix.ensure_application!(:wx)
 Mix.ensure_application!(:runtime_tools)
+Mix.ensure_application!(:observer)
 
 # Don't cut off inspects with "..."
 IEx.configure(inspect: [limit: :infinity])

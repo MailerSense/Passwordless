@@ -32,7 +32,7 @@ defmodule Passwordless.EventQueue.Pipeline do
     Supervisor.init(children, strategy: :one_for_one)
   end
 
-  def via(source_id) when is_binary(source_id) do
+  def via(source_id) do
     {:via, Registry, {@registry, {__MODULE__, source_id}}}
   end
 end

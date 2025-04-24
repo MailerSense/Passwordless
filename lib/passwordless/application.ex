@@ -82,12 +82,11 @@ defmodule Passwordless.Application do
   end
 
   defp queues do
-    [
-      %{
-        id: :ses_sns_notifications,
-        sqs_queue_url: System.get_env("SES_QUEUE_URL")
-      }
-    ]
+    append_if(
+      [],
+      %{id: :sqs_notifications, sqs_queue_url: System.get_env("SES_QUEUE_URL")},
+      Util.present?(System.get_env("SES_QUEUE_URL"))
+    )
   end
 
   defp append_if(list, _value, false), do: list

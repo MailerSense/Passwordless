@@ -37,7 +37,7 @@ defmodule Passwordless.EventQueue.ConsumerManager do
 
   # Private
 
-  defp via(source_id) when is_binary(source_id) do
+  defp via(source_id) do
     {:via, Registry, {@registry, {__MODULE__, source_id}}}
   end
 end
