@@ -455,14 +455,14 @@ defmodule Passwordless.Email.Adapter.SESParser do
           headers: headers,
           headers_truncated: headers_truncated
         }
-        |> Enum.reject(fn {_, v} -> Util.blank?(v) end)
+        |> Enum.filter(fn {_, v} -> Util.present?(v) end)
         |> Map.new()
     }
 
     parsed_message =
       parsed_message
       |> Map.merge(parse_common_headers(payload["commonHeaders"]))
-      |> Enum.filter(fn {_, v} -> v end)
+      |> Enum.filter(fn {_, v} -> Util.present?(v) end)
       |> Map.new()
 
     {dest_name, dest_email} = parse_email_list(destination)
