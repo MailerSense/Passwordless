@@ -31,11 +31,14 @@ defmodule Passwordless.EventQueue.Producer do
   end
 
   def start_link([%Source{} = source, index]) do
+    Logger.warning("Starting producer for source #{inspect(source)} with index #{index}")
     GenStage.start_link(__MODULE__, source, name: via(source.id, index))
   end
 
   @impl true
   def init(%Source{} = source) do
+    Logger.warning("Initializing producer for source #{inspect(source)}")
+
     {:producer,
      %State{
        source: source,
@@ -47,21 +50,25 @@ defmodule Passwordless.EventQueue.Producer do
 
   @impl true
   def handle_demand(incoming_demand, %State{demand: demand} = state) do
+    Logger.warning("Received demand: #{incoming_demand}, current demand: #{demand}")
     handle_receive_messages(%State{state | demand: demand + incoming_demand})
   end
 
   @impl true
   def handle_info(:receive_messages, %State{receive_timer: nil} = state) do
+    Logger.warning("Received messages with no timer set")
     {:noreply, [], state}
   end
 
   @impl true
   def handle_info(:receive_messages, %State{} = state) do
+    Logger.warning("Received messages with timer set")
     handle_receive_messages(%{state | receive_timer: nil})
   end
 
   @impl true
   def handle_info(_, %State{} = state) do
+    Logger.warning("Received unknown message")
     {:noreply, [], state}
   end
 
@@ -83,6 +90,10 @@ defmodule Passwordless.EventQueue.Producer do
             _ -> schedule_receive_messages(0)
           end
 
+        Logger.warning(
+          "Received messages: #{inspect(messages)}, timer: #{inspect(receive_timer)}, new demand: #{new_demand}"
+        )
+
         {:noreply, messages, %State{state | demand: new_demand, receive_timer: receive_timer}}
 
       {:error, error} ->
@@ -94,6 +105,7 @@ defmodule Passwordless.EventQueue.Producer do
   end
 
   defp handle_receive_messages(%State{} = state) do
+    Logger.warning("No demand to handle, skipping message reception")
     {:noreply, [], state}
   end
 
@@ -101,19 +113,30 @@ defmodule Passwordless.EventQueue.Producer do
        when is_binary(queue_url) and is_integer(demand) do
     receive_request = demand |> receive_message_opts() |> Map.put("QueueUrl", queue_url)
 
+    Logger.warning("Receiving messages with request: #{inspect(receive_request)}")
+
     with %AWS.Client{} = client <- Session.get_client!(),
          {:ok, body, _} when is_map(body) <- AWS.SQS.receive_message(client, receive_request) do
       case body do
         %{"Messages" => messages} when is_list(messages) ->
+          Logger.warning("Received messages: #{inspect(messages)}")
           {:ok, wrap_messages(messages, queue_url, source)}
 
         _ ->
+          Logger.warning("No messages received")
           {:ok, []}
       end
+    else
+      value ->
+        Logger.warning("Failed to receive messages: #{inspect(value)}")
+        {:error, value}
     end
   end
 
-  defp receive_messages(%State{}, _demand), do: {:ok, []}
+  defp receive_messages(%State{} = state, demand) do
+    Logger.warning("Invalid state or demand: #{inspect(state)}, demand: #{inspect(demand)}")
+    {:ok, []}
+  end
 
   defp wrap_messages(messages, queue_url, %Source{} = source) when is_list(messages) and is_binary(queue_url) do
     Enum.map(messages, fn %{"MessageId" => message_id} = message ->
