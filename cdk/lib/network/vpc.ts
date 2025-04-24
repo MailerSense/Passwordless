@@ -114,5 +114,9 @@ export class VPC extends Construct {
     this.vpc.addInterfaceEndpoint(`${name}-secrets-manager-endpoint`, {
       service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
     });
+
+    this.vpc.addInterfaceEndpoint(`${name}-secrets-sqs-endpoint`, {
+      service: InterfaceVpcEndpointAwsService.SQS,
+    });
   }
 }
