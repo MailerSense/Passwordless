@@ -34,19 +34,21 @@
       </.subpage_header>
 
       <.box padded>
-        <.field type="checkbox" field={@form[:active]} />
-        <.p>
-          <%= if @user_active do %>
-            {gettext("User is active and can authenticate with %{app}.",
-              app: user_app_name(@current_user)
-            )}
-          <% else %>
-            {gettext("User is locked and cannot authenticate with %{app}.",
-              app: user_app_name(@current_user)
-            )}
-          <% end %>
-        </.p>
-        <.form_separator />
+        <.field
+          type="checkbox"
+          field={@form[:active]}
+          help_text={
+            if @user_active do
+              gettext("User is active and can authenticate with %{app}.",
+                app: user_app_name(@current_user)
+              )
+            else
+              gettext("User is locked and cannot authenticate with %{app}.",
+                app: user_app_name(@current_user)
+              )
+            end
+          }
+        />
         <.field
           field={@form[:username]}
           disabled={not @user_active}
