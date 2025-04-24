@@ -70,19 +70,21 @@
       language={:typescript}
       code={
         ~s"""
-        import { Passwordless, Action } from "@passwordless/tools";
+        import { Passwordless, Challenge } from "@passwordless/tools";
 
-        const action: Action = Passwordless.authenticate({
+        const action = Passwordless.authenticate({
           action: "login",
           actor: {
             username: "1234567890",
             emails: [
-              { address: "user@example.com" },
+              {
+                address: "user@example.com"
+              },
             ],
           },
           rules: [
             {
-              if: true, then: [{ challenge: Passwordless.EMAIL_OTP }],
+              if: true, then: [{ challenge: Challenge.EMAIL_OTP }],
             },
           ],
         });
@@ -97,7 +99,7 @@
       language={:typescript}
       code={
         ~s"""
-        import { Passwordless } from "@passwordless/tools";
+        import { Action, Passwordless } from "@passwordless/tools";
 
         const action = Passwordless.continue({
           action: {id: action.id},
@@ -106,7 +108,7 @@
           },
         });
 
-        if (action.state === Passwordless.ALLOW) {
+        if (action.state === Action.ALLOW) {
           console.log("User is allowed to continue");
         }
         """

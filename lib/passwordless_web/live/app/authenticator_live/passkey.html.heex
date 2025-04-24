@@ -66,7 +66,7 @@
                   title={gettext("Remove")}
                   value={expected_origin.index}
                   event={JS.dispatch("change")}
-                  disabled={not @enabled}
+                  disabled={not @enabled or expected_origin.index == 0}
                 />
               </:action>
             </.field>

@@ -92,7 +92,7 @@
                   title={gettext("Remove")}
                   value={f.index}
                   event={JS.dispatch("change")}
-                  disabled={not @enabled}
+                  disabled={not @enabled or f.index == 0}
                 />
               </:action>
             </.field>
@@ -133,24 +133,52 @@
       language={:typescript}
       code={
         ~s"""
-        import hljs from "highlight.js/lib/core";
-        import { Hook, makeHook } from "./typed-hook";
+        import { Passwordless, Challenge } from "@passwordless/tools";
 
-        class HighlightHook extends Hook {
-          public mounted() {
-            this.run("mounted", this.el);
-          }
+        const action = Passwordless.authenticate({
+          action: "login",
+          actor: {
+            username: "1234567890",
+            emails: [
+              {
+                address: "user@example.com"
+              },
+            ],
+          },
+          rules: [
+            {
+              if: true,
+              then: [
+                {
+                  challenge: Challenge.MAGIC_LINK,
+                  link_target: "https://api.mycompany.com/auth/magic-link",
+                }
+              ],
+            },
+          ],
+        });
+        """
+      }
+    />
+    <.p class="mb-6">
+      The code above create an Email OTP challenge and delivers the code to the user. Then, the user provides the code back to the application:
+    </.p>
+    <.code_block
+      class="mb-6"
+      language={:typescript}
+      code={
+        ~s"""
+        import { Passwordless, Action } from "@passwordless/tools";
 
-          public updated() {
-            this.run("updated", this.el);
-          }
+        const action = Passwordless.continue({
+          data: {
+            magic_link_code: code,
+          },
+        });
 
-          private run(_lifecycleMethod: "mounted" | "updated", el: HTMLElement) {
-            hljs.highlightElement(el.querySelector("code")!);
-          }
+        if (action.state === Action.ALLOW) {
+          console.log("User is allowed to continue");
         }
-
-        export default makeHook(HighlightHook);
         """
       }
     />

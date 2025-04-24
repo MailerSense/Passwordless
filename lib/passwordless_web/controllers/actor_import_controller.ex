@@ -83,7 +83,7 @@ defmodule PasswordlessWeb.ActorImportController do
 
     send_download(conn, {:binary, data},
       filename: to_string(name),
-      content_type: "application/vnd.ms-excel"
+      content_type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
   end
 end
