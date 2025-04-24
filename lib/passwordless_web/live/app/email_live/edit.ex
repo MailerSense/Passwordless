@@ -134,10 +134,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
             case Passwordless.get_template_locale_style(locale, current_style) do
               %EmailTemplateStyle{} = style ->
                 locale_params =
-                  Map.merge(locale_params, %{
-                    "mjml_body" => style.mjml_body,
-                    "html_body" => style.html_body
-                  })
+                  Map.put(locale_params, "mjml_body", style.mjml_body)
 
                 socket.assigns.locale
                 |> Passwordless.change_email_template_locale(locale_params, opts)
@@ -206,7 +203,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
           assign(socket, preview: html_content)
 
         {:error, _} ->
-          assign(socket, preview: Ecto.Changeset.get_field(changeset, :html_body))
+          assign(socket, preview: nil)
       end
 
     socket

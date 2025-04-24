@@ -6,7 +6,6 @@ defmodule Passwordless.EmailTemplateLocale do
   use Passwordless.Schema, prefix: "emtplver"
 
   alias Database.ChangesetExt
-  alias Passwordless.Email.Renderer
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateStyle
 
@@ -25,7 +24,6 @@ defmodule Passwordless.EmailTemplateLocale do
       :language,
       :subject,
       :preheader,
-      :html_body,
       :mjml_body,
       :inserted_at,
       :updated_at
@@ -41,7 +39,6 @@ defmodule Passwordless.EmailTemplateLocale do
     field :current_language, Ecto.Enum, values: @languages, default: :en, virtual: true
     field :subject, :string
     field :preheader, :string
-    field :html_body, :string
     field :mjml_body, :string
 
     has_many :styles, EmailTemplateStyle
@@ -64,11 +61,10 @@ defmodule Passwordless.EmailTemplateLocale do
     current_language
     subject
     preheader
-    html_body
     mjml_body
     email_template_id
   )a
-  @required_fields @fields -- [:html_body]
+  @required_fields @fields
 
   @doc """
   A changeset.
@@ -77,7 +73,6 @@ defmodule Passwordless.EmailTemplateLocale do
     template
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> update_html_body(opts)
     |> validate_subject()
     |> validate_preheader()
     |> unique_constraint([:email_template_id, :language], error_key: :language)
@@ -99,25 +94,5 @@ defmodule Passwordless.EmailTemplateLocale do
     |> ChangesetExt.ensure_trimmed(:preheader)
     |> ChangesetExt.validate_profanities(:preheader)
     |> validate_length(:preheader, min: 1, max: 255)
-  end
-
-  defp update_html_body(changeset, opts \\ []) do
-    opts = opts ++ Renderer.demo_opts()
-
-    mod = %__MODULE__{
-      subject: get_field(changeset, :subject),
-      preheader: get_field(changeset, :preheader),
-      mjml_body: get_field(changeset, :mjml_body)
-    }
-
-    case Renderer.render(mod, Renderer.demo_variables(), opts) do
-      {:ok, %{html_content: html_content}} ->
-        put_change(changeset, :html_body, html_content)
-
-      # |> update_change(:html_body, &HtmlSanitizeEx.html5/1)
-
-      {:error, _} ->
-        changeset
-    end
   end
 end

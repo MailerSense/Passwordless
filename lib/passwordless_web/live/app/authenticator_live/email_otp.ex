@@ -25,7 +25,7 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.EmailOTP do
           assign(socket, preview: html_content)
 
         {:error, _} ->
-          assign(socket, preview: email_template_locale.html_body)
+          assign(socket, preview: nil)
       end
 
     {:ok,

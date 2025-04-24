@@ -890,7 +890,7 @@ defmodule Passwordless do
       |> EmailTemplateStyle.changeset(attrs)
 
     upsert_clause = [
-      on_conflict: {:replace, [:mjml_body, :html_body, :updated_at]},
+      on_conflict: {:replace, [:mjml_body, :updated_at]},
       conflict_target: [:email_template_locale_id, :style]
     ]
 
