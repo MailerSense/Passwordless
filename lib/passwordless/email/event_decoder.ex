@@ -49,11 +49,8 @@ defmodule Passwordless.Email.EventDecoder do
         opts = [prefix: Tenant.to_prefix(app)]
 
         case Repo.get(EmailMessage, email_message_id, opts) do
-          %EmailMessage{} = message ->
-            {:ok, app, Repo.preload(message, [:domain, {:email, [:actor]}])}
-
-          _ ->
-            {:error, :message_not_found}
+          %EmailMessage{} = message -> {:ok, app, message}
+          _ -> {:error, :message_not_found}
         end
 
       _ ->

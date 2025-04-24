@@ -15,7 +15,7 @@ defmodule Passwordless.EmailMessageMapping do
   @timestamps_opts [type: :utc_datetime]
   @foreign_key_type Database.PrefixedUUID
 
-  schema "email_message_mapping" do
+  schema "email_message_mappings" do
     field :external_id, :string, primary_key: true
     field :email_message_id, :binary_id
 

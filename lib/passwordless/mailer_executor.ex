@@ -17,7 +17,7 @@ defmodule Passwordless.MailerExecutor do
   def process(%Oban.Job{args: %{"app_id" => app_id, "domain_id" => domain_id, "email_message_id" => email_message_id}})
       when is_binary(app_id) and is_binary(email_message_id) do
     with %App{state: :active} = app <- Passwordless.get_app(app_id),
-         %Domain{verified: true, purpose: :email} = domain <- Passwordless.get_domain(domain_id),
+         %Domain{id: domain_id, verified: true, purpose: :email} = domain <- Passwordless.get_domain(domain_id),
          %EmailMessage{
            sender: sender,
            sender_name: sender_name,
@@ -27,7 +27,8 @@ defmodule Passwordless.MailerExecutor do
            reply_to_name: reply_to_name,
            subject: subject,
            html_content: html_content,
-           text_content: text_content
+           text_content: text_content,
+           domain_id: ^domain_id
          } = message <- Passwordless.get_email_message(app, email_message_id) do
       email =
         SwooshEmail.new()
