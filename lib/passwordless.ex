@@ -700,20 +700,6 @@ defmodule Passwordless do
 
   # Action
 
-  def continue(%App{} = app, %{action_id: id, event: event, payload: payload}) do
-    opts = [prefix: Tenant.to_prefix(app)]
-
-    # Repo.transact(fn ->
-    #   with %Action{flow_data: %mod{} = data} = action <- Repo.get(Action, id, opts),
-    #        {:ok, new_data} <- apply(mod, :trigger, [data, event, payload]),
-    #        {:ok, new_action} <- action |> Action.changeset(%{data: new_data}) |> Repo.update(opts),
-    #        {:ok, event} <- insert_action_event(app, action, new_action, %{event: event}),
-    #        do: {:ok, new_action, event}
-    # end)
-  end
-
-  # Action
-
   def get_action!(%App{} = app, id) do
     Action
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
