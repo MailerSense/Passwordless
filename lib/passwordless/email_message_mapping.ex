@@ -38,7 +38,6 @@ defmodule Passwordless.EmailMessageMapping do
     email_message_id
     app_id
   )a
-
   @required_fields @fields
 
   @doc """
@@ -48,9 +47,25 @@ defmodule Passwordless.EmailMessageMapping do
     message_mapping
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> ChangesetExt.ensure_trimmed(:external_id)
+    |> validate_external_id()
+    |> decode_email_message_id()
     |> unique_constraint(:email_message_id)
     |> unsafe_validate_unique(:email_message_id, Passwordless.Repo)
     |> assoc_constraint(:app)
+  end
+
+  # Private
+
+  defp validate_external_id(%Ecto.Changeset{} = changeset) do
+    ChangesetExt.ensure_trimmed(changeset, :external_id)
+  end
+
+  defp decode_email_message_id(changeset) do
+    update_change(changeset, :email_message_id, fn email_id ->
+      case Database.PrefixedUUID.slug_to_uuid(email_id) do
+        {:ok, _prefix, uuid} -> uuid
+        _ -> email_id
+      end
+    end)
   end
 end

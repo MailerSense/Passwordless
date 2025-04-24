@@ -214,7 +214,8 @@ defmodule Passwordless.EmailMessage do
     changeset
     |> validate_required([:text_content, :html_content])
     |> update_change(:text_content, &HtmlSanitizeEx.strip_tags/1)
-    |> update_change(:html_content, &HtmlSanitizeEx.html5/1)
+
+    # |> update_change(:html_content, &HtmlSanitizeEx.html5/1)
   end
 
   @metadata_fields ~w(

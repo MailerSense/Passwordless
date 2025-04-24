@@ -94,10 +94,10 @@ defmodule Passwordless.Actor do
   @doc """
   Get the handle of the actor.
   """
-  def handle(%__MODULE__{name: name}) when is_binary(name), do: name
+  def handle(%__MODULE__{name: name}) when is_binary(name), do: Util.truncate(name)
   def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
   def handle(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical), do: canonical
-  def handle(%__MODULE__{username: username}) when is_binary(username), do: username
+  def handle(%__MODULE__{username: username}) when is_binary(username), do: Util.truncate(username)
   def handle(%__MODULE__{id: id}) when is_binary(id), do: id
   def handle(%__MODULE__{}), do: nil
 

@@ -51,18 +51,11 @@ defmodule Passwordless.MailerExecutor do
 
       Logger.info("Sending email: #{inspect(email)}")
 
-      result =
-        with {:ok, external_id} <- Mailer.deliver_via_domain(email, domain),
-             {:ok, _mapping} <- Passwordless.record_email_message_mapping(app, message, external_id),
-             do: :ok
-
-      Logger.info("Email delivered successfully: #{inspect(result)}")
-
-      result
+      with {:ok, external_id} <- Mailer.deliver_via_domain(email, domain),
+           {:ok, _mapping} <- Passwordless.record_email_message_mapping(app, message, external_id),
+           do: :ok
     else
-      value ->
-        Logger.error("Failed to deliver email: #{inspect(value)}")
-        {:error, value}
+      value -> {:error, value}
     end
   end
 

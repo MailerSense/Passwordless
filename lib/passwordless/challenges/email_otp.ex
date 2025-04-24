@@ -134,7 +134,6 @@ defmodule Passwordless.Challenges.EmailOTP do
       sender: Authenticators.EmailOTP.sender_email(authenticator, domain),
       sender_name: authenticator.sender_name,
       recipient: email.address,
-      recipient_name: actor.name || "#{app.name} User",
       reply_to: "hello@passwordless.tools",
       reply_to_name: "Passwordless Support",
       current: true,
@@ -154,6 +153,8 @@ defmodule Passwordless.Challenges.EmailOTP do
         ]
       }
     }
+
+    attrs = if Util.present?(actor.name), do: Map.put(attrs, :recipient_name, actor.name), else: attrs
 
     with {:ok, message_attrs} <- Renderer.render(locale, %{otp_code: otp_code}, opts) do
       opts = [prefix: Tenant.to_prefix(app)]

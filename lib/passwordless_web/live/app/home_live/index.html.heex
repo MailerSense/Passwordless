@@ -77,6 +77,15 @@
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
 
+      <:col :let={action} label={gettext("User")} field={:user}>
+        <.a
+          :if={Util.present?(action.actor)}
+          to={~p"/users/#{action.actor}/edit"}
+          label={Actor.handle(action.actor)}
+          style="link"
+          link_type="live_redirect"
+        />
+      </:col>
       <:col :let={action} label={gettext("Action")} field={:name}>
         {Phoenix.Naming.humanize(Macro.underscore(action.name))}
       </:col>
@@ -94,10 +103,6 @@
       <:col :let={action} label={gettext("State")} field={:state}>
         <% {badge_label, badge_color} = action_state_badge(action) %>
         <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-      </:col>
-
-      <:col :let={action} label={gettext("Details")} field={:details}>
-        <.json_block code={action} expanded={false} compact={true} />
       </:col>
 
       <:col actions></:col>

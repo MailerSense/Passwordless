@@ -331,8 +331,7 @@ defmodule Passwordless do
   def record_email_message_mapping(%App{} = app, %EmailMessage{} = email_message, external_id) do
     app
     |> Ecto.build_assoc(:email_message_mappings)
-    |> Kernel.then(&%EmailMessageMapping{&1 | email_message_id: email_message.id})
-    |> EmailMessageMapping.changeset(%{external_id: external_id})
+    |> EmailMessageMapping.changeset(%{external_id: external_id, email_message_id: email_message.id})
     |> Repo.insert()
   end
 
