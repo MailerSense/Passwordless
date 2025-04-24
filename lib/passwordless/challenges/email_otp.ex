@@ -162,7 +162,7 @@ defmodule Passwordless.Challenges.EmailOTP do
 
       challenge
       |> Ecto.build_assoc(:email_messages, opts)
-      |> EmailMessage.changeset(attrs)
+      |> EmailMessage.changeset(attrs, opts)
       |> Repo.insert(opts)
       |> case do
         {:ok, %EmailMessage{} = message} ->

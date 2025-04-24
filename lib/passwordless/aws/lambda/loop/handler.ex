@@ -47,7 +47,7 @@ defmodule Passwordless.AWS.Lambda.Loop.Handler do
       %{msg: "hello"}
   """
   def invoke(%__MODULE__{module: module, function: function}, body, context) when is_map(body) and is_map(context) do
-    Logger.info("invoke #{module}.#{function}(#{Kernel.inspect(body)})")
+    Logger.info("Invoking #{module}.#{function}(#{Kernel.inspect(body)})")
     Kernel.apply(module, function, [body, context])
   end
 

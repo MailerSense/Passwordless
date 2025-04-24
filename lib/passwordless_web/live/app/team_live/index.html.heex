@@ -181,7 +181,7 @@
         <.button
           icon="remix-delete-bin-line"
           size="md"
-          label={gettext("Yes, Remove \"%{user}\"", user: @invitation.email)}
+          label={gettext("Yes, Delete \"%{user}\"", user: @invitation.email)}
           color="danger"
           phx-click="delete_invitation"
           phx-value-id={@invitation.id}
@@ -206,7 +206,7 @@
         <.button
           icon="remix-delete-bin-line"
           size="md"
-          label={gettext("Yes, Remove \"%{user}\"", user: user_name(@membership.user))}
+          label={gettext("Yes, Delete \"%{user}\"", user: user_name(@membership.user))}
           color="danger"
           phx-click="delete_member"
           phx-value-id={@membership.id}

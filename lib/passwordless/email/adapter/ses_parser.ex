@@ -79,7 +79,6 @@ defmodule Passwordless.Email.Adapter.SESParser do
          {:ok, object_name} <- Map.fetch(@objects, kind),
          {:ok, message} <- parse_mail(payload["mail"]),
          {:ok, message_details, event_details} <- parse_object(kind, payload[object_name]),
-         :ok <- message_valid?(message),
          do: {:ok, Map.merge(message, message_details), event_details}
   end
 
@@ -455,15 +454,11 @@ defmodule Passwordless.Email.Adapter.SESParser do
           headers: headers,
           headers_truncated: headers_truncated
         }
-        |> Enum.reject(fn {_, v} -> Util.blank?(v) end)
+        |> Enum.filter(fn {_, v} -> Util.present?(v) end)
         |> Map.new()
     }
 
-    parsed_message =
-      parsed_message
-      |> Map.merge(parse_common_headers(payload["commonHeaders"]))
-      |> Enum.filter(fn {_, v} -> v end)
-      |> Map.new()
+    parsed_message = Map.merge(parsed_message, parse_common_headers(payload["commonHeaders"]))
 
     {dest_name, dest_email} = parse_email_list(destination)
     {sender_name, sender_email} = parse_email_list(source)
@@ -474,6 +469,8 @@ defmodule Passwordless.Email.Adapter.SESParser do
       |> Map.put_new(:sender_name, sender_name)
       |> Map.put_new(:recipient, dest_email)
       |> Map.put_new(:recipient_name, dest_name)
+      |> Enum.filter(fn {_, v} -> Util.present?(v) end)
+      |> Map.new()
 
     {:ok, parsed_message}
   end
@@ -545,7 +542,4 @@ defmodule Passwordless.Email.Adapter.SESParser do
         {nil, nil}
     end
   end
-
-  defp message_valid?(%{recipient: nil}), do: {:error, :recipient_missing}
-  defp message_valid?(%{}), do: :ok
 end

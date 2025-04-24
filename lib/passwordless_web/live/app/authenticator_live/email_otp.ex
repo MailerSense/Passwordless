@@ -20,12 +20,12 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.EmailOTP do
     email_template_locale = Passwordless.get_email_template_locale(email_template)
 
     socket =
-      case Renderer.render(email_template_locale, %{}, [{:app, app} | Renderer.demo_opts()]) do
+      case Renderer.render(email_template_locale, Renderer.demo_variables(), [{:app, app} | Renderer.demo_opts()]) do
         {:ok, %{html_content: html_content}} ->
           assign(socket, preview: html_content)
 
         {:error, _} ->
-          assign(socket, preview: email_template_locale.html_body)
+          assign(socket, preview: nil)
       end
 
     {:ok,

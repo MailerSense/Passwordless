@@ -88,6 +88,12 @@
       variant="delete"
       hide_close_button
     >
+      <.alert color="info" with_icon class="mb-6">
+        {gettext(
+          "Only the selected language - %{language} - will be reset.",
+          language: @current_language_readable
+        )}
+      </.alert>
       <div class="flex justify-end gap-3">
         <.button
           size="md"

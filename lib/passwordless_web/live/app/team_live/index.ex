@@ -242,7 +242,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   defp apply_action(socket, :delete_invitation, _params) do
     assign(socket,
       page_title: gettext("Delete invitation"),
-      page_subtitle: gettext("Delete an invitation to join your organization")
+      page_subtitle: gettext("Delete an invitation to join your organization. You can always invite them again.")
     )
   end
 

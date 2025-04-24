@@ -8,7 +8,6 @@ defmodule Passwordless.EmailTemplateLocale do
   alias Database.ChangesetExt
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateStyle
-  alias Passwordless.Templating.MJML
 
   @styles [
     email_otp: ~w(email_otp_clean email_otp_card)a,
@@ -25,7 +24,6 @@ defmodule Passwordless.EmailTemplateLocale do
       :language,
       :subject,
       :preheader,
-      :html_body,
       :mjml_body,
       :inserted_at,
       :updated_at
@@ -41,7 +39,6 @@ defmodule Passwordless.EmailTemplateLocale do
     field :current_language, Ecto.Enum, values: @languages, default: :en, virtual: true
     field :subject, :string
     field :preheader, :string
-    field :html_body, :string
     field :mjml_body, :string
 
     has_many :styles, EmailTemplateStyle
@@ -64,22 +61,21 @@ defmodule Passwordless.EmailTemplateLocale do
     current_language
     subject
     preheader
-    html_body
     mjml_body
     email_template_id
   )a
-  @required_fields @fields -- [:html_body]
+  @required_fields @fields
 
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = template, attrs \\ %{}) do
+  def changeset(%__MODULE__{} = template, attrs \\ %{}, opts \\ []) do
     template
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> update_html_body()
     |> validate_subject()
     |> validate_preheader()
+    |> validate_body()
     |> unique_constraint([:email_template_id, :language], error_key: :language)
     |> unsafe_validate_unique([:email_template_id, :language], Passwordless.Repo, error_key: :language)
     |> assoc_constraint(:email_template)
@@ -101,26 +97,10 @@ defmodule Passwordless.EmailTemplateLocale do
     |> validate_length(:preheader, min: 1, max: 255)
   end
 
-  defp update_html_body(changeset) do
-    case fetch_field(changeset, :mjml_body) do
-      {_, mjml_body} when is_binary(mjml_body) ->
-        case MJML.convert(mjml_body) do
-          {:ok, html_body} ->
-            changeset
-            |> put_change(:html_body, html_body)
-            |> update_change(:html_content, &HtmlSanitizeEx.html5/1)
-
-          {:error, error} ->
-            add_error(
-              changeset,
-              :mjml_body,
-              "invalid syntax: %{error}",
-              error: error
-            )
-        end
-
-      _ ->
-        changeset
-    end
+  defp validate_body(changeset) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(:mjml_body)
+    |> update_change(:mjml_body, &Passwordless.Formatter.format!(&1, :html))
+    |> validate_length(:mjml_body, min: 1, max: 10_000)
   end
 end

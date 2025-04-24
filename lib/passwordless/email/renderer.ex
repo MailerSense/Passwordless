@@ -10,6 +10,7 @@ defmodule Passwordless.Email.Renderer do
   alias Passwordless.Phone
   alias Passwordless.Templating.Liquid
   alias Passwordless.Templating.MJML
+  alias Passwordless.Templating.Scrubber
   alias Passwordless.Templating.VariableProvider
 
   @example_providers [
@@ -30,15 +31,12 @@ defmodule Passwordless.Email.Renderer do
     },
     action: %Action{
       name: "login"
-    },
-    otp_code: "123456",
-    magic_link_url:
-      "https://eu.passwordless.tools/auth/sign-in/passwordless/complete/SFMyNTY.g2gDbQAAACAjqIsr8_fd6TsBwSqcV0GuDCesLQrEV4ohzfT9qOKJUW4GAMVHZR-WAWIAAVGA.SCmssWIvn_DD1DChLdU_LgStbWcDIqLOf1nwwMdwRzs"
+    }
   ]
 
   @example_variables %{
-    otp_code: "123456",
-    magic_link_url:
+    "otp_code" => "123456",
+    "magic_link_url" =>
       "https://eu.passwordless.tools/auth/sign-in/passwordless/complete/SFMyNTY.g2gDbQAAACAjqIsr8_fd6TsBwSqcV0GuDCesLQrEV4ohzfT9qOKJUW4GAMVHZR-WAWIAAVGA.SCmssWIvn_DD1DChLdU_LgStbWcDIqLOf1nwwMdwRzs"
   }
 
@@ -58,6 +56,8 @@ defmodule Passwordless.Email.Renderer do
     with {:ok, subject} <- Map.fetch(variables, "subject"),
          {:ok, mjml_body} <- Liquid.render(mjml_body, variables),
          {:ok, html_body} <- MJML.convert(mjml_body) do
+      html_body = Scrubber.clean_html(html_body)
+
       {:ok,
        %{
          subject: subject,
@@ -81,13 +81,13 @@ defmodule Passwordless.Email.Renderer do
 
     variables =
       case Liquid.render(subject, variables) do
-        {:ok, subject} -> Map.put(variables, :subject, subject)
+        {:ok, subject} -> Map.put(variables, "subject", subject)
         _ -> variables
       end
 
     variables =
       case Liquid.render(preheader, variables) do
-        {:ok, preheader} -> Map.put(variables, :preheader, preheader)
+        {:ok, preheader} -> Map.put(variables, "preheader", preheader)
         _ -> variables
       end
 

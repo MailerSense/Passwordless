@@ -6,7 +6,6 @@ defmodule Passwordless.EmailTemplateStyle do
   use Passwordless.Schema, prefix: "emtplstyl"
 
   alias Passwordless.EmailTemplateLocale
-  alias Passwordless.Templating.MJML
 
   @styles [
     email: ~w(email_otp_clean email_otp_card)a,
@@ -19,7 +18,6 @@ defmodule Passwordless.EmailTemplateStyle do
     only: [
       :id,
       :style,
-      :html_body,
       :mjml_body,
       :inserted_at,
       :updated_at
@@ -31,7 +29,6 @@ defmodule Passwordless.EmailTemplateStyle do
   }
   schema "email_template_styles" do
     field :style, Ecto.Enum, values: @styles_flat, default: :email_otp_clean
-    field :html_body, :string
     field :mjml_body, :string
 
     belongs_to :email_template_locale, EmailTemplateLocale
@@ -43,11 +40,10 @@ defmodule Passwordless.EmailTemplateStyle do
 
   @fields ~w(
     style
-    html_body
     mjml_body
     email_template_locale_id
   )a
-  @required_fields @fields -- [:html_body]
+  @required_fields @fields
 
   @doc """
   A changeset.
@@ -56,21 +52,17 @@ defmodule Passwordless.EmailTemplateStyle do
     template
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> update_html_body()
+    |> validate_body()
     |> unique_constraint([:email_template_locale_id, :style], error_key: :style)
     |> assoc_constraint(:email_template_locale)
   end
 
   # Private
 
-  defp update_html_body(changeset) do
-    with {_, mjml_body} when is_binary(mjml_body) <- fetch_field(changeset, :mjml_body),
-         {:ok, html_body} <- MJML.convert(mjml_body) do
-      changeset
-      |> put_change(:html_body, html_body)
-      |> update_change(:html_content, &HtmlSanitizeEx.html5/1)
-    else
-      _ -> changeset
-    end
+  defp validate_body(changeset) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(:mjml_body)
+    |> update_change(:mjml_body, &Passwordless.Formatter.format!(&1, :html))
+    |> validate_length(:mjml_body, min: 1, max: 10_000)
   end
 end

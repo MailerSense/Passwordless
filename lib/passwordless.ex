@@ -6,6 +6,7 @@ defmodule Passwordless do
   import Ecto.Query
   import Util.Crud
 
+  alias Database.PrefixedUUID
   alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.ActionEvent
@@ -630,8 +631,16 @@ defmodule Passwordless do
     with {:ok, query} <- EmailUnsubscribeLinkMapping.get_by_token(token) do
       Repo.transact(fn ->
         case Repo.one(query) do
-          %EmailUnsubscribeLinkMapping{app_id: app_id, email_id: email_id} = mapping ->
-            {:ok, mapping}
+          {%EmailUnsubscribeLinkMapping{email_id: email_id} = mapping, %App{} = app} ->
+            opts = [prefix: Tenant.to_prefix(app)]
+            email_id = PrefixedUUID.uuid_to_slug(email_id, %{primary_key: true, prefix: Email.prefix()})
+
+            with %Email{} = email <- Repo.get(Email, email_id, opts),
+                 {:ok, _mapping} <- Repo.delete(mapping),
+                 do:
+                   email
+                   |> Email.changeset(%{opted_out_at: DateTime.utc_now()}, opts)
+                   |> Repo.update(opts)
 
           _ ->
             {:error, :link_not_found}
@@ -687,20 +696,6 @@ defmodule Passwordless do
     |> Ecto.build_assoc(:recovery_codes)
     |> RecoveryCodes.changeset(opts)
     |> Repo.insert(opts)
-  end
-
-  # Action
-
-  def continue(%App{} = app, %{action_id: id, event: event, payload: payload}) do
-    opts = [prefix: Tenant.to_prefix(app)]
-
-    # Repo.transact(fn ->
-    #   with %Action{flow_data: %mod{} = data} = action <- Repo.get(Action, id, opts),
-    #        {:ok, new_data} <- apply(mod, :trigger, [data, event, payload]),
-    #        {:ok, new_action} <- action |> Action.changeset(%{data: new_data}) |> Repo.update(opts),
-    #        {:ok, event} <- insert_action_event(app, action, new_action, %{event: event}),
-    #        do: {:ok, new_action, event}
-    # end)
   end
 
   # Action
@@ -838,17 +833,17 @@ defmodule Passwordless do
     |> Repo.insert()
   end
 
-  def change_email_template_locale(%EmailTemplateLocale{} = locale, attrs \\ %{}) do
+  def change_email_template_locale(%EmailTemplateLocale{} = locale, attrs \\ %{}, opts \\ []) do
     if Ecto.get_meta(locale, :state) == :loaded do
-      EmailTemplateLocale.changeset(locale, attrs)
+      EmailTemplateLocale.changeset(locale, attrs, opts)
     else
-      EmailTemplateLocale.changeset(locale, attrs)
+      EmailTemplateLocale.changeset(locale, attrs, opts)
     end
   end
 
-  def update_email_template_locale(%EmailTemplateLocale{} = locale, attrs \\ %{}) do
+  def update_email_template_locale(%EmailTemplateLocale{} = locale, attrs \\ %{}, opts \\ []) do
     locale
-    |> EmailTemplateLocale.changeset(attrs)
+    |> EmailTemplateLocale.changeset(attrs, opts)
     |> Repo.update()
   end
 
@@ -895,7 +890,7 @@ defmodule Passwordless do
       |> EmailTemplateStyle.changeset(attrs)
 
     upsert_clause = [
-      on_conflict: {:replace, [:mjml_body, :html_body, :updated_at]},
+      on_conflict: {:replace, [:mjml_body, :updated_at]},
       conflict_target: [:email_template_locale_id, :style]
     ]
 

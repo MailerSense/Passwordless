@@ -6,6 +6,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateLocale
   alias Passwordless.EmailTemplateStyle
+  alias Passwordless.Locale
 
   @default PasswordlessWeb.App.EmailLive.EmailComponent
   @components [
@@ -75,13 +76,14 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
   @impl true
   def handle_event("save_locale", %{"email_template_locale" => locale_params}, socket) do
+    opts = [{:app, socket.assigns.current_app} | Renderer.demo_opts()]
     locale = socket.assigns.locale
 
-    case Passwordless.update_email_template_locale(locale, locale_params) do
+    case Passwordless.update_email_template_locale(locale, locale_params, opts) do
       {:ok, locale} ->
         changeset =
           locale
-          |> Passwordless.change_email_template_locale()
+          |> Passwordless.change_email_template_locale(%{}, opts)
           |> Map.put(:action, :validate)
 
         {:noreply,
@@ -97,9 +99,11 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
   @impl true
   def handle_event("validate_locale", %{"email_template_locale" => locale_params}, socket) do
+    opts = [{:app, socket.assigns.current_app} | Renderer.demo_opts()]
+
     changeset =
       socket.assigns.locale
-      |> Passwordless.change_email_template_locale(locale_params)
+      |> Passwordless.change_email_template_locale(locale_params, opts)
       |> Map.put(:action, :validate)
 
     template = socket.assigns.template
@@ -123,19 +127,17 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
           |> assign_locale_form(changeset)
 
         style != current_style ->
+          opts = [{:app, socket.assigns.current_app} | Renderer.demo_opts()]
           Passwordless.persist_template_locale_style!(locale)
 
           changeset =
             case Passwordless.get_template_locale_style(locale, current_style) do
               %EmailTemplateStyle{} = style ->
                 locale_params =
-                  Map.merge(locale_params, %{
-                    "mjml_body" => style.mjml_body,
-                    "html_body" => style.html_body
-                  })
+                  Map.put(locale_params, "mjml_body", style.mjml_body)
 
                 socket.assigns.locale
-                |> Passwordless.change_email_template_locale(locale_params)
+                |> Passwordless.change_email_template_locale(locale_params, opts)
                 |> Map.put(:action, :validate)
 
               _ ->
@@ -192,17 +194,24 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
       mjml_body: Ecto.Changeset.get_field(changeset, :mjml_body)
     }
 
+    current_style = Ecto.Changeset.get_field(changeset, :style)
+    current_language = Ecto.Changeset.get_field(changeset, :current_language)
+
     socket =
       case Renderer.render(locale, Renderer.demo_variables(), opts) do
         {:ok, %{html_content: html_content}} ->
           assign(socket, preview: html_content)
 
         {:error, _} ->
-          assign(socket, preview: Ecto.Changeset.get_field(changeset, :html_body))
+          assign(socket, preview: nil)
       end
 
-    assign(socket,
-      locale_form: to_form(changeset)
+    socket
+    |> assign(locale_form: to_form(changeset))
+    |> assign(
+      current_style: current_style,
+      current_language: current_language,
+      current_language_readable: Keyword.fetch!(Locale.languages(), current_language)
     )
   end
 

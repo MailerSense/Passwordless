@@ -150,7 +150,7 @@ defmodule Passwordless.EmailTemplates do
           name: gettext("Email OTP template"),
           style: :email_otp_clean,
           subject: gettext("Sign in to %{name}", name: app.settings.display_name),
-          preheader: gettext("Use the code below to sign in."),
+          preheader: gettext("Your OTP is {{ otp_code }}."),
           mjml_body:
             Passwordless.Formatter.format!(
               ~S"""
