@@ -10,6 +10,7 @@ defmodule Passwordless.Email.Renderer do
   alias Passwordless.Phone
   alias Passwordless.Templating.Liquid
   alias Passwordless.Templating.MJML
+  alias Passwordless.Templating.Scrubber
   alias Passwordless.Templating.VariableProvider
 
   @example_providers [
@@ -55,6 +56,8 @@ defmodule Passwordless.Email.Renderer do
     with {:ok, subject} <- Map.fetch(variables, "subject"),
          {:ok, mjml_body} <- Liquid.render(mjml_body, variables),
          {:ok, html_body} <- MJML.convert(mjml_body) do
+      html_body = Scrubber.clean_html(html_body)
+
       {:ok,
        %{
          subject: subject,

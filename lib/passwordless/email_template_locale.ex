@@ -75,6 +75,7 @@ defmodule Passwordless.EmailTemplateLocale do
     |> validate_required(@required_fields)
     |> validate_subject()
     |> validate_preheader()
+    |> validate_body()
     |> unique_constraint([:email_template_id, :language], error_key: :language)
     |> unsafe_validate_unique([:email_template_id, :language], Passwordless.Repo, error_key: :language)
     |> assoc_constraint(:email_template)
@@ -94,5 +95,12 @@ defmodule Passwordless.EmailTemplateLocale do
     |> ChangesetExt.ensure_trimmed(:preheader)
     |> ChangesetExt.validate_profanities(:preheader)
     |> validate_length(:preheader, min: 1, max: 255)
+  end
+
+  defp validate_body(changeset) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(:mjml_body)
+    |> update_change(:mjml_body, &Passwordless.Formatter.format!(&1, :html))
+    |> validate_length(:mjml_body, min: 1, max: 10_000)
   end
 end

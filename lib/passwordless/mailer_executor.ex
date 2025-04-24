@@ -11,8 +11,6 @@ defmodule Passwordless.MailerExecutor do
   alias Passwordless.Mailer
   alias Swoosh.Email, as: SwooshEmail
 
-  require Logger
-
   @impl true
   def process(%Oban.Job{args: %{"app_id" => app_id, "domain_id" => domain_id, "email_message_id" => email_message_id}})
       when is_binary(app_id) and is_binary(email_message_id) do
@@ -49,8 +47,6 @@ defmodule Passwordless.MailerExecutor do
           _ ->
             email
         end
-
-      Logger.info("Sending email: #{inspect(email)}")
 
       with {:ok, external_id} <- Mailer.deliver_via_domain(email, domain),
            {:ok, _mapping} <- Passwordless.record_email_message_mapping(app, message, external_id),

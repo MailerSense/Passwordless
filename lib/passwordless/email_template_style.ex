@@ -52,7 +52,17 @@ defmodule Passwordless.EmailTemplateStyle do
     template
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> validate_body()
     |> unique_constraint([:email_template_locale_id, :style], error_key: :style)
     |> assoc_constraint(:email_template_locale)
+  end
+
+  # Private
+
+  defp validate_body(changeset) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(:mjml_body)
+    |> update_change(:mjml_body, &Passwordless.Formatter.format!(&1, :html))
+    |> validate_length(:mjml_body, min: 1, max: 10_000)
   end
 end
