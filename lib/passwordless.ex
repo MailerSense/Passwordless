@@ -6,6 +6,7 @@ defmodule Passwordless do
   import Ecto.Query
   import Util.Crud
 
+  alias Database.PrefixedUUID
   alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.ActionEvent
@@ -635,7 +636,10 @@ defmodule Passwordless do
             email_id = PrefixedUUID.uuid_to_slug(email_id, %{primary_key: true, prefix: Email.prefix()})
 
             with %Email{} = email <- Repo.get(Email, email_id, opts),
-                 do: %{opted_out_at: DateTime.utc_now()} |> Email.changeset(opts) |> Repo.update()
+                 do:
+                   email
+                   |> Email.changeset(%{opted_out_at: DateTime.utc_now()}, opts)
+                   |> Repo.update()
 
           _ ->
             {:error, :link_not_found}
