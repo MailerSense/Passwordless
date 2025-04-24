@@ -459,11 +459,7 @@ defmodule Passwordless.Email.Adapter.SESParser do
         |> Map.new()
     }
 
-    parsed_message =
-      parsed_message
-      |> Map.merge(parse_common_headers(payload["commonHeaders"]))
-      |> Enum.filter(fn {_, v} -> Util.present?(v) end)
-      |> Map.new()
+    parsed_message = Map.merge(parsed_message, parse_common_headers(payload["commonHeaders"]))
 
     {dest_name, dest_email} = parse_email_list(destination)
     {sender_name, sender_email} = parse_email_list(source)
@@ -474,6 +470,8 @@ defmodule Passwordless.Email.Adapter.SESParser do
       |> Map.put_new(:sender_name, sender_name)
       |> Map.put_new(:recipient, dest_email)
       |> Map.put_new(:recipient_name, dest_name)
+      |> Enum.filter(fn {_, v} -> Util.present?(v) end)
+      |> Map.new()
 
     {:ok, parsed_message}
   end
