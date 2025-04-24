@@ -188,7 +188,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   defp actor_query(%App{} = app) do
     app
     |> Action.get_by_app()
-    |> Action.get_by_states([:allow, :timeout, :block, :pending])
     |> Action.preload_actor()
   end
 

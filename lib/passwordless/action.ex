@@ -96,7 +96,7 @@ defmodule Passwordless.Action do
   Preload associations.
   """
   def preload_actor(query \\ __MODULE__) do
-    from q in query, preload: [{:actor, [:email, :phone]}]
+    from q in query, preload: [{:actor, [:email]}]
   end
 
   @doc """
