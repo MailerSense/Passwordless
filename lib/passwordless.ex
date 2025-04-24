@@ -630,8 +630,12 @@ defmodule Passwordless do
     with {:ok, query} <- EmailUnsubscribeLinkMapping.get_by_token(token) do
       Repo.transact(fn ->
         case Repo.one(query) do
-          %EmailUnsubscribeLinkMapping{app_id: app_id, email_id: email_id} = mapping ->
-            {:ok, mapping}
+          {%EmailUnsubscribeLinkMapping{email_id: email_id} = mapping, %App{} = app} ->
+            opts = [prefix: Tenant.to_prefix(app)]
+            email_id = PrefixedUUID.uuid_to_slug(email_id, %{primary_key: true, prefix: Email.prefix()})
+
+            with %Email{} = email <- Repo.get(Email, email_id, opts),
+                 do: %{opted_out_at: DateTime.utc_now()} |> Email.changeset(opts) |> Repo.update()
 
           _ ->
             {:error, :link_not_found}

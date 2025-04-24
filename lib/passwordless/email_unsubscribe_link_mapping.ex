@@ -51,7 +51,13 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
   """
   def get_by_token(token_signed) when is_binary(token_signed) do
     with {:ok, token} <- verify_token(token_signed) do
-      {:ok, from(m in __MODULE__, where: m.token == ^token)}
+      {:ok,
+       from(
+         m in __MODULE__,
+         where: m.token == ^token,
+         left_join: a in assoc(m, :app),
+         select: {m, a}
+       )}
     end
   end
 
