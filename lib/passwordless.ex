@@ -636,10 +636,11 @@ defmodule Passwordless do
             email_id = PrefixedUUID.uuid_to_slug(email_id, %{primary_key: true, prefix: Email.prefix()})
 
             with %Email{} = email <- Repo.get(Email, email_id, opts),
+                 {:ok, _mapping} <- Repo.delete(mapping),
                  do:
                    email
                    |> Email.changeset(%{opted_out_at: DateTime.utc_now()}, opts)
-                   |> Repo.update()
+                   |> Repo.update(opts)
 
           _ ->
             {:error, :link_not_found}
