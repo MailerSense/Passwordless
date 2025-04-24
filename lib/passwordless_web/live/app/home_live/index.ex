@@ -90,7 +90,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
       {:noreply, socket}
     else
       query = actor_query(socket.assigns.current_app)
-
       assigns = Map.take(socket.assigns, ~w(cursor)a)
 
       {:noreply,
@@ -149,9 +148,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   defp assign_actions(socket, params) do
     query = actor_query(socket.assigns.current_app)
-
     params = Map.take(params, ~w(filters order_by order_directions))
-
     {actions, meta} = DataTable.search(query, params, @data_table_opts)
 
     cursor =
