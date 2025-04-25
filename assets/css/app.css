@@ -2041,7 +2041,7 @@
     @apply px-6 pb-6;
   }
   .pc-modal__content-delete {
-    @apply pt-0 px-6 pb-6;
+    @apply p-6;
   }
   .pc-modal__content-large {
     @apply px-8 pb-8;

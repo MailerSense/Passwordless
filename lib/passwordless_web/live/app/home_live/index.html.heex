@@ -38,14 +38,11 @@
     </.box>
     <.box card>
       <.form_header title={gettext("Installation")} no_margin />
-      <.code_block language={:bash} code="pnpm add @passwordless/tools" />
-      <.p>
-        Then, in the entrypoint of your application, initiate the Passwordless client:
-      </.p>
       <.code_block
         language={:typescript}
         code={
           ~s"""
+          // pnpm add @passwordless/tools
           import { Passwordless } from '@passwordless/tools';
 
           Passwordless.init({
