@@ -1,5 +1,5 @@
 import { RemovalPolicy } from "aws-cdk-lib";
-import { Bucket, CorsRule } from "aws-cdk-lib/aws-s3";
+import { Bucket, BucketEncryption, CorsRule } from "aws-cdk-lib/aws-s3";
 import { NagSuppressions } from "cdk-nag";
 import { Construct } from "constructs";
 
@@ -20,6 +20,7 @@ export class PrivateBucket extends Construct {
 
     this.bucket = new Bucket(this, `${name}-private`, {
       enforceSSL: true,
+      encryption: BucketEncryption.S3_MANAGED,
       removalPolicy,
       versioned,
       cors,
