@@ -1,79 +1,81 @@
-<div>
-  <.form
-    id="edit-security-key-form"
-    for={@form}
-    phx-target={@myself}
-    phx-submit="save"
-    phx-change="validate"
-    class="p-6"
-  >
-    <.field type="checkbox" field={@form[:enabled]} />
-    <.p class="mb-6">
-      Security keys (WebAuthn, FIDO) are physical devices that can be used to sign in. They are often in the form of a USB key or a Bluetooth device. When enabled, users can use a security key to sign in by plugging it into their computer or tapping it to their phone.
-    </.p>
-    <.alert color="warning" class="mb-6" with_icon>
-      {gettext("This authenticator will be available soon.")}
-    </.alert>
-    <.field
-      field={@form[:relying_party_id]}
-      label={gettext("Relying Party ID")}
-      disabled={not @enabled}
-      required
-    />
-    <.form_separator />
-    <.form_header title={gettext("Origins")} />
-    <.p class="mb-6">
-      The expected origins are the domains that the security key can be used on. This is used to prevent phishing attacks. The security key will only be valid for the specified domains.
-    </.p>
-    <div class="pc-form-field-wrapper">
-      <.field_label required>{gettext("Expected origins")}</.field_label>
-      <div class="flex flex-col gap-y-2">
-        <.inputs_for :let={expected_origin} field={@form[:expected_origins]}>
-          <input
-            type="hidden"
+<div class="flex flex-col p-6 gap-6">
+  <.box>
+    <.form
+      id="edit-security-key-form"
+      for={@form}
+      phx-target={@myself}
+      phx-submit="save"
+      phx-change="validate"
+      class="p-6"
+    >
+      <.field type="checkbox" field={@form[:enabled]} />
+      <.p class="mb-6">
+        Security keys (WebAuthn, FIDO) are physical devices that can be used to sign in. They are often in the form of a USB key or a Bluetooth device. When enabled, users can use a security key to sign in by plugging it into their computer or tapping it to their phone.
+      </.p>
+      <.alert color="warning" class="mb-6" with_icon>
+        {gettext("This authenticator will be available soon.")}
+      </.alert>
+      <.field
+        field={@form[:relying_party_id]}
+        label={gettext("Relying Party ID")}
+        disabled={not @enabled}
+        required
+      />
+      <.form_separator />
+      <.form_header title={gettext("Origins")} />
+      <.p class="mb-6">
+        The expected origins are the domains that the security key can be used on. This is used to prevent phishing attacks. The security key will only be valid for the specified domains.
+      </.p>
+      <div class="pc-form-field-wrapper">
+        <.field_label required>{gettext("Expected origins")}</.field_label>
+        <div class="flex flex-col gap-y-2">
+          <.inputs_for :let={expected_origin} field={@form[:expected_origins]}>
+            <input
+              type="hidden"
+              name="security_key[expected_origins_sort][]"
+              value={expected_origin.index}
+            />
+            <div class="flex items-center grow gap-2">
+              <.field
+                type="url"
+                label=""
+                field={expected_origin[:url]}
+                required
+                wrapper_class="mb-0! w-full grow"
+                disabled={not @enabled}
+              >
+                <:action>
+                  <.icon_form_button
+                    size="sm"
+                    name="security_key[expected_origins_drop][]"
+                    type="button"
+                    icon="custom-trash"
+                    color="light"
+                    title={gettext("Remove")}
+                    value={expected_origin.index}
+                    event={JS.dispatch("change")}
+                    disabled={not @enabled or expected_origin.index == 0}
+                  />
+                </:action>
+              </.field>
+            </div>
+          </.inputs_for>
+        </div>
+        <div class="flex mt-2">
+          <.button
+            size="xs"
+            type="button"
+            color="light"
+            icon="remix-add-circle-line"
+            label={gettext("Add origin")}
             name="security_key[expected_origins_sort][]"
-            value={expected_origin.index}
+            value="new"
+            phx-click={JS.dispatch("change")}
+            disabled={not @enabled}
           />
-          <div class="flex items-center grow gap-2">
-            <.field
-              type="url"
-              label=""
-              field={expected_origin[:url]}
-              required
-              wrapper_class="mb-0! w-full grow"
-              disabled={not @enabled}
-            >
-              <:action>
-                <.icon_form_button
-                  size="sm"
-                  name="security_key[expected_origins_drop][]"
-                  type="button"
-                  icon="custom-trash"
-                  color="light"
-                  title={gettext("Remove")}
-                  value={expected_origin.index}
-                  event={JS.dispatch("change")}
-                  disabled={not @enabled or expected_origin.index == 0}
-                />
-              </:action>
-            </.field>
-          </div>
-        </.inputs_for>
+        </div>
+        <input type="hidden" name="security_key[expected_origins_drop][]" />
       </div>
-      <div class="flex mt-2">
-        <.button
-          size="xs"
-          type="button"
-          color="light"
-          icon="remix-add-circle-line"
-          label={gettext("Add origin")}
-          name="security_key[expected_origins_sort][]"
-          value="new"
-          phx-click={JS.dispatch("change")}
-          disabled={not @enabled}
-        />
-      </div>
-      <input type="hidden" name="security_key[expected_origins_drop][]" />
-    </div>
-  </.form>
+    </.form>
+  </.box>
 </div>

@@ -52,14 +52,14 @@
 
   --shadow-m2: 0 1px 2px 0 rgb(16 24 40 / 0.05);
   --shadow-m3: 0 1px 2px 0 rgb(16 24 40 / 0.05);
-  --shadow-0:
-    0 1px 3px 0 rgb(16 24 40 / 0.1), 0 1px 2px 0px rgb(16 24 40 / 0.06);
-  --shadow-1:
-    0 4px 8px -2px rgb(16 24 40 / 0.1), 0 2px 4px -2px rgb(16 24 40 / 0.06);
-  --shadow-2:
-    0 12px 16px -4px rgb(16 24 40 / 0.08), 0 4px 6px -2px rgb(16 24 40 / 0.03);
-  --shadow-3:
-    0 20px 24px -4px rgb(16 24 40 / 0.08), 0 8px 8px -4px rgb(16 24 40 / 0.03);
+  --shadow-0: 0 1px 3px 0 rgb(16 24 40 / 0.1),
+    0 1px 2px 0px rgb(16 24 40 / 0.06);
+  --shadow-1: 0 4px 8px -2px rgb(16 24 40 / 0.1),
+    0 2px 4px -2px rgb(16 24 40 / 0.06);
+  --shadow-2: 0 12px 16px -4px rgb(16 24 40 / 0.08),
+    0 4px 6px -2px rgb(16 24 40 / 0.03);
+  --shadow-3: 0 20px 24px -4px rgb(16 24 40 / 0.08),
+    0 8px 8px -4px rgb(16 24 40 / 0.03);
   --shadow-4: 0 24px 48px -12px rgb(16 24 40 / 0.18);
 
   --color-primary-50: #eff8ff;
@@ -1360,6 +1360,9 @@
   .pc-sidebar__nav {
     @apply p-3 pt-6 w-64 xl:w-64 flex flex-col select-none shrink-0 border-r border-slate-200 dark:border-slate-700;
   }
+  .pc-sidebar__content {
+    @apply w-full grow overflow-y-auto bg-slate-100 dark:bg-transparent;
+  }
   .pc-sidebar__menu-item {
     @apply flex items-center gap-4 w-full;
     @apply text-base font-medium leading-normal px-4 py-3 transition duration-150 rounded-xl select-none;
@@ -1368,7 +1371,7 @@
     @apply bg-primary-50 text-primary-700 dark:bg-slate-800 dark:text-white dark:hover:text-white relative;
   }
   .pc-sidebar__menu-item-icon--active {
-    @apply text-primary-700 group-hover:text-primary-700 dark:text-white dark:group-hover:text-white;
+    @apply text-primary-800 group-hover:text-primary-700 dark:text-white dark:group-hover:text-white;
   }
   .pc-sidebar__menu-item--inactive {
     @apply text-slate-600 hover:bg-primary-50 hover:text-primary-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50;

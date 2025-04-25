@@ -1,201 +1,208 @@
-<div class="p-6 flex flex-col gap-6">
-  <.form_header title={gettext("Backend API")} no_margin />
-  <.p>
-    You can use the Backend API to authenticate your users directly from your own backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
-  </.p>
-  <.a
-    to={~p"/embed/install"}
-    label={gettext("Install Passwordless SDK")}
-    style="link"
-    link_type="live_redirect"
-  />
-  <.form_separator no_margin />
-  <.form_header title={gettext("Email OTP")} no_margin />
-  <.p>
-    You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
-  </.p>
-  <.code_block
-    language={:typescript}
-    code={
-      ~s"""
-      import { Passwordless } from "@passwordless/tools";
+<div class="flex flex-col p-6 gap-6">
+  <.box card>
+    <.form_header title={gettext("Backend API")} no_margin />
+    <.p>
+      You can use the Backend API to authenticate your users directly from your own backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
+    </.p>
+    <.a
+      to={~p"/embed/install"}
+      label={gettext("Install Passwordless SDK")}
+      style="link"
+      link_type="live_redirect"
+    />
+  </.box>
+  <.box card>
+    <.form_header title={gettext("Email OTP")} no_margin />
+    <.p>
+      You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
+    </.p>
+    <.code_block
+      language={:typescript}
+      code={
+        ~s"""
+        import { Passwordless } from "@passwordless/tools";
 
-        const action = Passwordless.authenticate({
-          action: "login",
-          actor: {
-            username: "1234567890",
-            emails: [
-              { address: "user@example.com" },
-            ],
-          },
-          rules: [
-            {
-              if: true, then: [ { challenge: Passwordless.EMAIL_OTP } ],
+          const action = Passwordless.authenticate({
+            action: "login",
+            actor: {
+              username: "1234567890",
+              emails: [
+                { address: "user@example.com" },
+              ],
             },
-          ],
-        });
-      """
-    }
-  />
-  <.p>
-    The code above create an Email OTP challenge and delivers the code to the user. Then, the user provides the code back to the application:
-  </.p>
-  <.code_block
-    language={:typescript}
-    code={
-      ~s"""
-      import { Passwordless } from "@passwordless/tools";
-
-      const action = Passwordless.continue({
-        action: {id: action.id},
-        data: {
-          otp_code: "123456",
-        },
-      });
-
-      if (action.state === Passwordless.ALLOW) {
-        console.log("User is allowed to continue");
+            rules: [
+              {
+                if: true, then: [ { challenge: Passwordless.EMAIL_OTP } ],
+              },
+            ],
+          });
+        """
       }
-      """
-    }
-  />
-  <.form_separator no_margin />
-  <.form_header title={gettext("Magic link")} no_margin />
-  <.p>
-    You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
-  </.p>
-  <.form_separator no_margin />
-  <.form_header title={gettext("Time-based OTP")} no_margin />
-  <.p>
-    You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
-  </.p>
-  <.form_separator no_margin />
-  <.form_header title={gettext("Rule evaluation")} no_margin />
-  <.p>
-    Passwordless comes with a powerful rules engine that allows you to define complex rules for your authentication flows. You can use the rules engine to define conditions and effects for your actions. If none of the rules match, the default action will take place. You can set the default action for your app here.
-  </.p>
-  <.form
-    id="app-update-form"
-    for={@form}
-    phx-submit="save"
-    phx-change="validate"
-    phx-target={@myself}
-  >
-    <.inputs_for :let={settings} field={@form[:settings]}>
-      <.field
-        field={settings[:default_action]}
-        type="select"
-        options={@actions}
-        icon_class={"pc-field-icon__icon " <> (
+    />
+    <.p>
+      The code above create an Email OTP challenge and delivers the code to the user. Then, the user provides the code back to the application:
+    </.p>
+    <.code_block
+      language={:typescript}
+      code={
+        ~s"""
+        import { Passwordless } from "@passwordless/tools";
+
+        const action = Passwordless.continue({
+          action: {id: action.id},
+          data: {
+            otp_code: "123456",
+          },
+        });
+
+        if (action.state === Passwordless.ALLOW) {
+          console.log("User is allowed to continue");
+        }
+        """
+      }
+    />
+  </.box>
+  <.box card>
+    <.form_header title={gettext("Magic link")} no_margin />
+    <.p>
+      You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
+    </.p>
+  </.box>
+  <.box card>
+    <.form_header title={gettext("Time-based OTP")} no_margin />
+    <.p>
+      You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
+    </.p>
+  </.box>
+  <.box card>
+    <.form_header title={gettext("Rule evaluation")} no_margin />
+    <.p>
+      Passwordless comes with a powerful rules engine that allows you to define complex rules for your authentication flows. You can use the rules engine to define conditions and effects for your actions. If none of the rules match, the default action will take place. You can set the default action for your app here.
+    </.p>
+    <.form
+      id="app-update-form"
+      for={@form}
+      phx-submit="save"
+      phx-change="validate"
+      phx-target={@myself}
+    >
+      <.inputs_for :let={settings} field={@form[:settings]}>
+        <.field
+          field={settings[:default_action]}
+          type="select"
+          options={@actions}
+          icon_class={"pc-field-icon__icon " <> (
         case @default_action do
           :allow -> "text-success-600 dark:text-success-300"
           :block -> "text-danger-600 dark:text-danger-300"
         end
       )}
-        icon_mapping={@icon_mapping}
-        required
-        required_asterix={false}
-      />
-    </.inputs_for>
-  </.form>
-  <.form_separator no_margin />
-  <.form_header title={gettext("IP Allowlist")} no_margin />
-  <.p>
-    Passwordless uses industry-standard security practices to protect your data. All data is encrypted in transit and at rest. We also support two-factor authentication for added security.
-  </.p>
-  <.form
-    id="app-security-form"
-    for={@form}
-    phx-submit="save"
-    phx-change="validate"
-    phx-target={@myself}
-  >
-    <.inputs_for :let={settings} field={@form[:settings]}>
-      <.field
-        type="checkbox"
-        field={settings[:allowlist_api_access]}
-        label={gettext("Allowlist API access")}
-        help_text={
-          gettext(
-            "Permit only specified IP addresses to make API calls. CIDR and IP notation is accepted."
-          )
-        }
-      />
-      <div :if={@allowlist_api_access} class="pc-form-field-wrapper">
-        <.field_label>{gettext("Allowlisted IP ranges")}</.field_label>
-        <div class="flex flex-col gap-y-2">
-          <.inputs_for :let={f} field={settings[:allowlisted_ip_addresses]}>
-            <input
-              type="hidden"
-              name="app[settings][allowlisted_ip_addresses_sort][]"
-              value={f.index}
-            />
-            <div class="flex items-center grow gap-2">
-              <.field
-                type="text"
-                minlength="7"
-                maxlength="15"
-                pattern="^(?>(\d|[1-9]\d{2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?1)$"
-                label=""
-                field={f[:address]}
-                required
-                class="font-mono"
-                wrapper_class="mb-0! w-full grow"
-              >
-                <:action>
-                  <.icon_form_button
-                    size="sm"
-                    name="app[settings][allowlisted_ip_addresses_drop][]"
-                    type="button"
-                    icon="custom-trash"
-                    color="light"
-                    title={gettext("Remove")}
-                    value={f.index}
-                    event={JS.dispatch("change")}
-                    disabled={f.index == 0}
-                  />
-                </:action>
-              </.field>
-            </div>
-          </.inputs_for>
-        </div>
-        <div class="flex mt-2">
-          <.button
-            size="xs"
-            type="button"
-            color="light"
-            icon="remix-add-circle-line"
-            label={gettext("Add IP range")}
-            name="app[settings][allowlisted_ip_addresses_sort][]"
-            value="new"
-            phx-click={JS.dispatch("change")}
-          />
-        </div>
-        <input type="hidden" name="app[settings][allowlisted_ip_addresses_drop][]" />
-      </div>
-    </.inputs_for>
-  </.form>
-  <div
-    :if={@allowlist_api_access and Util.present?(@allowlisted_ip_addresses)}
-    class="flex flex-col gap-2"
-  >
-    <.p class="font-mono text-success-600 dark:text-success-300">
-      {gettext("Whitelisted IP ranges:")}
+          icon_mapping={@icon_mapping}
+          required
+          required_asterix={false}
+        />
+      </.inputs_for>
+    </.form>
+  </.box>
+  <.box card>
+    <.form_header title={gettext("IP Allowlist")} no_margin />
+    <.p>
+      Passwordless uses industry-standard security practices to protect your data. All data is encrypted in transit and at rest. We also support two-factor authentication for added security.
     </.p>
-    <.ul>
-      <li
-        :for={{first, last, hosts} <- @allowlisted_ip_addresses}
-        class="font-mono text-success-600 dark:text-success-300"
-      >
-        {ngettext(
-          "%{first} - %{last} (%{count} host)",
-          "%{first} - %{last} (%{count} hosts)",
-          hosts,
-          first: first,
-          last: last,
-          count: hosts
-        )}
-      </li>
-    </.ul>
-  </div>
+    <.form
+      id="app-security-form"
+      for={@form}
+      phx-submit="save"
+      phx-change="validate"
+      phx-target={@myself}
+    >
+      <.inputs_for :let={settings} field={@form[:settings]}>
+        <.field
+          type="checkbox"
+          field={settings[:allowlist_api_access]}
+          label={gettext("Allowlist API access")}
+          help_text={
+            gettext(
+              "Permit only specified IP addresses to make API calls. CIDR and IP notation is accepted."
+            )
+          }
+        />
+        <div :if={@allowlist_api_access} class="pc-form-field-wrapper">
+          <.field_label>{gettext("Allowed IP ranges")}</.field_label>
+          <div class="flex flex-col gap-y-2">
+            <.inputs_for :let={f} field={settings[:allowlisted_ip_addresses]}>
+              <input
+                type="hidden"
+                name="app[settings][allowlisted_ip_addresses_sort][]"
+                value={f.index}
+              />
+              <div class="flex items-center grow gap-2">
+                <.field
+                  type="text"
+                  minlength="7"
+                  maxlength="15"
+                  pattern="^(?>(\d|[1-9]\d{2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?1)$"
+                  label=""
+                  field={f[:address]}
+                  required
+                  class="font-mono"
+                  wrapper_class="mb-0! w-full grow"
+                >
+                  <:action>
+                    <.icon_form_button
+                      size="sm"
+                      name="app[settings][allowlisted_ip_addresses_drop][]"
+                      type="button"
+                      icon="custom-trash"
+                      color="light"
+                      title={gettext("Remove")}
+                      value={f.index}
+                      event={JS.dispatch("change")}
+                      disabled={f.index == 0}
+                    />
+                  </:action>
+                </.field>
+              </div>
+            </.inputs_for>
+          </div>
+          <div class="flex mt-2">
+            <.button
+              size="xs"
+              type="button"
+              color="light"
+              icon="remix-add-circle-line"
+              label={gettext("Add IP range")}
+              name="app[settings][allowlisted_ip_addresses_sort][]"
+              value="new"
+              phx-click={JS.dispatch("change")}
+            />
+          </div>
+          <input type="hidden" name="app[settings][allowlisted_ip_addresses_drop][]" />
+        </div>
+      </.inputs_for>
+    </.form>
+    <div
+      :if={@allowlist_api_access and Util.present?(@allowlisted_ip_addresses)}
+      class="flex flex-col gap-2"
+    >
+      <.p class="font-mono text-success-600 dark:text-success-300">
+        {gettext("Allowed IP ranges:")}
+      </.p>
+      <.ul>
+        <li
+          :for={{first, last, hosts} <- @allowlisted_ip_addresses}
+          class="font-mono text-success-600 dark:text-success-300"
+        >
+          {ngettext(
+            "%{first} - %{last} (%{count} host)",
+            "%{first} - %{last} (%{count} hosts)",
+            hosts,
+            first: first,
+            last: last,
+            count: hosts
+          )}
+        </li>
+      </.ul>
+    </div>
+  </.box>
 </div>

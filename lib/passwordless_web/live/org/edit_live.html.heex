@@ -1,37 +1,39 @@
 <.tabbed_settings_layout current_page={:organization} current_user={@current_user}>
-  <.form id="edit-org-form" for={@form} phx-submit="save" phx-change="validate">
-    <.form_header title={gettext("Organization")} />
-    <.p class="mb-6">
-      Organizations represent the top level in your hierarchy. You'll be able to bundle a collection of teams within an organization as well as give organization-wide permissions to users.
-    </.p>
-    <.field
-      field={@form[:name]}
-      placeholder={gettext("e.g. YourOrg")}
-      autocomplete="organization"
-      required
-    />
-    <.field
-      type="email"
-      field={@form[:email]}
-      placeholder={gettext("e.g. you@org.com")}
-      autocomplete="email"
-      required
-    />
+  <.box card>
+    <.form id="edit-org-form" for={@form} phx-submit="save" phx-change="validate">
+      <.form_header title={gettext("Organization")} />
+      <.p class="mb-6">
+        Organizations represent the top level in your hierarchy. You'll be able to bundle a collection of teams within an organization as well as give organization-wide permissions to users.
+      </.p>
+      <.field
+        field={@form[:name]}
+        placeholder={gettext("e.g. YourOrg")}
+        autocomplete="organization"
+        required
+      />
+      <.field
+        type="email"
+        field={@form[:email]}
+        placeholder={gettext("e.g. you@org.com")}
+        autocomplete="email"
+        required
+      />
 
-    <div class="flex items-center justify-between">
-      <.a
-        to={~p"/organization/new"}
-        label={gettext("Create new organization")}
-        style="link"
-        link_type="live_redirect"
-      />
-      <.button
-        icon="remix-save-line"
-        label={gettext("Save")}
-        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
-      />
-    </div>
-  </.form>
+      <div class="flex items-center justify-between">
+        <.a
+          to={~p"/organization/new"}
+          label={gettext("Create new organization")}
+          style="link"
+          link_type="live_redirect"
+        />
+        <.button
+          icon="remix-save-line"
+          label={gettext("Save")}
+          disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
+        />
+      </div>
+    </.form>
+  </.box>
 </.tabbed_settings_layout>
 
 <%= case @live_action do %>

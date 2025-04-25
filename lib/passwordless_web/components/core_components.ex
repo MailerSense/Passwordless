@@ -24,7 +24,7 @@ defmodule PasswordlessWeb.CoreComponents do
       <nav class="pc-sidebar__nav">
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </nav>
-      <div class={["grow overflow-y-auto", @inner_class]}>
+      <div class={["pc-sidebar__content", @inner_class]}>
         {render_slot(@inner_block)}
       </div>
     </div>

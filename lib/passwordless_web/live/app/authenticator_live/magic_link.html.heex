@@ -1,18 +1,13 @@
-<div>
+<div class="flex flex-col p-6 gap-6">
   <.form
     id="edit-magic-link-form"
     for={@form}
     phx-target={@myself}
     phx-submit="save"
     phx-change="validate"
-    class="p-6"
+    class="flex flex-col gap-6"
   >
-    <.field type="checkbox" field={@form[:enabled]} />
-    <.p class="mb-6">
-      Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in. The link is valid for a limited time and can only be used once.
-    </.p>
-
-    <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
+    <.alert :if={Domain.system?(@domain)} color="info" with_icon>
       Do you want to send branded emails?
       <.a
         to={~p"/domain"}
@@ -22,38 +17,48 @@
         link_type="live_redirect"
       />
     </.alert>
-    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
-      <.field field={@form[:sender_name]} disabled={not @enabled} required wrapper_class="mb-0!" />
-      <.field
-        field={@form[:sender]}
-        label={gettext("Sender email")}
-        suffix={Domain.email_suffix(@domain)}
-        readonly={Domain.system?(@domain)}
-        disabled={not @enabled}
-        required
-        wrapper_class="mb-0!"
-      />
-    </div>
-    <.email_preview
-      to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/magic-link"}"}
-      name={gettext("Edit email template")}
-      preview={@preview}
-      link_type="live_redirect"
-    />
-    <div class="flex items-center gap-3 flex-wrap">
-      <.a
+    <.box padded>
+      <.form_header title={gettext("Magic link")} />
+      <.p class="mb-6">
+        Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in. The link is valid for a limited time and can only be used once.
+      </.p>
+      <.field type="checkbox" field={@form[:enabled]} />
+    </.box>
+    <.box padded>
+      <.form_header title={gettext("Delivery")} />
+      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+        <.field
+          field={@form[:sender_name]}
+          disabled={not @enabled}
+          required
+          wrapper_class="mb-0!"
+        />
+        <.field
+          field={@form[:sender]}
+          label={gettext("Sender email")}
+          suffix={Domain.email_suffix(@domain)}
+          readonly={Domain.system?(@domain)}
+          disabled={not @enabled}
+          required
+          wrapper_class="mb-0!"
+        />
+      </div>
+      <.email_preview
         to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/magic-link"}"}
-        label={gettext("Edit email template")}
-        style="link"
+        name={gettext("Edit email template")}
+        preview={@preview}
         link_type="live_redirect"
       />
-    </div>
-    <.form_separator />
-    <.form_header title={gettext("Timing")} />
-    <.p class="mb-6">
-      Magic link expires after a given time. It is recommended to set a short expiration time for the link. User can also request a new magic link after a cooldown period.
-    </.p>
-    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+      <div class="flex items-center gap-3 flex-wrap">
+        <.a
+          to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/magic-link"}"}
+          label={gettext("Edit email template")}
+          style="link"
+          link_type="live_redirect"
+        />
+      </div>
+      <.form_separator />
+      <.form_header title={gettext("Preferences")} />
       <.field
         field={@form[:expires]}
         label={gettext("Link expires")}
@@ -64,7 +69,6 @@
         suffix={gettext("minutes")}
         disabled={not @enabled}
         required
-        wrapper_class="mb-0!"
       />
       <.field
         field={@form[:resend]}
@@ -72,78 +76,81 @@
         type="number"
         min="30"
         max="300"
-        prefix={gettext("After")}
+        prefix={gettext("After at least")}
         suffix={gettext("seconds")}
         disabled={not @enabled}
         required
-        wrapper_class="mb-0!"
       />
-    </div>
-    <.form_separator />
-    <.form_header title={gettext("Link targets")} />
-    <.p class="mb-6">
-      The redirect URL is the URL to which the user will be redirected after clicking the magic link. You can restrict the redirect URLs to a specific domain. This will help prevent phishing attacks.
-    </.p>
-    <div class="pc-form-field-wrapper">
-      <.field_label required>{gettext("Allowed targets")}</.field_label>
-      <div class="flex flex-col gap-y-2">
-        <.inputs_for :let={f} field={@form[:redirect_urls]}>
-          <input type="hidden" name="magic_link[redirect_urls_sort][]" value={f.index} />
-          <div class="flex items-center grow gap-2">
-            <.field
-              type="url"
-              label=""
-              field={f[:url]}
-              required
-              disabled={not @enabled}
-              wrapper_class="mb-0! w-full grow"
-            >
-              <:action>
-                <.icon_form_button
-                  size="sm"
-                  name="magic_link[redirect_urls_drop][]"
-                  type="button"
-                  icon="custom-trash"
-                  color="light"
-                  title={gettext("Remove")}
-                  value={f.index}
-                  event={JS.dispatch("change")}
-                  disabled={not @enabled or f.index == 0}
-                />
-              </:action>
-            </.field>
-          </div>
-        </.inputs_for>
+    </.box>
+    <.box padded>
+      <.form_header title={gettext("Redirect URLs")} />
+      <.p class="mb-6">
+        The redirect URL is the URL to which the user will be redirected after clicking the magic link. You can restrict the redirect URLs to a specific domain. This will help prevent phishing attacks.
+      </.p>
+      <div class="pc-form-field-wrapper">
+        <.field_label required>{gettext("Allowed URLs")}</.field_label>
+        <div class="flex flex-col gap-y-2">
+          <.inputs_for :let={f} field={@form[:redirect_urls]}>
+            <input type="hidden" name="magic_link[redirect_urls_sort][]" value={f.index} />
+            <div class="flex items-center grow gap-2">
+              <.field
+                type="url"
+                label=""
+                field={f[:url]}
+                required
+                disabled={not @enabled}
+                wrapper_class="mb-0! w-full grow"
+              >
+                <:action>
+                  <.icon_form_button
+                    size="sm"
+                    name="magic_link[redirect_urls_drop][]"
+                    type="button"
+                    icon="custom-trash"
+                    color="light"
+                    title={gettext("Remove")}
+                    value={f.index}
+                    event={JS.dispatch("change")}
+                    disabled={not @enabled or f.index == 0}
+                  />
+                </:action>
+              </.field>
+            </div>
+          </.inputs_for>
+        </div>
+        <div class="flex mt-2">
+          <.button
+            size="xs"
+            type="button"
+            color="light"
+            icon="remix-add-circle-line"
+            label={gettext("Add redirect URL")}
+            name="magic_link[redirect_urls_sort][]"
+            value="new"
+            disabled={not @enabled}
+            phx-click={JS.dispatch("change")}
+          />
+        </div>
+        <input type="hidden" name="magic_link[redirect_urls_drop][]" />
       </div>
-      <div class="flex mt-2">
-        <.button
-          size="xs"
-          type="button"
-          color="light"
-          icon="remix-add-circle-line"
-          label={gettext("Add redirect URL")}
-          name="magic_link[redirect_urls_sort][]"
-          value="new"
-          disabled={not @enabled}
-          phx-click={JS.dispatch("change")}
-        />
-      </div>
-      <input type="hidden" name="magic_link[redirect_urls_drop][]" />
-    </div>
-    <.field
-      type="checkbox"
-      field={@form[:fingerprint_device]}
-      disabled={not @enabled}
-      help_text={
-        gettext(
-          "You can enable device fingerprinting to track the device used to request the magic link. This will ensure the user who requested the link is the one who opened it."
-        )
-      }
-    />
-    <.form_separator />
-    <.form_header title="API - Authenticate with Magic link" />
+      <.form_separator />
+      <.form_header title={gettext("Security")} />
+      <.field
+        type="checkbox"
+        field={@form[:fingerprint_device]}
+        disabled={not @enabled}
+        help_text={
+          gettext(
+            "You can enable device fingerprinting to track the device used to request the magic link. This will ensure the user who requested the link is the one who opened it."
+          )
+        }
+      />
+    </.box>
+  </.form>
+
+  <.box card>
+    <.form_header title="API - Authenticate with Magic link" no_margin />
     <.code_block
-      class="mb-6"
       language={:typescript}
       code={
         ~s"""
@@ -174,11 +181,10 @@
         """
       }
     />
-    <.p class="mb-6">
+    <.p>
       The code above create an Email OTP challenge and delivers the code to the user. Then, the user provides the code back to the application:
     </.p>
     <.code_block
-      class="mb-6"
       language={:typescript}
       code={
         ~s"""
@@ -202,5 +208,5 @@
       style="link"
       link_type="live_redirect"
     />
-  </.form>
+  </.box>
 </div>
