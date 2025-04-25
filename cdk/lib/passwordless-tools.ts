@@ -2,6 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
 import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
 import {
+  BehaviorOptions,
   CachePolicy,
   OriginRequestPolicy,
   ViewerProtocolPolicy,
@@ -421,7 +422,7 @@ export class PasswordlessTools extends cdk.Stack {
       removalPolicy,
     });
 
-    const albBehavior = {
+    const albBehavior: BehaviorOptions = {
       origin: new LoadBalancerV2Origin(app.service.loadBalancer),
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
