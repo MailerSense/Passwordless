@@ -729,6 +729,34 @@ defmodule Passwordless do
     |> Repo.update(prefix: Tenant.to_prefix(app))
   end
 
+  # Action Event
+
+  def get_action_event(%App{} = app, id) do
+    Repo.get(ActionEvent, id, prefix: Tenant.to_prefix(app))
+  end
+
+  def update_action_event(%App{} = app, %ActionEvent{} = action_event, attrs) do
+    action_event
+    |> ActionEvent.changeset(attrs)
+    |> Repo.update(prefix: Tenant.to_prefix(app))
+  end
+
+  def locate_action_event(%App{} = app, %ActionEvent{ip_address: ip_address} = event) when is_binary(ip_address) do
+    key = "ip_loc_" <> ip_address
+
+    case Passwordless.Cache.get(key) do
+      %{"city" => city, "country" => country} when is_binary(city) and is_binary(country) ->
+        Passwordless.update_action_event(app, event, %{city: city, country: country})
+
+      _ ->
+        %{app_id: app.id, action_event_id: event.id}
+        |> Passwordless.ActionLocator.new()
+        |> Oban.insert()
+    end
+  end
+
+  def locate_action_event(%App{} = app, event), do: {:ok, event}
+
   # Challenge
 
   def get_challenge!(%App{} = app, id) do

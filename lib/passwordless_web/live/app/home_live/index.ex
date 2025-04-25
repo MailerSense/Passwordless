@@ -4,6 +4,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   alias Database.QueryExt
   alias Passwordless.Action
+  alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
   alias PasswordlessWeb.Components.DataTable
@@ -186,6 +187,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     app
     |> Action.get_by_app()
     |> Action.preload_actor()
+    |> Action.preload_events()
   end
 
   defp update_top_actions(socket, %Action{name: action_name, state: state}) do

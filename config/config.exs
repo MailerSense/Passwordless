@@ -65,6 +65,7 @@ config :passwordless, Oban,
   queues: [
     default: 100,
     mailer: [local_limit: 10, global_limit: 20],
+    locator: [local_limit: 25, global_limit: 100],
     executor: [local_limit: 10, global_limit: 20],
     scheduler: [local_limit: 10, global_limit: 10],
     statistics: [local_limit: 10, global_limit: 10],

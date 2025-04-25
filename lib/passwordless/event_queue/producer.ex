@@ -14,7 +14,7 @@ defmodule Passwordless.EventQueue.Producer do
   @registry Passwordless.EventQueue.Registry
   @max_messages 10
   @receive_interval :timer.seconds(5)
-  @default_receive_opts %{"WaitTimeSeconds" => 10, "VisibilityTimeout" => 30}
+  @default_receive_opts %{"WaitTimeSeconds" => 20, "VisibilityTimeout" => 30}
 
   defmodule State do
     @moduledoc false
@@ -24,9 +24,9 @@ defmodule Passwordless.EventQueue.Producer do
 
     typedstruct do
       field :source, Source.t(), enforce: true
-      field :demand, non_neg_integer(), enforce: true
-      field :attempt, non_neg_integer(), enforce: true
-      field :receive_timer, pid() | nil, enforce: true
+      field :demand, non_neg_integer(), default: 0
+      field :attempt, non_neg_integer(), default: 0
+      field :receive_timer, pid() | nil, default: nil
     end
   end
 
@@ -36,13 +36,7 @@ defmodule Passwordless.EventQueue.Producer do
 
   @impl true
   def init(%Source{} = source) do
-    {:producer,
-     %State{
-       source: source,
-       demand: 0,
-       attempt: 0,
-       receive_timer: nil
-     }}
+    {:producer, %State{source: source}}
   end
 
   @impl true

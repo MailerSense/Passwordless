@@ -242,9 +242,13 @@
         {Phoenix.Naming.humanize(Macro.underscore(action.name))}
       </:col>
       <:col :let={action} label={gettext("Location")} field={:location}>
-        <div class="flex items-center gap-2">
-          <.icon name="flag-us" class="pc-flag-icon" /> New Jersey
-        </div>
+        <%= case Action.first_event(action) do %>
+          <% %ActionEvent{city: city, country: country} -> %>
+            <div class="flex items-center gap-2">
+              <.icon name={"flag-#{String.downcase(country)}"} class="pc-flag-icon" /> {city}
+            </div>
+          <% _ -> %>
+        <% end %>
       </:col>
       <:col :let={action} label={gettext("When")} field={:inserted_at}>
         {Timex.from_now(action.inserted_at)}

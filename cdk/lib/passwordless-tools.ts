@@ -297,6 +297,11 @@ export class PasswordlessTools extends cdk.Stack {
         ),
         // OpenAI
         OPEN_AI_KEY: Secret.fromSecretsManager(generalSecret, "OPEN_AI_KEY"),
+        // IPStack
+        IPSTACK_ACCESS_TOKEN: Secret.fromSecretsManager(
+          generalSecret,
+          "IPSTACK_ACCESS_TOKEN",
+        ),
         // Google
         GOOGLE_OAUTH_CLIENT_ID: Secret.fromSecretsManager(
           generalSecret,

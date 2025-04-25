@@ -8,5 +8,5 @@ defmodule Passwordless.EventQueue.Source do
     field :sqs_queue_url, binary(), enforce: true
   end
 
-  def consumers, do: 1..10
+  def consumers, do: 1..5
 end
