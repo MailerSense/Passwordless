@@ -12,6 +12,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Authenticators
+  alias Passwordless.Cache
   alias Passwordless.Challenge
   alias Passwordless.Domain
   alias Passwordless.Email
@@ -37,7 +38,8 @@ defmodule Passwordless.Challenges.EmailOTP do
       when state in [:started, :otp_sent] do
     otp_code = OTP.generate_code()
 
-    with {:ok, domain} <- Passwordless.get_email_domain(app),
+    with :ok <- rate_limit_reached?(app, email),
+         {:ok, domain} <- Passwordless.get_email_domain(app),
          {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email_otp),
          %EmailTemplate{} = email_template <- get_email_template(authenticator),
          {:ok, email_template_locale} <- get_email_template_locale(actor, email_template),
@@ -56,6 +58,7 @@ defmodule Passwordless.Challenges.EmailOTP do
          {:ok, otp} <- create_otp(app, authenticator, email_message, otp_code),
          {:ok, challenge} <- update_challenge_state(app, challenge, :otp_sent),
          {:ok, _job} <- enqueue_email_message(app, domain, email_message),
+         :ok <- apply_rate_limit(app, authenticator, email),
          do:
            {:ok,
             Repo.preload(
@@ -221,4 +224,17 @@ defmodule Passwordless.Challenges.EmailOTP do
       EmailUnsubscribeLinkMapping.sign_token(link)
     )
   end
+
+  defp rate_limit_reached?(%App{} = app, %Email{} = email) do
+    if Cache.exists?(rate_limit_key(app, email)),
+      do: {:error, :rate_limit_reached},
+      else: :ok
+  end
+
+  defp apply_rate_limit(%App{} = app, %Authenticators.EmailOTP{} = authenticator, %Email{} = email) do
+    Cache.put(rate_limit_key(app, email), true, ttl: :timer.seconds(authenticator.resend))
+    :ok
+  end
+
+  defp rate_limit_key(%App{id: id}, %Email{address: address}), do: "email_otp:#{id}:#{address}"
 end

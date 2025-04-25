@@ -69,7 +69,7 @@ defmodule PasswordlessApi.ActionController do
       }
     end
 
-    {:ok, action} =
+    result =
       Repo.transact(fn ->
         with {:ok, rule} <- Passwordless.create_rule(app, %{conditions: %{}, effects: %{}}),
              {:ok, actor} <- Passwordless.resolve_actor(app, actor_params),
@@ -82,9 +82,10 @@ defmodule PasswordlessApi.ActionController do
              do: {:ok, new_action}
       end)
 
-    PasswordlessWeb.Endpoint.broadcast(Action.topic_for(app), "inserted", action)
-
-    render(conn, :authenticate, action: action)
+    with {:ok, action} <- result do
+      PasswordlessWeb.Endpoint.broadcast(Action.topic_for(app), "inserted", action)
+      render(conn, :authenticate, action: action)
+    end
   end
 
   def continue(%Plug.Conn{} = conn, params, %App{} = app) do

@@ -14,7 +14,7 @@ defmodule Util.DomainBlocklist do
            |> MapSet.new()
 
   @doc """
-  Check if a domain is blocked.
+  Check if a domain is on the blocklist.
   """
   def blocked?(domain) when is_binary(domain) do
     MapSet.member?(@domains, domain |> String.trim() |> String.downcase())

@@ -415,18 +415,34 @@ export class PasswordlessTools extends cdk.Stack {
       blockedPathPrefixes: ["/health"],
     });
 
+    const emptyAppCDNBucketName = `${env}-empty-app-cdn-bucket`;
+    const emptyAppCDNBucket = new PrivateBucket(this, emptyAppCDNBucketName, {
+      name: emptyAppCDNBucketName,
+      removalPolicy,
+    });
+
+    const albBehavior = {
+      origin: new LoadBalancerV2Origin(app.service.loadBalancer),
+      viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
+      originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
+    };
+
     const _appCdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-app-cdn`,
       zone,
       cert: appCdnCert,
       domain: appCdnDomain,
       defaultBehavior: {
-        origin: new LoadBalancerV2Origin(app.service.loadBalancer),
+        origin: S3BucketOrigin.withOriginAccessControl(
+          emptyAppCDNBucket.bucket,
+        ),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
-        originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
       },
-      additionalBehaviors: {},
+      additionalBehaviors: {
+        "assets/*": albBehavior,
+        "images/*": albBehavior,
+      },
     });
 
     const _mediaCdn = new CDN(this, `${env}-customer-media-cdn`, {

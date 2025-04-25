@@ -7,6 +7,7 @@ defmodule Passwordless.Challenges.MagicLink do
   alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Authenticators
+  alias Passwordless.Cache
   alias Passwordless.Challenge
   alias Passwordless.Email
 
@@ -22,4 +23,19 @@ defmodule Passwordless.Challenges.MagicLink do
       ) do
     {:ok, action}
   end
+
+  # Private
+
+  defp rate_limit_reached?(%App{} = app, %Email{} = email) do
+    if Cache.exists?(rate_limit_key(app, email)),
+      do: {:error, :rate_limit_reached},
+      else: :ok
+  end
+
+  defp apply_rate_limit(%App{} = app, %Authenticators.MagicLink{} = authenticator, %Email{} = email) do
+    Cache.put(rate_limit_key(app, email), true, ttl: :timer.seconds(authenticator.resend))
+    :ok
+  end
+
+  defp rate_limit_key(%App{id: id}, %Email{address: address}), do: "email_otp:#{id}:#{address}"
 end

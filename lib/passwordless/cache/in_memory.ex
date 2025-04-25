@@ -19,6 +19,12 @@ defmodule Passwordless.Cache.InMemory do
 
   @impl true
   def put(key, value, opts \\ []) do
+    opts =
+      case Keyword.get(opts, :ttl) do
+        nil -> opts
+        ttl when is_integer(ttl) -> opts |> Keyword.drop([:ttl]) |> Keyword.put(:expire, ttl)
+      end
+
     case Cachex.put(@cache, key, value, opts) do
       {:ok, _} -> value
       _ -> nil

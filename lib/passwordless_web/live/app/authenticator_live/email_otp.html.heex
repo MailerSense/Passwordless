@@ -48,7 +48,7 @@
       />
     </div>
     <.form_separator />
-    <.form_header title={gettext("Lifetime")} />
+    <.form_header title={gettext("Timing")} />
     <.p class="mb-6">
       The expiration time is the time after which the OTP code will no longer be valid. It is recommended to set a short expiration time for the OTP code. This will help prevent unauthorized access.
     </.p>
@@ -59,6 +59,17 @@
       max="60"
       prefix={gettext("After")}
       suffix={gettext("minutes")}
+      disabled={not @enabled}
+      required
+    />
+    <.field
+      field={@form[:resend]}
+      label={gettext("Resend allowed")}
+      type="number"
+      min="30"
+      max="300"
+      prefix={gettext("After")}
+      suffix={gettext("seconds")}
       disabled={not @enabled}
       required
     />
