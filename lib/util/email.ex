@@ -76,8 +76,8 @@ defmodule Util.Email do
     [
       {:format, {&check_format/1, "is invalid"}},
       {:burner, {&check_burner/1, "is a burner email"}},
-      {:domain, {&check_domain/1, "has invalid domain"}},
-      {:blocked_domain, {&check_blocked_domain/1, "has blocked domain"}},
+      {:domain, {&check_domain/1, "is an invalid domain"}},
+      {:blocked_domain, {&check_blocked_domain/1, "is likely a spam domain"}},
       {:common_catch_all, {&check_common_catch_all/1, "is a likely catch-all address"}},
       {:common_provider_typos, {&check_common_provider_typos/1, "likely contains a typo"}},
       {:dns, {&check_dns/1, "has no MX or A/AAAA records"}}

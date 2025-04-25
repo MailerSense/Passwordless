@@ -50,29 +50,34 @@
     <.form_separator />
     <.form_header title={gettext("Timing")} />
     <.p class="mb-6">
-      The expiration time is the time after which the OTP code will no longer be valid. It is recommended to set a short expiration time for the OTP code. This will help prevent unauthorized access.
+      Email OTP code expires after a given time. It is recommended to set a short expiration time for the OTP code. User can also request a new OTP code after a cooldown period.
     </.p>
-    <.field
-      field={@form[:expires]}
-      type="number"
-      min="0"
-      max="60"
-      prefix={gettext("After")}
-      suffix={gettext("minutes")}
-      disabled={not @enabled}
-      required
-    />
-    <.field
-      field={@form[:resend]}
-      label={gettext("Resend allowed")}
-      type="number"
-      min="30"
-      max="300"
-      prefix={gettext("After")}
-      suffix={gettext("seconds")}
-      disabled={not @enabled}
-      required
-    />
+    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+      <.field
+        field={@form[:expires]}
+        label={gettext("OTP expires")}
+        type="number"
+        min="0"
+        max="60"
+        prefix={gettext("After")}
+        suffix={gettext("minutes")}
+        disabled={not @enabled}
+        required
+        wrapper_class="mb-0!"
+      />
+      <.field
+        field={@form[:resend]}
+        label={gettext("Request new OTP")}
+        type="number"
+        min="30"
+        max="300"
+        prefix={gettext("After")}
+        suffix={gettext("seconds")}
+        disabled={not @enabled}
+        required
+        wrapper_class="mb-0!"
+      />
+    </div>
     <.form_separator />
     <.form_header title="API - Authenticate with Email OTP" />
     <.code_block
