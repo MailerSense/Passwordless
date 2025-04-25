@@ -14,7 +14,14 @@ defmodule PasswordlessApi.Routes do
 
       pipeline :api_authenticated do
         plug :authenticate_api
-        plug :rate_limit_api
+      end
+
+      pipeline :api_rate_limited do
+        plug :rate_limit_api, name: "general"
+      end
+
+      pipeline :api_rate_limited_actions do
+        plug :rate_limit_api, name: "actions", limit: 100
       end
 
       pipeline :api_idempotent do
@@ -28,13 +35,20 @@ defmodule PasswordlessApi.Routes do
       end
 
       scope "/api/v1", PasswordlessApi do
-        pipe_through [:api, :api_authenticated]
+        pipe_through [
+          :api,
+          :api_authenticated,
+          :api_rate_limited
+        ]
 
         scope "/actions" do
           get "/:id", ActionController, :get
 
           scope "/" do
-            pipe_through :api_idempotent
+            pipe_through [
+              :api_rate_limited_actions,
+              :api_idempotent
+            ]
 
             post "/authenticate", ActionController, :authenticate
             post "/continue", ActionController, :continue
