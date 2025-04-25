@@ -7,11 +7,10 @@
     phx-change="validate"
     class="p-6"
   >
-    <.form_header title={gettext("Passkey")} />
+    <.field type="checkbox" field={@form[:enabled]} />
     <.p class="mb-6">
       Passkeys are a method that allows users to sign in without a password. When enabled, users will receive a prompt to add a passkey to their device.
     </.p>
-    <.field type="checkbox" field={@form[:enabled]} />
     <.alert color="warning" class="mb-6" with_icon>
       {gettext("This authenticator will be available soon.")}
     </.alert>

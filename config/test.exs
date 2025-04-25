@@ -34,7 +34,7 @@ config :logger, level: :warning
 config :phoenix, :plug_init_mode, :runtime
 
 # Only validate simple things
-config :passwordless, :email_validators, [:format, :domain]
+config :passwordless, :email_validators, [:format]
 
 config :passwordless, :env, :test
 

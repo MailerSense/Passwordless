@@ -7,11 +7,10 @@
     phx-change="validate"
     class="p-6"
   >
-    <.form_header title={gettext("Email OTP")} />
+    <.field type="checkbox" field={@form[:enabled]} />
     <.p class="mb-6">
       Email OTP is a one-time code sent to the user via email. This code can the be used to sign in. The code is valid for a limited time and can only be used once.
     </.p>
-    <.field type="checkbox" field={@form[:enabled]} />
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
       Do you want to send branded emails?
       <.a
@@ -70,21 +69,19 @@
       language={:typescript}
       code={
         ~s"""
-        import { Passwordless, Challenge } from "@passwordless/tools";
+        import { Passwordless, Action } from "@passwordless/tools";
 
-        const action = Passwordless.authenticate({
+        const action: Action = Passwordless.authenticate({
           action: "login",
           actor: {
             username: "1234567890",
             emails: [
-              {
-                address: "user@example.com"
-              },
+              { address: "user@example.com" },
             ],
           },
           rules: [
             {
-              if: true, then: [{ challenge: Challenge.EMAIL_OTP }],
+              if: true, then: [{ challenge: Passwordless.EMAIL_OTP }],
             },
           ],
         });
@@ -99,7 +96,7 @@
       language={:typescript}
       code={
         ~s"""
-        import { Action, Passwordless } from "@passwordless/tools";
+        import { Passwordless } from "@passwordless/tools";
 
         const action = Passwordless.continue({
           action: {id: action.id},
@@ -108,7 +105,7 @@
           },
         });
 
-        if (action.state === Action.ALLOW) {
+        if (action.state === Passwordless.ALLOW) {
           console.log("User is allowed to continue");
         }
         """

@@ -207,18 +207,12 @@ defmodule Passwordless.Actor do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields ++ [:name, :username])
     |> validate_name()
+    |> validate_active()
     |> validate_username(opts)
     |> validate_text_properties()
     |> validate_properties()
-    |> cast_assoc(:emails,
-      sort_param: :email_sort,
-      drop_param: :email_drop
-    )
-    |> cast_assoc(:phones,
-      sort_param: :phone_sort,
-      drop_param: :phone_drop,
-      with: &Phone.regional_changeset/2
-    )
+    |> cast_assoc(:email)
+    |> cast_assoc(:phone, with: &Phone.regional_changeset/2)
   end
 
   @doc """
