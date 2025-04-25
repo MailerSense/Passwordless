@@ -235,7 +235,7 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   defp apply_action(socket, :resend_invitation, _params) do
     assign(socket,
       page_title: gettext("Resend invitation"),
-      page_subtitle: gettext("Resend an invitation to join your organization")
+      page_subtitle: gettext("Do you want to resend this invitation? They will receive a new email.")
     )
   end
 

@@ -493,7 +493,7 @@
     @apply mb-3;
   }
   .pc-text {
-    @apply text-slate-500 dark:text-slate-400;
+    @apply text-slate-600 dark:text-slate-400;
   }
   .pc-text--sm {
     @apply text-sm;
