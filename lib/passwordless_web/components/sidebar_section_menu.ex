@@ -38,6 +38,7 @@ defmodule PasswordlessWeb.Components.SidebarSectionMenu do
       to={@path}
       link_type={@link_type}
       class={menu_item_classes(@current_section, @name)}
+      title={@label}
       phx-hook="TippyHook"
       data-tippy-content={@label}
       data-tippy-placement="right"

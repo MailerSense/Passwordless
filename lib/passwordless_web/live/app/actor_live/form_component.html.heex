@@ -11,8 +11,8 @@
       <.field field={@form[:name]} autocomplete="name" required />
       <.field
         field={@form[:username]}
-        help_text={gettext("Unique external ID you can assign to each user.")}
         autocomplete="username"
+        placeholder={gettext("Unique user ID from your own system")}
         required
       />
       <.field

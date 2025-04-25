@@ -5,6 +5,7 @@ defmodule Passwordless.EmailTemplateStyle do
 
   use Passwordless.Schema, prefix: "emtplstyl"
 
+  alias Database.ChangesetExt
   alias Passwordless.EmailTemplateLocale
 
   @styles [

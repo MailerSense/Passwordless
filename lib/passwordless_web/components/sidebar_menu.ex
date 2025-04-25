@@ -122,6 +122,7 @@ defmodule PasswordlessWeb.Components.SidebarMenu do
     <.a
       id={"sidebar_menu_item_#{@label |> String.downcase() |> String.replace(" ", "_")}_anchor"}
       to={@path}
+      title={@label}
       link_type={
         if @current_item[:patch_group] &&
              @current_item[:patch_group] == @patch_group,

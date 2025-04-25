@@ -217,10 +217,10 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
 
   defp apply_action(socket, _action, %{"delete" => _}) do
     assign(socket,
-      page_title: gettext("Reset email template"),
+      page_title: gettext("Reset template"),
       page_subtitle:
         gettext(
-          "Are you sure you want to reset this email template? Any customizations to the subject, preheader and content will be erased and replaced with default values."
+          "Are you sure you want to reset this template? Any customizations to the subject, preheader and content will be erased and replaced with default values."
         )
     )
   end

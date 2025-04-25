@@ -151,13 +151,13 @@
         <.button
           size="md"
           label="Cancel"
-          color="light-flat"
+          color="light"
           phx-click={JS.exec("data-cancel", to: "#modal")}
         />
         <.button
           icon="remix-send-plane-line"
           size="md"
-          label={gettext("Resend")}
+          label={gettext("Yes, Resend invitation")}
           phx-click="resend_invitation"
           phx-value-id={@invitation.id}
         />
@@ -175,7 +175,7 @@
         <.button
           size="md"
           label="Cancel"
-          color="light-flat"
+          color="light"
           phx-click={JS.exec("data-cancel", to: "#modal")}
         />
         <.button
@@ -200,7 +200,7 @@
         <.button
           size="md"
           label="Cancel"
-          color="light-flat"
+          color="light"
           phx-click={JS.exec("data-cancel", to: "#modal")}
         />
         <.button

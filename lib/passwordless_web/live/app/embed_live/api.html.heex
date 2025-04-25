@@ -65,6 +65,11 @@
     You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
   </.p>
   <.form_separator no_margin />
+  <.form_header title={gettext("Time-based OTP")} no_margin />
+  <.p>
+    You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
+  </.p>
+  <.form_separator no_margin />
   <.form_header title={gettext("Rule evaluation")} no_margin />
   <.p>
     Passwordless comes with a powerful rules engine that allows you to define complex rules for your authentication flows. You can use the rules engine to define conditions and effects for your actions. If none of the rules match, the default action will take place. You can set the default action for your app here.
@@ -93,17 +98,6 @@
       />
     </.inputs_for>
   </.form>
-  <.form_separator no_margin />
-  <.form_header title={gettext("Redirect URLs")} no_margin />
-  <.p>
-    Passwordless supports webhooks for various events, such as user login, user registration, and password reset. You can use webhooks to trigger actions in your application when these events occur. For now, we support whitelisting the Magic Link redirect URLs.
-  </.p>
-  <.a
-    to={~p"/authenticators/magic-link"}
-    label={gettext("Edit Magic Link")}
-    style="link"
-    link_type="live_redirect"
-  />
   <.form_separator no_margin />
   <.form_header title={gettext("Security")} no_margin />
   <.p>
@@ -158,6 +152,7 @@
                     title={gettext("Remove")}
                     value={f.index}
                     event={JS.dispatch("change")}
+                    disabled={f.index == 0}
                   />
                 </:action>
               </.field>

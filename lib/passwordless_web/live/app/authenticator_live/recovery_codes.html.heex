@@ -12,6 +12,8 @@
       Recovery codes are a list of single use codes that can be used as a backup authentication method.
     </.p>
     <.field type="checkbox" field={@form[:enabled]} />
+    <.form_separator />
+    <.form_header title={gettext("Advanced")} />
     <.field
       type="checkbox"
       field={@form[:hide_on_enrollment]}

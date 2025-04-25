@@ -92,9 +92,9 @@ defmodule PasswordlessWeb.User.PasswordLive do
 
   defp apply_action(socket, :change) do
     assign(socket,
-      page_title: gettext("Reset Password"),
+      page_title: gettext("Reset password"),
       page_subtitle:
-        gettext("This will send a reset password link to the email '%{email}'. Continue?",
+        gettext("This will send a password reset link to the \"%{email}\". Continue?",
           email: user_email(socket.assigns.current_user)
         )
     )
