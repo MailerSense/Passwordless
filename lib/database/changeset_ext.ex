@@ -6,6 +6,7 @@ defmodule Database.ChangesetExt do
   import Ecto.Changeset
 
   alias Crontab.CronExpression.Parser, as: CronParser
+  alias Util.DomainBlocklist
 
   @redacted "-"
   @sensitive_keys ~w(
@@ -121,6 +122,11 @@ defmodule Database.ChangesetExt do
         {:ok, _} -> []
         {:error, _} -> [{field, "is not a valid tld"}]
       end
+    end)
+    |> validate_change(field, fn ^field, domain ->
+      if DomainBlocklist.blocked?(domain),
+        do: [{field, "belongs to a known blocklist"}],
+        else: []
     end)
   end
 

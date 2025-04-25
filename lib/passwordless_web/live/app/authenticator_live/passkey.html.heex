@@ -7,11 +7,10 @@
     phx-change="validate"
     class="p-6"
   >
-    <.form_header title={gettext("Passkey")} />
+    <.field type="checkbox" field={@form[:enabled]} />
     <.p class="mb-6">
       Passkeys are a method that allows users to sign in without a password. When enabled, users will receive a prompt to add a passkey to their device.
     </.p>
-    <.field type="checkbox" field={@form[:enabled]} />
     <.alert color="warning" class="mb-6" with_icon>
       {gettext("This authenticator will be available soon.")}
     </.alert>
@@ -21,16 +20,14 @@
       disabled={not @enabled}
       required
     />
-    <.form_separator />
-    <.form_header title={gettext("Uplift")} />
-    <.p class="mb-6">
-      The passkey uplift is a prompt that asks users to add a passkey to their device. This prompt will be shown to users when they sign in with a password. The prompt will be shown only once per user.
-    </.p>
     <.field
-      type="select"
-      field={@form[:uplift_prompt_interval]}
-      options={@intervals}
-      required
+      type="checkbox"
+      field={@form[:require_user_verification]}
+      help_text={
+        gettext(
+          "When required, an additional authentication factor - such as biometric auth, pin or password - must always be provided when using the passkey."
+        )
+      }
       disabled={not @enabled}
     />
     <.form_separator />
@@ -89,15 +86,15 @@
       <input type="hidden" name="passkey[expected_origins_drop][]" />
     </div>
     <.form_separator />
-    <.form_header title="Advanced" />
+    <.form_header title={gettext("Uplift")} />
+    <.p class="mb-6">
+      The passkey uplift is a prompt that asks users to add a passkey to their device. This prompt will be shown to users when they sign in with a password. The prompt will be shown only once per user.
+    </.p>
     <.field
-      type="checkbox"
-      field={@form[:require_user_verification]}
-      help_text={
-        gettext(
-          "When required, an additional authentication factor - such as biometric auth, pin or password - must always be provided when using the passkey."
-        )
-      }
+      type="select"
+      field={@form[:uplift_prompt_interval]}
+      options={@intervals}
+      required
       disabled={not @enabled}
     />
   </.form>

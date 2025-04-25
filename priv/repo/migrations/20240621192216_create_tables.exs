@@ -330,6 +330,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :expires, :integer, null: false, default: 15
+      add :resend, :integer, null: false, default: 30
       add :sender, :citext, null: false
       add :sender_name, :string, null: false
       add :email_tracking, :boolean, null: false, default: false
@@ -373,6 +374,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
       add :expires, :integer, null: false, default: 15
+      add :resend, :integer, null: false, default: 30
       add :sender, :citext, null: false
       add :sender_name, :string, null: false
       add :email_tracking, :boolean, null: false, default: false

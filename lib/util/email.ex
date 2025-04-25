@@ -4,14 +4,15 @@ defmodule Util.Email do
   """
 
   alias EmailChecker.Tools
+  alias Util.DomainBlocklist
 
   @validators Application.compile_env(:passwordless, :email_validators, [
                 :format,
-                :domain,
                 :burner,
+                :domain,
+                :blocked_domain,
                 :common_catch_all,
-                :common_provider_typos,
-                :dns
+                :common_provider_typos
               ])
 
   @doc """
@@ -74,8 +75,9 @@ defmodule Util.Email do
   defp checks do
     [
       {:format, {&check_format/1, "is invalid"}},
-      {:domain, {&check_domain/1, "has an invalid domain"}},
       {:burner, {&check_burner/1, "is a burner email"}},
+      {:domain, {&check_domain/1, "is an invalid domain"}},
+      {:blocked_domain, {&check_blocked_domain/1, "is likely a spam domain"}},
       {:common_catch_all, {&check_common_catch_all/1, "is a likely catch-all address"}},
       {:common_provider_typos, {&check_common_provider_typos/1, "likely contains a typo"}},
       {:dns, {&check_dns/1, "has no MX or A/AAAA records"}}
@@ -84,6 +86,10 @@ defmodule Util.Email do
 
   defp check_format(email) when is_binary(email) do
     EmailChecker.Check.Format.valid?(email)
+  end
+
+  defp check_burner(email) when is_binary(email) do
+    not Burnex.is_burner?(email)
   end
 
   defp check_domain(email) when is_binary(email) do
@@ -95,8 +101,11 @@ defmodule Util.Email do
     end
   end
 
-  defp check_burner(email) when is_binary(email) do
-    not Burnex.is_burner?(email)
+  defp check_blocked_domain(email) when is_binary(email) do
+    case Regex.named_captures(Tools.email_regex(), email) do
+      %{"domain" => domain} when is_binary(domain) -> not DomainBlocklist.blocked?(domain)
+      _ -> true
+    end
   end
 
   @catch_all_names ~w(

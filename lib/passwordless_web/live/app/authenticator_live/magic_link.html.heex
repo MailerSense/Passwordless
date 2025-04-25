@@ -7,11 +7,11 @@
     phx-change="validate"
     class="p-6"
   >
-    <.form_header title={gettext("Magic link")} />
+    <.field type="checkbox" field={@form[:enabled]} />
     <.p class="mb-6">
       Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in. The link is valid for a limited time and can only be used once.
     </.p>
-    <.field type="checkbox" field={@form[:enabled]} />
+
     <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
       Do you want to send branded emails?
       <.a
@@ -49,20 +49,36 @@
       />
     </div>
     <.form_separator />
-    <.form_header title={gettext("Lifetime")} />
+    <.form_header title={gettext("Timing")} />
     <.p class="mb-6">
-      The expiration time is the time after which the magic link will no longer be valid. It is recommended to set a short expiration time for the magic link. This will help prevent unauthorized access.
+      Magic link expires after a given time. It is recommended to set a short expiration time for the link. User can also request a new magic link after a cooldown period.
     </.p>
-    <.field
-      field={@form[:expires]}
-      type="number"
-      min="0"
-      max="60"
-      prefix={gettext("After")}
-      suffix={gettext("minutes")}
-      disabled={not @enabled}
-      required
-    />
+    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+      <.field
+        field={@form[:expires]}
+        label={gettext("Link expires")}
+        type="number"
+        min="0"
+        max="60"
+        prefix={gettext("After")}
+        suffix={gettext("minutes")}
+        disabled={not @enabled}
+        required
+        wrapper_class="mb-0!"
+      />
+      <.field
+        field={@form[:resend]}
+        label={gettext("Request new link")}
+        type="number"
+        min="30"
+        max="300"
+        prefix={gettext("After")}
+        suffix={gettext("seconds")}
+        disabled={not @enabled}
+        required
+        wrapper_class="mb-0!"
+      />
+    </div>
     <.form_separator />
     <.form_header title={gettext("Link targets")} />
     <.p class="mb-6">
@@ -114,8 +130,6 @@
       </div>
       <input type="hidden" name="magic_link[redirect_urls_drop][]" />
     </div>
-    <.form_separator />
-    <.form_header title={gettext("Advanced")} />
     <.field
       type="checkbox"
       field={@form[:fingerprint_device]}

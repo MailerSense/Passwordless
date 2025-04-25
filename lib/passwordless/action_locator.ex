@@ -3,14 +3,34 @@ defmodule Passwordless.ActionLocator do
   This module is responsible for locating actions.
   """
 
-  use Oban.Pro.Worker, queue: :mailer, max_attempts: 5, tags: ["mailer", "executor"]
+  use Oban.Pro.Worker, queue: :locator, max_attempts: 5, tags: ["action", "locator"]
 
-  alias Passwordless.Mailer
+  alias Passwordless.ActionEvent
+  alias Passwordless.App
+  alias Passwordless.Cache
 
   @impl true
-  def process(%Oban.Job{args: %{"email" => email_args}}) do
-    with {:ok, _metadata} <- Mailer.deliver(Mailer.from_map(email_args)) do
-      :ok
-    end
+  def process(%Oban.Job{args: %{"app_id" => app_id, "action_event_id" => action_event_id}}) do
+    with %App{state: :active} = app <- Passwordless.get_app(app_id),
+         %ActionEvent{ip_address: ip_address} = action_event <- Passwordless.get_action_event(app, action_event_id),
+         {:ok, %{"city" => city, "country_code" => country_code}} <- IPStack.locate(ip_address),
+         :ok <- update_cache(ip_address, city, country_code),
+         do:
+           Passwordless.update_action_event(app, action_event, %{
+             city: city,
+             country: country_code
+           })
+  end
+
+  # Private
+
+  defp update_cache(ip_address, city, country) do
+    Cache.put(
+      "ip_loc_" <> ip_address,
+      %{"city" => city, "country" => country},
+      ttl: :timer.hours(24)
+    )
+
+    :ok
   end
 end

@@ -7,11 +7,10 @@
     phx-change="validate"
     class="p-6"
   >
-    <.form_header title={gettext("Security key")} />
+    <.field type="checkbox" field={@form[:enabled]} />
     <.p class="mb-6">
       Security keys (WebAuthn, FIDO) are physical devices that can be used to sign in. They are often in the form of a USB key or a Bluetooth device. When enabled, users can use a security key to sign in by plugging it into their computer or tapping it to their phone.
     </.p>
-    <.field type="checkbox" field={@form[:enabled]} />
     <.alert color="warning" class="mb-6" with_icon>
       {gettext("This authenticator will be available soon.")}
     </.alert>

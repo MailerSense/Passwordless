@@ -143,9 +143,9 @@ defmodule Passwordless.EmailMessage do
     message
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> ChangesetExt.validate_email_format(:sender)
-    |> ChangesetExt.validate_email_format(:reply_to)
-    |> ChangesetExt.validate_email_format(:recipient)
+    |> ChangesetExt.validate_email(:sender)
+    |> ChangesetExt.validate_email(:reply_to)
+    |> ChangesetExt.validate_email(:recipient)
     |> validate_text(:sender_name)
     |> validate_text(:reply_to_name)
     |> validate_text(:recipient_name)

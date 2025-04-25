@@ -31,6 +31,7 @@ defmodule Passwordless.RateLimit do
     Supervisor.init(children, strategy: :one_for_one)
   end
 
+  defdelegate get(key, scale), to: @adapter
   defdelegate hit(key, scale, limit), to: @adapter
   defdelegate hit(key, scale, limit, increment), to: @adapter
 end

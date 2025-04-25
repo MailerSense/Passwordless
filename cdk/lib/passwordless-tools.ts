@@ -2,6 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
 import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
 import {
+  BehaviorOptions,
   CachePolicy,
   OriginRequestPolicy,
   ViewerProtocolPolicy,
@@ -297,6 +298,11 @@ export class PasswordlessTools extends cdk.Stack {
         ),
         // OpenAI
         OPEN_AI_KEY: Secret.fromSecretsManager(generalSecret, "OPEN_AI_KEY"),
+        // IPStack
+        IPSTACK_ACCESS_TOKEN: Secret.fromSecretsManager(
+          generalSecret,
+          "IPSTACK_ACCESS_TOKEN",
+        ),
         // Google
         GOOGLE_OAUTH_CLIENT_ID: Secret.fromSecretsManager(
           generalSecret,
@@ -410,18 +416,34 @@ export class PasswordlessTools extends cdk.Stack {
       blockedPathPrefixes: ["/health"],
     });
 
+    const emptyAppCDNBucketName = `${env}-empty-app-cdn-bucket`;
+    const emptyAppCDNBucket = new PrivateBucket(this, emptyAppCDNBucketName, {
+      name: emptyAppCDNBucketName,
+      removalPolicy,
+    });
+
+    const albBehavior: BehaviorOptions = {
+      origin: new LoadBalancerV2Origin(app.service.loadBalancer),
+      viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
+      originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
+    };
+
     const _appCdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-app-cdn`,
       zone,
       cert: appCdnCert,
       domain: appCdnDomain,
       defaultBehavior: {
-        origin: new LoadBalancerV2Origin(app.service.loadBalancer),
+        origin: S3BucketOrigin.withOriginAccessControl(
+          emptyAppCDNBucket.bucket,
+        ),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
-        originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
       },
-      additionalBehaviors: {},
+      additionalBehaviors: {
+        "assets/*": albBehavior,
+        "images/*": albBehavior,
+      },
     });
 
     const _mediaCdn = new CDN(this, `${env}-customer-media-cdn`, {

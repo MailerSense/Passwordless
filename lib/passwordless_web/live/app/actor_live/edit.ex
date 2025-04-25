@@ -3,6 +3,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   use PasswordlessWeb, :live_view
 
   alias Passwordless.Action
+  alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.Locale
   alias Passwordless.Phone

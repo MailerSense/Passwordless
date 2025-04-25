@@ -30,12 +30,13 @@ defmodule PasswordlessApi.Plugs do
   end
 
   @doc """
-  Rate limits the API requests to 200 requests per minute.
+  Rate limits the API requests.
   """
-  def rate_limit_api(conn, _opts) do
-    key = "api:" <> get_current_app_id(conn)
-    scale = :timer.minutes(1)
-    limit = 150
+  def rate_limit_api(conn, opts \\ []) do
+    name = Keyword.fetch!(opts, :name)
+    key = "#{name}_#{get_current_org_id(conn)}"
+    scale = Keyword.get(opts, :scale, :timer.minutes(1))
+    limit = Keyword.get(opts, :limit, 200)
 
     case Passwordless.RateLimit.hit(key, scale, limit) do
       {:allow, _count} ->
@@ -44,6 +45,7 @@ defmodule PasswordlessApi.Plugs do
       {:deny, retry_after} ->
         conn
         |> put_resp_header("retry-after", Integer.to_string(div(retry_after, 1000)))
+        |> put_resp_header("x-rate-limit-domain", name)
         |> send_resp(429, [])
         |> halt()
     end
@@ -54,4 +56,10 @@ defmodule PasswordlessApi.Plugs do
   """
   def get_current_app_id(%Plug.Conn{assigns: %{current_app: %App{id: app_id}}}) when is_binary(app_id), do: app_id
   def get_current_app_id(%Plug.Conn{}), do: nil
+
+  @doc """
+  Fetches the current org id from the connection.
+  """
+  def get_current_org_id(%Plug.Conn{assigns: %{current_app: %App{org_id: org_id}}}) when is_binary(org_id), do: org_id
+  def get_current_org_id(%Plug.Conn{}), do: nil
 end
