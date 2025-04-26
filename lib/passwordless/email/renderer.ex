@@ -37,7 +37,8 @@ defmodule Passwordless.Email.Renderer do
   @example_variables %{
     "otp_code" => "123456",
     "magic_link_url" =>
-      "https://eu.passwordless.tools/auth/sign-in/passwordless/complete/SFMyNTY.g2gDbQAAACAjqIsr8_fd6TsBwSqcV0GuDCesLQrEV4ohzfT9qOKJUW4GAMVHZR-WAWIAAVGA.SCmssWIvn_DD1DChLdU_LgStbWcDIqLOf1nwwMdwRzs"
+      "https://eu.passwordless.tools/auth/sign-in/passwordless/complete/SFMyNTY.g2gDbQAAACAjqIsr8_fd6TsBwSqcV0GuDCesLQrEV4ohzfT9qOKJUW4GAMVHZR-WAWIAAVGA.SCmssWIvn_DD1DChLdU_LgStbWcDIqLOf1nwwMdwRzs",
+    "unsubscribe_url" => "https://eu.passwordless.tools/auth/unsubscribe/1234567890"
   }
 
   @variable_providers [

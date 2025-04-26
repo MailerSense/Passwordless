@@ -133,6 +133,8 @@ defmodule Passwordless.Challenges.EmailOTP do
        ) do
     opts = [app: app, actor: actor, action: action]
 
+    link = Passwordless.create_email_unsubscribe_link!(app, email)
+
     attrs = %{
       sender: Authenticators.EmailOTP.sender_email(authenticator, domain),
       sender_name: authenticator.sender_name,
@@ -147,7 +149,7 @@ defmodule Passwordless.Challenges.EmailOTP do
         headers: [
           %{
             name: "List-Unsubscribe",
-            value: "<#{unsubscribe_url(app, email)}>"
+            value: "<#{unsubscribe_url(link)}>"
           },
           %{
             name: "List-Unsubscribe-Post",
@@ -158,8 +160,9 @@ defmodule Passwordless.Challenges.EmailOTP do
     }
 
     attrs = if Util.present?(actor.name), do: Map.put(attrs, :recipient_name, actor.name), else: attrs
+    render_attrs = %{unsubscribe_url: unsubscribe_page_url(link), otp_code: otp_code}
 
-    with {:ok, message_attrs} <- Renderer.render(locale, %{otp_code: otp_code}, opts) do
+    with {:ok, message_attrs} <- Renderer.render(locale, render_attrs, opts) do
       opts = [prefix: Tenant.to_prefix(app)]
       attrs = Map.merge(attrs, message_attrs)
 
@@ -215,12 +218,18 @@ defmodule Passwordless.Challenges.EmailOTP do
     |> Repo.update(opts)
   end
 
-  defp unsubscribe_url(%App{} = app, %Email{} = email) do
-    link = Passwordless.create_email_unsubscribe_link!(app, email)
-
+  defp unsubscribe_url(%EmailUnsubscribeLinkMapping{} = link) do
     PasswordlessWeb.Router.Helpers.email_subscription_url(
       PasswordlessWeb.Endpoint,
       :unsubscribe_email,
+      EmailUnsubscribeLinkMapping.sign_token(link)
+    )
+  end
+
+  defp unsubscribe_page_url(%EmailUnsubscribeLinkMapping{} = link) do
+    PasswordlessWeb.Router.Helpers.email_subscription_page_url(
+      PasswordlessWeb.Endpoint,
+      :show,
       EmailUnsubscribeLinkMapping.sign_token(link)
     )
   end

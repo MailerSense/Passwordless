@@ -26,6 +26,19 @@ defmodule PasswordlessWeb.Router do
     plug PasswordlessWeb.Plugs.SetLocale, gettext: PasswordlessWeb.Gettext
   end
 
+  pipeline :public_browser do
+    plug :parse_ip
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, {PasswordlessWeb.Layouts, :root}
+    plug :put_layout, false
+    plug :protect_from_forgery
+
+    plug :put_content_security_policy,
+         {:config, :content_security_policy}
+  end
+
   pipeline :public_api do
     plug :accepts, ["json"]
   end
@@ -58,6 +71,15 @@ defmodule PasswordlessWeb.Router do
     pipe_through :public_api
 
     post "/email/:token", EmailSubscriptionController, :unsubscribe_email
+  end
+
+  scope "/unsubscribe/ui", PasswordlessWeb do
+    pipe_through :public_browser
+
+    get "/email/:token/confirm", EmailSubscriptionPageController, :show
+    post "/email/:token/confirm", EmailSubscriptionPageController, :show
+
+    post "/email/finalize", EmailSubscriptionPageController, :finalize
   end
 
   # App routes - for signed in and confirmed users only

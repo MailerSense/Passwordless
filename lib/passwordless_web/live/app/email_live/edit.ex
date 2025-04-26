@@ -246,7 +246,7 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
       page_title: title,
       page_subtitle:
         gettext(
-          "Are you sure you want to reset this template? Any customizations to the subject, preheader and content will be erased and replaced with default values "
+          "Are you sure you want to reset this template? Any customizations to the subject, preheader and content will be erased and replaced with default values. All unsaved changes will be lost."
         )
     )
   end
