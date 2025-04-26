@@ -11,7 +11,7 @@ defmodule Passwordless.AuthToken do
   alias Passwordless.Security.Roles
   alias Util.Base58
 
-  @size 16
+  @size 24
   @prefix "sk_live_"
 
   @derive {

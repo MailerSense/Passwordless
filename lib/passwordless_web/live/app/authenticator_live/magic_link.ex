@@ -28,13 +28,38 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
           assign(socket, preview: nil)
       end
 
+    fingerprint_factors = [
+      %{
+        icon: nil,
+        icon_class: nil,
+        label: gettext("Device ID"),
+        value: "device_id",
+        description: gettext("Unique ID provided by your backend")
+      },
+      %{
+        icon: nil,
+        icon_class: nil,
+        label: gettext("IP Address"),
+        value: "ip_address",
+        description: gettext("The IP address of the user device")
+      },
+      %{
+        icon: nil,
+        icon_class: nil,
+        label: gettext("User Agent"),
+        value: "user_agent",
+        description: gettext("As reported by the browser")
+      }
+    ]
+
     {:ok,
      socket
      |> assign(assigns)
      |> assign(
        domain: domain,
        magic_link: magic_link,
-       email_template: email_template
+       email_template: email_template,
+       fingerprint_factors: fingerprint_factors
      )
      |> assign_form(changeset)}
   end
@@ -75,5 +100,6 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
     socket
     |> assign(form: to_form(changeset))
     |> assign(enabled: Ecto.Changeset.fetch_field!(changeset, :enabled))
+    |> assign(fingerprint_device: Ecto.Changeset.fetch_field!(changeset, :fingerprint_device))
   end
 end

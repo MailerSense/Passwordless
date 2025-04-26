@@ -10,6 +10,8 @@ defmodule Passwordless.Authenticators.MagicLink do
   alias Passwordless.Domain
   alias Passwordless.EmailTemplate
 
+  @fingerprint_factors ~w(device_id ip_address user_agent)a
+
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
@@ -21,7 +23,7 @@ defmodule Passwordless.Authenticators.MagicLink do
     field :sender, :string
     field :sender_name, :string
     field :fingerprint_device, :boolean, default: false
-    field :required_security_question, :boolean, default: false
+    field :fingerprint_factors, {:array, Ecto.Enum}, values: @fingerprint_factors, default: @fingerprint_factors
 
     embeds_many :redirect_urls, RedirectURL, on_replace: :delete, primary_key: false do
       @derive Jason.Encoder
@@ -49,7 +51,7 @@ defmodule Passwordless.Authenticators.MagicLink do
     sender
     sender_name
     fingerprint_device
-    required_security_question
+    fingerprint_factors
     app_id
     email_template_id
   )a
@@ -72,6 +74,7 @@ defmodule Passwordless.Authenticators.MagicLink do
     |> validate_string(:sender_name)
     |> validate_number(:expires, greater_than: 0, less_than_or_equal_to: 60)
     |> validate_number(:resend, greater_than_or_equal_to: 30, less_than_or_equal_to: 300)
+    |> validate_fingerprint_factors()
     |> unique_constraint(:app_id)
     |> unsafe_validate_unique(:app_id, Passwordless.Repo)
     |> assoc_constraint(:app)
@@ -100,6 +103,10 @@ defmodule Passwordless.Authenticators.MagicLink do
       _ ->
         changeset
     end
+  end
+
+  defp validate_fingerprint_factors(changeset) do
+    ChangesetExt.clean_array(changeset, :fingerprint_factors)
   end
 
   defp redirect_url_changeset(%__MODULE__.RedirectURL{} = redirect_url, attrs) do

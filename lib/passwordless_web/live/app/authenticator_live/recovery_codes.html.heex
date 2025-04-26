@@ -13,22 +13,28 @@
         Recovery codes are a list of single use codes that can be used as a backup authentication method.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
+    </.box>
+    <.box padded>
+      <.form_header title={gettext("Hide on enrollment")} />
+      <.p class="mb-6">
+        When enabled, recovery codes will not be shown when the user enrolls their first authenticator. This is useful if you are using a custom authenticator app.
+      </.p>
       <.field
         type="checkbox"
         field={@form[:hide_on_enrollment]}
-        help_text={
-          gettext(
-            "Don't show recovery codes when the user enrolls their first authenticator (recovery codes will still be generated)."
-          )
-        }
+        label={gettext("Enabled")}
         disabled={not @enabled}
       />
+    </.box>
+    <.box padded>
+      <.form_header title={gettext("Skip on programatic")} />
+      <.p class="mb-6">
+        When enabled, recovery codes will not be generated when a user is enrolled programatically.
+      </.p>
       <.field
         type="checkbox"
         field={@form[:skip_on_programatic]}
-        help_text={
-          gettext("Don't generate recovery codes when enrolling a user programmatically.")
-        }
+        label={gettext("Enabled")}
         disabled={not @enabled}
       />
     </.box>

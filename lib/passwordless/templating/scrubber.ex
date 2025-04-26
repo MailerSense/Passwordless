@@ -156,14 +156,6 @@ defmodule Passwordless.Templating.Scrubber do
     html_escape(string)
   end
 
-  @doc false
-  @spec strip_js_from_tree(html_tree, opts) :: html_tree
-  def strip_js_from_tree(tree, opts \\ []) do
-    IO.warn("StripJs.strip_js_from_tree is deprecated; use StripJs.clean_html_tree instead")
-
-    clean_html_tree(tree, opts)
-  end
-
   @doc ~S"""
   Removes JS vectors from the given CSS string; i.e., the contents of a
   stylesheet or `<style>` tag.

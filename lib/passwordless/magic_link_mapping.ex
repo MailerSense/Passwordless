@@ -11,7 +11,7 @@ defmodule Passwordless.MagicLinkMapping do
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
 
-  @size 16
+  @size 24
   @primary_key false
   @timestamps_opts [type: :utc_datetime]
   @foreign_key_type Database.PrefixedUUID

@@ -54,7 +54,7 @@
         link_type="live_redirect"
       />
       <.form_separator />
-      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2">
         <.field
           field={@form[:expires]}
           label={gettext("Link expires")}
@@ -80,15 +80,29 @@
           wrapper_class="mb-0!"
         />
       </div>
+    </.box>
+    <.box padded>
+      <.form_header title={gettext("Fingerprint device")} />
+      <.p class="mb-6">
+        {gettext(
+          "You can enable device fingerprinting to track the device used to request the magic link. This will ensure the user who requested the link can open it."
+        )}
+      </.p>
       <.field
         type="checkbox"
         field={@form[:fingerprint_device]}
+        label={gettext("Enabled")}
         disabled={not @enabled}
-        help_text={
-          gettext(
-            "You can enable device fingerprinting to track the device used to request the magic link. This will ensure the user who requested the link can open it."
-          )
-        }
+      />
+      <.field
+        :if={@fingerprint_device}
+        type="radio-card-group"
+        field={@form[:fingerprint_factors]}
+        options={@fingerprint_factors}
+        required
+        size="sm"
+        variant="outline"
+        disabled={not @enabled}
       />
     </.box>
     <.box padded>

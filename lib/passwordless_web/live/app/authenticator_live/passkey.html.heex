@@ -21,23 +21,19 @@
         label={gettext("Relying Party ID")}
         disabled={not @enabled}
         required
-        help_text={
-          gettext(
-            "The Relying Party ID is the domain that the passkey will be valid for. This is used to prevent phishing attacks."
-          )
-        }
       />
     </.box>
     <.box padded>
-      <.form_header title={gettext("Preferences")} />
+      <.form_header title={gettext("User verification")} />
+      <.p class="mb-6">
+        {gettext(
+          "When required, an additional authentication factor - such as biometric auth, pin or password - must always be provided when using the passkey. This is used to prevent phishing attacks."
+        )}
+      </.p>
       <.field
         type="checkbox"
         field={@form[:require_user_verification]}
-        help_text={
-          gettext(
-            "When required, an additional authentication factor - such as biometric auth, pin or password - must always be provided when using the passkey."
-          )
-        }
+        label={gettext("Required")}
         disabled={not @enabled}
       />
     </.box>
