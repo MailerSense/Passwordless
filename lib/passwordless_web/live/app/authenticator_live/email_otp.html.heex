@@ -1,17 +1,13 @@
-<div>
+<div class="flex flex-col p-6 gap-6">
   <.form
     id="edit-email-form"
     for={@form}
     phx-target={@myself}
     phx-submit="save"
     phx-change="validate"
-    class="p-6"
+    class="flex flex-col gap-6"
   >
-    <.field type="checkbox" field={@form[:enabled]} />
-    <.p class="mb-6">
-      Email OTP is a one-time code sent to the user via email. This code can the be used to sign in. The code is valid for a limited time and can only be used once.
-    </.p>
-    <.alert :if={Domain.system?(@domain)} color="info" class="mb-6" with_icon>
+    <.alert :if={Domain.system?(@domain)} color="info" with_icon>
       Do you want to send branded emails?
       <.a
         to={~p"/domain"}
@@ -21,67 +17,77 @@
         link_type="live_redirect"
       />
     </.alert>
-    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
-      <.field field={@form[:sender_name]} disabled={not @enabled} required wrapper_class="mb-0!" />
-      <.field
-        field={@form[:sender]}
-        label={gettext("Sender email")}
-        suffix={Domain.email_suffix(@domain)}
-        readonly={Domain.system?(@domain)}
-        disabled={not @enabled}
-        required
-        wrapper_class="mb-0!"
+    <.box padded>
+      <.form_header title={gettext("Email OTP")} />
+      <.p class="mb-6">
+        Email OTP is a one-time code sent to the user via email. This code can the be used to sign in. The code is valid for a limited time and can only be used once.
+      </.p>
+      <.field type="checkbox" field={@form[:enabled]} />
+      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+        <.field
+          field={@form[:sender_name]}
+          label={gettext("Name")}
+          disabled={not @enabled}
+          required
+          wrapper_class="mb-0!"
+        />
+        <.field
+          field={@form[:sender]}
+          label={gettext("Email")}
+          suffix={Domain.email_suffix(@domain)}
+          readonly={Domain.system?(@domain)}
+          disabled={not @enabled}
+          required
+          wrapper_class="mb-0!"
+        />
+      </div>
+      <.email_preview
+        to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email-otp"}"}
+        name={gettext("Edit email template")}
+        preview={@preview}
+        link_type="live_redirect"
       />
-    </div>
-    <.email_preview
-      to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email-otp"}"}
-      name={gettext("Edit email template")}
-      preview={@preview}
-      link_type="live_redirect"
-    />
-    <div class="flex items-center gap-3 flex-wrap">
       <.a
         to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email-otp"}"}
         label={gettext("Edit email template")}
         style="link"
         link_type="live_redirect"
       />
-    </div>
-    <.form_separator />
-    <.form_header title={gettext("Timing")} />
-    <.p class="mb-6">
-      Email OTP code expires after a given time. It is recommended to set a short expiration time for the OTP code. User can also request a new OTP code after a cooldown period.
+      <.form_separator />
+      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2">
+        <.field
+          field={@form[:expires]}
+          label={gettext("OTP expires")}
+          type="number"
+          min="0"
+          max="60"
+          prefix={gettext("After")}
+          suffix={gettext("minutes")}
+          disabled={not @enabled}
+          required
+          wrapper_class="mb-0!"
+        />
+        <.field
+          field={@form[:resend]}
+          label={gettext("Request new OTP")}
+          type="number"
+          min="30"
+          max="300"
+          prefix={gettext("After")}
+          suffix={gettext("seconds")}
+          disabled={not @enabled}
+          required
+          wrapper_class="mb-0!"
+        />
+      </div>
+    </.box>
+  </.form>
+  <.box card>
+    <.form_header title="API - Authenticate with Email OTP" no_margin />
+    <.p>
+      The Email OTP authenticator can be used to authenticate users via email. The user provides their email address and the application sends a one-time code to the user. The user then provides the code back to the application.
     </.p>
-    <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
-      <.field
-        field={@form[:expires]}
-        label={gettext("OTP expires")}
-        type="number"
-        min="0"
-        max="60"
-        prefix={gettext("After")}
-        suffix={gettext("minutes")}
-        disabled={not @enabled}
-        required
-        wrapper_class="mb-0!"
-      />
-      <.field
-        field={@form[:resend]}
-        label={gettext("Request new OTP")}
-        type="number"
-        min="30"
-        max="300"
-        prefix={gettext("After")}
-        suffix={gettext("seconds")}
-        disabled={not @enabled}
-        required
-        wrapper_class="mb-0!"
-      />
-    </div>
-    <.form_separator />
-    <.form_header title="API - Authenticate with Email OTP" />
     <.code_block
-      class="mb-6"
       language={:typescript}
       code={
         ~s"""
@@ -104,11 +110,10 @@
         """
       }
     />
-    <.p class="mb-6">
+    <.p>
       The code above create an Email OTP challenge and delivers the code to the user. Then, the user provides the code back to the application:
     </.p>
     <.code_block
-      class="mb-6"
       language={:typescript}
       code={
         ~s"""
@@ -133,5 +138,5 @@
       style="link"
       link_type="live_redirect"
     />
-  </.form>
+  </.box>
 </div>

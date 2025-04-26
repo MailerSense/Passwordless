@@ -1360,6 +1360,9 @@
   .pc-sidebar__nav {
     @apply p-3 pt-6 w-64 xl:w-64 flex flex-col select-none shrink-0 border-r border-slate-200 dark:border-slate-700;
   }
+  .pc-sidebar__content {
+    @apply w-full grow overflow-y-auto bg-slate-100 dark:bg-transparent;
+  }
   .pc-sidebar__menu-item {
     @apply flex items-center gap-4 w-full;
     @apply text-base font-medium leading-normal px-4 py-3 transition duration-150 rounded-xl select-none;
@@ -1368,7 +1371,7 @@
     @apply bg-primary-50 text-primary-700 dark:bg-slate-800 dark:text-white dark:hover:text-white relative;
   }
   .pc-sidebar__menu-item-icon--active {
-    @apply text-primary-700 group-hover:text-primary-700 dark:text-white dark:group-hover:text-white;
+    @apply text-primary-800 group-hover:text-primary-700 dark:text-white dark:group-hover:text-white;
   }
   .pc-sidebar__menu-item--inactive {
     @apply text-slate-600 hover:bg-primary-50 hover:text-primary-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50;

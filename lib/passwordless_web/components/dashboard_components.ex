@@ -263,7 +263,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       <.field_label required>{gettext("Email template")}</.field_label>
       <.a
         to={@to}
-        class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 max-h-[280px] shadow-m2 overflow-hidden"
+        class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 max-h-[300px] shadow-m2 overflow-hidden"
         link_type={@link_type}
       >
         <iframe

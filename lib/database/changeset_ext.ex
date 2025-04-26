@@ -48,12 +48,18 @@ defmodule Database.ChangesetExt do
     update_change(changeset, field, &downcase/1)
   end
 
+  @doc """
+  Ensures the value is lowercase.
+  """
   def ensure_lowercase(%Ecto.Changeset{} = changeset, fields) when is_list(fields) do
     Enum.reduce(fields, changeset, fn field, cs ->
       update_change(cs, field, &downcase/1)
     end)
   end
 
+  @doc """
+  Ensures the code is formatted.
+  """
   def ensure_code_formatted(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
     update_change(changeset, field, fn code ->
       case Code.format_string!(code) do
@@ -61,6 +67,13 @@ defmodule Database.ChangesetExt do
         formatted_content -> IO.iodata_to_binary([formatted_content, ?\n])
       end
     end)
+  end
+
+  @doc """
+  Ensures the email is normalized.
+  """
+  def ensure_email_normalized(%Ecto.Changeset{} = changeset, field \\ :email) when is_atom(field) do
+    update_change(changeset, field, &Util.Email.normalize/1)
   end
 
   @doc """

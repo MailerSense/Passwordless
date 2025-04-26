@@ -1,99 +1,103 @@
 <.tabbed_settings_layout current_page={:domain} current_user={@current_user}>
   <div class="flex flex-col gap-6">
-    <.form_header title={gettext("Domain")} no_margin />
-    <.p>
-      Domain used for email sending ensures your emails are branded correctly and are less likely to be marked as spam. You can add a domain to your app, and we'll guide you through the process of verifying it.
-    </.p>
-    <.field
-      :if={Util.present?(@email_domain)}
-      name="email_domain"
-      value={@email_domain.name}
-      label={gettext("Sending domain")}
-      badge={domain_state_badge(@email_domain)}
-      readonly
-      wrapper_class="mb-0!"
-    />
-    <.a
-      :if={Util.present?(@email_domain) and not Domain.verified?(@email_domain)}
-      to={~p"/domain/email/dns"}
-      label={gettext("Setup DNS records")}
-      style="link"
-      link_type="live_patch"
-    />
-    <.a
-      :if={Util.blank?(@email_domain)}
-      to={~p"/domain/email/new"}
-      label={gettext("Set up email domain")}
-      style="link"
-      link_type="live_patch"
-    />
-    <.form_separator no_margin />
-    <.form_header title={gettext("Advanced")} no_margin />
-    <.inputs_for :let={settings} field={@form[:settings]}>
-      <.form id="edit-app-form" for={@form} phx-submit="save_app" phx-change="validate_app">
-        <.field
-          type="checkbox"
-          field={settings[:email_tracking]}
-          help_text={
-            gettext(
-              "Track users who successfully received your email and opened it in their email clients."
-            )
-          }
-        />
-      </.form>
+    <.box card>
+      <.form_header title={gettext("Domain")} no_margin />
+      <.p>
+        Domain used for email sending ensures your emails are branded correctly and are less likely to be marked as spam. You can add a domain to your app, and we'll guide you through the process of verifying it.
+      </.p>
       <.field
-        :if={@email_tracking and Util.present?(@tracking_domain)}
-        name="tracking_domain"
-        value={@tracking_domain.name}
-        label={gettext("Tracking domain")}
-        badge={domain_state_badge(@tracking_domain)}
+        :if={Util.present?(@email_domain)}
+        name="email_domain"
+        value={@email_domain.name}
+        label={gettext("Sending domain")}
+        badge={domain_state_badge(@email_domain)}
         readonly
         wrapper_class="mb-0!"
       />
       <.a
-        :if={@email_tracking and not Domain.verified?(@tracking_domain)}
-        to={~p"/domain/tracking/dns"}
+        :if={Util.present?(@email_domain) and not Domain.verified?(@email_domain)}
+        to={~p"/domain/email/dns"}
         label={gettext("Setup DNS records")}
         style="link"
         link_type="live_patch"
       />
       <.a
-        :if={@email_tracking and not Util.present?(@tracking_domain)}
-        to={~p"/domain/tracking/new"}
-        label={gettext("Set up tracking domain")}
+        :if={Util.blank?(@email_domain)}
+        to={~p"/domain/email/new"}
+        label={gettext("Set up email domain")}
         style="link"
         link_type="live_patch"
       />
-    </.inputs_for>
-    <.form_separator :if={Util.present?(@email_domain)} no_margin />
-    <.form_header :if={Util.present?(@email_domain)} title={gettext("Danger zone")} no_margin />
-    <.p :if={Util.present?(@email_domain)}>
-      Email domains can be changed or removed at any time. Be aware that a domain will continue to be active for 1 day after you remove it. This is to ensure that any emails sent during that time are not lost.
-    </.p>
-    <div
-      :if={Util.present?(@email_domain) or Util.present?(@tracking_domain)}
-      class="flex items-center gap-3 flex-wrap"
-    >
-      <.a
-        to={~p"/domain/email/change"}
-        label={gettext("Change sending domain")}
-        style="link"
-        link_type="live_patch"
-      />
-      <.a
-        :if={Util.present?(@tracking_domain)}
-        to={~p"/domain/tracking/change"}
-        label={gettext("Change tracking domain")}
-        style="link"
-        link_type="live_patch"
-      />
-      <.a
-        to={~p"/domain/delete"}
-        label={gettext("Delete domain")}
-        style="delete"
-        link_type="live_patch"
-      />
-    </div>
+    </.box>
+    <.box card>
+      <.form_header title={gettext("Configuration")} no_margin />
+      <.inputs_for :let={settings} field={@form[:settings]}>
+        <.form id="edit-app-form" for={@form} phx-submit="save_app" phx-change="validate_app">
+          <.field
+            type="checkbox"
+            field={settings[:email_tracking]}
+            help_text={
+              gettext(
+                "Track users who successfully received your email and opened it in their email clients."
+              )
+            }
+          />
+        </.form>
+        <.field
+          :if={@email_tracking and Util.present?(@tracking_domain)}
+          name="tracking_domain"
+          value={@tracking_domain.name}
+          label={gettext("Tracking domain")}
+          badge={domain_state_badge(@tracking_domain)}
+          readonly
+          wrapper_class="mb-0!"
+        />
+        <.a
+          :if={@email_tracking and not Domain.verified?(@tracking_domain)}
+          to={~p"/domain/tracking/dns"}
+          label={gettext("Setup DNS records")}
+          style="link"
+          link_type="live_patch"
+        />
+        <.a
+          :if={@email_tracking and not Util.present?(@tracking_domain)}
+          to={~p"/domain/tracking/new"}
+          label={gettext("Set up tracking domain")}
+          style="link"
+          link_type="live_patch"
+        />
+      </.inputs_for>
+    </.box>
+    <.box card>
+      <.form_header :if={Util.present?(@email_domain)} title={gettext("Danger zone")} no_margin />
+      <.p :if={Util.present?(@email_domain)}>
+        Email domains can be changed or removed at any time. Be aware that a domain will continue to be active for 1 day after you remove it. This is to ensure that any emails sent during that time are not lost.
+      </.p>
+      <div
+        :if={Util.present?(@email_domain) or Util.present?(@tracking_domain)}
+        class="flex items-center gap-3 flex-wrap"
+      >
+        <.a
+          to={~p"/domain/email/change"}
+          label={gettext("Change sending domain")}
+          style="link"
+          link_type="live_patch"
+        />
+        <.a
+          :if={Util.present?(@tracking_domain)}
+          to={~p"/domain/tracking/change"}
+          label={gettext("Change tracking domain")}
+          style="link"
+          link_type="live_patch"
+        />
+        <.a
+          to={~p"/domain/delete"}
+          label={gettext("Delete domain")}
+          style="delete"
+          link_type="live_patch"
+        />
+      </div>
+    </.box>
   </div>
 </.tabbed_settings_layout>
 
