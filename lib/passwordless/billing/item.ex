@@ -12,9 +12,7 @@ defmodule Passwordless.Billing.Item do
   @kinds ~w(metered)a
   @names ~w(
     mau_quota
-    sms_quota
     email_quota
-    whatsapp_quota
   )a
 
   @derive {

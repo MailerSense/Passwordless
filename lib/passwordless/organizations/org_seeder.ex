@@ -79,10 +79,10 @@ defmodule Passwordless.Organizations.OrgSeeder do
       })
 
     {:ok, magic_link_template} =
-      Passwordless.seed_email_template(app, :magic_link_sign_in, :en, %{tags: [:magic_link]})
+      Passwordless.seed_email_template(app, :magic_link, :en, :magic_link_clean, %{tags: [:magic_link]})
 
     {:ok, email_otp_template} =
-      Passwordless.seed_email_template(app, :email_otp_sign_in, :en, %{tags: [:email_otp]})
+      Passwordless.seed_email_template(app, :email_otp, :en, :email_otp_clean, %{tags: [:email_otp]})
 
     {:ok, _authenticators} =
       Passwordless.create_authenticators(app, %{
