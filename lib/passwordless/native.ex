@@ -8,12 +8,10 @@ defmodule Passwordless.Native do
     otp_app: :passwordless,
     skip_compilation?: Mix.env() in [:prod, :test]
 
-  alias Passwordless.Templating.MJMLRenderOptions
-
   @doc """
   Converts MJML to HTML.
   """
-  @spec mjml_to_html(binary(), MJMLRenderOptions.t()) :: {:ok, binary()} | {:error, any()}
+  @spec mjml_to_html(binary(), map()) :: {:ok, binary()} | {:error, any()}
   def mjml_to_html(_mjml, _render_options), do: :erlang.nif_error(:nif_not_loaded)
 
   @type language :: :javascript | :typescript | :html
