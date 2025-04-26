@@ -73,8 +73,8 @@ defmodule Passwordless.EmailTemplates do
                           <mj-text>Or, copy and paste this link into your browser:</mj-text>
                           <mj-text color="#1570ef"><a href="{{ magic_link_url }}" target="_blank">{{ magic_link_url }}</a></mj-text>
                           <mj-text color="#999999"
-                          >This email was sent by <a href="https://passwordless.tools" target="_blank" style="color: #999999;">Passwordless</a> on behalf of {{ app.display_name }}. If
-                            you did not request this email, please reply and let us know.</mj-text>
+                          >This email was sent by <a href="https://passwordless.tools" target="_blank" style="color: #999999;">Passwordless</a> on behalf of {{ app.display_name
+                            }}. If you did not request this email, please reply and let us know.</mj-text>
                         </mj-column>
                       </mj-section>
                       <mj-section
@@ -118,25 +118,8 @@ defmodule Passwordless.EmailTemplates do
                       </mj-section>
                       <mj-section>
                         <mj-column>
-                          <mj-text align="center">The following sections are dynamically generated with Liquid:</mj-text>
-                        </mj-column>
-                      </mj-section>
-                      <mj-raw>{% assign colors = "#41b8da,#8bb746,#0b3622" | split: "," %}</mj-raw>
-                      <mj-raw>{% for color in colors %}</mj-raw>
-                      <mj-section background-color="{{ color }}" padding="20px">
-                        <mj-column padding-top="20px">
-                          <mj-text font-size="31px" color="#ffffff">{{ color }}</mj-text>
-                        </mj-column>
-                        <mj-column background-color="#ffffff">
-                          <mj-text font-size="18px" font-weight="bold">Section #{{forloop.index}}</mj-text>
-                          <mj-text> This is a dynamically generated section. </mj-text>
-                        </mj-column>
-                      </mj-section>
-                      <mj-raw>{% endfor %}</mj-raw>
-                      <mj-section>
-                        <mj-column>
                           <mj-text font-size="12.5px" align="center">
-                            Powered by Keila - Open Source Newsletters
+                            Powered by Passwordless Tools
                             <br />
                             <a style="color: #292524" href="{{ unsubscribe_url }}">Unsubscribe</a>
                           </mj-text>
@@ -200,7 +183,7 @@ defmodule Passwordless.EmailTemplates do
                           <mj-text>
                             Hey {{ user.name | default: "there" }}, here is your OTP for <strong>{{ app.display_name }}</strong>:
                           </mj-text>
-                          <mj-text align="center" letter-spacing="8px" font-weight="500" font-size="56px" >{{ otp_code }}</mj-text>
+                          <mj-text align="center" letter-spacing="8px" font-weight="500" font-size="56px">{{ otp_code }}</mj-text>
                         </mj-column>
                       </mj-section>
                       <mj-section
@@ -244,25 +227,8 @@ defmodule Passwordless.EmailTemplates do
                       </mj-section>
                       <mj-section>
                         <mj-column>
-                          <mj-text align="center">The following sections are dynamically generated with Liquid:</mj-text>
-                        </mj-column>
-                      </mj-section>
-                      <mj-raw>{% assign colors = "#41b8da,#8bb746,#0b3622" | split: "," %}</mj-raw>
-                      <mj-raw>{% for color in colors %}</mj-raw>
-                      <mj-section background-color="{{ color }}" padding="20px">
-                        <mj-column padding-top="20px">
-                          <mj-text font-size="31px" color="#ffffff">{{ color }}</mj-text>
-                        </mj-column>
-                        <mj-column background-color="#ffffff">
-                          <mj-text font-size="18px" font-weight="bold">Section #{{forloop.index}}</mj-text>
-                          <mj-text> This is a dynamically generated section. </mj-text>
-                        </mj-column>
-                      </mj-section>
-                      <mj-raw>{% endfor %}</mj-raw>
-                      <mj-section>
-                        <mj-column>
                           <mj-text font-size="12.5px" align="center">
-                            Powered by Keila - Open Source Newsletters
+                            Powered by Passwordless Tools
                             <br />
                             <a style="color: #292524" href="{{ unsubscribe_url }}">Unsubscribe</a>
                           </mj-text>

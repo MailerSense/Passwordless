@@ -630,6 +630,7 @@ defmodule Passwordless do
   def get_unsubscribe_link(token) when is_binary(token) do
     with {:ok, query} <- EmailUnsubscribeLinkMapping.get_by_token(token),
          {%EmailUnsubscribeLinkMapping{email_id: email_id} = mapping, %App{} = app} <- Repo.one(query) do
+      app = Repo.preload(app, :settings)
       opts = [prefix: Tenant.to_prefix(app)]
       email_id = PrefixedUUID.uuid_to_slug(email_id, %{primary_key: true, prefix: Email.prefix()})
       {:ok, app, Repo.get(Email, email_id, opts), mapping}

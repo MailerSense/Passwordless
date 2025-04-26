@@ -78,7 +78,10 @@ defmodule Passwordless.Email.Renderer do
         Map.put(acc, VariableProvider.name(mod), VariableProvider.variables(mod))
       end)
 
-    variables = Map.merge(variables, provider_variables)
+    variables =
+      variables
+      |> Map.merge(provider_variables)
+      |> Util.stringify_keys()
 
     variables =
       case Liquid.render(subject, variables) do
@@ -92,6 +95,6 @@ defmodule Passwordless.Email.Renderer do
         _ -> variables
       end
 
-    Util.stringify_keys(variables)
+    variables
   end
 end
