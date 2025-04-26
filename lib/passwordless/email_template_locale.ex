@@ -10,8 +10,8 @@ defmodule Passwordless.EmailTemplateLocale do
   alias Passwordless.EmailTemplateStyle
 
   @styles [
-    email_otp: ~w(email_otp_clean email_otp_card)a,
-    magic_link: ~w(magic_link_clean magic_link_card)a
+    email_otp: ~w(email_otp_clean)a,
+    magic_link: ~w(magic_link_clean)a
   ]
   @languages ~w(en de fr)a
   @styles_flat @styles |> Enum.flat_map(fn {_key, values} -> values end) |> Enum.uniq()

@@ -608,7 +608,7 @@ defmodule Passwordless do
   end
 
   def create_email_unsubscribe_link!(%App{} = app, %Email{} = email) do
-    attrs = %{token: EmailUnsubscribeLinkMapping.generate_token(), email_id: email.id}
+    attrs = %{key: EmailUnsubscribeLinkMapping.generate_key(), email_id: email.id}
 
     changeset =
       app
@@ -622,6 +622,21 @@ defmodule Passwordless do
     ]
 
     Repo.insert!(changeset, upsert_clause)
+  end
+
+  @doc """
+  Get the unsubscribe link for an email.
+  """
+  def get_unsubscribe_link(token) when is_binary(token) do
+    with {:ok, query} <- EmailUnsubscribeLinkMapping.get_by_token(token),
+         {%EmailUnsubscribeLinkMapping{email_id: email_id} = mapping, %App{} = app} <- Repo.one(query) do
+      opts = [prefix: Tenant.to_prefix(app)]
+      email_id = PrefixedUUID.uuid_to_slug(email_id, %{primary_key: true, prefix: Email.prefix()})
+      {:ok, app, Repo.get(Email, email_id, opts), mapping}
+    else
+      _ ->
+        {:error, :not_found}
+    end
   end
 
   @doc """
@@ -812,16 +827,30 @@ defmodule Passwordless do
 
   # Email templates
 
-  def seed_email_template(%App{} = app, preset, language, attrs \\ %{}) do
+  def seed_email_template(%App{} = app, authenticator, language, style, attrs \\ %{}) do
     Repo.transact(fn ->
       app = Repo.preload(app, :settings)
-      settings = app |> EmailTemplates.get_seed(preset, language) |> Map.merge(attrs)
+      settings = app |> EmailTemplates.get_seed(authenticator, language, style) |> Map.merge(attrs)
       locale_attrs = Map.merge(%{language: language}, settings)
 
       with {:ok, template} <- create_email_template(app, Map.take(settings, [:name, :tags])),
            {:ok, locale} <- create_email_template_locale(template, locale_attrs),
            do: {:ok, %EmailTemplate{template | locales: [locale]}}
     end)
+  end
+
+  def reset_email_template(
+        %App{} = app,
+        %EmailTemplate{} = email_template,
+        %EmailTemplateLocale{language: language, style: style} = email_template_locale
+      ) do
+    app = Repo.preload(app, :settings)
+    settings = EmailTemplates.get_seed(app, hd(email_template.tags), language, style)
+    attrs = Map.merge(%{language: language}, settings)
+
+    email_template_locale
+    |> EmailTemplateLocale.changeset(attrs)
+    |> Repo.update()
   end
 
   def get_email_template_locale(%EmailTemplate{} = email_template, language \\ :en) do
@@ -837,21 +866,22 @@ defmodule Passwordless do
   end
 
   def get_or_create_email_template_locale(%App{} = app, %EmailTemplate{} = email_template, language) do
-    case get_email_template_locale(email_template, language) do
-      %EmailTemplateLocale{} = locale ->
-        locale
+    Repo.transact(fn ->
+      case get_email_template_locale(email_template, language) do
+        %EmailTemplateLocale{} = locale ->
+          {:ok, locale}
 
-      nil ->
-        app = Repo.preload(app, :settings)
-        preset = :magic_link_sign_in
-        settings = EmailTemplates.get_seed(app, preset, language)
-        attrs = Map.merge(%{language: language}, settings)
+        _ ->
+          app = Repo.preload(app, :settings)
+          settings = EmailTemplates.get_seed(app, hd(email_template.tags), language, nil)
+          attrs = Map.merge(%{language: language}, settings)
 
-        email_template
-        |> Ecto.build_assoc(:locales)
-        |> EmailTemplateLocale.changeset(attrs)
-        |> Repo.insert!()
-    end
+          email_template
+          |> Ecto.build_assoc(:locales)
+          |> EmailTemplateLocale.changeset(attrs)
+          |> Repo.insert()
+      end
+    end)
   end
 
   def create_email_template_locale(%EmailTemplate{} = email_template, attrs \\ %{}) do

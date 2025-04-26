@@ -1,0 +1,35 @@
+<.auth_layout title={gettext("Unsubscribe")}>
+  <:logo>
+    <.logo_icon class="w-20 h-20" />
+  </:logo>
+
+  <.form
+    :let={f}
+    for={@form}
+    as={:form}
+    id="unsubscribe-form"
+    action={~p"/unsubscribe/ui/email/finalize"}
+  >
+    <.form_header title={gettext("Hello")} />
+    <.p class="mb-6">
+      {gettext(
+        "You are about to unsubscribe from %{app_name}. No more magic links, OTPs etc. will be sent to your email. Click the button below to confirm.",
+        app_name: @app.name
+      )}
+    </.p>
+    <.field type="hidden" field={f[:token]} value={@token} />
+    <.field
+      type="email"
+      field={f[:email]}
+      label={gettext("Email")}
+      required
+      required_asterix={false}
+      readonly
+      autocomplete="email"
+    />
+
+    <div class="flex mt-6">
+      <.button label={gettext("Unsubscribe")} class="flex flex-1" />
+    </div>
+  </.form>
+</.auth_layout>

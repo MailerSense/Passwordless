@@ -29,13 +29,13 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
         app = socket.assigns.current_app
         template = Passwordless.get_email_template!(app, id)
         language = String.to_existing_atom(language)
-        locale = Passwordless.get_or_create_email_template_locale(app, template, language)
+        {:ok, locale} = Passwordless.get_or_create_email_template_locale(app, template, language)
         locale = EmailTemplateLocale.put_current_language(locale, language)
 
         socket
         |> assign(locale: locale, template: template, language: language)
-        |> assign_template_form(EmailTemplate.changeset(template))
         |> assign_locale_form(EmailTemplateLocale.changeset(locale))
+        |> assign_template_form(EmailTemplate.changeset(template))
       end
 
     module = Keyword.get(@components, socket.assigns.live_action, @default)
@@ -175,6 +175,25 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   end
 
   @impl true
+  def handle_event("reset_template", _params, socket) do
+    app = socket.assigns.current_app
+    template = socket.assigns.template
+    locale = socket.assigns.locale
+
+    case Passwordless.reset_email_template(app, template, locale) do
+      {:ok, locale} ->
+        {:noreply,
+         socket
+         |> assign(locale_form: nil)
+         |> put_toast(:info, "Email template reset.", title: gettext("Success"))
+         |> push_patch(to: ~p"/emails/#{template}/#{locale.language}/edit")}
+
+      _ ->
+        {:noreply, socket}
+    end
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
@@ -216,11 +235,18 @@ defmodule PasswordlessWeb.App.EmailLive.Edit do
   end
 
   defp apply_action(socket, _action, %{"delete" => _}) do
+    title =
+      if socket.assigns[:language] do
+        gettext("Reset template (%{language})", language: Keyword.fetch!(Locale.languages(), socket.assigns.language))
+      else
+        gettext("Reset template")
+      end
+
     assign(socket,
-      page_title: gettext("Reset template"),
+      page_title: title,
       page_subtitle:
         gettext(
-          "Are you sure you want to reset this template? Any customizations to the subject, preheader and content will be erased and replaced with default values."
+          "Are you sure you want to reset this template? Any customizations to the subject, preheader and content will be erased and replaced with default values. All unsaved changes will be lost."
         )
     )
   end

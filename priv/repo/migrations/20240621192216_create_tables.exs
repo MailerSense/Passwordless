@@ -474,7 +474,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     ## Email Unsubscribe Link mapping
 
     create table(:email_unsubscribe_link_mappings, primary_key: false) do
-      add :token, :binary, primary_key: true
+      add :key, :binary, null: false
+      add :key_hash, :binary, primary_key: true
       add :email_id, :uuid, null: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
