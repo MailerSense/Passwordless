@@ -7,6 +7,7 @@ defmodule Util.Email do
   alias Util.DomainBlocklist
 
   @validators Application.compile_env(:passwordless, :email_validators, [
+                :plus,
                 :format,
                 :burner,
                 :domain,
@@ -70,10 +71,32 @@ defmodule Util.Email do
   """
   def validations, do: Keyword.keys(checks())
 
+  @doc """
+  Normalize an email address by removing the plus sign and everything after it.
+  """
+  def normalize(email) when is_binary(email) do
+    with true <- String.contains?(email, "+"),
+         %{"domain" => domain} when is_binary(domain) <- Regex.named_captures(Tools.email_regex(), email) do
+      name = String.replace_suffix(email, "@#{domain}", "")
+
+      name =
+        case String.split(name, "+", parts: 2) do
+          [name] -> name
+          [name, _] -> name
+          _ -> name
+        end
+
+      "#{name}@#{domain}"
+    else
+      _ -> email
+    end
+  end
+
   # Private
 
   defp checks do
     [
+      {:plus, {&check_plus/1, "contains plus (+) symbol"}},
       {:format, {&check_format/1, "is invalid"}},
       {:burner, {&check_burner/1, "is a burner email"}},
       {:domain, {&check_domain/1, "is an invalid domain"}},
@@ -82,6 +105,10 @@ defmodule Util.Email do
       {:common_provider_typos, {&check_common_provider_typos/1, "likely contains a typo"}},
       {:dns, {&check_dns/1, "has no MX or A/AAAA records"}}
     ]
+  end
+
+  defp check_plus(email) when is_binary(email) do
+    not String.contains?(email, "+")
   end
 
   defp check_format(email) when is_binary(email) do

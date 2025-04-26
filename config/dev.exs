@@ -50,7 +50,7 @@ config :phoenix_live_view, :debug_heex_annotations, true
 config :swoosh, :api_client, false
 
 # Only care for format validation in development
-config :passwordless, :email_validators, [:format, :burner, :domain, :blocked_domain]
+config :passwordless, :email_validators, [:plus, :format, :burner, :domain, :blocked_domain]
 
 # Configure clustering
 config :libcluster,
