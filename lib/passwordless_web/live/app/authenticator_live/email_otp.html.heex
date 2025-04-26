@@ -47,16 +47,13 @@
         preview={@preview}
         link_type="live_redirect"
       />
-      <div class="flex items-center gap-3 flex-wrap">
-        <.a
-          to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email-otp"}"}
-          label={gettext("Edit email template")}
-          style="link"
-          link_type="live_redirect"
-        />
-      </div>
+      <.a
+        to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email-otp"}"}
+        label={gettext("Edit email template")}
+        style="link"
+        link_type="live_redirect"
+      />
       <.form_separator />
-      <.form_header title={gettext("Preferences")} />
       <div class="grid gap-6 grid-cols-1 xl:grid-cols-2">
         <.field
           field={@form[:expires]}

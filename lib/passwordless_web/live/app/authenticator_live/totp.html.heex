@@ -13,6 +13,16 @@
         Time-based OTP (TOTP) is a method that uses a time-based one-time password to sign in. The user scans a QR code with an authenticator app, such as Authy, and then enters the code displayed in the app to sign in.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
+      <.field
+        field={@form[:issuer_name]}
+        disabled={not @enabled}
+        required
+        help_text={
+          gettext(
+            "The issuer name is used to identify the service that the user is signing in to. This is used to prevent phishing attacks."
+          )
+        }
+      />
     </.box>
     <.box padded>
       <.form_header title={gettext("Preferences")} />
@@ -26,19 +36,6 @@
           )
         }
         disabled={not @enabled}
-      />
-    </.box>
-    <.box padded>
-      <.form_header title={gettext("Identification")} />
-      <.field
-        field={@form[:issuer_name]}
-        disabled={not @enabled}
-        required
-        help_text={
-          gettext(
-            "The issuer name is used to identify the service that the user is signing in to. This is used to prevent phishing attacks."
-          )
-        }
       />
     </.box>
   </.form>
