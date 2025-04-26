@@ -16,18 +16,20 @@
         Passkeys are a method that allows users to sign in without a password. When enabled, users will receive a prompt to add a passkey to their device.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
-    </.box>
-    <.box padded>
-      <.form_header title={gettext("Identification")} />
-      <.p class="mb-6">
-        The passkey settings are used to configure the passkey authenticator. The settings are used to configure the passkey prompt and the expected origins.
-      </.p>
       <.field
         field={@form[:relying_party_id]}
         label={gettext("Relying Party ID")}
         disabled={not @enabled}
         required
+        help_text={
+          gettext(
+            "The Relying Party ID is the domain that the passkey will be valid for. This is used to prevent phishing attacks."
+          )
+        }
       />
+    </.box>
+    <.box padded>
+      <.form_header title={gettext("Preferences")} />
       <.field
         type="checkbox"
         field={@form[:require_user_verification]}

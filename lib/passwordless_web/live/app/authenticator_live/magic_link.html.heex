@@ -23,19 +23,17 @@
         Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in. The link is valid for a limited time and can only be used once.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
-    </.box>
-    <.box padded>
-      <.form_header title={gettext("Delivery")} />
       <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
         <.field
           field={@form[:sender_name]}
+          label={gettext("Name")}
           disabled={not @enabled}
           required
           wrapper_class="mb-0!"
         />
         <.field
           field={@form[:sender]}
-          label={gettext("Sender email")}
+          label={gettext("Email")}
           suffix={Domain.email_suffix(@domain)}
           readonly={Domain.system?(@domain)}
           disabled={not @enabled}
@@ -59,27 +57,41 @@
       </div>
       <.form_separator />
       <.form_header title={gettext("Preferences")} />
+      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+        <.field
+          field={@form[:expires]}
+          label={gettext("Link expires")}
+          type="number"
+          min="0"
+          max="60"
+          prefix={gettext("After")}
+          suffix={gettext("minutes")}
+          disabled={not @enabled}
+          required
+          wrapper_class="mb-0!"
+        />
+        <.field
+          field={@form[:resend]}
+          label={gettext("Request new link")}
+          type="number"
+          min="30"
+          max="300"
+          prefix={gettext("After")}
+          suffix={gettext("seconds")}
+          disabled={not @enabled}
+          required
+          wrapper_class="mb-0!"
+        />
+      </div>
       <.field
-        field={@form[:expires]}
-        label={gettext("Link expires")}
-        type="number"
-        min="0"
-        max="60"
-        prefix={gettext("After")}
-        suffix={gettext("minutes")}
+        type="checkbox"
+        field={@form[:fingerprint_device]}
         disabled={not @enabled}
-        required
-      />
-      <.field
-        field={@form[:resend]}
-        label={gettext("Request new link")}
-        type="number"
-        min="30"
-        max="300"
-        prefix={gettext("After at least")}
-        suffix={gettext("seconds")}
-        disabled={not @enabled}
-        required
+        help_text={
+          gettext(
+            "You can enable device fingerprinting to track the device used to request the magic link. This will ensure the user who requested the link can open it."
+          )
+        }
       />
     </.box>
     <.box padded>
@@ -133,23 +145,14 @@
         </div>
         <input type="hidden" name="magic_link[redirect_urls_drop][]" />
       </div>
-      <.form_separator />
-      <.form_header title={gettext("Security")} />
-      <.field
-        type="checkbox"
-        field={@form[:fingerprint_device]}
-        disabled={not @enabled}
-        help_text={
-          gettext(
-            "You can enable device fingerprinting to track the device used to request the magic link. This will ensure the user who requested the link is the one who opened it."
-          )
-        }
-      />
     </.box>
   </.form>
 
   <.box card>
     <.form_header title="API - Authenticate with Magic link" no_margin />
+    <.p>
+      The API allows you to authenticate users with a magic link. The magic link is a one-time use link that will sign the user in. The link is valid for a limited time and can only be used once.
+    </.p>
     <.code_block
       language={:typescript}
       code={

@@ -15,11 +15,7 @@
       <.field type="checkbox" field={@form[:enabled]} />
     </.box>
     <.box padded>
-      <.form_header title={gettext("Identification")} />
-      <.p class="mb-6">
-        The TOTP settings are used to configure the TOTP authenticator. The settings are used to configure the TOTP prompt and the expected origins.
-      </.p>
-      <.field field={@form[:issuer_name]} disabled={not @enabled} required />
+      <.form_header title={gettext("Preferences")} />
       <.field
         type="checkbox"
         field={@form[:hide_download_screen]}
@@ -30,6 +26,19 @@
           )
         }
         disabled={not @enabled}
+      />
+    </.box>
+    <.box padded>
+      <.form_header title={gettext("Identification")} />
+      <.field
+        field={@form[:issuer_name]}
+        disabled={not @enabled}
+        required
+        help_text={
+          gettext(
+            "The issuer name is used to identify the service that the user is signing in to. This is used to prevent phishing attacks."
+          )
+        }
       />
     </.box>
   </.form>

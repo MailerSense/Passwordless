@@ -23,19 +23,17 @@
         Email OTP is a one-time code sent to the user via email. This code can the be used to sign in. The code is valid for a limited time and can only be used once.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
-    </.box>
-    <.box padded>
-      <.form_header title={gettext("Delivery")} />
       <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
         <.field
           field={@form[:sender_name]}
+          label={gettext("Name")}
           disabled={not @enabled}
           required
           wrapper_class="mb-0!"
         />
         <.field
           field={@form[:sender]}
-          label={gettext("Sender email")}
+          label={gettext("Email")}
           suffix={Domain.email_suffix(@domain)}
           readonly={Domain.system?(@domain)}
           disabled={not @enabled}
@@ -59,32 +57,39 @@
       </div>
       <.form_separator />
       <.form_header title={gettext("Preferences")} />
-      <.field
-        field={@form[:expires]}
-        label={gettext("OTP expires")}
-        type="number"
-        min="0"
-        max="60"
-        prefix={gettext("After")}
-        suffix={gettext("minutes")}
-        disabled={not @enabled}
-        required
-      />
-      <.field
-        field={@form[:resend]}
-        label={gettext("Request new OTP")}
-        type="number"
-        min="30"
-        max="300"
-        prefix={gettext("After at least")}
-        suffix={gettext("seconds")}
-        disabled={not @enabled}
-        required
-      />
+      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2">
+        <.field
+          field={@form[:expires]}
+          label={gettext("OTP expires")}
+          type="number"
+          min="0"
+          max="60"
+          prefix={gettext("After")}
+          suffix={gettext("minutes")}
+          disabled={not @enabled}
+          required
+          wrapper_class="mb-0!"
+        />
+        <.field
+          field={@form[:resend]}
+          label={gettext("Request new OTP")}
+          type="number"
+          min="30"
+          max="300"
+          prefix={gettext("After")}
+          suffix={gettext("seconds")}
+          disabled={not @enabled}
+          required
+          wrapper_class="mb-0!"
+        />
+      </div>
     </.box>
   </.form>
   <.box card>
     <.form_header title="API - Authenticate with Email OTP" no_margin />
+    <.p>
+      The Email OTP authenticator can be used to authenticate users via email. The user provides their email address and the application sends a one-time code to the user. The user then provides the code back to the application.
+    </.p>
     <.code_block
       language={:typescript}
       code={
