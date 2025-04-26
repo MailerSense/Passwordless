@@ -5,12 +5,14 @@ defmodule PasswordlessWeb.EmailSubscriptionPageController do
   alias Passwordless.Email
   alias Passwordless.EmailUnsubscribeLinkMapping
 
+  action_fallback PasswordlessWeb.FallbackController
+
   def show(%Plug.Conn{} = conn, %{"token" => token}) when is_binary(token) do
     with {:ok, %App{} = app, %Email{} = email, %EmailUnsubscribeLinkMapping{} = mapping} <-
            Passwordless.get_unsubscribe_link(token) do
       render(conn, "show.html",
         app: app,
-        form: build_message_changeset(%{email: email.address}),
+        form: build_unsubscribe_changeset(%{email: email.address}),
         token: EmailUnsubscribeLinkMapping.sign_token(mapping)
       )
     end
@@ -18,13 +20,13 @@ defmodule PasswordlessWeb.EmailSubscriptionPageController do
 
   # Private
 
-  defp apply_message_changeset(params) do
+  defp apply_unsubscribe_changeset(params) do
     params
-    |> build_message_changeset()
+    |> build_unsubscribe_changeset()
     |> Ecto.Changeset.apply_action(:insert)
   end
 
-  defp build_message_changeset(params) do
+  defp build_unsubscribe_changeset(params) do
     types = %{
       token: :string,
       email: :string

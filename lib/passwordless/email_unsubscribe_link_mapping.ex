@@ -18,7 +18,8 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
   @foreign_key_type Database.PrefixedUUID
 
   schema "email_unsubscribe_link_mappings" do
-    field :token, :binary, primary_key: true, redact: true
+    field :key, Passwordless.EncryptedBinary, redact: true
+    field :key_hash, Passwordless.HashedBinary, primary_key: true, redact: true
     field :email_id, :binary_id
 
     belongs_to :app, App
@@ -27,11 +28,10 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
   end
 
   @fields ~w(
-    token
+    key
     email_id
     app_id
   )a
-
   @required_fields @fields
 
   @doc """
@@ -42,6 +42,9 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> decode_email_id()
+    |> validate_key()
+    |> put_hash_fields()
+    |> validate_key_hash()
     |> unique_constraint(:email_id)
     |> assoc_constraint(:app)
   end
@@ -54,7 +57,7 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
       {:ok,
        from(
          m in __MODULE__,
-         where: m.token == ^token,
+         where: m.key_hash == ^token,
          left_join: a in assoc(m, :app),
          select: {m, a}
        )}
@@ -64,14 +67,14 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
   @doc """
   Sign the mapping token.
   """
-  def sign_token(%__MODULE__{token: token}) when is_binary(token) do
-    Token.sign(Endpoint, key_salt(), token)
+  def sign_token(%__MODULE__{key: key}) when is_binary(key) do
+    Token.sign(Endpoint, key_salt(), key)
   end
 
   @doc """
-  Generate a random token.
+  Generate a random key.
   """
-  def generate_token do
+  def generate_key do
     :crypto.strong_rand_bytes(@size)
   end
 
@@ -82,6 +85,29 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
       case Database.PrefixedUUID.slug_to_uuid(email_id) do
         {:ok, _prefix, uuid} -> uuid
         _ -> email_id
+      end
+    end)
+  end
+
+  defp validate_key(changeset) do
+    validate_length(changeset, :key, is: @size, count: :bytes)
+  end
+
+  defp validate_key_hash(changeset) do
+    changeset
+    |> validate_required(:key_hash)
+    |> unique_constraint(:key_hash)
+    |> unsafe_validate_unique(:key_hash, Passwordless.Repo)
+  end
+
+  @hashed_fields [key_hash: :key]
+
+  def put_hash_fields(changeset) do
+    Enum.reduce(@hashed_fields, changeset, fn {hashed_field, unhashed_field}, changeset ->
+      if value = get_field(changeset, unhashed_field) do
+        put_change(changeset, hashed_field, value)
+      else
+        changeset
       end
     end)
   end

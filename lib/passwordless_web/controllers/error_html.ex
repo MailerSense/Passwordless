@@ -20,16 +20,18 @@ defmodule PasswordlessWeb.ErrorHTML do
     assigns = Map.put(assigns, :message, Phoenix.Controller.status_message_from_template(template))
 
     ~H"""
-    <.container class="flex flex-col items-center lg:max-w-4xl py-6 md:py-16">
-      <h1 class="text-white font-display font-bold text-4xl md:text-6xl leading-[44px] md:leading-[74px] tracking-tight text-center mb-6">
-        {@status} {@message}
-      </h1>
-      <p class="inline-block text-white text-center text-lg lg:max-w-2xl mb-6 sm:mb-10">
-        {@reason.message}
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 items-center">
-        <.button size="lg" title={gettext("Go to Homepage")} to={~p"/"} link_type="a" />
-      </div>
+    <.container class="flex flex-col items-center py-6 md:py-16" max_width="sm">
+      <.box card>
+        <.h3 no_margin class="text-center">
+          {"#{@status} #{@message}"}
+        </.h3>
+        <.p>
+          {gettext("Something went wrong: %{reason}", reason: @reason.message)}
+        </.p>
+        <div class="flex">
+          <.button link_type="a" title={gettext("Go to Homepage")} to={~p"/"} class="flex flex-1" />
+        </div>
+      </.box>
     </.container>
     """
   end
@@ -38,16 +40,18 @@ defmodule PasswordlessWeb.ErrorHTML do
     assigns = Map.put(assigns, :message, Phoenix.Controller.status_message_from_template(template))
 
     ~H"""
-    <.container class="flex flex-col items-center lg:max-w-4xl py-6 md:py-16">
-      <h1 class="text-white font-display font-bold text-4xl md:text-6xl leading-[44px] md:leading-[74px] tracking-tight text-center mb-6">
-        {@status}
-      </h1>
-      <p class="inline-block text-white text-center text-lg lg:max-w-2xl mb-6 sm:mb-10">
-        {gettext("Something went wrong on our side. Please try again in a moment.")}
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 items-center">
-        <.button size="lg" title={gettext("Go to Homepage")} to={~p"/"} link_type="a" />
-      </div>
+    <.container class="flex flex-col items-center py-6 md:py-16" max_width="sm">
+      <.box card>
+        <.h3 no_margin class="text-center">
+          {@status}
+        </.h3>
+        <.p>
+          {gettext("Something went wrong on our side. Please try again in a moment.")}
+        </.p>
+        <div class="flex">
+          <.button link_type="a" title={gettext("Go to Homepage")} to={~p"/"} class="flex flex-1" />
+        </div>
+      </.box>
     </.container>
     """
   end
@@ -60,14 +64,18 @@ defmodule PasswordlessWeb.ErrorHTML do
       |> Map.put(:message, Phoenix.Controller.status_message_from_template(template))
 
     ~H"""
-    <.container class="flex flex-col items-center lg:max-w-4xl py-6 md:py-16">
-      <.h1 no_margin class="text-center">
-        <span :if={@status} class={status_color(@status)}>{@status}</span> {@message}
-      </.h1>
-      <.p class="text-sm text-slate-600 dark:text-slate-300 leading-tight text-center">
-        {gettext("Route %{path} not found.", path: @path)}
-      </.p>
-      <.start_for_free_button to={~p"/"} label={gettext("Go to Homepage")} class="flex lg:hidden" />
+    <.container class="flex flex-col items-center py-6 md:py-16" max_width="sm">
+      <.box card>
+        <.h3 no_margin class="text-center">
+          <span :if={@status} class={status_color(@status)}>{@status}</span> {@message}
+        </.h3>
+        <.p>
+          {gettext("Route %{path} not found.", path: @path)}
+        </.p>
+        <div class="flex">
+          <.button link_type="a" title={gettext("Go to Homepage")} to={~p"/"} class="flex flex-1" />
+        </div>
+      </.box>
     </.container>
     """
   end

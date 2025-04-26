@@ -608,7 +608,7 @@ defmodule Passwordless do
   end
 
   def create_email_unsubscribe_link!(%App{} = app, %Email{} = email) do
-    attrs = %{token: EmailUnsubscribeLinkMapping.generate_token(), email_id: email.id}
+    attrs = %{key: EmailUnsubscribeLinkMapping.generate_key(), email_id: email.id}
 
     changeset =
       app

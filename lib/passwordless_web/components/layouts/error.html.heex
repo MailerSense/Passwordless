@@ -1,8 +1,6 @@
 <%!-- This should match max_width in `landing_page.html.heex`. Options: ["sm", "md", "lg", "xl", "full"] --%>
 <% max_width = "xl" %>
 
-<main>
+<main class="h-screen bg-slate-100 dark:bg-slate-900">
   {@inner_content}
 </main>
-
-<PasswordlessWeb.CoreComponents.footer max_width={max_width} />
