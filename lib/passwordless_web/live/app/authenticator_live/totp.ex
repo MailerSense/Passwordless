@@ -53,4 +53,11 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.TOTP do
     |> assign(form: to_form(changeset))
     |> assign(enabled: Ecto.Changeset.fetch_field!(changeset, :enabled))
   end
+
+  defp generate_qrcode(uri) do
+    uri
+    |> EQRCode.encode()
+    |> EQRCode.svg(width: @qrcode_size)
+    |> raw()
+  end
 end

@@ -84,9 +84,12 @@
     <.box padded>
       <.form_header title={gettext("Fingerprint device")} />
       <.p class="mb-6">
-        {gettext(
-          "You can enable device fingerprinting to track the device used to request the magic link. This will ensure the user who requested the link can open it."
-        )}
+        You can enable device fingerprinting to ensure only the user who requested the magic link is the one to also open it. This requires you to provide identifiers -
+        <.code_line>deviceId</.code_line>,
+        <.code_line>ipAddress</.code_line>
+        or
+        <.code_line>userAgent</.code_line>
+        - in the API calls for the magic link authenticator. You can provide any of them, and Passwordless will use them to uniquely identify the device. Below you can choose which factors are taken into consideration.
       </.p>
       <.field
         type="checkbox"
@@ -103,6 +106,12 @@
         size="sm"
         variant="outline"
         disabled={not @enabled}
+      />
+      <.a
+        to={~p"/embed/fingerprint"}
+        label={gettext("Learn more about fingerprinting")}
+        style="link"
+        link_type="live_redirect"
       />
     </.box>
     <.box padded>

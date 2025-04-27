@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.EmbedLive.AccessLog do
+defmodule PasswordlessWeb.App.EmbedLive.Fingerprint do
   @moduledoc false
 
   use PasswordlessWeb, :live_component

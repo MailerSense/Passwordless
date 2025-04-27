@@ -353,6 +353,19 @@ defmodule PasswordlessWeb.CoreComponents do
     """
   end
 
+  attr :class, :any, default: nil, doc: "any extra CSS class for the parent container"
+  attr :rest, :global
+
+  slot :inner_block, required: true
+
+  def code_line(assigns) do
+    ~H"""
+    <code class={[@class, "pc-code-line"]} {@rest}>
+      {render_slot(@inner_block)}
+    </code>
+    """
+  end
+
   attr :id, :string
   attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
 
