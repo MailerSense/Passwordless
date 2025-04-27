@@ -263,6 +263,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       <.field_label required>{gettext("Email template")}</.field_label>
       <.a
         to={@to}
+        title={@name}
         class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 max-h-[300px] shadow-m2 overflow-hidden"
         link_type={@link_type}
       >
@@ -367,6 +368,33 @@ defmodule PasswordlessWeb.DashboardComponents do
             >
               <.icon id="icon" name="remix-send-plane-2-fill" class={["w-4 h-4"]} />
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :code, :string, required: true, doc: "any extra CSS class for the parent container"
+  attr :rest, :global
+
+  def totp_preview(assigns) do
+    ~H"""
+    <div class={["pc-form-field-wrapper", @class]} {@rest}>
+      <.field_label required>{gettext("Preview")}</.field_label>
+      <div class="flex justify-center items-center bg-slate-100 rounded-lg dark:bg-slate-700/50 shadow-m2 p-6 gap-6">
+        <div class="inline-block">
+          {generate_qrcode(@code)}
+        </div>
+        <div class="flex flex-col gap-5 px-4 py-8 sm:px-0">
+          <.p>
+            {gettext("Or enter this secret into your two-factor authentication app:")}
+          </.p>
+          <div class="p-5 border-4 border-slate-300 border-dashed rounded-lg dark:border-slate-700">
+            <div class="text-xl font-bold text-slate-900 dark:text-white" id="totp-secret">
+              {format_secret(@code)}
+            </div>
           </div>
         </div>
       </div>
@@ -497,5 +525,31 @@ defmodule PasswordlessWeb.DashboardComponents do
       </div>
     </.a>
     """
+  end
+
+  # Private
+
+  defp generate_qrcode(uri, opts \\ []) do
+    uri
+    |> EQRCode.encode()
+    |> EQRCode.svg(width: Keyword.get(opts, :width, 175))
+    |> Phoenix.HTML.raw()
+  end
+
+  defp format_secret(secret) do
+    secret
+    |> Base.encode32(padding: false)
+    |> String.graphemes()
+    |> Enum.map(&maybe_highlight_digit/1)
+    |> Enum.chunk_every(4)
+    |> Enum.intersperse(" ")
+    |> Phoenix.HTML.raw()
+  end
+
+  defp maybe_highlight_digit(char) do
+    case Integer.parse(char) do
+      :error -> char
+      _ -> ~s(<span class="text-primary-600 dark:text-primary-400">#{char}</span>)
+    end
   end
 end

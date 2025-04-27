@@ -38,18 +38,7 @@
     </.box>
     <.box card>
       <.form_header title={gettext("Installation")} no_margin />
-      <.code_block
-        language={:typescript}
-        code={
-          ~s"""
-          import { Passwordless } from '@passwordless/tools';
-
-          Passwordless.init({
-            secret: process.env.PASSWORDLESS_APP_SECRET // ⚠️ Never publish your Secret Key!
-          });
-          """
-        }
-      />
+      <.code_block language={:bash} code="pnpm add @passwordless/tools" />
       <.p>
         From now on you can use the client anywhere in your application to create authentication challenges and perform passwordless flows.
       </.p>

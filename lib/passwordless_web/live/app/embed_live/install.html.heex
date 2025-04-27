@@ -12,11 +12,16 @@
       language={:typescript}
       code={
         ~s"""
-        import { Passwordless } from '@passwordless/tools';
+        import { Passwordless, Residency } from '@passwordless/tools';
 
-        Passwordless.init({
-          secret: process.env.PASSWORDLESS_APP_SECRET // ⚠️ Never publish your Secret Key!
-        });
+        const secret = process.env.PASSWORDLESS_APP_SECRET;
+        if (!secret) {
+          throw new Error("PASSWORDLESS_APP_SECRET is undefined");
+        }
+
+        const residency = Residency.EU;
+
+        Passwordless.init({ secret, residency });
         """
       }
     />
