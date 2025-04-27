@@ -30,18 +30,13 @@
       />
     </.box>
     <.box card>
-      <.form_header title={gettext("Configuration")} no_margin />
+      <.form_header title={gettext("Email tracking")} no_margin />
+      <.p>
+        Email tracking allows you to track whether your emails are opened or not. This is useful for understanding how your users interact with your emails and can help you improve your email campaigns.
+      </.p>
       <.inputs_for :let={settings} field={@form[:settings]}>
         <.form id="edit-app-form" for={@form} phx-submit="save_app" phx-change="validate_app">
-          <.field
-            type="checkbox"
-            field={settings[:email_tracking]}
-            help_text={
-              gettext(
-                "Track users who successfully received your email and opened it in their email clients."
-              )
-            }
-          />
+          <.field type="checkbox" field={settings[:email_tracking]} label={gettext("Enabled")} />
         </.form>
         <.field
           :if={@email_tracking and Util.present?(@tracking_domain)}

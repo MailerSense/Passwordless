@@ -6,7 +6,7 @@ defmodule PasswordlessWeb.Router do
   import PasswordlessWeb.Plugs.ParseIP
   import PasswordlessWeb.UserAuth
 
-  alias Passwordless.Organizations.Org
+  alias Passwordless.Organizations.Org, as: AccountOrg
   alias PasswordlessWeb.FallbackController
 
   pipeline :browser do
@@ -270,7 +270,7 @@ defmodule PasswordlessWeb.Router do
   @doc """
   Fetches the current org id from the connection.
   """
-  def get_current_org_id(%Plug.Conn{assigns: %{current_org: %Org{id: org_id}}}) when is_binary(org_id), do: org_id
+  def get_current_org_id(%Plug.Conn{assigns: %{current_org: %AccountOrg{id: org_id}}}) when is_binary(org_id), do: org_id
   def get_current_org_id(%Plug.Conn{}), do: nil
 
   @doc """
