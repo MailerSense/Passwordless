@@ -66,7 +66,7 @@ export class Redis extends Construct {
       engine: "valkey",
       engineVersion: "7.2",
       authToken,
-      clusterMode: "Disabled",
+      clusterMode: "disabled",
       replicationGroupDescription: `${name} Redis Cluster`,
       numCacheClusters: 1,
       cacheNodeType: `cache.${machine.toString()}`,
