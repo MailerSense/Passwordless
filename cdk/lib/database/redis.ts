@@ -71,6 +71,7 @@ export class Redis extends Construct {
       numCacheClusters: 1,
       cacheNodeType: `cache.${machine.toString()}`,
       cacheSubnetGroupName: this.subnetGroup.cacheSubnetGroupName,
+      cacheParameterGroupName: "default.valkey7",
       securityGroupIds: [this.securityGroup.securityGroupId],
       automaticFailoverEnabled: false,
       autoMinorVersionUpgrade: true,
