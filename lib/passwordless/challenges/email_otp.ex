@@ -39,6 +39,7 @@ defmodule Passwordless.Challenges.EmailOTP do
     otp_code = OTP.generate_code()
 
     with :ok <- rate_limit_reached?(app, email),
+         :ok <- Passwordless.email_opted_out?(app, email),
          {:ok, domain} <- Passwordless.get_email_domain(app),
          {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email_otp),
          %EmailTemplate{} = email_template <- get_email_template(authenticator),

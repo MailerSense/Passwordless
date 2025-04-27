@@ -3,7 +3,7 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
   An email unsubscribe link mapping.
   """
 
-  use Ecto.Schema
+  use Passwordless.Schema, prefix: "emunsub"
 
   import Ecto.Changeset
   import Ecto.Query
@@ -13,13 +13,10 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
   alias Phoenix.Token
 
   @size 24
-  @primary_key false
-  @timestamps_opts [type: :utc_datetime]
-  @foreign_key_type Database.PrefixedUUID
 
   schema "email_unsubscribe_link_mappings" do
     field :key, Passwordless.EncryptedBinary, redact: true
-    field :key_hash, Passwordless.HashedBinary, primary_key: true, redact: true
+    field :key_hash, Passwordless.HashedBinary, redact: true
     field :email_id, :binary_id
 
     belongs_to :app, App

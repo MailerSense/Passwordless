@@ -3,7 +3,7 @@ defmodule Passwordless.MagicLinkMapping do
   A magic link mapping.
   """
 
-  use Ecto.Schema
+  use Passwordless.Schema, prefix: "mglnkmap"
 
   import Ecto.Changeset
 
@@ -12,13 +12,10 @@ defmodule Passwordless.MagicLinkMapping do
   alias Phoenix.Token
 
   @size 24
-  @primary_key false
-  @timestamps_opts [type: :utc_datetime]
-  @foreign_key_type Database.PrefixedUUID
 
   schema "magic_link_mappings" do
     field :key, Passwordless.EncryptedBinary, redact: true
-    field :key_hash, Passwordless.HashedBinary, primary_key: true
+    field :key_hash, Passwordless.HashedBinary, redact: true
     field :magic_link_id, :binary_id
 
     belongs_to :app, App

@@ -32,10 +32,17 @@
           )
         }
       />
+      <.form_separator :if={@opted_out} />
       <.field
+        :if={@opted_out}
         type="checkbox"
         field={@form[:opted_out]}
-        help_text={gettext("User has opted out of receiving emails from the system.")}
+        help_text={
+          gettext(
+            "User has opted out of receiving emails from the system with following reason: %{reason}.",
+            reason: @opt_out_reason
+          )
+        }
       />
     </.form>
 

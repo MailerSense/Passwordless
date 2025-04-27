@@ -3,7 +3,7 @@ defmodule Passwordless.EmailMessageMapping do
   An email message SES mapping.
   """
 
-  use Ecto.Schema
+  use Passwordless.Schema, prefix: "emmsgmap"
 
   import Ecto.Changeset
   import Ecto.Query
@@ -11,12 +11,8 @@ defmodule Passwordless.EmailMessageMapping do
   alias Database.ChangesetExt
   alias Passwordless.App
 
-  @primary_key false
-  @timestamps_opts [type: :utc_datetime]
-  @foreign_key_type Database.PrefixedUUID
-
   schema "email_message_mappings" do
-    field :external_id, :string, primary_key: true
+    field :external_id, :string
     field :email_message_id, :binary_id
 
     belongs_to :app, App
@@ -49,8 +45,8 @@ defmodule Passwordless.EmailMessageMapping do
     |> validate_required(@required_fields)
     |> validate_external_id()
     |> decode_email_message_id()
+    |> unique_constraint(:external_id)
     |> unique_constraint(:email_message_id)
-    |> unsafe_validate_unique(:email_message_id, Passwordless.Repo)
     |> assoc_constraint(:app)
   end
 

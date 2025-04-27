@@ -17,6 +17,19 @@ defmodule Passwordless.Authenticators.Passkey do
   )a
 
   @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :enabled,
+      :relying_party_id,
+      :uplift_prompt_interval,
+      :require_user_verification,
+      :expected_origins,
+      :inserted_at,
+      :updated_at
+    ]
+  }
+  @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }

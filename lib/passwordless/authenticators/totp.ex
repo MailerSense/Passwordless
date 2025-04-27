@@ -8,6 +8,17 @@ defmodule Passwordless.Authenticators.TOTP do
   alias Passwordless.App
 
   @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :enabled,
+      :issuer_name,
+      :hide_download_screen,
+      :inserted_at,
+      :updated_at
+    ]
+  }
+  @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }

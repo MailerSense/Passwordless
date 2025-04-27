@@ -11,6 +11,19 @@ defmodule Passwordless.Authenticators.EmailOTP do
   alias Passwordless.EmailTemplate
 
   @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :enabled,
+      :expires,
+      :resend,
+      :sender,
+      :sender_name,
+      :inserted_at,
+      :updated_at
+    ]
+  }
+  @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }

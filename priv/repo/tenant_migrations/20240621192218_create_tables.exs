@@ -94,6 +94,18 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     execute "create index emails_address_gin_trgm_idx on #{prefix()}.emails using gin (address gin_trgm_ops);"
 
+    ## Email Opt Outs
+
+    create table(:email_opt_outs, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :email, :citext, null: false
+      add :reason, :string, null: false
+
+      timestamps()
+    end
+
+    create unique_index(:email_opt_outs, [:email])
+
     ## Email messages
 
     create table(:email_messages, primary_key: false) do

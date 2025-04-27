@@ -42,6 +42,15 @@ defmodule Passwordless.Email do
     soft_delete_timestamp()
   end
 
+  @doc """
+  Checks if the email has opted out.
+  """
+  def opted_out?(%__MODULE__{opted_out_at: %DateTime{}}), do: true
+  def opted_out?(%__MODULE__{}), do: false
+
+  @doc """
+  Put virtual fields.
+  """
   def put_virtuals(%__MODULE__{opted_out_at: opted_out_at} = email) do
     %__MODULE__{email | opted_out: not is_nil(opted_out_at)}
   end

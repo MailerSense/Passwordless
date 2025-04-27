@@ -1,0 +1,25 @@
+<.auth_layout title={gettext("Email Subscription")}>
+  <:logo>
+    <.logo_icon class="w-20 h-20" />
+  </:logo>
+
+  <:top_links>
+    {gettext("Not you?")}
+    <.link class="text-blue-600 underline dark:text-blue-400" navigate={@app.settings.website}>
+      {gettext("Back to Home")}
+    </.link>
+  </:top_links>
+
+  <.alert color="success" with_icon class="mb-6">
+    {gettext("You have been unsubscribed.")}
+  </.alert>
+  <.p class="mb-6">
+    {gettext("No more emails will be sent from %{app} to %{email}. Thank you!",
+      app: @app.name,
+      email: @email.address
+    )}
+  </.p>
+  <div class="flex">
+    <.button link_type="a" title={gettext("Back to Home")} to={~p"/"} class="flex flex-1" />
+  </div>
+</.auth_layout>
