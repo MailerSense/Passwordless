@@ -63,8 +63,8 @@ export class Redis extends Construct {
     this.port = port;
     this.cluster = new redis.CfnReplicationGroup(this, name, {
       port: port,
-      engine: "Redis",
-      engineVersion: "7.1",
+      engine: "valkey",
+      engineVersion: "7.2",
       authToken,
       clusterMode: "Disabled",
       replicationGroupDescription: `${name} Redis Cluster`,

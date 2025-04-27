@@ -472,6 +472,8 @@ defmodule Util do
   # Stringify keys
 
   def stringify_keys(map) when is_map(map) do
+    map = Enum.reject(map, fn {_key, val} -> is_nil(val) end)
+
     for {key, val} <- map, into: %{} do
       string_key = if is_atom(key), do: Atom.to_string(key), else: key
 
