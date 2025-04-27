@@ -21,6 +21,9 @@ defmodule Passwordless.AppSettings do
       :secondary_button_color,
       :email_configuration_set,
       :email_tracking,
+      :default_action,
+      :allowlist_api_access,
+      :allowlisted_ip_addresses,
       :inserted_at,
       :updated_at
     ]

@@ -9,6 +9,17 @@ defmodule Passwordless.Authenticators.SecurityKey do
   alias Passwordless.App
 
   @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :enabled,
+      :relying_party_id,
+      :expected_origins,
+      :inserted_at,
+      :updated_at
+    ]
+  }
+  @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }

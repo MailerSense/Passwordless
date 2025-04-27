@@ -13,6 +13,22 @@ defmodule Passwordless.Authenticators.MagicLink do
   @fingerprint_factors ~w(device_id ip_address user_agent)a
 
   @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :enabled,
+      :expires,
+      :resend,
+      :sender,
+      :sender_name,
+      :fingerprint_device,
+      :fingerprint_factors,
+      :redirect_urls,
+      :inserted_at,
+      :updated_at
+    ]
+  }
+  @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }

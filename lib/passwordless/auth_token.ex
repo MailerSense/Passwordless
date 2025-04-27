@@ -64,7 +64,7 @@ defmodule Passwordless.AuthToken do
   """
   def get_app_by_token(@prefix <> auth_token) when is_binary(auth_token) do
     with {:ok, key} <- Base58.decode58(auth_token) do
-      {:ok, from(a in App, join: at in assoc(a, :auth_token), where: at.key_hash == ^key, select: [:id])}
+      {:ok, from(a in App, join: at in assoc(a, :auth_token), where: at.key_hash == ^key, select: a)}
     end
   end
 

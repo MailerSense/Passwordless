@@ -62,8 +62,12 @@ defmodule PasswordlessWeb.ErrorHTML do
         </.link>
       </:top_links>
 
-      <.form_header title={gettext("Error details")} class="mb-6" />
-      <.p class="mb-6">
+      <.form_header
+        :if={Util.present?(@reason_message)}
+        title={gettext("Error details")}
+        class="mb-6"
+      />
+      <.p :if={Util.present?(@reason_message)} class="mb-6">
         {@reason_message}
       </.p>
       <div class="flex">
@@ -83,5 +87,5 @@ defmodule PasswordlessWeb.ErrorHTML do
     end
   end
 
-  defp reason_message(_reason), do: ""
+  defp reason_message(_reason), do: nil
 end

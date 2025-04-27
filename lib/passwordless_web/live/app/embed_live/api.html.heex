@@ -121,14 +121,9 @@
           type="checkbox"
           field={settings[:allowlist_api_access]}
           label={gettext("Allowlist API access")}
-          help_text={
-            gettext(
-              "Permit only specified IP addresses to make API calls. CIDR and IP notation is accepted."
-            )
-          }
         />
         <div :if={@allowlist_api_access} class="pc-form-field-wrapper">
-          <.field_label>{gettext("Allowed IP ranges")}</.field_label>
+          <.field_label required>{gettext("Allowed IP ranges")}</.field_label>
           <div class="flex flex-col gap-y-2">
             <.inputs_for :let={f} field={settings[:allowlisted_ip_addresses]}>
               <input
@@ -183,7 +178,7 @@
     </.form>
     <div
       :if={@allowlist_api_access and Util.present?(@allowlisted_ip_addresses)}
-      class="flex flex-col gap-2"
+      class="flex flex-col"
     >
       <.p class="font-mono text-success-600 dark:text-success-300">
         {gettext("Allowed IP ranges:")}

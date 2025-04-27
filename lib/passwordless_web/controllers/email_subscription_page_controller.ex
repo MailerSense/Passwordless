@@ -18,6 +18,21 @@ defmodule PasswordlessWeb.EmailSubscriptionPageController do
     end
   end
 
+  def finalize(%Plug.Conn{} = conn, %{"form" => form}) do
+    case apply_unsubscribe_changeset(form) do
+      {:ok, %{token: token}} ->
+        with {:ok, %App{} = app, %Email{} = email, %EmailUnsubscribeLinkMapping{} = mapping} <-
+               Passwordless.get_unsubscribe_link(token) do
+          render(conn, "success.html", app: app)
+        end
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        conn
+        |> put_flash(:error, gettext("Something went wrong"))
+        |> render("show.html", form: changeset)
+    end
+  end
+
   # Private
 
   defp apply_unsubscribe_changeset(params) do

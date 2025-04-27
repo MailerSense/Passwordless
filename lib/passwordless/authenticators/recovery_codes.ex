@@ -8,6 +8,17 @@ defmodule Passwordless.Authenticators.RecoveryCodes do
   alias Passwordless.App
 
   @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :enabled,
+      :hide_on_enrollment,
+      :skip_on_programatic,
+      :inserted_at,
+      :updated_at
+    ]
+  }
+  @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
