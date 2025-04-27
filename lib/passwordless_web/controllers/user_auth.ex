@@ -177,7 +177,6 @@ defmodule PasswordlessWeb.UserAuth do
     cond do
       is_nil(conn.assigns[:current_user]) ->
         conn
-        |> put_flash(:info, gettext("You must sign in to access this page."))
         |> maybe_store_return_to()
         |> redirect(to: ~p"/auth/sign-in")
         |> halt()

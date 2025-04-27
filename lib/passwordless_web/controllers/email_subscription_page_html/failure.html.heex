@@ -5,18 +5,17 @@
 
   <:top_links>
     {gettext("Not you?")}
-    <.link class="text-blue-600 underline dark:text-blue-400" navigate={@app.settings.website}>
+    <.link class="text-blue-600 underline dark:text-blue-400" navigate={~p"/"}>
       {gettext("Back to Home")}
     </.link>
   </:top_links>
 
-  <.alert color="success" with_icon class="mb-6">
-    {gettext("You have been unsubscribed.")}
+  <.alert color="danger" with_icon class="mb-6">
+    {gettext("Link is invalid or has expired.")}
   </.alert>
   <.p class="mb-6">
-    {gettext("No more emails will be sent from %{app} to %{email}. Thank you!",
-      app: @app.name,
-      email: @email.address
+    {gettext(
+      "If you are trying to unsubscribe from unwanted emails, please check your email for the correct link. If you are trying to subscribe, please try again."
     )}
   </.p>
   <div class="flex">

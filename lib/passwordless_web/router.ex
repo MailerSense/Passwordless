@@ -6,6 +6,9 @@ defmodule PasswordlessWeb.Router do
   import PasswordlessWeb.Plugs.ParseIP
   import PasswordlessWeb.UserAuth
 
+  alias Passwordless.Organizations.Org
+  alias PasswordlessWeb.FallbackController
+
   pipeline :browser do
     plug :parse_ip
     plug :accepts, ["html"]
@@ -14,15 +17,10 @@ defmodule PasswordlessWeb.Router do
     plug :put_root_layout, {PasswordlessWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-
-    plug :put_content_security_policy,
-         {:config, :content_security_policy}
-
+    plug :put_content_security_policy, {:config, :content_security_policy}
     plug :fetch_current_user
     plug :fetch_active_user
     plug :fetch_impersonator_user
-    plug :rate_limit_browser
-
     plug PasswordlessWeb.Plugs.SetLocale, gettext: PasswordlessWeb.Gettext
   end
 
@@ -34,13 +32,13 @@ defmodule PasswordlessWeb.Router do
     plug :put_root_layout, {PasswordlessWeb.Layouts, :root}
     plug :put_layout, false
     plug :protect_from_forgery
-
-    plug :put_content_security_policy,
-         {:config, :content_security_policy}
+    plug :put_content_security_policy, {:config, :content_security_policy}
+    plug :rate_limit_public, name: "app_public_browser", limit: 60
   end
 
   pipeline :public_api do
     plug :accepts, ["json"]
+    plug :rate_limit_public, name: "app_public_api", limit: 60
   end
 
   pipeline :public_layout do
@@ -52,12 +50,14 @@ defmodule PasswordlessWeb.Router do
     plug :require_onboarded_user
     plug :fetch_current_org
     plug :fetch_current_app
+    plug :rate_limit_authenticated, name: "app_authenticated", limit: 120
   end
 
   pipeline :authenticated_only do
     plug :require_authenticated_user
     plug :fetch_current_org
     plug :fetch_current_app
+    plug :rate_limit_authenticated, name: "app_authenticated_only", limit: 120
   end
 
   scope "/", PasswordlessWeb do
@@ -226,20 +226,55 @@ defmodule PasswordlessWeb.Router do
     use PasswordlessWeb.DevRoutes
   end
 
-  defp rate_limit_browser(conn, _opts) do
-    key = "browser:unauthenticated"
-    scale = :timer.minutes(1)
-    limit = 100
+  @doc """
+  Rate limits the API requests.
+  """
+  def rate_limit_authenticated(conn, opts \\ []) do
+    name = Keyword.fetch!(opts, :name)
+    key = "#{name}_#{get_current_org_id(conn)}"
+    scale = Keyword.get(opts, :scale, :timer.minutes(1))
+    limit = Keyword.get(opts, :limit, 200)
 
     case Passwordless.RateLimit.hit(key, scale, limit) do
       {:allow, _count} ->
         conn
 
-      {:deny, retry_after} ->
+      {:deny, _retry_after} ->
         conn
-        |> put_resp_header("retry-after", Integer.to_string(div(retry_after, 1000)))
-        |> send_resp(429, [])
+        |> FallbackController.call({:error, :too_many_requests})
         |> halt()
     end
   end
+
+  @doc """
+  Rate limits the API requests.
+  """
+  def rate_limit_public(conn, opts \\ []) do
+    name = Keyword.fetch!(opts, :name)
+    key = "#{name}_#{get_current_user_ip(conn)}"
+    scale = Keyword.get(opts, :scale, :timer.minutes(1))
+    limit = Keyword.get(opts, :limit, 200)
+
+    case Passwordless.RateLimit.hit(key, scale, limit) do
+      {:allow, _count} ->
+        conn
+
+      {:deny, _retry_after} ->
+        conn
+        |> FallbackController.call({:error, :too_many_requests})
+        |> halt()
+    end
+  end
+
+  @doc """
+  Fetches the current org id from the connection.
+  """
+  def get_current_org_id(%Plug.Conn{assigns: %{current_org: %Org{id: org_id}}}) when is_binary(org_id), do: org_id
+  def get_current_org_id(%Plug.Conn{}), do: nil
+
+  @doc """
+  Fetches the current org id from the connection.
+  """
+  def get_current_user_ip(%Plug.Conn{assigns: %{current_user_ip: ip}}) when is_binary(ip), do: ip
+  def get_current_user_ip(%Plug.Conn{}), do: nil
 end

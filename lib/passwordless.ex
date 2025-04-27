@@ -22,6 +22,7 @@ defmodule Passwordless do
   alias Passwordless.Email
   alias Passwordless.EmailMessage
   alias Passwordless.EmailMessageMapping
+  alias Passwordless.EmailOptOut
   alias Passwordless.EmailTemplate
   alias Passwordless.EmailTemplateLocale
   alias Passwordless.EmailTemplates
@@ -607,6 +608,31 @@ defmodule Passwordless do
     |> Repo.all(prefix: Tenant.to_prefix(app))
   end
 
+  def get_email_opt_out_reason(%App{} = app, %Email{address: address}) when is_binary(address) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    case Repo.one(from(e in EmailOptOut, where: e.email == ^address), opts) do
+      %EmailOptOut{reason: reason} -> reason
+      _ -> nil
+    end
+  end
+
+  def get_email_opt_out_reason(%App{}, %Email{}), do: nil
+
+  def email_opted_out?(%App{} = app, %Email{address: address} = email) when is_binary(address) do
+    if Email.opted_out?(email) do
+      {:error, :email_opted_out}
+    else
+      opts = [prefix: Tenant.to_prefix(app)]
+
+      if Repo.exists?(from(e in EmailOptOut, where: e.email == ^address), opts),
+        do: {:error, :email_opted_out},
+        else: :ok
+    end
+  end
+
+  def email_opted_out?(%App{}, %Email{}), do: :ok
+
   def create_email_unsubscribe_link!(%App{} = app, %Email{} = email) do
     attrs = %{key: EmailUnsubscribeLinkMapping.generate_key(), email_id: email.id}
 
@@ -643,26 +669,48 @@ defmodule Passwordless do
   @doc """
   Unsubscribe an email.
   """
-  def unsubscribe_email(token) when is_binary(token) do
+  def unsubscribe_email(token, reason) when is_binary(token) do
     with {:ok, query} <- EmailUnsubscribeLinkMapping.get_by_token(token) do
       Repo.transact(fn ->
         case Repo.one(query) do
           {%EmailUnsubscribeLinkMapping{email_id: email_id} = mapping, %App{} = app} ->
+            app = Repo.preload(app, :settings)
             opts = [prefix: Tenant.to_prefix(app)]
             email_id = PrefixedUUID.uuid_to_slug(email_id, %{primary_key: true, prefix: Email.prefix()})
 
             with %Email{} = email <- Repo.get(Email, email_id, opts),
                  {:ok, _mapping} <- Repo.delete(mapping),
-                 do:
-                   email
-                   |> Email.changeset(%{opted_out_at: DateTime.utc_now()}, opts)
-                   |> Repo.update(opts)
+                 {:ok, _opt_out} <- insert_email_opt_out(app, email, reason),
+                 {:ok, email} <- opt_email_out(app, email),
+                 do: {:ok, {app, email}}
 
           _ ->
             {:error, :link_not_found}
         end
       end)
     end
+  end
+
+  def opt_email_out(%App{} = app, %Email{} = email) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    email
+    |> Email.changeset(%{opted_out_at: DateTime.utc_now()}, opts)
+    |> Repo.update(opts)
+  end
+
+  def insert_email_opt_out(%App{} = app, %Email{} = email, reason) do
+    attrs = %{email: email.address, reason: reason}
+    changeset = EmailOptOut.changeset(%EmailOptOut{}, attrs)
+
+    upsert_clause = [
+      prefix: Tenant.to_prefix(app),
+      returning: true,
+      on_conflict: :nothing,
+      conflict_target: [:email]
+    ]
+
+    Repo.insert(changeset, upsert_clause)
   end
 
   def get_phone!(%App{} = app, %Actor{} = actor, id) do

@@ -444,7 +444,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     ## Message mapping
 
     create table(:email_message_mappings, primary_key: false) do
-      add :external_id, :string, primary_key: true
+      add :id, :uuid, primary_key: true
+      add :external_id, :string, null: false
       add :email_message_id, :uuid, null: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
@@ -453,11 +454,13 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create index(:email_message_mappings, [:app_id])
+    create unique_index(:email_message_mappings, [:external_id])
     create unique_index(:email_message_mappings, [:email_message_id])
 
     ## Magic Link mapping
 
     create table(:magic_link_mappings, primary_key: false) do
+      add :id, :uuid, primary_key: true
       add :key, :binary, null: false
       add :key_hash, :binary, null: false
       add :magic_link_id, :uuid, null: false
@@ -474,8 +477,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     ## Email Unsubscribe Link mapping
 
     create table(:email_unsubscribe_link_mappings, primary_key: false) do
+      add :id, :uuid, primary_key: true
       add :key, :binary, null: false
-      add :key_hash, :binary, primary_key: true
+      add :key_hash, :binary, null: false
       add :email_id, :uuid, null: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
@@ -484,6 +488,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create index(:email_unsubscribe_link_mappings, [:app_id])
+    create unique_index(:email_unsubscribe_link_mappings, [:key_hash])
     create unique_index(:email_unsubscribe_link_mappings, [:email_id])
 
     ## Billing items

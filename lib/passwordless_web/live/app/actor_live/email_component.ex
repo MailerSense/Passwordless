@@ -8,10 +8,13 @@ defmodule PasswordlessWeb.App.ActorLive.EmailComponent do
   @impl true
   def update(%{app: %App{} = app, email: %Email{} = email} = assigns, socket) do
     changeset = Passwordless.change_actor_email(app, email)
+    opted_out = match?({:error, _}, Passwordless.email_opted_out?(app, email))
+    opt_out_reason = app |> Passwordless.get_email_opt_out_reason(email) |> Phoenix.Naming.humanize()
 
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(opted_out: opted_out, opt_out_reason: opt_out_reason)
      |> assign_form(changeset)}
   end
 

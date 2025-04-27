@@ -21,7 +21,6 @@ defmodule PasswordlessWeb.User.Hooks do
         {:cont, socket}
 
       _ ->
-        socket = put_flash(socket, :error, gettext("You must sign in to access this page."))
         {:halt, redirect(socket, to: ~p"/auth/sign-in")}
     end
   end

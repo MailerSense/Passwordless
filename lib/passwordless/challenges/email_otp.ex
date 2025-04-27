@@ -39,6 +39,7 @@ defmodule Passwordless.Challenges.EmailOTP do
     otp_code = OTP.generate_code()
 
     with :ok <- rate_limit_reached?(app, email),
+         :ok <- Passwordless.email_opted_out?(app, email),
          {:ok, domain} <- Passwordless.get_email_domain(app),
          {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email_otp),
          %EmailTemplate{} = email_template <- get_email_template(authenticator),
@@ -161,8 +162,6 @@ defmodule Passwordless.Challenges.EmailOTP do
 
     attrs = if Util.present?(actor.name), do: Map.put(attrs, :recipient_name, actor.name), else: attrs
     render_attrs = %{unsubscribe_url: unsubscribe_page_url(link), otp_code: otp_code}
-
-    IO.inspect(render_attrs)
 
     with {:ok, message_attrs} <- Renderer.render(locale, render_attrs, opts) do
       opts = [prefix: Tenant.to_prefix(app)]

@@ -8,28 +8,29 @@ defmodule PasswordlessWeb.EmailSubscriptionPageController do
   action_fallback PasswordlessWeb.FallbackController
 
   def show(%Plug.Conn{} = conn, %{"token" => token}) when is_binary(token) do
-    with {:ok, %App{} = app, %Email{} = email, %EmailUnsubscribeLinkMapping{} = mapping} <-
-           Passwordless.get_unsubscribe_link(token) do
-      render(conn, "show.html",
-        app: app,
-        form: build_unsubscribe_changeset(%{email: email.address}),
-        token: EmailUnsubscribeLinkMapping.sign_token(mapping)
-      )
+    case Passwordless.get_unsubscribe_link(token) do
+      {:ok, %App{} = app, %Email{} = email, %EmailUnsubscribeLinkMapping{} = mapping} ->
+        render(conn, "show.html",
+          app: app,
+          form: build_unsubscribe_changeset(%{email: email.address}),
+          token: EmailUnsubscribeLinkMapping.sign_token(mapping)
+        )
+
+      _ ->
+        render(conn, "failure.html")
     end
   end
 
   def finalize(%Plug.Conn{} = conn, %{"form" => form}) do
     case apply_unsubscribe_changeset(form) do
       {:ok, %{token: token}} ->
-        with {:ok, %App{} = app, %Email{} = email, %EmailUnsubscribeLinkMapping{} = mapping} <-
-               Passwordless.get_unsubscribe_link(token) do
-          render(conn, "success.html", app: app)
+        case Passwordless.unsubscribe_email(token, "ui-link") do
+          {:ok, {%App{} = app, %Email{} = email}} -> render(conn, "success.html", app: app, email: email)
+          _ -> render(conn, "failure.html")
         end
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        conn
-        |> put_flash(:error, gettext("Something went wrong"))
-        |> render("show.html", form: changeset)
+      {:error, %Ecto.Changeset{} = _changeset} ->
+        render(conn, "failure.html")
     end
   end
 
