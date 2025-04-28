@@ -32,7 +32,6 @@
     <.field
       type="email"
       field={@form[:email]}
-      label={gettext("Email address")}
       placeholder={gettext("name@company.com")}
       autocomplete="email"
       phx-debounce="blur"
@@ -40,7 +39,6 @@
     />
     <.field
       type="password"
-      label={gettext("Create a password")}
       phx-debounce="blur"
       placeholder={gettext("Enter strong password")}
       value={@form[:password].value}
