@@ -10,31 +10,29 @@
     </.link>
   </:top_links>
 
-  <.form for={@form} phx-update="ignore" id="sign_in_form" action={~p"/auth/sign-in"} class="mb-4">
+  <.auth_providers mode={:sign_in} conn_or_socket={@socket} />
+
+  <.form for={@form} phx-change="validate" id="sign_in_form" action={~p"/auth/sign-in"}>
     <.field
       type="email"
       field={@form[:email]}
       required
-      required_asterix={false}
       autocomplete="email"
-      placeholder={gettext("hello@passwordless.tools")}
+      placeholder={gettext("Email Address")}
     />
     <.field
       type="password"
       field={@form[:password]}
       required
-      required_asterix={false}
       autocomplete="current-password"
-      placeholder={gettext("•••••••••••••")}
+      placeholder={gettext("Password")}
       viewable={true}
     />
 
     <div class="flex mt-6">
-      <.button label={gettext("Sign in")} class="flex flex-1" />
+      <.button size="xl" label={gettext("Sign in")} class="flex flex-1" />
     </div>
   </.form>
-
-  <.auth_providers mode={:sign_in} conn_or_socket={@socket} />
 
   <:bottom_links>
     <.a

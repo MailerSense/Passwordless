@@ -6,7 +6,7 @@ defmodule PasswordlessWeb.Auth.SignInLive do
   def mount(_params, _session, socket) do
     socket =
       socket
-      |> assign(form: to_form(%{}, as: :user))
+      |> assign_form(build_login_changeset())
       |> assign(email: Phoenix.Flash.get(socket.assigns.flash, :email))
       |> assign(page_title: gettext("Sign In"))
 
@@ -14,7 +14,39 @@ defmodule PasswordlessWeb.Auth.SignInLive do
   end
 
   @impl true
+  def handle_event("validate", %{"user" => user_params}, socket) do
+    changeset =
+      user_params
+      |> build_login_changeset()
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign_form(socket, changeset)}
+  end
+
+  @impl true
   def handle_event(_action, _params, socket) do
     {:noreply, socket}
+  end
+
+  defp apply_login_changeset(params) do
+    params
+    |> build_login_changeset()
+    |> Ecto.Changeset.apply_action(:insert)
+  end
+
+  defp build_login_changeset(params \\ %{}) do
+    types = %{
+      email: :string,
+      password: :string
+    }
+
+    {%{}, types}
+    |> Ecto.Changeset.cast(params, Map.keys(types))
+    |> Ecto.Changeset.validate_required([:email])
+    |> Database.ChangesetExt.validate_email()
+  end
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    assign(socket, form: to_form(changeset, as: :user))
   end
 end

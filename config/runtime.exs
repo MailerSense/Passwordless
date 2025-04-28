@@ -5,6 +5,10 @@ config :ueberauth, Ueberauth.Strategy.Google.OAuth,
   client_id: System.get_env("GOOGLE_OAUTH_CLIENT_ID"),
   client_secret: System.get_env("GOOGLE_OAUTH_SECRET")
 
+config :ueberauth, Ueberauth.Strategy.Github.OAuth,
+  client_id: System.get_env("GITHUB_OAUTH_CLIENT_ID"),
+  client_secret: System.get_env("GITHUB_OAUTH_SECRET")
+
 config :stripity_stripe,
   api_key: System.get_env("STRIPE_SECRET"),
   signing_secret: System.get_env("STRIPE_WEBHOOK_SECRET")

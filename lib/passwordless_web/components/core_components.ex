@@ -216,38 +216,47 @@ defmodule PasswordlessWeb.CoreComponents do
     ~H"""
     <%= if auth_provider_loaded?("google") || auth_provider_loaded?("passwordless") do %>
       <div class="flex flex-col gap-4">
-        <%= if auth_provider_loaded?("google") do %>
-          <.social_button
-            link_type="a"
-            to={~p"/auth/google"}
-            variant="outline"
-            logo="google"
-            class="w-full"
-            mode={@mode}
-          />
-        <% end %>
+        <.social_button
+          :if={auth_provider_loaded?("google")}
+          link_type="a"
+          to={~p"/auth/google"}
+          variant="outline"
+          logo="google"
+          class="w-full"
+          mode={@mode}
+        />
 
-        <%= if auth_provider_loaded?("passwordless") do %>
-          <% label =
-            if(@mode == :sign_in,
-              do: gettext("Sign In with Magic Link"),
-              else: gettext("Sign Up with Magic Link")
-            ) %>
-          <.button
-            link_type="live_patch"
-            to={~p"/auth/sign-in/passwordless"}
-            class="w-full"
-            type="button"
-            color="wireframe"
-            label={label}
-            with_icon
-          >
-            <.icon name="remix-magic-line" class="w-6 h-6" />
-            {label}
-          </.button>
-        <% end %>
+        <.social_button
+          :if={auth_provider_loaded?("github")}
+          link_type="a"
+          to={~p"/auth/github"}
+          variant="outline"
+          logo="github"
+          class="w-full"
+          mode={@mode}
+        />
       </div>
+
+      <.or_break or_text="Or" />
     <% end %>
+    """
+  end
+
+  # Shows a line with some text in the middle of the line. eg "Or login with"
+  attr :or_text, :string
+
+  def or_break(assigns) do
+    ~H"""
+    <div class="relative my-5">
+      <div class="absolute inset-0 flex items-center">
+        <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
+      </div>
+      <div class="relative flex justify-center text-sm">
+        <span class="px-2 text-gray-500 bg-white dark:bg-gray-800">
+          {@or_text}
+        </span>
+      </div>
+    </div>
     """
   end
 
@@ -263,6 +272,9 @@ defmodule PasswordlessWeb.CoreComponents do
     case provider do
       "google" ->
         get_in(Application.get_env(:ueberauth, Ueberauth.Strategy.Google.OAuth), [:client_id])
+
+      "github" ->
+        get_in(Application.get_env(:ueberauth, Ueberauth.Strategy.Github.OAuth), [:client_id])
 
       "passwordless" ->
         true

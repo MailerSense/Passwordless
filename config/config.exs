@@ -205,7 +205,8 @@ config :passwordless, PasswordlessWeb.Gettext, allowed_locales: ~w(en)
 # Social login providers
 config :ueberauth, Ueberauth,
   providers: [
-    google: {Ueberauth.Strategy.Google, [default_scope: "email profile"]}
+    google: {Ueberauth.Strategy.Google, [default_scope: "email profile"]},
+    github: {Ueberauth.Strategy.Github, [default_scope: "user:email"]}
   ]
 
 config :flop, repo: Passwordless.Repo, default_limit: 10

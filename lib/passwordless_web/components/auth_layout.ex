@@ -62,7 +62,7 @@ defmodule PasswordlessWeb.Components.AuthLayout do
       <h4 :if={@subtitle} class="text-center text-slate-500 text-xs font-semibold uppercase">
         {@subtitle}
       </h4>
-      <h2 class="text-slate-900 text-center text-4xl md:text-5xl font-semibold">
+      <h2 class="text-slate-900 text-center text-2xl font-semibold">
         {@title}
       </h2>
     </div>

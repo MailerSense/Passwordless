@@ -10,6 +10,8 @@
     </.link>
   </:top_links>
 
+  <.auth_providers mode={:sign_up} conn_or_socket={@socket} />
+
   <.form
     id="registration_form"
     for={@form}
@@ -18,19 +20,18 @@
     phx-change="validate"
     phx-trigger-action={@trigger_submit}
     method="post"
-    class="mb-4"
   >
     <.field
       field={@form[:name]}
       autocomplete="given-name family-name"
-      placeholder={gettext("Your name")}
+      placeholder={gettext("John Doe")}
       phx-debounce="blur"
       required
     />
     <.field
       type="email"
       field={@form[:email]}
-      placeholder={gettext("eg. you@example.com")}
+      placeholder={gettext("name@company.com")}
       autocomplete="email"
       phx-debounce="blur"
       required
@@ -38,16 +39,15 @@
     <.field
       type="password"
       phx-debounce="blur"
-      placeholder={gettext("••••••••••••")}
+      placeholder={gettext("Enter strong password")}
       value={@form[:password].value}
       field={@form[:password]}
       autocomplete="new-password"
+      viewable={true}
       required
     />
     <div class="flex mt-6">
-      <.button label={gettext("Create account")} class="flex flex-1" />
+      <.button size="xl" label={gettext("Sign up")} class="flex flex-1" />
     </div>
   </.form>
-
-  <.auth_providers mode={:sign_up} conn_or_socket={@socket} />
 </.auth_layout>

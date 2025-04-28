@@ -88,6 +88,7 @@ defmodule Passwordless.MixProject do
       {:argon2_elixir, "~> 4.1"},
       {:ueberauth, "~> 0.10.8"},
       {:ueberauth_google, "~> 0.12"},
+      {:ueberauth_github, "~> 0.8.3"},
 
       # API
       {:open_api_spex, "~> 3.18"},

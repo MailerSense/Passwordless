@@ -294,7 +294,7 @@
     @apply h-14 px-6 py-4 text-base font-semibold leading-normal;
   }
   .pc-button--xl {
-    @apply px-6 py-3 text-base leading-6;
+    @apply h-[44px] px-4 py-2.5 text-base font-semibold;
   }
   .pc-button--wide {
     @apply h-12 px-6 py-[3px] text-sm font-semibold leading-tight flex grow;
@@ -469,7 +469,7 @@
     @apply text-5xl font-bold;
   }
   .pc-h2 {
-    @apply text-3xl font-bold md:text-4xl lg:text-5xl lg:leading-[56px];
+    @apply text-2xl font-extrabold leading-9 sm:leading-10 sm:text-3xl;
   }
   .pc-h3 {
     @apply text-2xl font-bold xl:text-4xl;
