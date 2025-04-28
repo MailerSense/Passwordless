@@ -78,7 +78,7 @@
 
       <%= cond do %>
         <% @loading -> %>
-          <.button size="xl" label={gettext("Working...")} class="flex flex-1" disabled={true} />
+          <.button size="xl" color="success" label={gettext("Success")} class="flex flex-1" />
         <% @resend_enabled -> %>
           <.button size="xl" type="button" phx-click="resend" with_icon class="flex flex-1">
             <.icon name="remix-reset-right-fill" />
