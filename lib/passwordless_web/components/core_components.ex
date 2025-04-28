@@ -15,6 +15,7 @@ defmodule PasswordlessWeb.CoreComponents do
 
   attr :class, :any, default: nil
   attr :inner_class, :any, default: nil
+  attr :container, :boolean, default: true
 
   slot :inner_block
 
@@ -25,7 +26,9 @@ defmodule PasswordlessWeb.CoreComponents do
         <.sidebar_menu_item :for={menu_item <- @menu_items} current={@current_page} {menu_item} />
       </nav>
       <div class={["pc-sidebar__content", @inner_class]}>
-        {render_slot(@inner_block)}
+        <.div_wrapper class="w-full mx-auto max-w-7xl" wrap={@container}>
+          {render_slot(@inner_block)}
+        </.div_wrapper>
       </div>
     </div>
     """
@@ -201,7 +204,7 @@ defmodule PasswordlessWeb.CoreComponents do
         />
       </:dropdown>
 
-      <.div_wrapper class="p-6" wrap={@padded}>
+      <.div_wrapper class="p-6 w-full mx-auto max-w-7xl" wrap={@padded}>
         {render_slot(@inner_block)}
       </.div_wrapper>
     </.sidebar_layout>

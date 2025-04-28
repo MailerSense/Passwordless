@@ -8,6 +8,7 @@ defmodule Passwordless.HealthCheck do
 
   import SqlFmt.Helpers
 
+  @table :health_checks
   @tick_interval :timer.seconds(5)
 
   defmodule State do
@@ -20,7 +21,6 @@ defmodule Passwordless.HealthCheck do
     typedstruct do
       field :ready, list((-> :ok | {:error, any()})), enforce: true
       field :live, list((-> :ok | {:error, any()})), enforce: true
-      field :results, {atom() | atom()}, default: {:ok, :ok}
     end
   end
 
@@ -45,28 +45,28 @@ defmodule Passwordless.HealthCheck do
   @doc """
   Execute readiness checks
   """
-  def check_readiness do
-    GenServer.call(__MODULE__, :readiness)
-  end
+  def check_readiness, do: get_result(:readiness)
 
   @doc """
   Execute liness checks
   """
-  def check_liveness do
-    GenServer.call(__MODULE__, :liveness)
-  end
+  def check_liveness, do: get_result(:liveness)
 
   # Server
 
   @impl true
   def init({ready, live}) do
+    :ets.new(@table, [
+      :set,
+      :named_table,
+      :protected,
+      read_concurrency: true,
+      write_concurrency: false
+    ])
+
     tick()
 
-    {:ok,
-     %State{
-       ready: ready,
-       live: live
-     }}
+    {:ok, %State{ready: ready, live: live}}
   end
 
   @impl true
@@ -80,22 +80,13 @@ defmodule Passwordless.HealthCheck do
   end
 
   @impl true
-  def handle_call(:readiness, _from, %State{results: {ready, _}} = state) do
-    {:reply, ready, state}
-  end
-
-  @impl true
-  def handle_call(:liveness, _from, %State{results: {_, live}} = state) do
-    {:reply, live, state}
-  end
-
-  @impl true
   def handle_info(:tick, %State{ready: ready, live: live} = state) do
-    results = {all_pass?(ready), all_pass?(live)}
+    put_result(:readiness, all_pass?(ready))
+    put_result(:liveness, all_pass?(live))
 
     tick()
 
-    {:noreply, %State{state | results: results}}
+    {:noreply, state}
   end
 
   # Common checks
@@ -168,4 +159,15 @@ defmodule Passwordless.HealthCheck do
       {:ok, err}, _ -> {:halt, err}
     end)
   end
+
+  def get_result(kind) when kind in [:readiness, :liveness] do
+    key = {__MODULE__, kind}
+
+    case :ets.lookup(@table, key) do
+      [{^key, value}] -> value
+      _ -> nil
+    end
+  end
+
+  def put_result(kind, value) when kind in [:readiness, :liveness], do: :ets.insert(@table, {{__MODULE__, kind}, value})
 end
