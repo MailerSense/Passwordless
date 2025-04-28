@@ -43,7 +43,7 @@ defmodule PasswordlessWeb.Components.SocialButton do
       size="xl"
       class="w-full"
       type="button"
-      color="wireframe"
+      color="light"
       label={@label}
       with_icon
     >
