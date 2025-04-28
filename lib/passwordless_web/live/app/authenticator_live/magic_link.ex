@@ -34,7 +34,7 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
         icon_class: nil,
         label: gettext("Device ID"),
         value: "device_id",
-        description: gettext("Unique ID provided by your backend")
+        description: gettext("Unique ID provided by your app")
       },
       %{
         icon: nil,

@@ -1,11 +1,11 @@
 <.auth_layout title={gettext("Sign up")}>
   <:logo>
-    <.logo_icon class="w-20 h-20" />
+    <.logo_icon class="w-16 h-16" />
   </:logo>
 
   <:top_links>
     {gettext("Already registered?")}
-    <.link class="text-blue-600 underline dark:text-blue-400" navigate={~p"/auth/sign-in"}>
+    <.link class="text-blue-600 underline dark:text-blue-300" navigate={~p"/auth/sign-in"}>
       {gettext("Sign in")}
     </.link>
   </:top_links>
@@ -23,6 +23,7 @@
   >
     <.field
       field={@form[:name]}
+      label={gettext("Full name")}
       autocomplete="given-name family-name"
       placeholder={gettext("John Doe")}
       phx-debounce="blur"
@@ -31,6 +32,7 @@
     <.field
       type="email"
       field={@form[:email]}
+      label={gettext("Email address")}
       placeholder={gettext("name@company.com")}
       autocomplete="email"
       phx-debounce="blur"
@@ -38,6 +40,7 @@
     />
     <.field
       type="password"
+      label={gettext("Create a password")}
       phx-debounce="blur"
       placeholder={gettext("Enter strong password")}
       value={@form[:password].value}
@@ -47,7 +50,12 @@
       required
     />
     <div class="flex mt-6">
-      <.button size="xl" label={gettext("Sign up")} class="flex flex-1" />
+      <.button
+        size="xl"
+        label={gettext("Sign up")}
+        class="flex flex-1"
+        disabled={not @form.source.valid?}
+      />
     </div>
   </.form>
 </.auth_layout>

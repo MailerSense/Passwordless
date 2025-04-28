@@ -29,7 +29,7 @@ defmodule Passwordless.Authenticators.EmailOTP do
   }
   schema "email_otp_authenticators" do
     field :enabled, :boolean, default: true
-    field :expires, :integer, default: 5
+    field :expires, :integer, default: 3
     field :resend, :integer, default: 30
     field :sender, :string
     field :sender_name, :string
@@ -67,7 +67,7 @@ defmodule Passwordless.Authenticators.EmailOTP do
     |> validate_required(@required_fields)
     |> validate_sender(opts)
     |> validate_string(:sender_name)
-    |> validate_number(:expires, greater_than: 0, less_than_or_equal_to: 60)
+    |> validate_number(:expires, greater_than: 1, less_than_or_equal_to: 30)
     |> validate_number(:resend, greater_than_or_equal_to: 30, less_than_or_equal_to: 300)
     |> unique_constraint(:app_id)
     |> unsafe_validate_unique(:app_id, Passwordless.Repo)

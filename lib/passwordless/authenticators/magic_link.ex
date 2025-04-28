@@ -34,7 +34,7 @@ defmodule Passwordless.Authenticators.MagicLink do
   }
   schema "magic_link_authenticators" do
     field :enabled, :boolean, default: true
-    field :expires, :integer, default: 5
+    field :expires, :integer, default: 3
     field :resend, :integer, default: 30
     field :sender, :string
     field :sender_name, :string
@@ -88,7 +88,7 @@ defmodule Passwordless.Authenticators.MagicLink do
     |> validate_required(@required_fields)
     |> validate_sender(opts)
     |> validate_string(:sender_name)
-    |> validate_number(:expires, greater_than: 0, less_than_or_equal_to: 60)
+    |> validate_number(:expires, greater_than: 1, less_than_or_equal_to: 30)
     |> validate_number(:resend, greater_than_or_equal_to: 30, less_than_or_equal_to: 300)
     |> validate_fingerprint_factors()
     |> unique_constraint(:app_id)

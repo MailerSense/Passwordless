@@ -15,37 +15,34 @@ defmodule PasswordlessWeb.Components.AuthLayout do
 
   def auth_layout(assigns) do
     ~H"""
-    <section class="fixed w-full h-full overflow-y-scroll bg-slate-100 dark:bg-slate-900" {@rest}>
-      <div class="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div class="text-center sm:mx-auto sm:w-full sm:max-w-md">
-          <div class="flex justify-center mb-10">
-            <.link href="/">
-              {render_slot(@logo)}
-            </.link>
-          </div>
-
-          <.h2>
-            {@title}
-          </.h2>
-
-          <%= if render_slot(@top_links) do %>
-            <.p>
-              {render_slot(@top_links)}
-            </.p>
-          <% end %>
-        </div>
-      </div>
-
+    <section
+      class="fixed w-full h-full overflow-y-scroll bg-slate-100 dark:bg-slate-900 sm:py-20"
+      {@rest}
+    >
       <div class="pb-20 sm:mx-auto sm:w-full sm:max-w-md">
         <div class="px-8 py-8 bg-white shadow-1 sm:rounded-lg sm:px-10 dark:bg-slate-800">
+          <div class="flex flex-col items-center mb-10">
+            <div class="flex justify-center mb-8">
+              <.link href="/">
+                {render_slot(@logo)}
+              </.link>
+            </div>
+
+            <.h2>
+              {@title}
+            </.h2>
+
+            <.p :if={Util.present?(@top_links)}>
+              {render_slot(@top_links)}
+            </.p>
+          </div>
+
           {render_slot(@inner_block)}
         </div>
 
-        <%= if render_slot(@bottom_links) do %>
-          <div class="mt-5 text-center">
-            {render_slot(@bottom_links)}
-          </div>
-        <% end %>
+        <div :if={Util.present?(@bottom_links)} class="mt-6 text-center">
+          {render_slot(@bottom_links)}
+        </div>
       </div>
     </section>
     """
@@ -62,7 +59,7 @@ defmodule PasswordlessWeb.Components.AuthLayout do
       <h4 :if={@subtitle} class="text-center text-slate-500 text-xs font-semibold uppercase">
         {@subtitle}
       </h4>
-      <h2 class="text-slate-900 text-center text-2xl font-semibold">
+      <h2 class="text-slate-900 text-center text-2xl md:text-5xl font-semibold">
         {@title}
       </h2>
     </div>

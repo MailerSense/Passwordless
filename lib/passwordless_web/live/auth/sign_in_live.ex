@@ -28,12 +28,6 @@ defmodule PasswordlessWeb.Auth.SignInLive do
     {:noreply, socket}
   end
 
-  defp apply_login_changeset(params) do
-    params
-    |> build_login_changeset()
-    |> Ecto.Changeset.apply_action(:insert)
-  end
-
   defp build_login_changeset(params \\ %{}) do
     types = %{
       email: :string,
@@ -42,7 +36,6 @@ defmodule PasswordlessWeb.Auth.SignInLive do
 
     {%{}, types}
     |> Ecto.Changeset.cast(params, Map.keys(types))
-    |> Ecto.Changeset.validate_required([:email])
     |> Database.ChangesetExt.validate_email()
   end
 

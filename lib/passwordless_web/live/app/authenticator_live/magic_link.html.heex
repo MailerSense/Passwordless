@@ -23,7 +23,7 @@
         Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in. The link is valid for a limited time and can only be used once.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
-      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
+      <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2 mb-6">
         <.field
           field={@form[:sender_name]}
           label={gettext("Name")}
@@ -54,13 +54,13 @@
         link_type="live_redirect"
       />
       <.form_separator />
-      <div class="grid gap-6 grid-cols-1 xl:grid-cols-2">
+      <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2">
         <.field
           field={@form[:expires]}
           label={gettext("Link expires")}
           type="number"
-          min="0"
-          max="60"
+          min="1"
+          max="30"
           prefix={gettext("After")}
           suffix={gettext("minutes")}
           disabled={not @enabled}

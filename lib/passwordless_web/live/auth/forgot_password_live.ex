@@ -63,7 +63,6 @@ defmodule PasswordlessWeb.Auth.ForgotPasswordLive do
 
     {%{}, types}
     |> Ecto.Changeset.cast(params, Map.keys(types))
-    |> Ecto.Changeset.validate_required([:email])
     |> Database.ChangesetExt.validate_email()
   end
 end
