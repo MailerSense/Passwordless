@@ -193,7 +193,6 @@ defmodule Passwordless.Accounts.User do
   def naive_email_changeset(%__MODULE__{} = user, attrs \\ %{}) do
     user
     |> cast(attrs, [:email])
-    |> validate_required([:email])
     |> ChangesetExt.validate_email()
   end
 
