@@ -877,7 +877,7 @@
     @apply block w-full px-3.5 py-4 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
   }
   .pc-text-input--md {
-    @apply block w-full px-3 py-2.5 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
+    @apply block w-full px-3.5 py-2.5 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
   }
   .pc-text-input--sm {
     @apply block min-w-16 px-2.5 py-2 font-medium border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-xs disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
@@ -964,14 +964,14 @@
     @apply relative;
   }
   .pc-select-input__flag {
-    @apply w-5 h-[15px] absolute left-3 top-1/2 transform -translate-y-1/2;
+    @apply w-5 h-[15px] absolute left-3.5 top-1/2 transform -translate-y-1/2;
     @apply outline outline-1 outline-offset-[-1px] outline-black/10 dark:outline-white/10;
   }
   .pc-select-input__icon {
-    @apply w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-900 dark:text-white;
+    @apply w-5 h-5 absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-900 dark:text-white;
   }
   .pc-select-input {
-    @apply ps-10 block w-full px-3.5 py-2.5 pr-10 text-base border-slate-300 rounded-lg cursor-pointer focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 disabled:bg-slate-100 disabled:cursor-not-allowed focus:outline-hidden dark:disabled:bg-slate-700 dark:text-white dark:bg-slate-800;
+    @apply ps-11 block w-full px-3.5 py-2.5 pr-10 text-base border-slate-300 rounded-lg cursor-pointer focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 disabled:bg-slate-100 disabled:cursor-not-allowed focus:outline-hidden dark:disabled:bg-slate-700 dark:text-white dark:bg-slate-800;
   }
   .pc-select {
     @apply block w-full py-2 pl-3 pr-10 text-base border-slate-300 rounded-md cursor-pointer focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 disabled:bg-slate-100 disabled:cursor-not-allowed focus:outline-hidden sm:text-sm dark:disabled:bg-slate-700 dark:text-white dark:bg-slate-800;
@@ -981,7 +981,7 @@
   }
   .pc-color-input {
     @apply flex items-center gap-3 border;
-    @apply w-full px-3 py-2.5 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20;
+    @apply w-full px-3.5 py-2.5 border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-1 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20;
   }
   input[type="color" i] {
     border-radius: 50%;
@@ -1199,7 +1199,7 @@
   }
   .pc-field-icon__icon {
     @apply w-5 h-5 text-slate-500 dark:text-slate-300;
-    @apply absolute left-3 top-1/2 transform -translate-y-1/2;
+    @apply absolute left-3.5 top-1/2 transform -translate-y-1/2;
   }
   .pc-field-icon__padding {
     @apply ps-10;
@@ -1214,13 +1214,13 @@
     @apply text-lg font-semibold text-slate-900 dark:text-white;
   }
   .pc-field-prefix {
-    @apply flex items-center justify-center shrink-0 px-3 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-r-0 rounded-l-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-hidden z-10;
+    @apply flex items-center justify-center shrink-0 px-3.5 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-r-0 rounded-l-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-hidden z-10;
   }
   .pc-field-suffix {
-    @apply flex items-center justify-center shrink-0 px-3 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-l-0 rounded-r-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-hidden z-10;
+    @apply flex items-center justify-center shrink-0 px-3.5 py-2 bg-slate-50 dark:bg-transparent border border-slate-300 border-l-0 rounded-r-lg shadow-m2 focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-500 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700 focus:outline-hidden z-10;
   }
   .pc-field-badge {
-    @apply flex items-center justify-center px-3 py-1 gap-2 border border-slate-300 border-l-0 rounded-r-lg shadow-m2 dark:border-slate-600 disabled:cursor-not-allowed focus:outline-hidden z-10 whitespace-nowrap;
+    @apply flex items-center justify-center px-3.5 py-1 gap-2 border border-slate-300 border-l-0 rounded-r-lg shadow-m2 dark:border-slate-600 disabled:cursor-not-allowed focus:outline-hidden z-10 whitespace-nowrap;
   }
   .pc-field-badge__padding {
     @apply pe-24;
@@ -1256,7 +1256,7 @@
     @apply w-64;
   }
   .pc-dropdown__menu-item {
-    @apply flex items-center self-start justify-start w-full gap-2 px-3 py-2 text-sm text-left font-semibold leading-tight text-slate-700 transition duration-150 ease-in-out dark:hover:bg-slate-700 dark:active:bg-slate-600 dark:text-slate-300 dark:bg-slate-900 hover:bg-slate-100 active:bg-slate-200 rounded-sm;
+    @apply flex items-center self-start justify-start w-full gap-2 px-3.5 py-2 text-sm text-left font-semibold leading-tight text-slate-700 transition duration-150 ease-in-out dark:hover:bg-slate-700 dark:active:bg-slate-600 dark:text-slate-300 dark:bg-slate-900 hover:bg-slate-100 active:bg-slate-200 rounded-sm;
   }
   .pc-dropdown__trigger-button--no-label {
     @apply flex items-center text-slate-400 rounded-full hover:text-slate-600 focus:outline-hidden focus:ring-primary-500;

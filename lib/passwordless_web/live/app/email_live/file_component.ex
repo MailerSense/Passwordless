@@ -134,7 +134,7 @@ defmodule PasswordlessWeb.App.EmailLive.FileComponent do
 
     case Passwordless.create_media(app, media_params) do
       {:ok, _media} ->
-        {:ok,
+        {:noreply,
          socket
          |> put_toast(
            :info,

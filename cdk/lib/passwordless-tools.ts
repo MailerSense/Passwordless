@@ -312,6 +312,15 @@ export class PasswordlessTools extends cdk.Stack {
           generalSecret,
           "GOOGLE_OAUTH_SECRET",
         ),
+        // Github
+        GITHUB_OAUTH_CLIENT_ID: Secret.fromSecretsManager(
+          generalSecret,
+          "GITHUB_OAUTH_CLIENT_ID",
+        ),
+        GITHUB_OAUTH_SECRET: Secret.fromSecretsManager(
+          generalSecret,
+          "GITHUB_OAUTH_SECRET",
+        ),
       },
       command: "/app/bin/server",
       environment: {

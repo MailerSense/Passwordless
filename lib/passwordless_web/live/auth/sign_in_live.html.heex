@@ -19,14 +19,14 @@
         field={@form[:email]}
         required
         autocomplete="email"
-        placeholder={gettext("Enter your business email")}
+        placeholder={gettext("Enter your email address")}
       />
 
       <div class="flex mt-6">
         <.button
           size="xl"
           type="submit"
-          label={gettext("Continue with Email")}
+          label={gettext("Continue")}
           class="flex flex-1"
           phx-disable-with={gettext("Working...")}
           disabled={not @form.source.valid?}
