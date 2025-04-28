@@ -235,6 +235,16 @@ defmodule PasswordlessWeb.CoreComponents do
           class="w-full"
           mode={@mode}
         />
+
+        <.social_button
+          :if={auth_provider_loaded?("passwordless")}
+          link_type="live_redirect"
+          to={~p"/auth/sign-in/passwordless"}
+          variant="outline"
+          logo="passwordless"
+          class="w-full"
+          mode={@mode}
+        />
       </div>
 
       <.or_break or_text="Or" />

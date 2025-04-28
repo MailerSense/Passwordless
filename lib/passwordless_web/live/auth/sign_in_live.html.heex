@@ -34,6 +34,7 @@
         size="xl"
         label={gettext("Sign in")}
         class="flex flex-1"
+        phx-disable-with={gettext("Working...")}
         disabled={not @form.source.valid?}
       />
     </div>
