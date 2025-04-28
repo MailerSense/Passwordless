@@ -16,11 +16,11 @@ defmodule PasswordlessWeb.Components.AuthLayout do
   def auth_layout(assigns) do
     ~H"""
     <section
-      class="fixed w-full h-full overflow-y-scroll bg-slate-100 dark:bg-slate-900 sm:py-20"
+      class="fixed w-full h-full overflow-y-scroll bg-slate-100 dark:bg-slate-900 sm:py-16"
       {@rest}
     >
-      <div class="pb-20 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="px-8 py-8 bg-white shadow-1 sm:rounded-lg sm:px-10 dark:bg-slate-800">
+      <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="px-10 py-10 bg-white shadow-3 sm:rounded-2xl  dark:bg-slate-800">
           <div class="flex flex-col items-center mb-10">
             <div class="flex justify-center mb-8">
               <.link href="/">
@@ -40,7 +40,7 @@ defmodule PasswordlessWeb.Components.AuthLayout do
           {render_slot(@inner_block)}
         </div>
 
-        <div :if={Util.present?(@bottom_links)} class="mt-6 text-center">
+        <div :if={Util.present?(@bottom_links)} class="mt-8 text-center">
           {render_slot(@bottom_links)}
         </div>
       </div>

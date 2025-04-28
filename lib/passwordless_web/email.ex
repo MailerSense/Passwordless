@@ -60,6 +60,14 @@ defmodule PasswordlessWeb.Email do
     |> premail()
   end
 
+  def email_otp(email, code) do
+    auth_email()
+    |> to(email)
+    |> subject(gettext("%{app} OTP Code", app: Passwordless.config(:app_name)))
+    |> render_body("email_otp.html", %{code: code})
+    |> premail()
+  end
+
   def contact_form(email, name, message) do
     support_email()
     |> to("hello@passwordless.tools")

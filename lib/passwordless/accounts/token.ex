@@ -18,7 +18,8 @@ defmodule Passwordless.Accounts.Token do
     email_change: :timer.hours(6),
     email_confirmation: :timer.hours(6),
     password_reset: :timer.hours(6),
-    passwordless_sign_in: :timer.minutes(30)
+    passwordless_sign_in: :timer.minutes(5),
+    passwordless_session: :timer.minutes(30)
   ]
   @contexts Keyword.keys(@lifetimes)
 
@@ -136,6 +137,10 @@ defmodule Passwordless.Accounts.Token do
     )
   end
 
+  def verify_key(key, context) when is_binary(key) and context in @contexts do
+    Token.verify(Endpoint, key_salt(), key, max_age: div(Keyword.fetch!(@lifetimes, context), 1000))
+  end
+
   # Private
 
   defp validate_key(changeset) do
@@ -169,10 +174,6 @@ defmodule Passwordless.Accounts.Token do
     raw = :crypto.strong_rand_bytes(@size)
     signed = Token.sign(Endpoint, key_salt(), raw)
     {raw, signed}
-  end
-
-  defp verify_key(key, context) when is_binary(key) and context in @contexts do
-    Token.verify(Endpoint, key_salt(), key, max_age: div(Keyword.fetch!(@lifetimes, context), 1000))
   end
 
   defp key_salt, do: Endpoint.config(:secret_key_base)

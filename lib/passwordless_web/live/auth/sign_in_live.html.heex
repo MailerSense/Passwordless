@@ -1,52 +1,105 @@
-<.auth_layout id="sign-in-layout" phx-hook="ResetColorSchemeHook" title={gettext("Sign in")}>
-  <:logo>
-    <.logo_icon class="w-16 h-16" />
-  </:logo>
+<%= if @step == :sign_in do %>
+  <.auth_layout id="sign-in-layout" title={gettext("Sign in")}>
+    <:logo>
+      <.logo_icon class="w-16 h-16" />
+    </:logo>
 
-  <:top_links>
-    {gettext("Don't have an account?")}
-    <.link class="text-blue-600 underline dark:text-blue-300" navigate={~p"/auth/sign-up"}>
-      {gettext("Register")}
-    </.link>
-  </:top_links>
+    <:top_links>
+      {gettext("Don't have an account?")}
+      <.link class="text-blue-600 underline dark:text-blue-300" navigate={~p"/auth/sign-up"}>
+        {gettext("Register")}
+      </.link>
+    </:top_links>
 
-  <.auth_providers mode={:sign_in} conn_or_socket={@socket} />
+    <.auth_providers mode={:sign_in} conn_or_socket={@socket} />
 
-  <.form for={@form} phx-change="validate" id="sign_in_form" action={~p"/auth/sign-in"}>
-    <.field
-      type="email"
-      field={@form[:email]}
-      required
-      autocomplete="email"
-      placeholder={gettext("Email Address")}
-    />
-    <.field
-      type="password"
-      field={@form[:password]}
-      required
-      autocomplete="current-password"
-      placeholder={gettext("Password")}
-      viewable={true}
-    />
-
-    <div class="flex mt-6">
-      <.button
-        size="xl"
-        label={gettext("Sign in")}
-        class="flex flex-1"
-        phx-disable-with={gettext("Working...")}
-        disabled={not @form.source.valid?}
+    <.form id="sign-in-form" for={@form} phx-change="validate_email" phx-submit="submit_email">
+      <.field
+        type="email"
+        field={@form[:email]}
+        required
+        autocomplete="email"
+        placeholder={gettext("Enter your business email")}
       />
-    </div>
-  </.form>
 
-  <:bottom_links>
-    <.a
-      class="text-sm text-slate-500 underline dark:text-slate-400"
-      to={~p"/auth/reset-password"}
-      link_type="live_patch"
-    >
-      {gettext("Forgot your password?")}
-    </.a>
-  </:bottom_links>
-</.auth_layout>
+      <div class="flex mt-6">
+        <.button
+          size="xl"
+          type="submit"
+          label={gettext("Continue with Email")}
+          class="flex flex-1"
+          phx-disable-with={gettext("Working...")}
+          disabled={not @form.source.valid?}
+        />
+      </div>
+    </.form>
+
+    <:bottom_links>
+      <.a
+        class="text-sm text-slate-500 underline dark:text-slate-400"
+        to={~p"/auth/sign-in/password"}
+        link_type="live_patch"
+      >
+        {gettext("Login with password")}
+      </.a>
+    </:bottom_links>
+  </.auth_layout>
+<% end %>
+
+<%= if @step == :otp_sent do %>
+  <.auth_layout id="sign-in-layout" title={gettext("Sign in")}>
+    <:logo>
+      <.logo_icon class="w-16 h-16" />
+    </:logo>
+
+    <:top_links>
+      {gettext("Don't have an account?")}
+      <.link class="text-blue-600 underline dark:text-blue-300" navigate={~p"/auth/sign-up"}>
+        {gettext("Register")}
+      </.link>
+    </:top_links>
+
+    <div class="flex flex-col gap-6">
+      <.p>
+        {gettext(
+          "We've sent a 6-digit code to %{email}. Enter it below to continue.",
+          email: @auth_user.email
+        )}
+      </.p>
+      <.form
+        for={@token_form}
+        action={~p"/auth/sign-in/passwordless/form"}
+        phx-trigger-action={@trigger_submit}
+        phx-change="validate_code"
+      >
+        <.otp_input name={@token_form[:code].name} label={gettext("Email OTP")} />
+        <.input type="hidden" field={@token_form[:sign_in_token]} />
+      </.form>
+
+      <%= cond do %>
+        <% @loading -> %>
+          <.button size="xl" label={gettext("Working...")} class="flex flex-1" disabled={true} />
+        <% @resend_enabled -> %>
+          <.button size="xl" type="button" phx-click="resend" with_icon class="flex flex-1">
+            <.icon name="remix-reset-right-fill" />
+            {gettext("Resend code")}
+          </.button>
+        <% true -> %>
+          <.button size="xl" type="button" disabled with_icon class="flex flex-1">
+            <.icon name="remix-reset-right-fill" />
+            {gettext("Wait %{seconds} seconds to resend", seconds: @seconds_till_resend)}
+          </.button>
+      <% end %>
+    </div>
+
+    <:bottom_links>
+      <.a
+        class="text-sm text-slate-500 underline dark:text-slate-400"
+        to={~p"/auth/sign-in/password"}
+        link_type="live_patch"
+      >
+        {gettext("Login with password")}
+      </.a>
+    </:bottom_links>
+  </.auth_layout>
+<% end %>

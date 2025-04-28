@@ -8,7 +8,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     execute ~SQL"CREATE extension IF NOT EXISTS citext", ""
     execute ~SQL"CREATE extension IF NOT EXISTS pg_trgm", ""
 
-    ## Accounts
+    ## Users
 
     create table(:users, primary_key: false) do
       add :id, :uuid, primary_key: true
@@ -23,6 +23,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create unique_index(:users, [:email], where: "deleted_at is null")
+
+    ## User tokens
 
     create table(:user_tokens, primary_key: false) do
       add :id, :uuid, primary_key: true
@@ -41,6 +43,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create index(:user_tokens, [:context, :key_hash])
     create unique_index(:user_tokens, [:key_hash])
 
+    ## User credentials
+
     create table(:user_credentials, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :subject, :string
@@ -54,6 +58,24 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create index(:user_credentials, [:user_id])
     create unique_index(:user_credentials, [:user_id, :provider])
     create unique_index(:user_credentials, [:subject, :provider])
+
+    ## OTPs
+
+    create table(:user_otps, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :code, :binary, null: false
+      add :attempts, :integer, null: false, default: 0
+      add :expires_at, :utc_datetime_usec, null: false
+      add :accepted_at, :utc_datetime_usec
+
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:user_otps, [:user_id])
+
+    ## User TOTP
 
     create table(:user_totps, primary_key: false) do
       add :id, :uuid, primary_key: true
@@ -82,6 +104,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create unique_index(:orgs, [:email], where: "deleted_at is null")
 
+    ## Organization memberships
+
     create table(:org_memberships, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :role, :string, null: false
@@ -93,6 +117,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     end
 
     create unique_index(:org_memberships, [:org_id, :user_id])
+
+    ## Organization invitations
 
     create table(:org_invitations, primary_key: false) do
       add :id, :uuid, primary_key: true

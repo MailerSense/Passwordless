@@ -469,7 +469,7 @@
     @apply text-5xl font-bold;
   }
   .pc-h2 {
-    @apply text-2xl font-extrabold leading-9 sm:leading-10 sm:text-3xl;
+    @apply text-2xl font-semibold leading-9 sm:leading-10 sm:text-3xl;
   }
   .pc-h3 {
     @apply text-2xl font-bold xl:text-4xl;
@@ -881,6 +881,12 @@
   }
   .pc-text-input--sm {
     @apply block min-w-16 px-2.5 py-2 font-medium border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-xs disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
+  }
+
+  /* OTP Input */
+
+  .pc-otp-input {
+    @apply w-12 h-12 text-center border border-gray-300 shadow-m2 rounded-md font-bold focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 focus:outline-hidden;
   }
 
   /* Password Input */

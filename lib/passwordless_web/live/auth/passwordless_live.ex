@@ -32,14 +32,15 @@ defmodule PasswordlessWeb.Auth.PasswordlessLive do
     socket =
       socket
       |> assign(
-        user_return_to: Map.get(params, "user_return_to", nil),
         step: :sign_in,
         auth_user: nil,
         resend_enabled: false,
-        seconds_till_resend: nil
+        seconds_till_resend: nil,
+        sign_in_token: nil,
+        trigger_submit: false
       )
       |> assign_form(User.naive_email_changeset(%User{}))
-      |> apply_action(socket.assigns.live_action, %{})
+      |> apply_action(socket.assigns.live_action, params)
 
     {:noreply, socket}
   end
@@ -56,14 +57,29 @@ defmodule PasswordlessWeb.Auth.PasswordlessLive do
 
   @impl true
   def handle_event("submit_email", %{"user" => %{"email" => email}}, socket) do
-    send_magic_link(socket, email)
+    send_email_otp(socket, email)
   end
+
+  # Handle nil user
+  @impl true
+  def handle_event("validate_code", %{"auth" => %{"code" => _code}}, socket) when is_nil(socket.assigns.auth_user) do
+    {:noreply, push_patch(socket, to: ~p"/auth/sign-in/passwordless")}
+  end
+
+  @impl true
+  def handle_event("validate_code", %{"auth" => %{"code" => code}}, socket) when byte_size(code) >= 6 do
+    validation_result = Accounts.validate_user_otp(socket.assigns.auth_user, code)
+    {:noreply, handle_validation(socket, validation_result)}
+  end
+
+  @impl true
+  def handle_event("validate_code", _, socket), do: {:noreply, socket}
 
   @impl true
   def handle_event("resend", _, socket) do
     case {socket.assigns[:auth_user], socket.assigns[:resend_enabled]} do
       {%User{} = user, true} ->
-        send_magic_link(socket, user.email)
+        send_email_otp(socket, user.email)
 
       _ ->
         {:noreply, socket}
@@ -86,6 +102,11 @@ defmodule PasswordlessWeb.Auth.PasswordlessLive do
   end
 
   @impl true
+  def handle_info(:trigger_submit, socket) do
+    {:noreply, assign(socket, :trigger_submit, true)}
+  end
+
+  @impl true
   def handle_info(_params, socket) do
     {:noreply, socket}
   end
@@ -96,26 +117,42 @@ defmodule PasswordlessWeb.Auth.PasswordlessLive do
     assign(socket, form: to_form(changeset))
   end
 
-  defp apply_action(socket, :sign_in, _params), do: assign(socket, page_title: gettext("Magic Link"), error_message: nil)
+  defp apply_action(socket, :sign_in, _params), do: assign(socket, page_title: gettext("Email Code"), error_message: nil)
 
-  defp apply_action(socket, :link_sent, _params),
-    do: assign(socket, page_title: gettext("Magic Link Sent!"), error_message: nil)
+  defp apply_action(socket, :otp_sent, %{"token" => token}) when is_binary(token) do
+    case socket.assigns[:auth_user] do
+      %User{} ->
+        socket
 
-  defp send_magic_link(socket, email) when is_binary(email) do
+      _ ->
+        # Re-assign page variables if this is remounted (eg. socket disconnected)
+        # This can happen on mobile devices when user switches to mail app to copy/paste code
+        {:ok, auth_user} = Accounts.get_user_by_temporary_token(token)
+
+        if Accounts.user_has_valid_otp?(auth_user),
+          do: assign(socket, auth_user: auth_user),
+          else: push_patch(socket, to: ~p"/auth/sign-in")
+    end
+  end
+
+  defp send_email_otp(socket, email) when is_binary(email) do
     case Accounts.get_or_register_user(email, %{}, via: :passwordless) do
       {:ok, %User{} = user} ->
-        case Accounts.deliver_magic_link(user, &url(~p"/auth/sign-in/passwordless/complete/#{&1}")) do
-          {:ok, _sent_email} ->
-            Process.send_after(self(), :wait_for_resend, @interval)
+        with {:ok, otp} <- Accounts.insert_user_otp(user), {:ok, _sent_email} <- Accounts.deliver_otp(user, otp) do
+          token = Accounts.generate_user_temporary_token(user)
+          Process.send_after(self(), :wait_for_resend, @interval)
 
-            {:noreply,
-             assign(socket,
-               auth_user: user,
-               step: :link_sent,
-               resend_enabled: false,
-               seconds_till_resend: @resend_interval
-             )}
-
+          {:noreply,
+           socket
+           |> assign(
+             step: :otp_sent,
+             auth_user: user,
+             token_form: to_form(build_token_changeset(), as: :auth),
+             seconds_till_resend: @resend_interval,
+             resend_enabled: false
+           )
+           |> push_patch(to: ~p"/auth/sign-in/passwordless/otp#{token}")}
+        else
           {:error, error} ->
             assign(socket, error_message: inspect(error))
         end
@@ -123,5 +160,84 @@ defmodule PasswordlessWeb.Auth.PasswordlessLive do
       {:error, changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
     end
+  end
+
+  defp build_token_changeset(params \\ %{}) do
+    types = %{
+      code: :number,
+      sign_in_token: :string
+    }
+
+    Ecto.Changeset.cast({%{}, types}, params, Map.keys(types))
+  end
+
+  defp handle_validation(socket, {:ok, _user_code}) do
+    case socket.assigns[:auth_user] do
+      %User{} = user ->
+        Accounts.purge_user_otp(user)
+
+        sign_in_token = Accounts.generate_user_passwordless_token!(user)
+
+        changeset =
+          build_token_changeset(%{
+            sign_in_token: sign_in_token,
+            user_return_to: socket.assigns.user_return_to
+          })
+
+        Process.send_after(self(), :trigger_submit, 500)
+
+        assign(socket, token_form: to_form(changeset, as: :auth), loading: true)
+
+      _ ->
+        {:noreply, socket}
+    end
+  end
+
+  defp handle_validation(socket, {:error, :too_many_incorrect_attempts}) do
+    case socket.assigns[:auth_user] do
+      %User{} = user ->
+        Accounts.purge_user_otp(user)
+
+        socket
+        |> push_patch(to: ~p"/auth/sign-in/passwordless")
+        |> put_flash(:error, gettext("Too many incorrect attempts!"))
+
+      _ ->
+        {:noreply, socket}
+    end
+  end
+
+  defp handle_validation(socket, {:error, :expired}) do
+    case socket.assigns[:auth_user] do
+      %User{} = user ->
+        Accounts.purge_user_otp(user)
+
+        socket
+        |> push_patch(to: ~p"/auth/sign-in/passwordless")
+        |> put_flash(:error, gettext("Not a valid code. Sure you typed it correctly?"))
+
+      _ ->
+        {:noreply, socket}
+    end
+  end
+
+  defp handle_validation(socket, {:error, :incorrect_code}) do
+    case socket.assigns[:auth_user] do
+      %User{} = user ->
+        Accounts.fail_user_otp(user)
+
+        socket
+        |> assign(:error_message, gettext("Not a valid code. Sure you typed it correctly?"))
+        |> assign(:enable_resend?, true)
+
+      _ ->
+        {:noreply, socket}
+    end
+  end
+
+  defp handle_validation(socket, {:error, :not_found}) do
+    socket
+    |> push_patch(to: ~p"/auth/sign-in/passwordless")
+    |> put_flash(:error, gettext("Not a valid code. Sure you typed it correctly?"))
   end
 end

@@ -5,6 +5,7 @@ defmodule Passwordless.Accounts.Notifier do
   For some emails, we also filter which users can actually be sent an email (see can_receive_mail?/1)
   """
 
+  alias Passwordless.Accounts.OTP
   alias Passwordless.Accounts.User
   alias Passwordless.Domain
   alias Passwordless.Mailer
@@ -54,6 +55,15 @@ defmodule Passwordless.Accounts.Notifier do
   def deliver_passwordless_token(%User{email: email}, url) when is_binary(url) do
     email
     |> Email.passwordless_token(url)
+    |> deliver(via: system_domain(Email.auth_email_domain()))
+  end
+
+  @doc """
+  Deliver a pin code to sign in without a password.
+  """
+  def deliver_email_otp(%User{email: email}, %OTP{code: code}) do
+    email
+    |> Email.email_otp(code)
     |> deliver(via: system_domain(Email.auth_email_domain()))
   end
 

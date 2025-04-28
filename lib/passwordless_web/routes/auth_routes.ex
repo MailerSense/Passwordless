@@ -26,24 +26,26 @@ defmodule PasswordlessWeb.AuthRoutes do
         pipe_through [:browser, :redirect_if_user_is_authenticated]
 
         live_session :auth_session, on_mount: [{PasswordlessWeb.User.Hooks, :redirect_if_user_is_authenticated}] do
-          # Sign in
-          live "/sign-in", Auth.SignInLive, :new
+          # Passwordless sign in
+          live "/sign-in", Auth.SignInLive, :sign_in
+          live "/sign-in/otp/:token", Auth.SignInLive, :otp_sent
+
+          # Password sign in
+          live "/sign-in/password", Auth.PasswordLive, :new
 
           # Register
           live "/sign-up", Auth.RegistrationLive, :new
-
-          # Passwordless
-          live "/sign-in/passwordless", Auth.PasswordlessLive, :sign_in
 
           # Reset password
           live "/reset-password", Auth.ForgotPasswordLive, :new
         end
 
         # Password
-        post "/sign-in", UserSessionController, :create
+        post "/sign-in/password", UserSessionController, :create
 
         # Passwordless
-        get "/sign-in/passwordless/complete/:token", UserSessionController, :create_from_token
+        get "/sign-in/passwordless/email/:token", UserSessionController, :create_from_token
+        post "/sign-in/passwordless/form", UserSessionController, :create_from_token_form
 
         # Social
         get "/:provider", UserUeberauthController, :request

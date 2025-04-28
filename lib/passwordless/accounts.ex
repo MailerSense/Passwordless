@@ -5,6 +5,7 @@ defmodule Passwordless.Accounts do
 
   alias Passwordless.Accounts.Credential
   alias Passwordless.Accounts.Notifier
+  alias Passwordless.Accounts.OTP
   alias Passwordless.Accounts.Token
   alias Passwordless.Accounts.TOTP
   alias Passwordless.Accounts.User
@@ -446,6 +447,62 @@ defmodule Passwordless.Accounts do
   ## Passwordless
 
   @doc """
+  Inserts a new OTP code for the given User.
+  """
+  def insert_user_otp(%User{} = user) do
+    otp_code = OTP.generate_code()
+    expires_at = DateTime.add(DateTime.utc_now(), 5, :minute)
+
+    Repo.transact(fn ->
+      with {c, _} when c in [0, 1] <- Repo.delete_all(Ecto.assoc(user, :otp)),
+           do:
+             user
+             |> Ecto.build_assoc(:otp)
+             |> OTP.changeset(%{code: otp_code, expires_at: expires_at})
+             |> Repo.insert()
+    end)
+  end
+
+  def validate_user_otp(%User{} = user, candidate) when is_binary(candidate) do
+    user
+    |> Ecto.assoc(:otp)
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      %OTP{} = otp -> OTP.validate(otp, candidate)
+    end
+  end
+
+  def fail_user_otp(%User{} = user) do
+    user
+    |> Ecto.assoc(:otp)
+    |> Repo.one()
+    |> case do
+      nil ->
+        {:error, :not_found}
+
+      %OTP{} = otp ->
+        otp
+        |> OTP.changeset(%{attempts: otp.attempts + 1})
+        |> Repo.update()
+    end
+  end
+
+  def purge_user_otp(%User{} = user) do
+    Repo.delete_all(Ecto.assoc(user, :otp))
+  end
+
+  def user_has_valid_otp?(%User{} = user) do
+    user
+    |> Ecto.assoc(:otp)
+    |> Repo.one()
+    |> case do
+      nil -> false
+      %OTP{} = otp -> not OTP.expired?(otp)
+    end
+  end
+
+  @doc """
   Generates a passwordless sign in token for the given User.
   """
   def generate_user_passwordless_token(%User{} = user) do
@@ -471,17 +528,20 @@ defmodule Passwordless.Accounts do
   @doc """
   Generates a temporary token for the given User.
   """
-  def generate_user_temporary_token(%User{id: user_id}) do
-    token = Util.random_string()
-    Passwordless.Cache.put(token, user_id, ttl: :timer.minutes(5))
+  def generate_user_temporary_token(%User{id: user_id} = user) do
+    {token, _token} = Token.new(user, :passwordless_session)
+    Passwordless.Cache.put(token, user_id, ttl: :timer.minutes(30))
     token
   end
 
   @doc """
   Fetches user by temporary token.
   """
-  def get_user_by_temporary_token!(token) do
-    get_user!(Passwordless.Cache.get(token))
+  def get_user_by_temporary_token(token) do
+    with {:ok, _} <- Token.verify_key(token, :passwordless_session),
+         user_id when is_binary(user_id) <- Passwordless.Cache.get(token),
+         %User{} = user <- get_user(user_id),
+         do: {:ok, user}
   end
 
   @doc """
@@ -497,6 +557,10 @@ defmodule Passwordless.Accounts do
     with {:ok, _token} <- Repo.insert(token) do
       Notifier.deliver_passwordless_token(user, magic_link_url_fun.(token_signed))
     end
+  end
+
+  def deliver_email_otp(%User{} = user, %OTP{} = otp) do
+    Notifier.deliver_email_otp(user, otp)
   end
 
   ## 2FA / TOTP (Time based One Time Password)

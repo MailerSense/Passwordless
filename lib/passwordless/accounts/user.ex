@@ -7,6 +7,7 @@ defmodule Passwordless.Accounts.User do
 
   alias Database.ChangesetExt
   alias Passwordless.Accounts.Credential
+  alias Passwordless.Accounts.OTP
   alias Passwordless.Accounts.Token
   alias Passwordless.Accounts.TOTP
   alias Passwordless.Organizations.Invitation
@@ -37,6 +38,7 @@ defmodule Passwordless.Accounts.User do
     field :two_factor_enabled, :boolean, virtual: true, default: false
     field :is_online, :boolean, virtual: true, default: false
 
+    has_one :otp, OTP
     has_one :totp, TOTP
 
     has_many :tokens, Token, preload_order: [asc: :inserted_at]

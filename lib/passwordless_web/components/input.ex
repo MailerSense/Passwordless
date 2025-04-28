@@ -5,6 +5,8 @@ defmodule PasswordlessWeb.Components.Input do
 
   use Phoenix.Component
 
+  import PasswordlessWeb.Components.Field, only: [field_label: 1]
+
   attr :id, :any, default: nil
   attr :name, :any
   attr :label, :string
@@ -87,6 +89,39 @@ defmodule PasswordlessWeb.Components.Input do
       class={@class}
       {@rest}
     />
+    """
+  end
+
+  attr :id, :any
+  attr :name, :string
+  attr :label, :string
+  attr :class, :string, default: nil, doc: "the class to add to the input"
+
+  attr :rest, :global,
+    include:
+      ~w(autocomplete autocorrect autocapitalize disabled form max maxlength min minlength list
+    pattern placeholder readonly required size step value name multiple prompt selected default year month day hour minute second builder options layout cols rows wrap checked accept)
+
+  def otp_input(assigns) do
+    assigns = assign_new(assigns, :id, fn -> Util.id("otp-input") end)
+
+    ~H"""
+    <div class={@class} {@rest}>
+      <.field_label required>{@label}</.field_label>
+      <div id={@id} phx-hook="OTPHook">
+        <div class="otp-input-container flex items-center justify-between">
+          <input :for={i <- 1..6} id={"#{@id}-input-#{i}"} type="text" class="pc-otp-input" />
+        </div>
+        <input
+          id={@id <> "-hidden"}
+          type="hidden"
+          name={@name}
+          class="otp-result-input"
+          autofill="off"
+          autocomplete="off"
+        />
+      </div>
+    </div>
     """
   end
 
