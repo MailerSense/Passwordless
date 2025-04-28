@@ -1,9 +1,11 @@
 <.layout current_user={@current_user} current_page={:reports} current_section={:app}>
-  <.box card>
-    <.form_header title={gettext("Reports")} no_margin />
-    <.p>
-      {gettext("We are working on statistical data analysis. Stay tuned!")}
-    </.p>
-    <.a label={gettext("Back to home")} to={~p"/home"} style="link" link_type="live_redirect" />
-  </.box>
+  <div class="flex flex-col gap-6 p-6">
+    <.box card>
+      <.form_header title={gettext("Reports")} no_margin />
+      <.p>
+        {gettext("We are working on statistical data analysis. Stay tuned!")}
+      </.p>
+      <.a label={gettext("Back to home")} to={~p"/home"} style="link" link_type="live_redirect" />
+    </.box>
+  </div>
 </.layout>

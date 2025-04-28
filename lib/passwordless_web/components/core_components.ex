@@ -204,7 +204,7 @@ defmodule PasswordlessWeb.CoreComponents do
         />
       </:dropdown>
 
-      <.div_wrapper class="p-6 w-full mx-auto max-w-7xl" wrap={@padded}>
+      <.div_wrapper class="w-full mx-auto max-w-7xl" wrap={@padded}>
         {render_slot(@inner_block)}
       </.div_wrapper>
     </.sidebar_layout>

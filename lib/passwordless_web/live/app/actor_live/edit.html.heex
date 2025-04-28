@@ -1,6 +1,6 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
   <.form id="edit-actor-form" for={@form} phx-change="validate" phx-submit="save">
-    <div class="flex flex-col gap-6">
+    <div class="flex flex-col gap-6 p-6">
       <.subpage_header field={@form[:name]} placeholder={gettext("User's display name")}>
         <div class="flex gap-3">
           <.button
@@ -231,7 +231,7 @@
     </div>
   </.form>
 
-  <div class="flex flex-col gap-6 mt-6">
+  <div class="flex flex-col gap-6 px-6 pb-6 pt-0">
     <.form_separator no_margin />
     <.p>
       Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.

@@ -10,7 +10,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
 
   attr :current_user, :map, required: true
   attr :current_page, :atom, required: true
-  attr :inner_class, :any, default: "p-6"
+  attr :inner_class, :any, default: ""
   slot :action, required: false
   slot :inner_block
 
