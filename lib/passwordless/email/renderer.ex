@@ -31,7 +31,7 @@ defmodule Passwordless.Email.Renderer do
       }
     },
     action: %Action{
-      name: "login"
+      name: "signIn"
     }
   ]
 

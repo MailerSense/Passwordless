@@ -22,8 +22,8 @@ defmodule Passwordless.EmailTemplates do
         en: %{
           name: gettext("Magic link template"),
           style: :magic_link_clean,
-          subject: gettext("Sign in to %{name}", name: app.settings.display_name),
-          preheader: gettext("Magic Link to {{ action.name }}"),
+          subject: gettext("Your Magic Link"),
+          preheader: gettext("Magic Link to {{ action.name | downcase }}"),
           styles: %{
             magic_link_clean: %{
               mjml_body:
@@ -53,10 +53,10 @@ defmodule Passwordless.EmailTemplates do
                         <mj-column background-color="#fff" border-top="4px solid #2294ed" padding="16px">
                           <mj-text align="left">
                             <h4>Your {{ app.display_name }}'s Magic Link</h4>
-                            Please click the magic link below to {{ action.name }} with {{ app.display_name }}.
+                            Please click the magic link below to {{ action.name | downcase }}.
                           </mj-text>
                           <mj-button href="{{ magic_link_url }}" padding-bottom="32px">
-                            {{ action.name }} with {{ app.display_name }}
+                            Confirm {{ action.name }}
                           </mj-button>
                           <mj-text container-background-color="#f3f9ff" padding-bottom="0">
                             Or copy and paste this URL into your browser:
@@ -73,7 +73,7 @@ defmodule Passwordless.EmailTemplates do
                       <mj-section>
                         <mj-column>
                           <mj-text align="center" line-height="1.6" font-size="14px">
-                            This is your {{ app.display_name }}'s magic link.<br />if you didn't attempt to {{ action.name }}, you can safely ignore this email.
+                            This is your {{ app.display_name }}'s magic link.<br />if you didn't attempt to {{ action.name | downcase }}, you can safely ignore this email.
                           </mj-text>
                           <mj-text align="center" line-height="1.6" font-size="14px">
                             <a href="{{ unsubscribe_url }}">Unsubscribe</a>
@@ -93,8 +93,8 @@ defmodule Passwordless.EmailTemplates do
         en: %{
           name: gettext("Email OTP template"),
           style: :email_otp_clean,
-          subject: gettext("Sign in to %{name}", name: app.settings.display_name),
-          preheader: gettext("Enter {{ otp.code }} to {{ action.name }}"),
+          subject: gettext("Your OTP Code"),
+          preheader: gettext("Enter {{ otp.code }} to {{ action.name | downcase }}"),
           styles: %{
             email_otp_clean: %{
               mjml_body:
@@ -118,7 +118,7 @@ defmodule Passwordless.EmailTemplates do
                         <mj-column background-color="#fff" width="320px" css-class="body-section" border-top="4px solid #2e90fa" padding="15px">
                           <mj-image src="https://res.cloudinary.com/kissassets/image/upload/v1556264522/password-lock.png" align="center" width="150px" alt="" />
                           <mj-text font-size="24px" align="center">
-                            Code to {{ action.name }}
+                            {{ action.name }} Code
                           </mj-text>
                           <mj-text font-family="monospace" font-size="32px" align="center" container-background-color="#f3f9ff" font-weight="600" letter-spacing="8px">
                             {{ otp.code }}
@@ -132,7 +132,7 @@ defmodule Passwordless.EmailTemplates do
                       <mj-section>
                         <mj-column>
                           <mj-text align="center" line-height="1.6" font-size="14px">
-                            This is your {{ app.display_name }}'s one time password.<br />if you didn't attempt to {{ action.name }}, you can safely ignore this email.
+                            This is your {{ app.display_name }}'s one time password.<br />if you didn't attempt to {{ action.name | downcase }}, you can safely ignore this email.
                           </mj-text>
                           <mj-text align="center" line-height="1.6" font-size="14px">
                             <a href="{{ unsubscribe_url }}">Unsubscribe</a>
