@@ -55,8 +55,8 @@
 
     <:top_links>
       {gettext("Don't have an account?")}
-      <.link class="text-blue-600 underline dark:text-blue-300" navigate={~p"/auth/sign-up"}>
-        {gettext("Register")}
+      <.link class="text-blue-600 dark:text-blue-300" navigate={~p"/auth/sign-up"}>
+        {gettext("Sign up")}
       </.link>
     </:top_links>
 
@@ -95,11 +95,11 @@
 
     <:bottom_links>
       <.a
-        class="text-sm text-slate-500 underline dark:text-slate-400"
+        class="text-sm text-slate-500 dark:text-slate-400"
         to={~p"/auth/sign-in/password"}
         link_type="live_patch"
       >
-        {gettext("Login with password")}
+        {gettext("Password login")}
       </.a>
     </:bottom_links>
   </.auth_layout>

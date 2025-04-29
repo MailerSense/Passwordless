@@ -23,7 +23,7 @@ defmodule Passwordless.EmailTemplates do
           name: gettext("Magic link template"),
           style: :magic_link_clean,
           subject: gettext("Sign in to %{name}", name: app.settings.display_name),
-          preheader: gettext("Click the link below to sign in."),
+          preheader: gettext("Magic Link to {{ action.name}}"),
           styles: %{
             magic_link_clean: %{
               mjml_body:
@@ -34,94 +34,46 @@ defmodule Passwordless.EmailTemplates do
                       <mj-title>{{ subject }}</mj-title>
                       <mj-preview>{{ preheader }}</mj-preview>
                       <mj-attributes>
-                        <mj-text
-                          font-size="16px"
-                          line-height="1.6"
-                          color="#111827"
-                          font-family="inter, sans-serif"
-                        ></mj-text>
+                        <mj-all font-size="14px" line-height="26px" font-family="inter, sans-serif" line-height="36px" />
                         <mj-button
-                          font-size="16px"
-                          line-height="1.6"
-                          color="#111827"
+                          color="#FFFFFF"
                           background-color="{{ app.primary_button_color }}"
                           font-family="inter, sans-serif"
                         ></mj-button>
                       </mj-attributes>
-                      <mj-style inline="inline">
-                        a { color: inherit; text-decoration: underline; }
-                      </mj-style>
                     </mj-head>
-                    <mj-body background-color="#f3f4f6">
+                    <mj-body background-color="#ebf2fa">
                       <mj-section>
                         <mj-column>
-                          <mj-image
-                            width="100px"
-                            height="100px"
-                            src="{{ app.logo }}"
-                          ></mj-image>
+                          <mj-image src="https://res.cloudinary.com/kissassets/image/upload/v1556188010/logo.png" width="140px" alt="logo" />
                         </mj-column>
                       </mj-section>
-                      <mj-section background-color="#ffffff">
-                        <mj-column>
-                          <mj-text>
-                            Hey {{ user.name | default: "there" }}, here is your login for <strong>{{ app.display_name }}</strong>:
+                      <mj-section>
+                        <mj-column background-color="#fff" css-class="body-section" border-top="4px solid #2294ed" padding="15px">
+                          <mj-text padding="16px" align="left">
+                            <h4>Your {{ app.display_name }}'s Magic Link</h4>
+                            Please click the magic link below to {{ action.name }} with {{ app.display_name }}.
                           </mj-text>
-                          <mj-button color="#ffffff" font-weight="600" border-radius="8px" href="{{ magic_link_url }}">
-                            Sign in to {{ app.display_name }}
+                          <mj-button href="{{ magic_link_url }}" padding-bottom="24px">
+                            {{ action.name }} with {{ app.display_name }}
                           </mj-button>
-                          <mj-text>Or, copy and paste this link into your browser:</mj-text>
-                          <mj-text color="#1570ef"><a href="{{ magic_link_url }}" target="_blank">{{ magic_link_url }}</a></mj-text>
-                          <mj-text color="#999999"
-                          >This email was sent by <a href="https://passwordless.tools" target="_blank" style="color: #999999;">Passwordless</a> on behalf of {{ app.display_name
-                            }}. If you did not request this email, please reply and let us know.</mj-text>
-                        </mj-column>
-                      </mj-section>
-                      <mj-section
-                        background-url="https://www.keila.io/newsletter-assets/ai-elephant.jpg"
-                        padding="20px 20px"
-                      >
-                        <mj-column></mj-column>
-                        <mj-column background-color="#dcfce7">
-                          <mj-text>
-                            MJML is an easy way to create complex email layouts with multiple columns that are fully responsive and work on a wide range of devices.
+                          <mj-text container-background-color="#f3f9ff">
+                            Or copy and paste this URL into your browser:
+                            <a href="{{ magic_link_url }}" style="line-height: 1.6">{{ magic_link_url }}</a>
                           </mj-text>
+                          <mj-divider border-width="1px" border-color="#8ba6c0" border-style="dashed" />
                           <mj-text>
-                            Lorem Ipsum Dolor Sit Amet Consecuteor Est Lirum Larum.
+                            This link is valid for 3 minutes.
                           </mj-text>
-                          <mj-button
-                            background-color="#111827"
-                            color="white"
-                            href="https://www.keila.io"
-                          >
-                            Click me!
-                          </mj-button>
-                        </mj-column>
-                      </mj-section>
-                      <mj-section background-color="#ffffff" padding-bottom="0">
-                        <mj-column>
-                          <mj-text font-weight="bold"> Use Multiple Columns! </mj-text>
-                        </mj-column>
-                      </mj-section>
-                      <mj-section background-color="#ffffff" padding-top="0">
-                        <mj-column>
-                          <mj-text>Build responsive email templates with MJML.</mj-text>
-                        </mj-column>
-                        <mj-column>
-                          <mj-text>Use the <code>&lt;mj-raw&gt;</code> tag to include
-                            <a href="https://shopify.github.io/liquid/" target="_blank">Liquid template</a>
-                            tags.</mj-text>
-                        </mj-column>
-                        <mj-column>
-                          <mj-text>If you prefer simpler emails, you can also write newsletters in Markdown!</mj-text>
                         </mj-column>
                       </mj-section>
                       <mj-section>
                         <mj-column>
-                          <mj-text font-size="12.5px" align="center">
-                            Powered by Passwordless Tools
-                            <br />
-                            <a style="color: #292524" href="{{ unsubscribe_url }}">Unsubscribe</a>
+                          <mj-text align="center" line-height="1.6">
+                            This is your {{ app.display_name }}'s magic link.<br />if you didn't attempt to {{ action.name }}, you can safely ignore this email.
+                          </mj-text>
+                          <mj-text align="center" line-height="1.6">
+                            <a href="{{ unsubscribe_url }}">Unsubscribe</a>
                           </mj-text>
                         </mj-column>
                       </mj-section>
@@ -139,7 +91,7 @@ defmodule Passwordless.EmailTemplates do
           name: gettext("Email OTP template"),
           style: :email_otp_clean,
           subject: gettext("Sign in to %{name}", name: app.settings.display_name),
-          preheader: gettext("Your OTP is {{ otp_code }}."),
+          preheader: gettext("Enter {{ otp_code }} to {{ action.name}}"),
           styles: %{
             email_otp_clean: %{
               mjml_body:
@@ -150,87 +102,37 @@ defmodule Passwordless.EmailTemplates do
                       <mj-title>{{ subject }}</mj-title>
                       <mj-preview>{{ preheader }}</mj-preview>
                       <mj-attributes>
-                        <mj-text
-                          font-size="16px"
-                          line-height="1.6"
-                          color="#111827"
-                          font-family="inter, sans-serif"
-                        ></mj-text>
-                        <mj-button
-                          font-size="16px"
-                          line-height="1.6"
-                          color="#111827"
-                          background-color="{{ app.primary_button_color }}"
-                          font-family="inter, sans-serif"
-                        ></mj-button>
+                        <mj-all font-size="14px" line-height="26px" font-family="inter, sans-serif" line-height="36px" />
                       </mj-attributes>
-                      <mj-style inline="inline">
-                        a { color: inherit; text-decoration: underline; }
-                      </mj-style>
                     </mj-head>
-                    <mj-body background-color="#f3f4f6">
+                    <mj-body background-color="#ebf2fa">
                       <mj-section>
                         <mj-column>
-                          <mj-image
-                            width="100px"
-                            height="100px"
-                            src="{{ app.logo }}"
-                          ></mj-image>
+                          <mj-image src="https://res.cloudinary.com/kissassets/image/upload/v1556188010/logo.png" width="140px" alt="logo" />
                         </mj-column>
                       </mj-section>
-                      <mj-section background-color="#ffffff">
-                        <mj-column>
-                          <mj-text>
-                            Hey {{ user.name | default: "there" }}, here is your OTP for <strong>{{ app.display_name }}</strong>:
+                      <mj-section>
+                        <mj-column background-color="#fff" width="320px" css-class="body-section" border-top="4px solid #2e90fa" padding="15px">
+                          <mj-image src="https://res.cloudinary.com/kissassets/image/upload/v1556264522/password-lock.png" align="center" width="150px" alt="" />
+                          <mj-text font-size="24px" align="center">
+                            Code to {{ action.name }}
                           </mj-text>
-                          <mj-text align="center" letter-spacing="8px" font-weight="500" font-size="56px">{{ otp_code }}</mj-text>
-                        </mj-column>
-                      </mj-section>
-                      <mj-section
-                        background-url="https://www.keila.io/newsletter-assets/ai-elephant.jpg"
-                        padding="20px 20px"
-                      >
-                        <mj-column></mj-column>
-                        <mj-column background-color="#dcfce7">
-                          <mj-text>
-                            MJML is an easy way to create complex email layouts with multiple columns that are fully responsive and work on a wide range of devices.
+                          <mj-text font-family="monospace" font-size="32px" align="center" container-background-color="#f3f9ff" font-weight="600" letter-spacing="8px">
+                            {{ otp_code }}
                           </mj-text>
-                          <mj-text>
-                            Lorem Ipsum Dolor Sit Amet Consecuteor Est Lirum Larum.
+                          <mj-divider border-width="1px" border-color="#8ba6c0" border-style="dashed" />
+                          <mj-text align="center">
+                            Valid for next 3 minutes
                           </mj-text>
-                          <mj-button
-                            background-color="#111827"
-                            color="white"
-                            href="https://www.keila.io"
-                          >
-                            Click me!
-                          </mj-button>
-                        </mj-column>
-                      </mj-section>
-                      <mj-section background-color="#ffffff" padding-bottom="0">
-                        <mj-column>
-                          <mj-text font-weight="bold"> Use Multiple Columns! </mj-text>
-                        </mj-column>
-                      </mj-section>
-                      <mj-section background-color="#ffffff" padding-top="0">
-                        <mj-column>
-                          <mj-text>Build responsive email templates with MJML.</mj-text>
-                        </mj-column>
-                        <mj-column>
-                          <mj-text>Use the <code>&lt;mj-raw&gt;</code> tag to include
-                            <a href="https://shopify.github.io/liquid/" target="_blank">Liquid template</a>
-                            tags.</mj-text>
-                        </mj-column>
-                        <mj-column>
-                          <mj-text>If you prefer simpler emails, you can also write newsletters in Markdown!</mj-text>
                         </mj-column>
                       </mj-section>
                       <mj-section>
                         <mj-column>
-                          <mj-text font-size="12.5px" align="center">
-                            Powered by Passwordless Tools
-                            <br />
-                            <a style="color: #292524" href="{{ unsubscribe_url }}">Unsubscribe</a>
+                          <mj-text align="center" line-height="1.6">
+                            This is your {{ app.display_name }}'s one time password.<br />if you didn't attempt to {{ action.name }}, you can safely ignore this email.
+                          </mj-text>
+                          <mj-text align="center" line-height="1.6">
+                            <a href="{{ unsubscribe_url }}">Unsubscribe</a>
                           </mj-text>
                         </mj-column>
                       </mj-section>

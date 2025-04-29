@@ -5,8 +5,6 @@ defmodule PasswordlessWeb.Components.Input do
 
   use Phoenix.Component
 
-  import PasswordlessWeb.Components.Field, only: [field_label: 1]
-
   attr :id, :any, default: nil
   attr :name, :any
   attr :label, :string
@@ -107,7 +105,6 @@ defmodule PasswordlessWeb.Components.Input do
 
     ~H"""
     <div class={@class} {@rest}>
-      <.field_label required>{@label}</.field_label>
       <div id={@id} phx-hook="OTPHook">
         <div class="otp-input-container flex items-center justify-between">
           <input :for={i <- 1..6} id={"#{@id}-input-#{i}"} type="text" class="pc-otp-input" />

@@ -1,8 +1,6 @@
 defmodule PasswordlessWeb.ErrorHTML do
   use PasswordlessWeb, :html
 
-  import PasswordlessWeb.Components.Typography
-
   # If you want to customize your error pages,
   # uncomment the embed_templates/1 call below
   # and add pages to the error directory:
@@ -25,16 +23,15 @@ defmodule PasswordlessWeb.ErrorHTML do
       </:logo>
 
       <:top_links>
-        What's next?
+        Feeling lost?
         <.link class="text-blue-600 underline dark:text-blue-400" navigate={~p"/"}>
           {gettext("Back to Home")}
         </.link>
       </:top_links>
 
-      <.form_header title={gettext("Error details")} class="mb-6" />
-      <.p class="mb-6">
+      <.alert color={status_color(@status)} with_icon class="mb-6">
         {@message}
-      </.p>
+      </.alert>
       <div class="flex">
         <.button link_type="a" title={gettext("Back to Home")} to={~p"/"} class="flex flex-1" />
       </div>
@@ -56,22 +53,28 @@ defmodule PasswordlessWeb.ErrorHTML do
       </:logo>
 
       <:top_links>
-        What's next?
+        Feeling lost?
         <.link class="text-blue-600 underline dark:text-blue-400" navigate={~p"/"}>
           {gettext("Back to Home")}
         </.link>
       </:top_links>
 
-      <.form_header
+      <.alert
         :if={Util.present?(@reason_message)}
-        title={gettext("Error details")}
-        class="mb-6"
-      />
-      <.p :if={Util.present?(@reason_message)} class="mb-6">
+        color={status_color(@status)}
+        with_icon
+        class="mb-6 break-all"
+      >
         {@reason_message}
-      </.p>
+      </.alert>
       <div class="flex">
-        <.button link_type="a" title={gettext("Back to Home")} to={~p"/"} class="flex flex-1" />
+        <.button
+          size="xl"
+          link_type="a"
+          title={gettext("Back to Home")}
+          to={~p"/"}
+          class="flex flex-1"
+        />
       </div>
     </.auth_layout>
     """
@@ -79,13 +82,19 @@ defmodule PasswordlessWeb.ErrorHTML do
 
   # Private
 
-  defp reason_message(%mod{} = reason) do
-    if Kernel.function_exported?(mod, :message, 1) do
-      apply(mod, :message, [reason])
-    else
-      inspect(reason)
-    end
+  defp reason_message(%mod{} = _reason) do
+    inspect(mod)
   end
 
   defp reason_message(_reason), do: nil
+
+  defp status_color(status) when is_integer(status) do
+    cond do
+      status < 400 -> "info"
+      status in 400..499 -> "warning"
+      true -> "danger"
+    end
+  end
+
+  defp status_color(_), do: "info"
 end
