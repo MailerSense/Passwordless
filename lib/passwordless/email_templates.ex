@@ -34,15 +34,16 @@ defmodule Passwordless.EmailTemplates do
                       <mj-title>{{ subject }}</mj-title>
                       <mj-preview>{{ preheader }}</mj-preview>
                       <mj-attributes>
-                        <mj-all font-size="14px" line-height="26px" font-family="Inter, sans-serif, Arial" line-height="36px" />
+                        <mj-all font-size="16px" line-height="26px" font-family="Inter, sans-serif, Arial" line-height="36px" />
                         <mj-button
                           color="#FFFFFF"
                           background-color="{{ app.primary_button_color }}"
                           font-family="Inter, sans-serif, Arial"
                         ></mj-button>
                       </mj-attributes>
+                      <mj-style inline="inline"> .break { word-break: break-all !important; } </mj-style>
                     </mj-head>
-                    <mj-body background-color="#ebf2fa">
+                    <mj-body background-color="#ebf2fa" width="500px">
                       <mj-section>
                         <mj-column>
                           <mj-image src="https://res.cloudinary.com/kissassets/image/upload/v1556188010/logo.png" width="140px" alt="logo" />
@@ -54,25 +55,27 @@ defmodule Passwordless.EmailTemplates do
                             <h4>Your {{ app.display_name }}'s Magic Link</h4>
                             Please click the magic link below to {{ action.name }} with {{ app.display_name }}.
                           </mj-text>
-                          <mj-button href="{{ magic_link_url }}" padding-bottom="24px">
+                          <mj-button href="{{ magic_link_url }}" padding-bottom="32px">
                             {{ action.name }} with {{ app.display_name }}
                           </mj-button>
-                          <mj-text container-background-color="#f3f9ff">
+                          <mj-text container-background-color="#f3f9ff" padding-bottom="0">
                             Or copy and paste this URL into your browser:
-                            <a href="{{ magic_link_url }}" style="line-height: 1.6">{{ magic_link_url }}</a>
+                          </mj-text>
+                          <mj-text container-background-color="#f3f9ff" line-height="1.6" padding-top="0">
+                            <a href="{{ magic_link_url }}" class="break">{{ magic_link_url }}</a>
                           </mj-text>
                           <mj-divider border-width="1px" border-color="#8ba6c0" border-style="dashed" />
                           <mj-text>
-                            This link is valid for 3 minutes.
+                            This link is valid for next 3 minutes.
                           </mj-text>
                         </mj-column>
                       </mj-section>
                       <mj-section>
                         <mj-column>
-                          <mj-text align="center" line-height="1.6">
+                          <mj-text align="center" line-height="1.6" font-size="14px">
                             This is your {{ app.display_name }}'s magic link.<br />if you didn't attempt to {{ action.name }}, you can safely ignore this email.
                           </mj-text>
-                          <mj-text align="center" line-height="1.6">
+                          <mj-text align="center" line-height="1.6" font-size="14px">
                             <a href="{{ unsubscribe_url }}">Unsubscribe</a>
                           </mj-text>
                         </mj-column>
@@ -102,7 +105,7 @@ defmodule Passwordless.EmailTemplates do
                       <mj-title>{{ subject }}</mj-title>
                       <mj-preview>{{ preheader }}</mj-preview>
                       <mj-attributes>
-                        <mj-all font-size="14px" line-height="26px" font-family="Inter, sans-serif, Arial" line-height="36px" />
+                        <mj-all font-size="16px" line-height="26px" font-family="Inter, sans-serif, Arial" line-height="36px" />
                       </mj-attributes>
                     </mj-head>
                     <mj-body background-color="#ebf2fa">
@@ -128,10 +131,10 @@ defmodule Passwordless.EmailTemplates do
                       </mj-section>
                       <mj-section>
                         <mj-column>
-                          <mj-text align="center" line-height="1.6">
+                          <mj-text align="center" line-height="1.6" font-size="14px">
                             This is your {{ app.display_name }}'s one time password.<br />if you didn't attempt to {{ action.name }}, you can safely ignore this email.
                           </mj-text>
-                          <mj-text align="center" line-height="1.6">
+                          <mj-text align="center" line-height="1.6" font-size="14px">
                             <a href="{{ unsubscribe_url }}">Unsubscribe</a>
                           </mj-text>
                         </mj-column>

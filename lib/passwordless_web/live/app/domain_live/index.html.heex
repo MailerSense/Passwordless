@@ -3,7 +3,7 @@
     <.box card>
       <.form_header title={gettext("Domain")} no_margin />
       <.p>
-        Domain used for email sending ensures your emails are branded correctly and are less likely to be marked as spam. You can add a domain to your app, and we'll guide you through the process of verifying it.
+        Emails (OTPs, magic links) are sent from your domain. This allows you to send branded emails and improves deliverability. You can set up a custom domain for your app or use the default system domain.
       </.p>
       <.field
         :if={Util.present?(@email_domain)}

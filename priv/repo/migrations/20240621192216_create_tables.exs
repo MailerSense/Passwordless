@@ -355,8 +355,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:magic_link_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
-      add :expires, :integer, null: false, default: 15
-      add :resend, :integer, null: false, default: 30
+      add :expires, :integer, null: false
+      add :resend, :integer, null: false
       add :sender, :citext, null: false
       add :sender_name, :string, null: false
       add :email_tracking, :boolean, null: false, default: false
@@ -387,7 +387,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:whatsapp_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
-      add :expires, :integer, null: false, default: 5
+      add :expires, :integer, null: false
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 
@@ -399,8 +399,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create table(:email_otp_authenticators, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :enabled, :boolean, null: false, default: true
-      add :expires, :integer, null: false, default: 15
-      add :resend, :integer, null: false, default: 30
+      add :expires, :integer, null: false
+      add :resend, :integer, null: false
+      add :attempts, :integer, null: false
       add :sender, :citext, null: false
       add :sender_name, :string, null: false
       add :email_tracking, :boolean, null: false, default: false

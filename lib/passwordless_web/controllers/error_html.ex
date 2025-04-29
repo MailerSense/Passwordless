@@ -17,15 +17,15 @@ defmodule PasswordlessWeb.ErrorHTML do
     assigns = Map.put(assigns, :status_message, Phoenix.Controller.status_message_from_template(template))
 
     ~H"""
-    <.auth_layout title={gettext("%{status}: %{message}", status: @status, message: @status_message)}>
+    <.auth_layout title={@message}>
       <:logo>
         <.logo_icon class="w-16 h-16" />
       </:logo>
 
       <:top_links>
-        Feeling lost?
-        <.link class="text-blue-600 underline dark:text-blue-400" navigate={~p"/"}>
-          {gettext("Back to Home")}
+        Found a bug?
+        <.link class="text-blue-600 dark:text-blue-400" navigate={~p"/"}>
+          {gettext("Report")}
         </.link>
       </:top_links>
 
@@ -33,7 +33,13 @@ defmodule PasswordlessWeb.ErrorHTML do
         {@message}
       </.alert>
       <div class="flex">
-        <.button link_type="a" title={gettext("Back to Home")} to={~p"/"} class="flex flex-1" />
+        <.button
+          size="xl"
+          link_type="a"
+          title={gettext("Back to Home")}
+          to={~p"/"}
+          class="flex flex-1"
+        />
       </div>
     </.auth_layout>
     """
@@ -47,15 +53,15 @@ defmodule PasswordlessWeb.ErrorHTML do
       |> Map.put(:reason_message, reason_message(assigns[:reason]))
 
     ~H"""
-    <.auth_layout title={gettext("%{status}: %{message}", status: @status, message: @message)}>
+    <.auth_layout title={@message}>
       <:logo>
         <.logo_icon class="w-16 h-16" />
       </:logo>
 
       <:top_links>
-        Feeling lost?
-        <.link class="text-blue-600 underline dark:text-blue-400" navigate={~p"/"}>
-          {gettext("Back to Home")}
+        Found a bug?
+        <.link class="text-blue-600 dark:text-blue-400" navigate={~p"/"}>
+          {gettext("Report")}
         </.link>
       </:top_links>
 

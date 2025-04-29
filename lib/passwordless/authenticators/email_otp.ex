@@ -31,6 +31,7 @@ defmodule Passwordless.Authenticators.EmailOTP do
     field :enabled, :boolean, default: true
     field :expires, :integer, default: 3
     field :resend, :integer, default: 30
+    field :attempts, :integer, default: 3
     field :sender, :string
     field :sender_name, :string
 
@@ -51,6 +52,7 @@ defmodule Passwordless.Authenticators.EmailOTP do
     enabled
     expires
     resend
+    attempts
     sender
     sender_name
     app_id
@@ -69,6 +71,7 @@ defmodule Passwordless.Authenticators.EmailOTP do
     |> validate_string(:sender_name)
     |> validate_number(:expires, greater_than: 1, less_than_or_equal_to: 30)
     |> validate_number(:resend, greater_than_or_equal_to: 30, less_than_or_equal_to: 300)
+    |> validate_number(:attempts, greater_than_or_equal_to: 1, less_than_or_equal_to: 5)
     |> unique_constraint(:app_id)
     |> unsafe_validate_unique(:app_id, Passwordless.Repo)
     |> assoc_constraint(:app)

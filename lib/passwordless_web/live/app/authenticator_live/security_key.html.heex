@@ -10,7 +10,7 @@
     <.box padded>
       <.form_header title={gettext("Security key")} />
       <.p class="mb-6">
-        Security keys (WebAuthn, FIDO) are physical devices that can be used to sign in. They are often in the form of a USB key or a Bluetooth device. When enabled, users can use a security key to sign in by plugging it into their computer or tapping it to their phone.
+        WebAuthn security keys, also known as FIDO2 keys, are physical devices that use public key cryptography to securely authenticate users online, replacing passwords with a more secure method.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
       <.field
