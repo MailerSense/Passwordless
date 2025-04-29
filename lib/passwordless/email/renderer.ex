@@ -7,6 +7,7 @@ defmodule Passwordless.Email.Renderer do
   alias Passwordless.Actor
   alias Passwordless.Email
   alias Passwordless.EmailTemplateLocale
+  alias Passwordless.OTP
   alias Passwordless.Phone
   alias Passwordless.Templating.Liquid
   alias Passwordless.Templating.MJML
@@ -42,12 +43,16 @@ defmodule Passwordless.Email.Renderer do
   }
 
   @variable_providers [
+    :otp,
     :app,
     :actor,
     :action
   ]
 
-  def demo_opts, do: @example_providers
+  def demo_opts,
+    do:
+      @example_providers ++
+        [otp: %OTP{code: OTP.generate_code(), expires_at: DateTime.add(DateTime.utc_now(), 3, :minute)}]
 
   def demo_variables, do: @example_variables
 

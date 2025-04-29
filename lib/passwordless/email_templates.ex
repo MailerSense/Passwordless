@@ -23,7 +23,7 @@ defmodule Passwordless.EmailTemplates do
           name: gettext("Magic link template"),
           style: :magic_link_clean,
           subject: gettext("Sign in to %{name}", name: app.settings.display_name),
-          preheader: gettext("Magic Link to {{ action.name}}"),
+          preheader: gettext("Magic Link to {{ action.name }}"),
           styles: %{
             magic_link_clean: %{
               mjml_body:
@@ -49,8 +49,8 @@ defmodule Passwordless.EmailTemplates do
                         </mj-column>
                       </mj-section>
                       <mj-section>
-                        <mj-column background-color="#fff" css-class="body-section" border-top="4px solid #2294ed" padding="15px">
-                          <mj-text padding="16px" align="left">
+                        <mj-column background-color="#fff" border-top="4px solid #2294ed" padding="16px">
+                          <mj-text align="left">
                             <h4>Your {{ app.display_name }}'s Magic Link</h4>
                             Please click the magic link below to {{ action.name }} with {{ app.display_name }}.
                           </mj-text>
@@ -91,7 +91,7 @@ defmodule Passwordless.EmailTemplates do
           name: gettext("Email OTP template"),
           style: :email_otp_clean,
           subject: gettext("Sign in to %{name}", name: app.settings.display_name),
-          preheader: gettext("Enter {{ otp_code }} to {{ action.name}}"),
+          preheader: gettext("Enter {{ otp.code }} to {{ action.name }}"),
           styles: %{
             email_otp_clean: %{
               mjml_body:
@@ -118,11 +118,11 @@ defmodule Passwordless.EmailTemplates do
                             Code to {{ action.name }}
                           </mj-text>
                           <mj-text font-family="monospace" font-size="32px" align="center" container-background-color="#f3f9ff" font-weight="600" letter-spacing="8px">
-                            {{ otp_code }}
+                            {{ otp.code }}
                           </mj-text>
                           <mj-divider border-width="1px" border-color="#8ba6c0" border-style="dashed" />
                           <mj-text align="center">
-                            Valid for next 3 minutes
+                            Valid for next {{ otp.expires_in }}
                           </mj-text>
                         </mj-column>
                       </mj-section>

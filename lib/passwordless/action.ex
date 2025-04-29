@@ -54,6 +54,8 @@ defmodule Passwordless.Action do
 
   def topic_for(%App{} = app), do: "#{prefix()}:#{app.id}"
 
+  def readable_name(%__MODULE__{name: name}), do: Recase.to_sentence(name)
+
   def first_event(%__MODULE__{events: [_ | _] = events}) do
     events
     |> Enum.sort_by(& &1.inserted_at, :asc)
