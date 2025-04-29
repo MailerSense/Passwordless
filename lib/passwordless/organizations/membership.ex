@@ -9,7 +9,8 @@ defmodule Passwordless.Organizations.Membership do
 
   alias Passwordless.Accounts.User
   alias Passwordless.Organizations.Org
-  alias Passwordless.Security.Roles
+
+  @roles [:owner, :admin, :manager, :member, :billing]
 
   @derive {
     Flop.Schema,
@@ -31,7 +32,7 @@ defmodule Passwordless.Organizations.Membership do
     ]
   }
   schema "org_memberships" do
-    field :role, Ecto.Enum, values: Roles.org_roles(), default: :member
+    field :role, Ecto.Enum, values: @roles, default: :member
 
     # User
     field :name, :string, virtual: true
@@ -42,6 +43,8 @@ defmodule Passwordless.Organizations.Membership do
 
     timestamps()
   end
+
+  def roles, do: @roles
 
   @doc """
   Get all memberships for an organization.
@@ -112,7 +115,7 @@ defmodule Passwordless.Organizations.Membership do
   def is?(%__MODULE__{}, _role), do: false
 
   def at_least?(%__MODULE__{role: role}, target_role) when is_atom(role) and is_atom(target_role) do
-    roles = Enum.with_index(Roles.org_roles())
+    roles = Enum.with_index(@roles)
     precedences = for r <- [role, target_role], do: Enum.find(roles, fn {m, _} -> m == r end)
 
     case precedences do
@@ -124,7 +127,7 @@ defmodule Passwordless.Organizations.Membership do
   def at_least?(%__MODULE__{}, _role), do: false
 
   def access_level(%__MODULE__{role: role}) when is_atom(role) do
-    roles = Enum.with_index(Roles.org_roles())
+    roles = Enum.with_index(@roles)
 
     case Enum.find(roles, fn {m, _} -> m == role end) do
       {_, i} -> i

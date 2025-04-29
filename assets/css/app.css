@@ -1316,7 +1316,7 @@
   }
 
   .pc-page-header--text {
-    @apply text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight;
+    @apply text-2xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight;
   }
 
   /* Separator */

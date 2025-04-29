@@ -8,11 +8,19 @@ defmodule Passwordless.AuthToken do
   import Ecto.Query
 
   alias Passwordless.App
-  alias Passwordless.Security.Roles
   alias Util.Base58
 
   @size 24
   @prefix "sk_live_"
+  @permissions [
+    actions: [
+      :list,
+      :create
+    ]
+  ]
+  @permissions_flat Enum.flat_map(@permissions, fn {domain, actions} ->
+                      [domain | Enum.map(actions, &:"#{&1}_#{domain}")]
+                    end)
 
   @derive {
     Flop.Schema,
@@ -21,13 +29,15 @@ defmodule Passwordless.AuthToken do
   schema "auth_tokens" do
     field :key, Passwordless.EncryptedBinary, redact: true
     field :key_hash, Passwordless.HashedBinary, redact: true
-    field :scopes, {:array, Ecto.Enum}, values: Roles.auth_token_scopes(), default: []
+    field :permissions, {:array, Ecto.Enum}, values: @permissions_flat, default: []
 
     belongs_to :app, App
 
     timestamps()
     soft_delete_timestamp()
   end
+
+  def permissions, do: @permissions_flat
 
   @doc """
   Get invitations for an app.
@@ -70,6 +80,9 @@ defmodule Passwordless.AuthToken do
 
   def get_app_by_token(_), do: {:error, :invalid_key}
 
+  @doc """
+  Generate an underlying key.
+  """
   def generate_key do
     :crypto.strong_rand_bytes(@size)
   end
@@ -91,14 +104,15 @@ defmodule Passwordless.AuthToken do
   @doc """
   Can the api key perform the given scope?
   """
-  def can?(%__MODULE__{scopes: scopes}, scope) when is_atom(scope) and not is_nil(scope), do: scope in scopes
+  def can?(%__MODULE__{permissions: permissions}, action) when is_atom(action) and not is_nil(action),
+    do: action in permissions
 
-  def can?(%__MODULE__{scopes: scopes}, other_scopes) when is_list(other_scopes),
-    do: Enum.all?(other_scopes, &Enum.member?(scopes, &1))
+  def can?(%__MODULE__{permissions: permissions}, other_actions) when is_list(other_actions),
+    do: Enum.all?(other_actions, &Enum.member?(permissions, &1))
 
-  def can?(%__MODULE__{}, _scope), do: false
+  def can?(%__MODULE__{}, _action), do: false
 
-  @fields ~w(key scopes app_id)a
+  @fields ~w(key permissions app_id)a
   @required_fields @fields
 
   @doc """
@@ -108,7 +122,7 @@ defmodule Passwordless.AuthToken do
     auth_token
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> validate_scopes()
+    |> validate_permissions()
     |> validate_key()
     |> put_hash_fields()
     |> validate_key_hash()
@@ -130,10 +144,10 @@ defmodule Passwordless.AuthToken do
     |> unsafe_validate_unique(:key_hash, Passwordless.Repo)
   end
 
-  defp validate_scopes(changeset) do
+  defp validate_permissions(changeset) do
     changeset
-    |> update_change(:scopes, &Enum.uniq/1)
-    |> validate_length(:scopes, min: 1)
+    |> update_change(:permissions, &Enum.uniq/1)
+    |> validate_length(:permissions, min: 1)
   end
 
   @hashed_fields [key_hash: :key]

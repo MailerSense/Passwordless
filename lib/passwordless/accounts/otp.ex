@@ -34,20 +34,17 @@ defmodule Passwordless.Accounts.OTP do
 
   def size, do: @size
 
-  def valid?(%__MODULE__{attempts: attempts}, _candidate) when attempts >= @attempts, do: false
-
-  def valid?(%__MODULE__{code: code, expires_at: expires_at}, candidate) when is_binary(code) and is_binary(candidate) do
-    DateTime.after?(expires_at, DateTime.utc_now()) and
-      Plug.Crypto.secure_compare(code, candidate)
-  end
-
-  def valid?(%__MODULE__{}, _candidate), do: false
-
+  @doc """
+  Checks if the OTP is expired.
+  """
   def expired?(%__MODULE__{expires_at: expires_at}) do
     DateTime.before?(expires_at, DateTime.utc_now())
   end
 
-  def validate(%__MODULE__{} = otp, candidate) do
+  @doc """
+  Validates the OTP against a candidate code.
+  """
+  def validate(%__MODULE__{} = otp, candidate) when is_binary(candidate) and byte_size(candidate) == @size do
     cond do
       DateTime.before?(otp.expires_at, DateTime.utc_now()) ->
         {:error, :expired}
@@ -62,6 +59,13 @@ defmodule Passwordless.Accounts.OTP do
         {:ok, otp}
     end
   end
+
+  def validate(%__MODULE__{}, _otp), do: {:error, :incorrect_code}
+
+  @doc """
+  Generates a new OTP code.
+  """
+  def generate_code, do: Util.random_numeric_string(@size)
 
   @fields ~w(
     code
@@ -83,6 +87,4 @@ defmodule Passwordless.Accounts.OTP do
     |> unique_constraint(:user_id)
     |> unsafe_validate_unique(:user_id, Passwordless.Repo)
   end
-
-  def generate_code, do: Util.random_numeric_string(@size)
 end

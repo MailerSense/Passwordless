@@ -12,7 +12,7 @@ defmodule PasswordlessWeb.Admin.MembershipLive do
 
   import Ecto.Query
 
-  alias Passwordless.Security.Roles
+  alias Passwordless.Organizations.Membership
 
   @impl Backpex.LiveResource
   def singular_name, do: "Membership"
@@ -57,7 +57,7 @@ defmodule PasswordlessWeb.Admin.MembershipLive do
       role: %{
         module: Backpex.Fields.Select,
         label: "Role",
-        options: fn _assigns -> Enum.map(Roles.org_roles(), &{String.capitalize(Atom.to_string(&1)), &1}) end,
+        options: fn _assigns -> Enum.map(Membership.roles(), &{String.capitalize(Atom.to_string(&1)), &1}) end,
         index_editable: true
       },
       inserted_at: %{

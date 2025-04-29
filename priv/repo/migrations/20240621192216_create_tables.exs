@@ -256,7 +256,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :key, :binary, null: false
       add :key_hash, :binary, null: false
-      add :scopes, {:array, :string}, null: false, default: []
+      add :permissions, {:array, :string}, null: false, default: []
 
       add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
 

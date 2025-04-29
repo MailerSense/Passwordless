@@ -11,7 +11,7 @@ defmodule Passwordless.MagicLinkMapping do
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
 
-  @size 24
+  @size 16
 
   schema "magic_link_mappings" do
     field :key, Passwordless.EncryptedBinary, redact: true
@@ -23,20 +23,10 @@ defmodule Passwordless.MagicLinkMapping do
     timestamps(updated_at: false)
   end
 
-  @doc """
-  Creates a new mapping for this app.
-  """
-  def new(%App{} = app, attrs \\ %{}) do
-    {key, key_signed} = generate_key()
-
-    params = Map.put(attrs, :key, key)
-
-    changeset =
-      app
-      |> Ecto.build_assoc(:magic_link_mappings)
-      |> changeset(params)
-
-    {key_signed, changeset}
+  def generate_key do
+    raw = :crypto.strong_rand_bytes(@size)
+    signed = Token.sign(Endpoint, key_salt(), raw)
+    {raw, signed}
   end
 
   @fields ~w(
@@ -89,12 +79,6 @@ defmodule Passwordless.MagicLinkMapping do
         changeset
       end
     end)
-  end
-
-  defp generate_key do
-    raw = :crypto.strong_rand_bytes(@size)
-    signed = Token.sign(Endpoint, key_salt(), raw)
-    {raw, signed}
   end
 
   defp verify_key(token) when is_binary(token) do

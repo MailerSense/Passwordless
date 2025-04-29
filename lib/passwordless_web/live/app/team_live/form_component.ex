@@ -5,18 +5,14 @@ defmodule PasswordlessWeb.Org.TeamLive.FormComponent do
   alias Passwordless.Accounts
   alias Passwordless.Accounts.User
   alias Passwordless.Organizations
+  alias Passwordless.Organizations.Membership
   alias Passwordless.Security.Guard
   alias Passwordless.Security.Policy.Accounts, as: AccountsPolicy
-  alias Passwordless.Security.Roles
 
   @impl true
   def update(assigns, socket) do
+    roles = Enum.map(Membership.roles(), fn role -> {Phoenix.Naming.humanize(role), role} end)
     changeset = Organizations.change_membership(assigns.membership)
-
-    roles =
-      Enum.map(Roles.org_role_descriptions(), fn {role, _desc} ->
-        {Phoenix.Naming.humanize(role), role}
-      end)
 
     {:ok,
      socket

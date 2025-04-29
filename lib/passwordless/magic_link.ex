@@ -5,6 +5,8 @@ defmodule Passwordless.MagicLink do
 
   use Passwordless.Schema, prefix: "mgclnk"
 
+  import Ecto.Query
+
   alias Passwordless.EmailMessage
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
@@ -34,13 +36,38 @@ defmodule Passwordless.MagicLink do
     timestamps()
   end
 
+  @doc """
+  Generate a new magic link key.
+  """
+  def generate_key(%Timex.Duration{} = duration) do
+    max_age = duration |> Timex.Duration.to_seconds() |> trunc()
+    raw = :crypto.strong_rand_bytes(@size)
+    signed = Token.sign(Endpoint, key_salt(), raw, max_age: max_age)
+    {raw, signed}
+  end
+
+  @doc """
+  Query for getting magic link by ID and token.
+  """
+  def get_by_id_and_token(id, token) when is_binary(id) and is_binary(token) do
+    with {:ok, key} <- verify_key(token) do
+      {:ok,
+       from(l in __MODULE__,
+         where:
+           l.id == ^id and
+             l.key_hash == ^key and
+             l.expires_at > ^DateTime.utc_now()
+       )}
+    end
+  end
+
   @fields ~w(
     key
     expires_at
     accepted_at
     email_message_id
   )a
-  @required_fields @fields -- [:accepted_at, :email_message_id]
+  @required_fields @fields -- [:accepted_at]
 
   def changeset(%__MODULE__{} = magic_link, attrs \\ %{}, opts \\ []) do
     magic_link
@@ -52,12 +79,6 @@ defmodule Passwordless.MagicLink do
     |> assoc_constraint(:email_message)
     |> unique_constraint(:email_message_id)
     |> unsafe_validate_unique(:email_message_id, Passwordless.Repo, opts)
-  end
-
-  def generate_key do
-    raw = :crypto.strong_rand_bytes(@size)
-    signed = Token.sign(Endpoint, key_salt(), raw)
-    {raw, signed}
   end
 
   # Private

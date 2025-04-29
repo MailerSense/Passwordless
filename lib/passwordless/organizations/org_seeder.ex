@@ -56,7 +56,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
         }
       })
 
-    {:ok, auth_token} = Passwordless.create_auth_token(app, %{scopes: [:sync]})
+    {:ok, auth_token} = Passwordless.create_auth_token(app, %{permissions: [:actions]})
 
     Logger.warning("----------- AUTH TOKEN ------------")
     Logger.warning(AuthToken.encode(auth_token))

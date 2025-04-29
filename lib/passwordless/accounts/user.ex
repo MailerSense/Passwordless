@@ -13,7 +13,6 @@ defmodule Passwordless.Accounts.User do
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
-  alias Passwordless.Security.Roles
 
   @states ~w(active locked)a
 
@@ -29,7 +28,7 @@ defmodule Passwordless.Accounts.User do
     field :confirmed_at, :utc_datetime_usec
 
     # Virtuals
-    field :role, Ecto.Enum, values: Roles.org_roles(), virtual: true
+    field :role, :any, virtual: true
     field :full_name, :string, virtual: true
     field :current_org, :map, virtual: true
     field :current_app, :map, virtual: true

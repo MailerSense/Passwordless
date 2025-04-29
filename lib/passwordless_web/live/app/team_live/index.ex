@@ -12,7 +12,6 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   alias Passwordless.Repo
   alias Passwordless.Security.Guard
   alias Passwordless.Security.Policy.Accounts, as: AccountsPolicy
-  alias Passwordless.Security.Roles
   alias PasswordlessWeb.Components.DataTable
 
   @data_table_opts [
@@ -288,9 +287,9 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
 
   defp role_badge(assigns) do
     details =
-      Enum.find_value(Roles.org_role_descriptions(), fn {role, {_description, color}} ->
+      Enum.find_value(Membership.roles(), fn role ->
         if role == assigns.role do
-          %{role: Phoenix.Naming.humanize(role), color: color}
+          %{role: Phoenix.Naming.humanize(role), color: PasswordlessWeb.Helpers.random_color(role)}
         end
       end)
 
