@@ -34,15 +34,15 @@ defmodule Passwordless.EmailTemplates do
                       <mj-title>{{ subject }}</mj-title>
                       <mj-preview>{{ preheader }}</mj-preview>
                       <mj-attributes>
-                        <mj-all font-size="14px" line-height="26px" font-family="inter, sans-serif" line-height="36px" />
+                        <mj-all font-size="14px" line-height="26px" font-family="Inter, sans-serif, Arial" line-height="36px" />
                         <mj-button
                           color="#FFFFFF"
                           background-color="{{ app.primary_button_color }}"
-                          font-family="inter, sans-serif"
+                          font-family="Inter, sans-serif, Arial"
                         ></mj-button>
                       </mj-attributes>
                     </mj-head>
-                    <mj-body background-color="#ebf2fa">
+                    <mj-body background-color="#e8f4ff">
                       <mj-section>
                         <mj-column>
                           <mj-image src="https://res.cloudinary.com/kissassets/image/upload/v1556188010/logo.png" width="140px" alt="logo" />
@@ -102,10 +102,10 @@ defmodule Passwordless.EmailTemplates do
                       <mj-title>{{ subject }}</mj-title>
                       <mj-preview>{{ preheader }}</mj-preview>
                       <mj-attributes>
-                        <mj-all font-size="14px" line-height="26px" font-family="inter, sans-serif" line-height="36px" />
+                        <mj-all font-size="14px" line-height="26px" font-family="Inter, sans-serif, Arial" line-height="36px" />
                       </mj-attributes>
                     </mj-head>
-                    <mj-body background-color="#ebf2fa">
+                    <mj-body background-color="#e8f4ff">
                       <mj-section>
                         <mj-column>
                           <mj-image src="https://res.cloudinary.com/kissassets/image/upload/v1556188010/logo.png" width="140px" alt="logo" />
