@@ -176,7 +176,7 @@ defmodule PasswordlessWeb.Auth.PasswordlessLive do
       %User{} = user ->
         Accounts.purge_user_otp(user)
 
-        sign_in_token = Accounts.generate_user_passwordless_token!(user)
+        {:ok, sign_in_token} = Accounts.generate_user_passwordless_token(user)
 
         changeset =
           build_token_changeset(%{

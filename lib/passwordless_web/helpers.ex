@@ -363,19 +363,19 @@ defmodule PasswordlessWeb.Helpers do
     end
   end
 
-  def auth_token_scopes(%AuthToken{scopes: [_ | _] = scopes}) when length(scopes) > 2,
+  def auth_token_permissions(%AuthToken{permissions: [_ | _] = permissions}) when length(permissions) > 2,
     do:
-      scopes
+      permissions
       |> Enum.sort()
       |> Enum.take(1)
       |> Enum.map_join(", ", &Atom.to_string/1)
       |> String.capitalize()
-      |> Kernel.<>(", #{Enum.count(scopes) - 1} more")
+      |> Kernel.<>(", #{Enum.count(permissions) - 1} more")
 
-  def auth_token_scopes(%AuthToken{scopes: [_ | _] = scopes}),
-    do: scopes |> Enum.sort() |> Enum.map_join(", ", &Atom.to_string/1) |> String.capitalize()
+  def auth_token_permissions(%AuthToken{permissions: [_ | _] = permissions}),
+    do: permissions |> Enum.sort() |> Enum.map_join(", ", &Atom.to_string/1) |> String.capitalize()
 
-  def auth_token_scopes(_), do: "-"
+  def auth_token_permissions(_), do: "-"
 
   # Autofocuses the input
   # <input {alpine_autofocus()} />

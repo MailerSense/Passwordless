@@ -10,6 +10,7 @@ defmodule Passwordless.Accounts do
   alias Passwordless.Accounts.TOTP
   alias Passwordless.Accounts.User
   alias Passwordless.Activity
+  alias Passwordless.Cache
   alias Passwordless.Repo
 
   require Logger
@@ -507,14 +508,11 @@ defmodule Passwordless.Accounts do
   """
   def generate_user_passwordless_token(%User{} = user) do
     context = :passwordless_sign_in
+    {token_signed, token} = Token.new(user, context)
 
     Repo.transact(fn ->
       Repo.delete_all(Token.get_tokens_by_user_and_context(user, context))
-      {token_signed, token} = Token.new(user, context)
-
-      with {:ok, _token} <- Repo.insert(token) do
-        {:ok, token_signed}
-      end
+      with {:ok, _token} <- Repo.insert(token), do: {:ok, token_signed}
     end)
   end
 
@@ -528,18 +526,18 @@ defmodule Passwordless.Accounts do
   @doc """
   Generates a temporary token for the given User.
   """
-  def generate_user_temporary_token(%User{id: user_id} = user) do
-    {token, _token} = Token.new(user, :passwordless_session)
-    Passwordless.Cache.put(token, user_id, ttl: :timer.minutes(30))
+  def generate_user_temporary_token(%User{id: user_id}) do
+    {raw, token, ttl} = Token.new(:passwordless_session)
+    Cache.put(raw, user_id, ttl: ttl)
     token
   end
 
   @doc """
   Fetches user by temporary token.
   """
-  def get_user_by_temporary_token(token) do
-    with {:ok, _} <- Token.verify_key(token, :passwordless_session),
-         user_id when is_binary(user_id) <- Passwordless.Cache.get(token),
+  def get_user_by_temporary_token(token) when is_binary(token) do
+    with {:ok, raw} <- Token.verify_key(token, :passwordless_session),
+         user_id when is_binary(user_id) <- Cache.get(raw),
          %User{} = user <- get_user(user_id),
          do: {:ok, user}
   end

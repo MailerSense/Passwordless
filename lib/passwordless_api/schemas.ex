@@ -14,16 +14,16 @@ defmodule PasswordlessApi.Schemas do
       description: "Response body for inspecting the API key",
       type: :object,
       properties: %{
-        scopes: %Schema{
+        permissions: %Schema{
           type: :array,
-          description: "API Scopes",
-          enum: Passwordless.Security.Roles.auth_token_scopes(),
-          example: [:sync]
+          description: "API Permissions",
+          enum: Passwordless.AuthToken.permissions(),
+          example: [:actions]
         }
       },
-      required: [:scopes],
+      required: [:permissions],
       example: %{
-        "scopes" => ["sync"]
+        "permissions" => ["actions"]
       }
     })
   end

@@ -36,14 +36,20 @@ defmodule Passwordless.OTP do
 
   def size, do: @size
 
-  def valid?(%__MODULE__{attempts: attempts}, _candidate) when attempts >= @attempts, do: false
-
-  def valid?(%__MODULE__{code: code, expires_at: expires_at}, candidate) when is_binary(code) and is_binary(candidate) do
-    DateTime.after?(expires_at, DateTime.utc_now()) and
-      Plug.Crypto.secure_compare(code, candidate)
+  @doc """
+  Checks if the OTP is valid.
+  """
+  def valid?(%__MODULE__{code: code, expires_at: expires_at, attempts: attempts}, candidate)
+      when attempts < @attempts and is_binary(code) and is_binary(candidate) and byte_size(candidate) == @size do
+    DateTime.after?(expires_at, DateTime.utc_now()) and Plug.Crypto.secure_compare(code, candidate)
   end
 
   def valid?(%__MODULE__{}, _candidate), do: false
+
+  @doc """
+  Generates a new OTP code.
+  """
+  def generate_code, do: Util.random_numeric_string(@size)
 
   @fields ~w(
     code
@@ -65,6 +71,4 @@ defmodule Passwordless.OTP do
     |> unique_constraint(:email_message_id)
     |> unsafe_validate_unique(:email_message_id, Passwordless.Repo, opts)
   end
-
-  def generate_code, do: Util.random_numeric_string(@size)
 end

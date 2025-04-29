@@ -21,6 +21,7 @@ defmodule PasswordlessWeb.Components.Button do
   attr :color, :string,
     default: "primary",
     values: [
+      "success",
       "primary",
       "secondary",
       "danger",

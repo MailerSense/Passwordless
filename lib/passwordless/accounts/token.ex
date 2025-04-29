@@ -19,7 +19,7 @@ defmodule Passwordless.Accounts.Token do
     email_confirmation: :timer.hours(6),
     password_reset: :timer.hours(6),
     passwordless_sign_in: :timer.minutes(5),
-    passwordless_session: :timer.minutes(30)
+    passwordless_session: :timer.minutes(5)
   ]
   @contexts Keyword.keys(@lifetimes)
 
@@ -50,6 +50,23 @@ defmodule Passwordless.Accounts.Token do
       |> changeset(params)
 
     {key_signed, changeset}
+  end
+
+  @doc """
+  Creates a new key for the given context and returns the signed token.
+  """
+  def new(context) when context in @contexts do
+    ttl = Keyword.fetch!(@lifetimes, context)
+
+    max_age =
+      ttl
+      |> Timex.Duration.from_milliseconds()
+      |> Timex.Duration.to_seconds()
+      |> trunc()
+
+    raw = :crypto.strong_rand_bytes(@size)
+    signed = Token.sign(Endpoint, key_salt(), raw, max_age: max_age)
+    {raw, signed, ttl}
   end
 
   def hash(%__MODULE__{key_hash: key_hash}), do: key_hash
@@ -129,16 +146,11 @@ defmodule Passwordless.Accounts.Token do
   end
 
   def get_tokens_by_user_and_context(%User{id: user_id}, context) when context in @contexts do
-    from(t in __MODULE__,
-      where:
-        t.user_id == ^user_id and
-          t.context == ^context and
-          t.inserted_at > ago(^Keyword.fetch!(@lifetimes, context), "millisecond")
-    )
+    from(t in __MODULE__, where: t.user_id == ^user_id and t.context == ^context)
   end
 
   def verify_key(key, context) when is_binary(key) and context in @contexts do
-    Token.verify(Endpoint, key_salt(), key, max_age: div(Keyword.fetch!(@lifetimes, context), 1000))
+    Token.verify(Endpoint, key_salt(), key)
   end
 
   # Private
@@ -171,8 +183,15 @@ defmodule Passwordless.Accounts.Token do
   end
 
   defp generate_key(context) when context in @contexts do
+    max_age =
+      @lifetimes
+      |> Keyword.fetch!(context)
+      |> Timex.Duration.from_milliseconds()
+      |> Timex.Duration.to_seconds()
+      |> trunc()
+
     raw = :crypto.strong_rand_bytes(@size)
-    signed = Token.sign(Endpoint, key_salt(), raw)
+    signed = Token.sign(Endpoint, key_salt(), raw, max_age: max_age)
     {raw, signed}
   end
 

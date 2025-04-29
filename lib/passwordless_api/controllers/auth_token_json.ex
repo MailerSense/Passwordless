@@ -6,6 +6,6 @@ defmodule PasswordlessApi.AuthTokenJSON do
   alias Passwordless.AuthToken
 
   def show(%{auth_token: %AuthToken{} = auth_token}) do
-    %{scopes: auth_token.scopes}
+    %{permissions: auth_token.permissions}
   end
 end
