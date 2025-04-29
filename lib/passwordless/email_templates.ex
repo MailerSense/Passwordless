@@ -42,7 +42,7 @@ defmodule Passwordless.EmailTemplates do
                         ></mj-button>
                       </mj-attributes>
                     </mj-head>
-                    <mj-body background-color="#e8f4ff">
+                    <mj-body background-color="#ebf2fa">
                       <mj-section>
                         <mj-column>
                           <mj-image src="https://res.cloudinary.com/kissassets/image/upload/v1556188010/logo.png" width="140px" alt="logo" />
@@ -105,7 +105,7 @@ defmodule Passwordless.EmailTemplates do
                         <mj-all font-size="14px" line-height="26px" font-family="Inter, sans-serif, Arial" line-height="36px" />
                       </mj-attributes>
                     </mj-head>
-                    <mj-body background-color="#e8f4ff">
+                    <mj-body background-color="#ebf2fa">
                       <mj-section>
                         <mj-column>
                           <mj-image src="https://res.cloudinary.com/kissassets/image/upload/v1556188010/logo.png" width="140px" alt="logo" />
