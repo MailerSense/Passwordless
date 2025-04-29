@@ -146,12 +146,7 @@ defmodule Passwordless.Accounts.Token do
   end
 
   def get_tokens_by_user_and_context(%User{id: user_id}, context) when context in @contexts do
-    from(t in __MODULE__,
-      where:
-        t.user_id == ^user_id and
-          t.context == ^context and
-          t.inserted_at > ago(^Keyword.fetch!(@lifetimes, context), "millisecond")
-    )
+    from(t in __MODULE__, where: t.user_id == ^user_id and t.context == ^context)
   end
 
   def verify_key(key, context) when is_binary(key) and context in @contexts do

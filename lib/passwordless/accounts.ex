@@ -508,14 +508,11 @@ defmodule Passwordless.Accounts do
   """
   def generate_user_passwordless_token(%User{} = user) do
     context = :passwordless_sign_in
+    {token_signed, token} = Token.new(user, context)
 
     Repo.transact(fn ->
       Repo.delete_all(Token.get_tokens_by_user_and_context(user, context))
-      {token_signed, token} = Token.new(user, context)
-
-      with {:ok, _token} <- Repo.insert(token) do
-        {:ok, token_signed}
-      end
+      with {:ok, _token} <- Repo.insert(token), do: {:ok, token_signed}
     end)
   end
 
