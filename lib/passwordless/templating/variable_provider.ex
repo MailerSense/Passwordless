@@ -106,7 +106,27 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Action do
   @doc """
   Provide the action variables.
   """
-  def variables(%Action{name: name}) do
-    %{"name" => name}
+  def variables(%Action{state: state} = action) do
+    %{"name" => Action.readable_name(action), "state" => Atom.to_string(state)}
+  end
+end
+
+defimpl Passwordless.Templating.VariableProvider, for: Passwordless.OTP do
+  use Gettext, backend: PasswordlessWeb.Gettext
+
+  alias Passwordless.OTP
+
+  def name(_), do: "otp"
+
+  @doc """
+  Provide the action variables.
+  """
+  def variables(%OTP{code: code, expires_at: expires_at} = action) do
+    expires_in = DateTime.diff(expires_at, DateTime.utc_now(), :minute)
+
+    %{
+      "code" => code,
+      "expires_in" => ngettext("1 minute", "%{count} minutes", expires_in)
+    }
   end
 end

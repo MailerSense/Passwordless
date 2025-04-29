@@ -36,7 +36,7 @@ defmodule Passwordless.AppSettings do
     field :logo, :string
     field :website, :string
     field :display_name, :string
-    field :primary_button_color, :string, default: "#1570ef"
+    field :primary_button_color, :string, default: "#2e90fa"
     field :secondary_button_color, :string, default: "#ffffff"
     field :email_configuration_set, :string
     field :email_tracking, :boolean, default: false

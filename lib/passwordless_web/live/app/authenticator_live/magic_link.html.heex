@@ -20,7 +20,7 @@
     <.box padded>
       <.form_header title={gettext("Magic link")} />
       <.p class="mb-6">
-        Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in. The link is valid for a limited time and can only be used once.
+        Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
       <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2 mb-6">
@@ -57,7 +57,6 @@
       <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2">
         <.field
           field={@form[:expires]}
-          label={gettext("Link expires")}
           type="number"
           min="1"
           max="30"
@@ -69,7 +68,6 @@
         />
         <.field
           field={@form[:resend]}
-          label={gettext("Request new link")}
           type="number"
           min="30"
           max="300"
@@ -144,7 +142,7 @@
             </div>
           </.inputs_for>
         </div>
-        <div class="flex mt-2">
+        <div class="flex mt-1.5">
           <.button
             size="xs"
             type="button"

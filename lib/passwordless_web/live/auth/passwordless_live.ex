@@ -184,7 +184,7 @@ defmodule PasswordlessWeb.Auth.PasswordlessLive do
             user_return_to: socket.assigns.user_return_to
           })
 
-        Process.send_after(self(), :trigger_submit, 500)
+        Process.send_after(self(), :trigger_submit, 300)
 
         assign(socket, token_form: to_form(changeset, as: :auth), loading: true)
 

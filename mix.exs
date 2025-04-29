@@ -132,6 +132,7 @@ defmodule Passwordless.MixProject do
       {:cloak_ecto, "~> 1.3"},
       {:typedstruct, "~> 0.5.3"},
       {:elixlsx, "~> 0.6.0"},
+      {:recase, "~> 0.8.1"},
 
       # Markdown
       {:earmark, "~> 1.4"},
