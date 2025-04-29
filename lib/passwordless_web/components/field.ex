@@ -595,7 +595,12 @@ defmodule PasswordlessWeb.Components.Field do
 
     ~H"""
     <.field_wrapper errors={@errors} name={@name} class={@wrapper_class} no_margin={@no_margin}>
-      <.field_label required={@required} for={@id} class={@label_class}>
+      <.field_label
+        required={@required}
+        required_asterix={@required_asterix}
+        for={@id}
+        class={@label_class}
+      >
         {@label}
       </.field_label>
       <div class="pc-password-field-wrapper" x-data="viewable">

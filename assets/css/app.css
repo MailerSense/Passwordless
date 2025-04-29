@@ -830,7 +830,7 @@
     @apply flex items-center text-base font-normal text-slate-900 cursor-pointer dark:text-white mb-6;
   }
   .pc-label {
-    @apply leading-tight block mb-2 text-sm font-medium text-slate-700 dark:text-slate-200;
+    @apply leading-tight block mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-200;
   }
   .pc-label--for-checkbox {
     @apply mb-0! font-normal;
@@ -841,10 +841,10 @@
     display: inline;
   }
   .pc-form-field-error {
-    @apply mt-2 text-xs italic text-danger-500;
+    @apply mt-1.5 text-xs italic text-danger-500;
   }
   .pc-form-help-text {
-    @apply mt-2 text-sm text-slate-500 dark:text-slate-400;
+    @apply mt-1.5 text-sm text-slate-500 dark:text-slate-400;
   }
   .pc-time-select {
     @apply dark:text-white;
@@ -1312,11 +1312,11 @@
   /* Page header */
 
   .pc-page-header {
-    @apply flex justify-between items-center gap-4;
+    @apply flex justify-between items-center gap-4 py-4;
   }
 
   .pc-page-header--text {
-    @apply text-2xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight;
+    @apply text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight;
   }
 
   /* Separator */
