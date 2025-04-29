@@ -18,9 +18,9 @@ defmodule Passwordless.AuthToken do
       :create
     ]
   ]
-  @permissions_flat Enum.flat_map(@permissions, fn {domain, actions} ->
-                      [domain | Enum.map(actions, &:"#{&1}_#{domain}")]
-                    end)
+  @permissions_flat @permissions
+                    |> Enum.flat_map(fn {domain, actions} -> [domain | Enum.map(actions, &:"#{&1}_#{domain}")] end)
+                    |> Enum.uniq()
 
   @derive {
     Flop.Schema,
