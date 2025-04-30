@@ -12,7 +12,6 @@ defmodule Passwordless do
   alias Passwordless.ActionEvent
   alias Passwordless.Actor
   alias Passwordless.App
-  alias Passwordless.AppSettings
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
@@ -382,32 +381,28 @@ defmodule Passwordless do
     end
   end
 
-  def get_email_domain(%App{} = app) do
-    case Repo.preload(app, :email_domain) do
-      %App{email_domain: %Domain{purpose: :email} = domain} ->
+  def get_fallback_domain(%App{} = app, purpose) when purpose in [:email, :tracking] do
+    assoc =
+      case purpose do
+        :email -> :email_domain
+        :tracking -> :tracking_domain
+      end
+
+    case Repo.preload(app, assoc) do
+      %{^assoc => %Domain{purpose: ^purpose} = domain} ->
         {:ok, domain}
 
       _ ->
         case Repo.one(Domain.get_by_tags([:system, :default])) do
-          %Domain{purpose: :email} = domain -> {:ok, domain}
+          %Domain{purpose: ^purpose} = domain -> {:ok, domain}
           _ -> {:error, :default_domain_not_found}
         end
     end
   end
 
-  def get_email_domain!(%App{} = app) do
-    {:ok, domain} = get_email_domain(app)
+  def get_fallback_domain!(%App{} = app, purpose) when purpose in [:email, :tracking] do
+    {:ok, domain} = get_fallback_domain(app, purpose)
     domain
-  end
-
-  def get_tracking_domain(%App{} = app) do
-    case Repo.preload(app, [:settings, :tracking_domain]) do
-      %App{settings: %AppSettings{email_tracking: true}, tracking_domain: %Domain{purpose: :tracking} = domain} ->
-        {:ok, domain}
-
-      _ ->
-        {:error, :tracking_domain_not_found}
-    end
   end
 
   crud(:email_otp, :email, Passwordless.Authenticators.EmailOTP)

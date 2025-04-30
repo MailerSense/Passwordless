@@ -40,7 +40,7 @@ defmodule Passwordless.Challenges.EmailOTP do
 
     with :ok <- rate_limit_reached?(app, email),
          :ok <- Passwordless.email_opted_out?(app, email),
-         {:ok, domain} <- Passwordless.get_email_domain(app),
+         {:ok, domain} <- Passwordless.get_fallback_domain(app, :email),
          {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email_otp),
          %EmailTemplate{} = email_template <- get_email_template(authenticator),
          {:ok, email_template_locale} <- get_email_template_locale(actor, email_template),

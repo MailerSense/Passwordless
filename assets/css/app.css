@@ -29,6 +29,10 @@
   }
 }
 
+#sentry-feedback {
+  --z-index: 30;
+}
+
 @utility no-scrollbar {
   /* Hide scrollbar for Chrome, Safari and Opera */
   &::-webkit-scrollbar {
@@ -52,14 +56,14 @@
 
   --shadow-m2: 0 1px 2px 0 rgb(16 24 40 / 0.05);
   --shadow-m3: 0 1px 2px 0 rgb(16 24 40 / 0.05);
-  --shadow-0: 0 1px 3px 0 rgb(16 24 40 / 0.1),
-    0 1px 2px 0px rgb(16 24 40 / 0.06);
-  --shadow-1: 0 4px 8px -2px rgb(16 24 40 / 0.1),
-    0 2px 4px -2px rgb(16 24 40 / 0.06);
-  --shadow-2: 0 12px 16px -4px rgb(16 24 40 / 0.08),
-    0 4px 6px -2px rgb(16 24 40 / 0.03);
-  --shadow-3: 0 20px 24px -4px rgb(16 24 40 / 0.08),
-    0 8px 8px -4px rgb(16 24 40 / 0.03);
+  --shadow-0:
+    0 1px 3px 0 rgb(16 24 40 / 0.1), 0 1px 2px 0px rgb(16 24 40 / 0.06);
+  --shadow-1:
+    0 4px 8px -2px rgb(16 24 40 / 0.1), 0 2px 4px -2px rgb(16 24 40 / 0.06);
+  --shadow-2:
+    0 12px 16px -4px rgb(16 24 40 / 0.08), 0 4px 6px -2px rgb(16 24 40 / 0.03);
+  --shadow-3:
+    0 20px 24px -4px rgb(16 24 40 / 0.08), 0 8px 8px -4px rgb(16 24 40 / 0.03);
   --shadow-4: 0 24px 48px -12px rgb(16 24 40 / 0.18);
 
   --color-primary-50: #eff8ff;
@@ -401,6 +405,9 @@
   }
   .pc-icon-button--light {
     @apply text-slate-600 dark:text-slate-300 hover:bg-slate-100 active:bg-slate-200 dark:hover:bg-slate-800 dark:active:bg-slate-700;
+  }
+  .pc-icon-button--wireframe {
+    @apply text-white;
   }
   .pc-icon-button--primary--outline {
     @apply text-white border-transparent bg-primary-500 dark:bg-primary-600 hover:bg-primary-600 dark:hover:bg-primary-700 focus:bg-primary-600 dark:focus:bg-primary-700 active:bg-primary-700 dark:active:bg-primary-800 focus:shadow-primary-500/50 dark:focus:shadow-primary-600/50;
@@ -2159,6 +2166,38 @@
   }
   .pc-editor-select-field {
     @apply py-0 max-w-[400px] ps-3 pe-10 text-3xl font-semibold bg-transparent h-12 text-slate-900 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 tracking-tight text-ellipsis focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
+  }
+
+  .pc-code-tab {
+    @apply px-4 py-3 relative text-sm font-semibold;
+  }
+
+  .pc-code-tabs {
+    @apply flex items-center justify-between bg-[#2d2b57] border-b border-slate-600 rounded-ss-lg rounded-se-lg;
+  }
+
+  .pc-code-tabs__buttons {
+    @apply flex items-center flex-wrap;
+  }
+
+  .pc-code-tab-inactive {
+    @apply text-slate-500;
+  }
+
+  .pc-code-tab-active {
+    @apply text-white;
+  }
+
+  .pc-code-tab-active::before {
+    position: absolute;
+    content: "";
+    display: block;
+    height: 2px;
+    left: 8px;
+    right: 8px;
+    bottom: 0;
+    background: transparent;
+    @apply bg-[#fa658d];
   }
 
   /* Other */

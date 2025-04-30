@@ -13,7 +13,7 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
     app = Repo.preload(app, [:magic_link])
 
     magic_link = app.magic_link
-    domain = Passwordless.get_email_domain!(app)
+    domain = Passwordless.get_fallback_domain!(app, :email)
     changeset = Passwordless.change_magic_link(magic_link)
 
     email_template = Repo.preload(magic_link, :email_template).email_template
