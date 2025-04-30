@@ -25,12 +25,21 @@ defmodule PasswordlessWeb.App.EmbedLive.API do
       :block -> "remix-close-circle-fill"
     end
 
+    concepts =
+      Enum.map(concepts(), fn {key, value} ->
+        %{
+          name: Phoenix.Naming.humanize(key),
+          description: value
+        }
+      end)
+
     {:ok,
      socket
      |> assign(assigns)
      |> assign(
        app: app,
        actions: actions,
+       concepts: concepts,
        icon_mapping: icon_mapping
      )
      |> assign_form(changeset)}
@@ -94,4 +103,16 @@ defmodule PasswordlessWeb.App.EmbedLive.API do
   end
 
   defp format_ip(ip), do: String.pad_trailing(to_string(:inet.ntoa(ip)), 16)
+
+  defp concepts,
+    do: [
+      app: gettext("The application where the action took place. Can be a web app, mobile app or an API."),
+      actor: gettext("The actor who initiated the action. Can be a user, system or an application."),
+      action:
+        gettext(
+          "An action initiated by the actor. Can be anything from login attempt, placing an order to changing a password."
+        ),
+      challenge: gettext("The challenge that was presented to the actor. Can be a password, OTP or a biometric scan."),
+      rule: gettext("The rule that was applied to the action. Can be a policy, rule or a condition.")
+    ]
 end

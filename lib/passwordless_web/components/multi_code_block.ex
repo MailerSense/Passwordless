@@ -35,6 +35,7 @@ defmodule PasswordlessWeb.Components.MultiCodeBlock do
         <div class="pc-code-tabs__buttons">
           <button
             :for={%{tab: tab} <- @codes}
+            role="link"
             phx-click="change_tab"
             phx-value-tab={tab}
             phx-target={@myself}

@@ -39,8 +39,8 @@
           <.field type="checkbox" field={settings[:email_tracking]} label={gettext("Enabled")} />
         </.form>
         <.alert :if={@email_tracking} color="info" with_icon>
-          Links will be wrapped in <code>{@tracking_domain.name}</code>
-          to track opens and clicks. We will soon support adding your own tracking domain.
+          Links will be sent from <code>{@tracking_domain.name}</code>
+          to track open and click events. We will soon support adding your own tracking domain.
         </.alert>
       </.inputs_for>
     </.box>

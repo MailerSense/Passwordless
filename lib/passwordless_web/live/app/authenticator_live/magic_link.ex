@@ -63,9 +63,9 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
       :short_code -> "remix-hashtag"
     end
 
-    second_steps =
-      Enum.map(MagicLink.second_steps(), fn step ->
-        [key: Phoenix.Naming.humanize(step), value: step, disabled: step not in MagicLink.second_steps_enabled()]
+    behaviors =
+      Enum.map(MagicLink.behaviors(), fn step ->
+        [key: behaviour_translation(step), value: step, disabled: step not in MagicLink.behaviors_enabled()]
       end)
 
     {:ok,
@@ -74,7 +74,7 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
      |> assign(
        domain: domain,
        magic_link: magic_link,
-       second_steps: second_steps,
+       behaviors: behaviors,
        icon_mapping: icon_mapping,
        email_template: email_template,
        fingerprint_factors: fingerprint_factors
@@ -93,6 +93,10 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
   end
 
   # Private
+
+  defp behaviour_translation(:authenticate), do: gettext("authenticate user")
+  defp behaviour_translation(:click), do: gettext("ask user to press a button")
+  defp behaviour_translation(:short_code), do: gettext("ask user to type a short-code")
 
   defp save_magic_link(socket, params) do
     opts = [domain: socket.assigns[:domain]]

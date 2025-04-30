@@ -16,11 +16,11 @@ defmodule PasswordlessWeb.Components.AuthLayout do
   def auth_layout(assigns) do
     ~H"""
     <section
-      class="fixed w-full h-full overflow-y-scroll bg-slate-100 dark:bg-slate-900 sm:py-16"
+      class="fixed w-full h-full overflow-y-scroll bg-slate-100 dark:bg-slate-900 sm:pt-20"
       {@rest}
     >
       <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="p-4 sm:p-10 bg-white shadow-3 sm:rounded-2xl dark:bg-slate-800">
+        <div class="p-4 sm:p-10 bg-white shadow-4 sm:rounded-2xl dark:bg-slate-800">
           <div class="flex flex-col items-center mb-10">
             <div class="flex justify-center mb-8">
               <.link href="/">

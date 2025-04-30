@@ -54,7 +54,7 @@
         link_type="live_redirect"
       />
       <.form_separator />
-      <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2">
+      <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2 mb-6">
         <.field
           field={@form[:expires]}
           type="number"
@@ -78,27 +78,15 @@
           wrapper_class="mb-0!"
         />
       </div>
-    </.box>
-    <.box padded>
-      <.form_header title={gettext("Two-Step Verification")} />
-      <.p class="mb-6">
-        User can be asked to perform an additional step to complete their authentication after they click the magic link.
-      </.p>
       <.field
-        field={@form[:two_step_verification]}
-        label={gettext("Behavior")}
+        field={@form[:behavior]}
+        prefix={gettext("After link is clicked")}
         type="select"
-        options={@second_steps}
+        options={@behaviors}
         required
       />
-    </.box>
-    <.box padded>
-      <.form_header title={gettext("Redirect URLs")} />
-      <.p class="mb-6">
-        Enforce the target of the magic link - the redirect URL - to be one of the allowed URLs below. At least one URL is required.
-      </.p>
       <div class="pc-form-field-wrapper">
-        <.field_label required>{gettext("Expected URLs")}</.field_label>
+        <.field_label required>{gettext("Redirect URLs")}</.field_label>
         <div class="flex flex-col gap-y-2">
           <.inputs_for :let={f} field={@form[:redirect_urls]}>
             <input type="hidden" name="magic_link[redirect_urls_sort][]" value={f.index} />

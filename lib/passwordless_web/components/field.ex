@@ -221,6 +221,33 @@ defmodule PasswordlessWeb.Components.Field do
               {Phoenix.HTML.Form.options_for_select(@options, @selected || @value)}
             </select>
           </div>
+        <% Util.present?(@prefix) or Util.present?(@suffix) -> %>
+          <.div_wrapper class="flex" wrap={true}>
+            <span :if={Util.present?(@prefix)} class="pc-field-prefix">
+              {@prefix}
+            </span>
+            <select
+              id={@id}
+              name={@name}
+              class={[
+                if(Util.present?(@prefix), do: "rounded-l-none!"),
+                if(Util.present?(@suffix), do: "rounded-r-none!"),
+                get_class_for_type(@type, @size),
+                @class
+              ]}
+              multiple={@multiple}
+              required={@required}
+              disabled={@disabled}
+              {@rest}
+            >
+              <option :if={@prompt} value="">{@prompt}</option>
+              {Phoenix.HTML.Form.options_for_select(@options, @selected || @value)}
+            </select>
+
+            <span :if={Util.present?(@suffix)} class="pc-field-suffix">
+              {@suffix}
+            </span>
+          </.div_wrapper>
         <% true -> %>
           <select
             id={@id}
