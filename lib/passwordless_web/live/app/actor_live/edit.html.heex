@@ -35,8 +35,18 @@
 
       <.box padded>
         <.field
-          type="checkbox"
-          field={@form[:active]}
+          field={@form[:state]}
+          type="select"
+          options={@states}
+          icon_class={"pc-field-icon__icon " <> (
+        case @user_state do
+          :active -> "text-success-600 dark:text-success-300"
+          :locked -> "text-danger-600 dark:text-danger-300"
+        end
+      )}
+          icon_mapping={@icon_mapping}
+          required
+          required_asterix={false}
           help_text={
             if @user_active do
               gettext("User is active and can authenticate with %{app}.",
@@ -100,7 +110,6 @@
               style="link"
               link_type="a"
               phx-click="toggle_property_editor"
-              disabled={not @user_active}
             />
             <.a
               label={gettext("Add new email")}

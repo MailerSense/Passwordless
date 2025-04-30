@@ -10,6 +10,8 @@ defmodule Passwordless.Authenticators.EmailOTP do
   alias Passwordless.Domain
   alias Passwordless.EmailTemplate
 
+  @states [:enabled, :disabled]
+
   @derive {
     Jason.Encoder,
     only: [
@@ -28,6 +30,7 @@ defmodule Passwordless.Authenticators.EmailOTP do
     filterable: [:id], sortable: [:id]
   }
   schema "email_otp_authenticators" do
+    field :state, Ecto.Enum, values: @states, virtual: true, default: :enabled
     field :enabled, :boolean, default: true
     field :expires, :integer, default: 3
     field :resend, :integer, default: 30
