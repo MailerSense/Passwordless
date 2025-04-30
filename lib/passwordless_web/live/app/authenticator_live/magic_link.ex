@@ -4,6 +4,7 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.App
+  alias Passwordless.Authenticators.MagicLink
   alias Passwordless.Domain
   alias Passwordless.Email.Renderer
   alias Passwordless.Repo
@@ -52,12 +53,29 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
       }
     ]
 
+    icon_mapping = fn
+      nil -> "remix-checkbox-circle-line"
+      "none" -> "remix-checkbox-circle-line"
+      :none -> "remix-checkbox-circle-line"
+      "click" -> "remix-cursor-line"
+      :click -> "remix-cursor-line"
+      "short_code" -> "remix-hashtag"
+      :short_code -> "remix-hashtag"
+    end
+
+    second_steps =
+      Enum.map(MagicLink.second_steps(), fn step ->
+        [key: Phoenix.Naming.humanize(step), value: step, disabled: step not in MagicLink.second_steps_enabled()]
+      end)
+
     {:ok,
      socket
      |> assign(assigns)
      |> assign(
        domain: domain,
        magic_link: magic_link,
+       second_steps: second_steps,
+       icon_mapping: icon_mapping,
        email_template: email_template,
        fingerprint_factors: fingerprint_factors
      )

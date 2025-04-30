@@ -24,7 +24,7 @@
       <.form_header title={gettext("User verification")} />
       <.p class="mb-6">
         {gettext(
-          "When required, an additional authentication factor - such as biometric auth, pin or password - must always be provided when using the passkey. This is used to prevent phishing attacks."
+          "When required, an additional authentication factor - such as biometric auth, pin or password - must always be provided when using the passkey."
         )}
       </.p>
       <.field
@@ -37,7 +37,7 @@
     <.box padded>
       <.form_header title={gettext("Origins")} />
       <.p class="mb-6">
-        The expected origins are the domains that the passkey can be used on. This is used to prevent phishing attacks. The passkey will only be valid for the specified domains.
+        The expected origins are the domains that the passkey can be used on. The passkey will only be valid for the specified domains.
       </.p>
       <div class="pc-form-field-wrapper">
         <.field_label required>{gettext("Expected origins")}</.field_label>
@@ -74,7 +74,7 @@
             </div>
           </.inputs_for>
         </div>
-        <div class="flex mt-1.5">
+        <div class="flex mt-3">
           <.button
             size="xs"
             type="button"

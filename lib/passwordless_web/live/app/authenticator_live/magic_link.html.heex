@@ -20,7 +20,7 @@
     <.box padded>
       <.form_header title={gettext("Magic link")} />
       <.p class="mb-6">
-        Magic link allows users to sign in without a password. When enabled, users will receive an email with a link that will sign them in.
+        Magic link authentication creates a unique link for authenticating user actions that can only be used one time.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
       <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2 mb-6">
@@ -80,39 +80,25 @@
       </div>
     </.box>
     <.box padded>
-      <.form_header title={gettext("Fingerprint device")} />
+      <.form_header title={gettext("Two-Step Verification")} />
       <.p class="mb-6">
-        You can enable device fingerprinting to ensure only the user who requested the magic link is the one to also open it. This requires you to provide identifiers -
-        <.code_line>deviceId</.code_line>,
-        <.code_line>ipAddress</.code_line>
-        or
-        <.code_line>userAgent</.code_line>
-        - in the API calls for the magic link authenticator. You can provide any of them, and Passwordless will use them to uniquely identify the device. Below you can choose which factors are taken into consideration.
+        User can be asked to perform an additional step to complete their authentication after they click the magic link.
       </.p>
       <.field
-        type="checkbox"
-        field={@form[:fingerprint_device]}
-        label={gettext("Enabled")}
-        disabled={not @enabled}
-      />
-      <.field
-        :if={@fingerprint_device}
-        type="radio-card-group"
-        field={@form[:fingerprint_factors]}
-        options={@fingerprint_factors}
+        field={@form[:two_step_verification]}
+        label={gettext("Behavior")}
+        type="select"
+        options={@second_steps}
         required
-        size="sm"
-        variant="outline"
-        disabled={not @enabled}
       />
     </.box>
     <.box padded>
       <.form_header title={gettext("Redirect URLs")} />
       <.p class="mb-6">
-        The redirect URL is the URL to which the user will be redirected after clicking the magic link. You can restrict the redirect URLs to a specific domain. This will help prevent phishing attacks.
+        Enforce the target of the magic link - the redirect URL - to be one of the allowed URLs below. At least one URL is required.
       </.p>
       <div class="pc-form-field-wrapper">
-        <.field_label required>{gettext("Allowed URLs")}</.field_label>
+        <.field_label required>{gettext("Expected URLs")}</.field_label>
         <div class="flex flex-col gap-y-2">
           <.inputs_for :let={f} field={@form[:redirect_urls]}>
             <input type="hidden" name="magic_link[redirect_urls_sort][]" value={f.index} />
@@ -142,13 +128,13 @@
             </div>
           </.inputs_for>
         </div>
-        <div class="flex mt-1.5">
+        <div class="flex mt-3">
           <.button
             size="xs"
             type="button"
             color="light"
             icon="remix-add-circle-line"
-            label={gettext("Add redirect URL")}
+            label={gettext("Add URL")}
             name="magic_link[redirect_urls_sort][]"
             value="new"
             disabled={not @enabled}

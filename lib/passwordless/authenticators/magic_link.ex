@@ -10,6 +10,7 @@ defmodule Passwordless.Authenticators.MagicLink do
   alias Passwordless.Domain
   alias Passwordless.EmailTemplate
 
+  @second_steps ~w(none click short_code)a
   @fingerprint_factors ~w(device_id ip_address user_agent)a
 
   @derive {
@@ -21,6 +22,7 @@ defmodule Passwordless.Authenticators.MagicLink do
       :resend,
       :sender,
       :sender_name,
+      :two_step_verification,
       :fingerprint_device,
       :fingerprint_factors,
       :redirect_urls,
@@ -38,6 +40,7 @@ defmodule Passwordless.Authenticators.MagicLink do
     field :resend, :integer, default: 30
     field :sender, :string
     field :sender_name, :string
+    field :two_step_verification, Ecto.Enum, values: @second_steps, default: :none
     field :fingerprint_device, :boolean, default: false
     field :fingerprint_factors, {:array, Ecto.Enum}, values: @fingerprint_factors, default: @fingerprint_factors
 
@@ -53,6 +56,9 @@ defmodule Passwordless.Authenticators.MagicLink do
     timestamps()
   end
 
+  def second_steps, do: @second_steps
+  def second_steps_enabled, do: @second_steps -- [:short_code]
+
   @doc """
   The sender email address.
   """
@@ -66,6 +72,7 @@ defmodule Passwordless.Authenticators.MagicLink do
     resend
     sender
     sender_name
+    two_step_verification
     fingerprint_device
     fingerprint_factors
     app_id

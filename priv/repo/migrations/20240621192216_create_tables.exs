@@ -359,7 +359,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :resend, :integer, null: false
       add :sender, :citext, null: false
       add :sender_name, :string, null: false
-      add :email_tracking, :boolean, null: false, default: false
+      add :two_step_verification, :string, null: false
       add :fingerprint_device, :boolean, null: false, default: false
       add :fingerprint_factors, {:array, :string}, null: false, default: []
       add :redirect_urls, :map, null: false, default: %{}
