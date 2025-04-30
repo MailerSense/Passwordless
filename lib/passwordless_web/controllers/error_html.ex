@@ -17,29 +17,32 @@ defmodule PasswordlessWeb.ErrorHTML do
     assigns = Map.put(assigns, :status_message, Phoenix.Controller.status_message_from_template(template))
 
     ~H"""
-    <.auth_layout title={@message}>
+    <.auth_layout title={"#{@status} - #{@message}"}>
       <:logo>
         <.logo_icon class="w-16 h-16" />
       </:logo>
 
       <:top_links>
         Found a bug?
-        <.link class="text-blue-600 dark:text-blue-400" navigate={~p"/"}>
-          {gettext("Report")}
-        </.link>
+        <button
+          class="text-blue-600 dark:text-blue-400"
+          x-data="sentryCrashPopup"
+          x-on:click="toggleShow"
+        >
+          {gettext("Report it")}
+        </button>
       </:top_links>
 
       <.alert color={status_color(@status)} with_icon class="mb-6">
         {@message}
       </.alert>
+      <.p class="mb-6">
+        {gettext(
+          "We're sorry, the page you've requested cannot be shown. Please go back to the homepage, or report the bug above."
+        )}
+      </.p>
       <div class="flex">
-        <.button
-          size="xl"
-          link_type="a"
-          title={gettext("Back to Home")}
-          to={~p"/"}
-          class="flex flex-1"
-        />
+        <.button size="xl" link_type="a" title={gettext("Go Home")} to={~p"/"} class="flex flex-1" />
       </div>
     </.auth_layout>
     """
@@ -53,16 +56,20 @@ defmodule PasswordlessWeb.ErrorHTML do
       |> Map.put(:reason_message, reason_message(assigns[:reason]))
 
     ~H"""
-    <.auth_layout title={@message}>
+    <.auth_layout title={"#{@status} - #{@message}"}>
       <:logo>
         <.logo_icon class="w-16 h-16" />
       </:logo>
 
       <:top_links>
         Found a bug?
-        <.link class="text-blue-600 dark:text-blue-400" navigate={~p"/"}>
-          {gettext("Report")}
-        </.link>
+        <button
+          class="text-blue-600 dark:text-blue-400"
+          x-data="sentryCrashPopup"
+          x-on:click="toggleShow"
+        >
+          {gettext("Report it")}
+        </button>
       </:top_links>
 
       <.alert
@@ -73,14 +80,13 @@ defmodule PasswordlessWeb.ErrorHTML do
       >
         {@reason_message}
       </.alert>
+      <.p class="mb-6">
+        {gettext(
+          "We're sorry, the page you've requested cannot be shown. Please go back to the homepage, or report the bug above."
+        )}
+      </.p>
       <div class="flex">
-        <.button
-          size="xl"
-          link_type="a"
-          title={gettext("Back to Home")}
-          to={~p"/"}
-          class="flex flex-1"
-        />
+        <.button size="xl" link_type="a" title={gettext("Go Home")} to={~p"/"} class="flex flex-1" />
       </div>
     </.auth_layout>
     """

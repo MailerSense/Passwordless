@@ -1,4 +1,5 @@
 import Alpine from "@alpinejs/csp";
+import * as Sentry from "@sentry/browser";
 import { Hooks as BackpexHooks } from "backpex";
 import hljs from "highlight.js/lib/core";
 import bash from "highlight.js/lib/languages/bash";
@@ -17,6 +18,20 @@ hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("typescript", typescript);
 hljs.registerLanguage("json", json);
 hljs.registerLanguage("bash", bash);
+
+Sentry.init({
+  dsn: "https://30d7d29e2efaacf56cbaf704e4016f62@o4507273188802560.ingest.de.sentry.io/4509240653185104",
+  // Setting this option to true will send default PII data to Sentry.
+  // For example, automatic IP address collection on events
+  sendDefaultPii: true,
+  integrations: [
+    Sentry.feedbackIntegration({
+      // Additional SDK configuration goes in here, for example:
+      colorScheme: "system",
+    }),
+  ],
+  environment: MIX_ENV,
+});
 
 // Enable dark mode
 const applyScheme = (scheme: "light" | "dark") => {
@@ -116,6 +131,20 @@ function defaultReconnectAfterMs(tries: number): number {
   const jitterRatio = getRandomInt(75, 125) / 100;
   return nominalMs * jitterRatio;
 }
+
+Alpine.data("sentryCrashPopup", () => {
+  return {
+    show: false,
+    toggleShow() {
+      this.show = !this.show;
+
+      const eventId = Sentry.captureMessage("User-reported feedback");
+      Sentry.showReportDialog({
+        eventId,
+      });
+    },
+  };
+});
 
 Alpine.data("viewable", () => {
   return {

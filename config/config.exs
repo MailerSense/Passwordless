@@ -161,6 +161,7 @@ config :esbuild,
       --loader:.ttf=dataurl
       --loader:.woff=dataurl
       --loader:.woff2=dataurl
+      --define:MIX_ENV=\"#{config_env()}\"
     ),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
