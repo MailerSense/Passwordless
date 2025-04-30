@@ -13,6 +13,8 @@ defmodule PasswordlessWeb.DashboardComponents do
   import PasswordlessWeb.Components.Progress
   import PasswordlessWeb.Components.Typography
 
+  alias Passwordless.Accounts.User
+
   attr :badge, :string, required: true
   attr :content, :string, required: true
   attr :class, :string, default: nil, doc: "CSS class"
@@ -524,6 +526,37 @@ defmodule PasswordlessWeb.DashboardComponents do
         <.badge size="sm" color={@badge_color} label={@badge_label} />
       </div>
     </.a>
+    """
+  end
+
+  attr :id, :string
+  attr :current_user, :map, required: true
+  attr :rest, :global
+
+  def sentry_user_setter(%{current_user: %User{} = user} = assigns) do
+    assigns =
+      assigns
+      |> assign_new(:id, fn -> Util.id("copy-button") end)
+      |> assign(
+        user_id: user.id,
+        username: user.name,
+        email: user.email,
+        org: if(user.current_org, do: user.current_org.id),
+        app: if(user.current_app, do: user.current_app.id)
+      )
+
+    ~H"""
+    <div
+      id={@id}
+      phx-hook="SetSentryUserHook"
+      data-id={@user_id}
+      data-username={@username}
+      data-email={@email}
+      data-org={@org}
+      data-app={@app}
+      {@rest}
+    >
+    </div>
     """
   end
 
