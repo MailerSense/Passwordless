@@ -13,7 +13,7 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.EmailOTP do
     app = Repo.preload(app, [:email_otp])
 
     email_otp = app.email_otp
-    domain = Passwordless.get_email_domain!(app)
+    domain = Passwordless.get_fallback_domain!(app, :email)
     changeset = Passwordless.change_email_otp(email_otp)
 
     email_template = Repo.preload(email_otp, :email_template).email_template

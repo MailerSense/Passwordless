@@ -2,29 +2,43 @@
   <.box card>
     <.form_header title={gettext("Installation")} no_margin />
     <.p>
-      Install Passwordless SDK for NodeJS to efficiently create authentication challenges and perform passwordless flows:
+      Before you can use Passwordless, you need to install the SDK in your application. The SDK is currently available for Node.js. We're actively working on the Web Components SDK that will allow you to use Passwordless in any frontend framework.
     </.p>
-    <.code_block language={:bash} code="pnpm add @passwordless/tools" />
-    <.p>
-      Then, in the entrypoint of your application, initiate the Passwordless client:
-    </.p>
-    <.code_block
-      language={:typescript}
-      code={
-        ~s"""
-        import { Passwordless, Residency } from '@passwordless/tools';
+    <.live_component
+      id="installation-intro"
+      module={PasswordlessWeb.Components.MultiCodeBlock}
+      codes={[
+        %{
+          tab: gettext("Bash"),
+          language: :bash,
+          code: ~s"""
+          ## Get Current App
+          curl "#{PasswordlessWeb.Router.Helpers.app_url(PasswordlessWeb.Endpoint, :show)}" \\
+              -H 'Authorization: Bearer #{if @reveal_secret?, do: @secret, else: "sk_live_*******"}'
+          """
+        },
+        %{
+          tab: gettext("Typescript"),
+          language: :typescript,
+          code: ~s"""
+          // First, install the SDK
+          // pnpm add @passwordless/tools
 
-        const secret = process.env.PASSWORDLESS_APP_SECRET;
-        if (!secret) {
-          throw new Error("PASSWORDLESS_APP_SECRET is undefined");
+          import { Passwordless, Residency } from '@passwordless/tools';
+
+          const secret = process.env.PASSWORDLESS_APP_SECRET;
+          if (!secret) {
+            throw new Error("PASSWORDLESS_APP_SECRET is undefined");
+          }
+
+          const residency = Residency.EU;
+
+          Passwordless.init({ secret, residency });
+          """
         }
-
-        const residency = Residency.EU;
-
-        Passwordless.init({ secret, residency });
-        """
-      }
+      ]}
     />
+
     <.p>
       From now on you can use the client anywhere in your application to create authentication challenges and perform passwordless flows.
     </.p>
@@ -66,6 +80,102 @@
       />
     </:actions>
   </.simple_table>
+  <.box card>
+    <.form_header title={gettext("IP Allowlist")} no_margin />
+    <.p>
+      Backend API access can be allowed from only whitelisted IP ranges. If you have static outbound IP addresses, you can add them here.
+    </.p>
+    <.form
+      id="app-security-form"
+      for={@form}
+      phx-submit="save"
+      phx-change="validate"
+      phx-target={@myself}
+    >
+      <.inputs_for :let={settings} field={@form[:settings]}>
+        <.field
+          type="checkbox"
+          field={settings[:allowlist_api_access]}
+          label={gettext("Allowlist API access")}
+        />
+        <div :if={@allowlist_api_access} class="pc-form-field-wrapper">
+          <.field_label required>{gettext("Allowed IP ranges")}</.field_label>
+          <div class="flex flex-col gap-y-2">
+            <.inputs_for :let={f} field={settings[:allowlisted_ip_addresses]}>
+              <input
+                type="hidden"
+                name="app[settings][allowlisted_ip_addresses_sort][]"
+                value={f.index}
+              />
+              <div class="flex items-center grow gap-2">
+                <.field
+                  type="text"
+                  minlength="7"
+                  maxlength="15"
+                  pattern="^(?>(\d|[1-9]\d{2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?1)$"
+                  label=""
+                  field={f[:address]}
+                  required
+                  class="font-mono"
+                  wrapper_class="mb-0! w-full grow"
+                >
+                  <:action>
+                    <.icon_form_button
+                      size="sm"
+                      name="app[settings][allowlisted_ip_addresses_drop][]"
+                      type="button"
+                      icon="custom-trash"
+                      color="light"
+                      title={gettext("Remove")}
+                      value={f.index}
+                      event={JS.dispatch("change")}
+                      disabled={f.index == 0}
+                    />
+                  </:action>
+                </.field>
+              </div>
+            </.inputs_for>
+          </div>
+          <div class="flex mt-1.5">
+            <.button
+              size="xs"
+              type="button"
+              color="light"
+              icon="remix-add-circle-line"
+              label={gettext("Add IP range")}
+              name="app[settings][allowlisted_ip_addresses_sort][]"
+              value="new"
+              phx-click={JS.dispatch("change")}
+            />
+          </div>
+          <input type="hidden" name="app[settings][allowlisted_ip_addresses_drop][]" />
+        </div>
+      </.inputs_for>
+    </.form>
+    <div
+      :if={@allowlist_api_access and Util.present?(@allowlisted_ip_addresses)}
+      class="flex flex-col"
+    >
+      <.p class="font-mono text-success-600 dark:text-success-300">
+        {gettext("Allowed IP ranges:")}
+      </.p>
+      <.ul>
+        <li
+          :for={{first, last, hosts} <- @allowlisted_ip_addresses}
+          class="font-mono text-success-600 dark:text-success-300"
+        >
+          {ngettext(
+            "%{first} - %{last} (%{count} host)",
+            "%{first} - %{last} (%{count} hosts)",
+            hosts,
+            first: first,
+            last: last,
+            count: hosts
+          )}
+        </li>
+      </.ul>
+    </div>
+  </.box>
   <.box card>
     <.form_header title={gettext("Usage")} no_margin />
     <.p>

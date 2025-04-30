@@ -41,13 +41,18 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
         _ -> []
       end
 
+    socket =
+      case Passwordless.get_fallback_domain(current_app, :tracking) do
+        {:ok, tracking_domain} -> assign(socket, tracking_domain: tracking_domain)
+        _ -> assign(socket, tracking_domain: nil)
+      end
+
     {:noreply,
      socket
      |> assign(
        current_app: current_app,
        domain_kind: domain_kind,
-       email_domain: current_app.email_domain,
-       tracking_domain: current_app.tracking_domain
+       email_domain: current_app.email_domain
      )
      |> assign(domain_assigns)
      |> assign_form(changeset)
@@ -137,7 +142,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
   defp apply_action(socket, :change, :email_domain) do
     assign(socket,
-      page_title: gettext("Change sending domain"),
+      page_title: gettext("Change domain"),
       page_subtitle:
         gettext(
           "If you change the domain, the previous one will be deleted after 1 day. Keep in mind the new one still needs to be validated."

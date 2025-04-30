@@ -96,28 +96,68 @@
     <.p>
       The Email OTP authenticator can be used to authenticate users via email. The user provides their email address and the application sends a one-time code to the user. The user then provides the code back to the application.
     </.p>
-    <.code_block
-      language={:typescript}
-      code={
-        ~s"""
-        import { Passwordless, Action } from "@passwordless/tools";
 
-        const action: Action = Passwordless.authenticate({
-          action: "login",
-          actor: {
-            username: "1234567890",
-            emails: [
-              { address: "user@example.com" },
-            ],
-          },
-          rules: [
-            {
-              if: true, then: [{ challenge: Passwordless.EMAIL_OTP }],
+    <.live_component
+      id="installation-intro"
+      module={PasswordlessWeb.Components.MultiCodeBlock}
+      codes={[
+        %{
+          tab: gettext("Bash"),
+          language: :bash,
+          code: ~s"""
+          ## Authenicate Action
+          curl -X "POST" "#{PasswordlessWeb.Router.Helpers.action_url(PasswordlessWeb.Endpoint, :authenticate)}" \\
+              -H 'Authorization: Bearer sk_live_******' \\
+              -H 'Idempotency-Key: 123ws' \\
+              -H 'Content-Type: application/json; charset=utf-8' \\
+              -d $'{
+            "ip_address": "78.30.98.85",
+            "user": {
+              "username": "test1",
+              "emails": [
+                {
+                  "address": "marcin.praski@opentide.com",
+                  "primary": true
+                }
+              ]
             },
-          ],
-        });
-        """
-      }
+            "rules": [
+              {
+                "then": [
+                  {
+                    "challenge": "email"
+                  }
+                ],
+                "if": true
+              }
+            ],
+            "action": "login"
+          }'
+          """
+        },
+        %{
+          tab: gettext("Typescript"),
+          language: :typescript,
+          code: ~s"""
+          import { Passwordless } from "@passwordless/tools";
+
+          const action = Passwordless.authenticate({
+            action: "login",
+            actor: {
+              username: "1234567890",
+              emails: [
+                { address: "user@example.com" },
+              ],
+            },
+            rules: [
+              {
+                if: true, then: [{ challenge: Passwordless.EMAIL_OTP }],
+              },
+            ],
+          });
+          """
+        }
+      ]}
     />
     <.p>
       The code above create an Email OTP challenge and delivers the code to the user. Then, the user provides the code back to the application:

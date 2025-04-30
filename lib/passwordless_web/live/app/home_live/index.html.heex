@@ -38,10 +38,44 @@
     </.box>
     <.box card>
       <.form_header title={gettext("Installation")} no_margin />
-      <.code_block language={:bash} code="pnpm add @passwordless/tools" />
       <.p>
-        From now on you can use the client anywhere in your application to create authentication challenges and perform passwordless flows.
+        Passwordless is a drop-in solution for your authentication needs. Follow the instructions below to get started.
       </.p>
+      <.live_component
+        id="installation-intro"
+        module={PasswordlessWeb.Components.MultiCodeBlock}
+        codes={[
+          %{
+            tab: gettext("Bash"),
+            language: :bash,
+            code: ~s"""
+            ## Get Current App
+            curl "#{PasswordlessWeb.Router.Helpers.app_url(PasswordlessWeb.Endpoint, :show)}" \\
+                -H 'Authorization: Bearer #{"sk_live_*******"}'
+            """
+          },
+          %{
+            tab: gettext("Typescript"),
+            language: :typescript,
+            code: ~s"""
+            // First, install the SDK
+            // pnpm add @passwordless/tools
+
+            import { Passwordless, Residency } from '@passwordless/tools';
+
+            const secret = process.env.PASSWORDLESS_APP_SECRET;
+            if (!secret) {
+              throw new Error("PASSWORDLESS_APP_SECRET is undefined");
+            }
+
+            const residency = Residency.EU;
+
+            Passwordless.init({ secret, residency });
+            """
+          }
+        ]}
+      />
+
       <div class="flex items-center gap-3 flex-wrap">
         <.a
           label={gettext("Read documentation")}

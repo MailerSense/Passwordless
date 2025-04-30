@@ -336,7 +336,7 @@ defmodule PasswordlessWeb.CoreComponents do
     """
   end
 
-  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :class, :string, default: "text-base font-mono rounded-lg", doc: "any extra CSS class for the parent container"
   attr :code, :any, required: true
   attr :label, :string, default: nil
   attr :language, :atom, values: [:javascript, :typescript, :json, :html, :bash], required: true
@@ -356,13 +356,13 @@ defmodule PasswordlessWeb.CoreComponents do
     <%= if Util.present?(@label) do %>
       <div class="pc-form-field-wrapper">
         <.form_label>{@label}</.form_label>
-        <pre id={@id} phx-hook="HighlightHook">
-          <code class={[@class, @language_class, "text-base font-mono rounded-lg"]}>{@code}</code>
+        <pre id={@id} phx-hook="HighlightHook" {@rest}>
+          <code class={[@class, @language_class]}>{@code}</code>
         </pre>
       </div>
     <% else %>
-      <pre id={@id} phx-hook="HighlightHook">
-        <code class={[@class, @language_class, "text-base font-mono rounded-lg"]}>{@code}</code>
+      <pre id={@id} phx-hook="HighlightHook" {@rest}>
+        <code class={[@class, @language_class]}>{@code}</code>
       </pre>
     <% end %>
     """

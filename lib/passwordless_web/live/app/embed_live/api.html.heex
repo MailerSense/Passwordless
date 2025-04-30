@@ -1,26 +1,18 @@
 <div class="flex flex-col p-6 gap-6">
   <.box card>
-    <.form_header title={gettext("Backend API")} no_margin />
-    <.p>
-      You can use the Backend API to authenticate your users directly from your own backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
-    </.p>
-    <.a
-      to={~p"/embed/install"}
-      label={gettext("Install Passwordless SDK")}
-      style="link"
-      link_type="live_redirect"
-    />
-  </.box>
-  <.box card>
     <.form_header title={gettext("Email OTP")} no_margin />
     <.p>
       You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
     </.p>
-    <.code_block
-      language={:typescript}
-      code={
-        ~s"""
-        import { Passwordless } from "@passwordless/tools";
+    <.live_component
+      id="multi-code-block"
+      module={PasswordlessWeb.Components.MultiCodeBlock}
+      codes={[
+        %{
+          tab: gettext("Typescript"),
+          language: :typescript,
+          code: ~s"""
+          import { Passwordless } from "@passwordless/tools";
 
           const action = Passwordless.authenticate({
             action: "login",
@@ -36,8 +28,31 @@
               },
             ],
           });
-        """
-      }
+          """
+        },
+        %{
+          tab: gettext("Typescript2"),
+          language: :typescript,
+          code: ~s"""
+          import { Passwordless } from "@passwordless/tools";
+
+          const action2 = Passwordless.authenticate({
+            action: "login",
+            actor: {
+              username: "1234567890",
+              emails: [
+                { address: "user@example.com" },
+              ],
+            },
+            rules: [
+              {
+                if: true, then: [ { challenge: Passwordless.EMAIL_OTP } ],
+              },
+            ],
+          });
+          """
+        }
+      ]}
     />
     <.p>
       The code above create an Email OTP challenge and delivers the code to the user. Then, the user provides the code back to the application:

@@ -38,29 +38,10 @@
         <.form id="edit-app-form" for={@form} phx-submit="save_app" phx-change="validate_app">
           <.field type="checkbox" field={settings[:email_tracking]} label={gettext("Enabled")} />
         </.form>
-        <.field
-          :if={@email_tracking and Util.present?(@tracking_domain)}
-          name="tracking_domain"
-          value={@tracking_domain.name}
-          label={gettext("Tracking domain")}
-          badge={domain_state_badge(@tracking_domain)}
-          readonly
-          wrapper_class="mb-0!"
-        />
-        <.a
-          :if={@email_tracking and not Domain.verified?(@tracking_domain)}
-          to={~p"/domain/tracking/dns"}
-          label={gettext("Setup DNS records")}
-          style="link"
-          link_type="live_patch"
-        />
-        <.a
-          :if={@email_tracking and not Util.present?(@tracking_domain)}
-          to={~p"/domain/tracking/new"}
-          label={gettext("Set up tracking domain")}
-          style="link"
-          link_type="live_patch"
-        />
+        <.alert :if={@email_tracking} color="info" with_icon>
+          Links will be wrapped in <code>{@tracking_domain.name}</code>
+          to track opens and clicks. We will soon support adding your own tracking domain.
+        </.alert>
       </.inputs_for>
     </.box>
     <.box card>
@@ -74,14 +55,7 @@
       >
         <.a
           to={~p"/domain/email/change"}
-          label={gettext("Change sending domain")}
-          style="link"
-          link_type="live_patch"
-        />
-        <.a
-          :if={Util.present?(@tracking_domain)}
-          to={~p"/domain/tracking/change"}
-          label={gettext("Change tracking domain")}
+          label={gettext("Change domain")}
           style="link"
           link_type="live_patch"
         />
