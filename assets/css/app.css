@@ -2183,7 +2183,7 @@
   }
 
   .pc-code-tab-inactive {
-    @apply text-slate-500;
+    @apply text-slate-400;
   }
 
   .pc-code-tab-active {

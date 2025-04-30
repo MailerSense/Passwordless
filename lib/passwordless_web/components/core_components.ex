@@ -339,7 +339,7 @@ defmodule PasswordlessWeb.CoreComponents do
   attr :class, :string, default: "text-base font-mono rounded-lg", doc: "any extra CSS class for the parent container"
   attr :code, :any, required: true
   attr :label, :string, default: nil
-  attr :language, :atom, values: [:javascript, :typescript, :json, :html, :bash], required: true
+  attr :language, :atom, values: [:javascript, :typescript, :json, :html, :bash, :asciidoc], required: true
   attr :language_class, :string
   attr :rest, :global
 
