@@ -1,23 +1,17 @@
-<.auth_layout title={gettext("Email Preferences")}>
+<.auth_layout title={gettext("Secure Email")}>
   <:logo>
     <.logo_icon class="w-12 h-12" />
   </:logo>
 
   <:top_links>
-    {gettext("What's this?")}
-    <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/"}>
-      {gettext("Learn more")}
-    </.link>
+    {gettext("Manage your email preferences")}
   </:top_links>
 
   <.alert color="danger" with_icon class="mb-6">
-    {gettext("Link invalid or expired")}
-  </.alert>
-  <.p class="mb-6">
     {gettext(
-      "If you are trying to unsubscribe from unwanted emails, please check your email for the correct link. If you are trying to subscribe, please try again."
+      "Link invalid or expired. If you are trying to unsubscribe from unwanted emails, please look for a more recent message."
     )}
-  </.p>
+  </.alert>
   <div class="flex">
     <.button size="xl" link_type="a" title={gettext("Go Home")} to={~p"/"} class="flex flex-1" />
   </div>

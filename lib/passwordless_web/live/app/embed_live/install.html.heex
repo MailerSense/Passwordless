@@ -82,7 +82,7 @@
   <.box card>
     <.form_header title={gettext("IP Allowlist")} no_margin />
     <.p>
-      Backend API access can be allowed from only whitelisted IP ranges. If you have static outbound IP addresses, you can add them here.
+      Permit API calls only from predefined IP ranges. If you have static outbound IP addresses, you can allowlist them here.
     </.p>
     <.form
       id="app-security-form"
@@ -95,7 +95,7 @@
         <.field
           type="checkbox"
           field={settings[:allowlist_api_access]}
-          label={gettext("Allowlist API access")}
+          label={gettext("Enabled")}
         />
         <div :if={@allowlist_api_access} class="pc-form-field-wrapper">
           <.field_label required>{gettext("Allowed IP ranges")}</.field_label>

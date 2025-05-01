@@ -81,6 +81,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :primary, :boolean, null: false, default: false
       add :verified, :boolean, null: false, default: false
       add :opted_out_at, :utc_datetime_usec
+      add :authenticators, {:array, :string}, null: false, default: []
 
       add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
 
@@ -220,8 +221,8 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :canonical, :citext, null: false
       add :primary, :boolean, null: false, default: false
       add :verified, :boolean, null: false, default: false
-      add :channels, {:array, :string}, null: false, default: []
       add :opted_out_at, :utc_datetime_usec
+      add :authenticators, {:array, :string}, null: false, default: []
 
       add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
 

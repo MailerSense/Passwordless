@@ -10,7 +10,7 @@ defmodule Passwordless.Phone do
   alias Database.ChangesetExt
   alias Passwordless.Actor
 
-  @channels ~w(sms whatsapp)a
+  @authenticators ~w(sms whatsapp)a
 
   @derive {
     Jason.Encoder,
@@ -21,7 +21,7 @@ defmodule Passwordless.Phone do
       :canonical,
       :primary,
       :verified,
-      :channels,
+      :authenticators,
       :opted_out_at,
       :inserted_at,
       :updated_at
@@ -37,7 +37,7 @@ defmodule Passwordless.Phone do
     field :canonical, :string
     field :primary, :boolean, default: false
     field :verified, :boolean, default: false
-    field :channels, {:array, Ecto.Enum}, values: @channels, default: [:sms]
+    field :authenticators, {:array, Ecto.Enum}, values: @authenticators, default: []
     field :opted_out, :boolean, virtual: true
     field :opted_out_at, :utc_datetime_usec
 
@@ -73,7 +73,7 @@ defmodule Passwordless.Phone do
     canonical
     primary
     verified
-    channels
+    authenticators
     opted_out_at
     actor_id
   )a
@@ -149,7 +149,7 @@ defmodule Passwordless.Phone do
 
   defp base_changeset(changeset, opts) do
     changeset
-    |> validate_channels()
+    |> validate_authenticators()
     |> unique_constraint([:actor_id, :primary], error_key: :primary)
     |> unique_constraint([:actor_id, :canonical], error_key: :canonical)
     |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo,
@@ -164,7 +164,7 @@ defmodule Passwordless.Phone do
     |> assoc_constraint(:actor)
   end
 
-  defp validate_channels(changeset) do
-    ChangesetExt.clean_array(changeset, :channels)
+  defp validate_authenticators(changeset) do
+    ChangesetExt.clean_array(changeset, :authenticators)
   end
 end

@@ -40,6 +40,7 @@ defmodule Passwordless.Challenges.EmailOTP do
 
     with :ok <- rate_limit_reached?(app, email),
          :ok <- Passwordless.email_opted_out?(app, email),
+         {:ok, email} <- update_email_authenticators(email),
          {:ok, domain} <- Passwordless.get_fallback_domain(app, :email),
          {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email_otp),
          %EmailTemplate{} = email_template <- get_email_template(authenticator),
@@ -163,6 +164,8 @@ defmodule Passwordless.Challenges.EmailOTP do
     attrs = if Util.present?(actor.name), do: Map.put(attrs, :recipient_name, actor.name), else: attrs
     render_attrs = %{unsubscribe_url: unsubscribe_page_url(link), otp_code: otp_code}
 
+    IO.inspect(render_attrs)
+
     with {:ok, message_attrs} <- Renderer.render(locale, render_attrs, opts) do
       opts = [prefix: Tenant.to_prefix(app)]
       attrs = Map.merge(attrs, message_attrs)
@@ -217,6 +220,16 @@ defmodule Passwordless.Challenges.EmailOTP do
     challenge
     |> Challenge.state_changeset(%{state: state})
     |> Repo.update(opts)
+  end
+
+  defp update_email_authenticators(%Email{authenticators: authenticators} = email) do
+    if @challenge in authenticators do
+      {:ok, email}
+    else
+      email
+      |> Email.changeset(%{authenticators: [@challenge | authenticators]})
+      |> Repo.update()
+    end
   end
 
   defp unsubscribe_url(%EmailUnsubscribeLinkMapping{} = link) do

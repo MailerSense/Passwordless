@@ -1,16 +1,10 @@
-<.auth_layout title={gettext("Email Subscription")}>
+<.auth_layout title={gettext("Secure Email")}>
   <:logo>
     <.logo_icon class="w-12 h-12" />
   </:logo>
 
   <:top_links>
-    {gettext("Not you?")}
-    <.link
-      class="text-blue-600 underline dark:text-blue-300 font-semibold"
-      navigate={@app.settings.website}
-    >
-      {gettext("Go Home")}
-    </.link>
+    {gettext("Manage your email preferences")}
   </:top_links>
 
   <.form
@@ -23,13 +17,14 @@
     <.form_header title={gettext("Hello")} />
     <.p class="mb-6">
       {gettext(
-        "You are about to unsubscribe from %{app_name}. No more magic links, OTPs etc. will be sent to your email. Click the button below to confirm.",
+        "You are about to unsubscribe from secure emails send by %{app_name}. Click the button below to confirm.",
         app_name: @app.name
       )}
     </.p>
     <.field type="hidden" field={f[:token]} value={@token} />
     <.field
       type="email"
+      icon="remix-mail-fill"
       field={f[:email]}
       label={gettext("Email")}
       required
@@ -37,7 +32,6 @@
       readonly
       autocomplete="email"
     />
-
     <div class="flex mt-6">
       <.button size="xl" label={gettext("Unsubscribe")} class="flex flex-1" />
     </div>

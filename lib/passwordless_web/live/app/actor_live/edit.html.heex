@@ -34,6 +34,7 @@
       </.subpage_header>
 
       <.box padded>
+        <.form_header title={gettext("User profile")} />
         <.field
           field={@form[:state]}
           type="select"
@@ -49,34 +50,38 @@
           required_asterix={false}
           help_text={
             if @user_active do
-              gettext("User is active and can authenticate with %{app}.",
+              gettext("User can authenticate with %{app}.",
                 app: user_app_name(@current_user)
               )
             else
-              gettext("User is locked and cannot authenticate with %{app}.",
+              gettext("User cannot authenticate with %{app}.",
                 app: user_app_name(@current_user)
               )
             end
           }
         />
-        <.field
-          field={@form[:username]}
-          disabled={not @user_active}
-          copyable={true}
-          nonce={get_csp_nonce()}
-          placeholder={gettext("Unique user ID from your own system")}
-          autocomplete="username"
-        />
-        <.field
-          field={@form[:language]}
-          type="select"
-          options={@languages}
-          icon_class="pc-select-input__flag"
-          icon_mapping={@flag_mapping}
-          required
-          required_asterix={false}
-          disabled={not @user_active}
-        />
+        <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2 mb-6">
+          <.field
+            field={@form[:username]}
+            disabled={not @user_active}
+            copyable={true}
+            nonce={get_csp_nonce()}
+            placeholder={gettext("Unique user ID from your own system")}
+            autocomplete="username"
+            wrapper_class="mb-0!"
+          />
+          <.field
+            field={@form[:language]}
+            type="select"
+            options={@languages}
+            icon_class="pc-select-input__flag"
+            icon_mapping={@flag_mapping}
+            required
+            required_asterix={false}
+            disabled={not @user_active}
+            wrapper_class="mb-0!"
+          />
+        </div>
         <%= if @property_editor do %>
           <.field
             type="textarea"
@@ -131,12 +136,16 @@
         Email and phone numbers are used to send notifications and authenticate users. You can add multiple emails and phone numbers to a user account.
       </.p>
       <.simple_table items={@emails} count={Enum.count(@emails)} title={gettext("Emails")}>
-        <:if_empty>{gettext("No %{models} defined yet", models: gettext("emails"))}</:if_empty>
+        <:if_empty>{gettext("No %{models} present", models: gettext("emails"))}</:if_empty>
         <:col field={:address} label={gettext("Email")} body_class="w-full" />
         <:col :let={email} field={:authenticators}>
           <div class="flex items-center gap-2">
-            <.badge size="sm" label="Magic link" color="cyan" />
-            <.badge size="sm" label="Email OTP" color="pink" />
+            <.badge
+              :for={authn <- email.authenticators}
+              size="sm"
+              label={translate_authenticator(authn)}
+              color={random_color(authn)}
+            />
           </div>
         </:col>
         <:col :let={email} field={:verified}>
@@ -169,7 +178,7 @@
         </:actions>
       </.simple_table>
       <.simple_table items={@phones} count={Enum.count(@phones)} title={gettext("Phones")}>
-        <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
+        <:if_empty>{gettext("No %{models} present", models: gettext("phones"))}</:if_empty>
         <:col :let={phone} label={gettext("Phone")} body_class="w-full">
           <div class="flex items-center gap-2">
             <.icon name={"flag-#{String.downcase(phone.region)}"} class="pc-flag-icon" /> {Phone.format(
@@ -177,13 +186,13 @@
             )}
           </div>
         </:col>
-        <:col :let={phone} field={:channels}>
+        <:col :let={phone} field={:authenticators}>
           <div class="flex items-center gap-2">
             <.badge
-              :for={channel <- phone.channels}
+              :for={authn <- phone.authenticators}
               size="sm"
-              label={translate_channel(channel)}
-              color={random_color(channel)}
+              label={translate_authenticator(authn)}
+              color={random_color(authn)}
             />
           </div>
         </:col>
@@ -221,19 +230,19 @@
         Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
       </.p>
       <.simple_table items={[]} count={Enum.count([])} title={gettext("Passkeys")}>
-        <:if_empty>{gettext("No %{models} defined yet", models: gettext("passkeys"))}</:if_empty>
+        <:if_empty>{gettext("No %{models} present", models: gettext("passkeys"))}</:if_empty>
         <:col field={:name} body_class="w-full" />
         <:col actions></:col>
       </.simple_table>
       <.simple_table items={[]} count={Enum.count([])} title={gettext("Security keys")}>
         <:if_empty>
-          {gettext("No %{models} defined yet", models: gettext("security keys"))}
+          {gettext("No %{models} present", models: gettext("security keys"))}
         </:if_empty>
         <:col field={:name} body_class="w-full" />
         <:col actions></:col>
       </.simple_table>
       <.simple_table items={@totps} count={Enum.count([])} title={gettext("Time-based OTPs")}>
-        <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
+        <:if_empty>{gettext("No %{models} present", models: gettext("TOTPs"))}</:if_empty>
         <:col field={:name} body_class="w-full" />
         <:col actions></:col>
       </.simple_table>

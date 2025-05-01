@@ -11,6 +11,8 @@ defmodule Passwordless.Email do
   alias Passwordless.Actor
   alias Passwordless.EmailMessage
 
+  @authenticators ~w(email_otp magic_link)a
+
   @derive {
     Jason.Encoder,
     only: [
@@ -19,6 +21,7 @@ defmodule Passwordless.Email do
       :primary,
       :verified,
       :opted_out_at,
+      :authenticators,
       :inserted_at,
       :updated_at
     ]
@@ -33,6 +36,7 @@ defmodule Passwordless.Email do
     field :verified, :boolean, default: false
     field :opted_out, :boolean, virtual: true
     field :opted_out_at, :utc_datetime_usec
+    field :authenticators, {:array, Ecto.Enum}, values: @authenticators, default: []
 
     has_many :email_messages, EmailMessage, preload_order: [asc: :inserted_at]
 
@@ -60,6 +64,7 @@ defmodule Passwordless.Email do
     primary
     verified
     opted_out_at
+    authenticators
     actor_id
   )a
   @required_fields @fields -- [:opted_out_at]
@@ -72,6 +77,7 @@ defmodule Passwordless.Email do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_email()
+    |> validate_authenticators()
     |> unique_constraint([:actor_id, :primary], error_key: :primary)
     |> unique_constraint([:actor_id, :address], error_key: :address)
     |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo,
@@ -90,5 +96,9 @@ defmodule Passwordless.Email do
 
   defp validate_email(changeset) do
     ChangesetExt.validate_email(changeset, :address)
+  end
+
+  defp validate_authenticators(changeset) do
+    ChangesetExt.clean_array(changeset, :authenticators)
   end
 end
