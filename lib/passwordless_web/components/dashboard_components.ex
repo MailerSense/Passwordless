@@ -530,7 +530,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   end
 
   attr :id, :string
-  attr :current_user, :map, required: true
+  attr :current_user, :map, default: nil
   attr :rest, :global
 
   def sentry_user_setter(%{current_user: %User{} = user} = assigns) do
