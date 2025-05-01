@@ -73,14 +73,15 @@ defmodule Passwordless.Challenges.EmailOTP do
         attrs: %{code: code}
       )
       when state in [:otp_sent, :otp_invalid] and is_binary(code) do
-    case challenge |> Ecto.assoc(:email_message) |> Repo.one() |> Repo.preload(:otp) do
-      %EmailMessage{otp: %OTP{} = otp} ->
+    case challenge |> Ecto.assoc(:email_message) |> Repo.one() |> Repo.preload([:otp, :email]) do
+      %EmailMessage{otp: %OTP{} = otp, email: %Email{} = email} ->
         cond do
           OTP.expired?(otp) ->
             {:error, :otp_not_found}
 
-          OTP.valid?(otp) ->
-            with {:ok, challenge} <- update_challenge_state(app, challenge, :otp_validated),
+          OTP.valid?(otp, code) ->
+            with {:ok, _email} <- update_email_verified(email),
+                 {:ok, challenge} <- update_challenge_state(app, challenge, :otp_validated),
                  do: {:ok, %Action{action | challenge: challenge}}
 
           true ->
@@ -164,8 +165,6 @@ defmodule Passwordless.Challenges.EmailOTP do
     attrs = if Util.present?(actor.name), do: Map.put(attrs, :recipient_name, actor.name), else: attrs
     render_attrs = %{unsubscribe_url: unsubscribe_page_url(link), otp_code: otp_code}
 
-    IO.inspect(render_attrs)
-
     with {:ok, message_attrs} <- Renderer.render(locale, render_attrs, opts) do
       opts = [prefix: Tenant.to_prefix(app)]
       attrs = Map.merge(attrs, message_attrs)
@@ -238,6 +237,12 @@ defmodule Passwordless.Challenges.EmailOTP do
       |> Email.changeset(%{authenticators: [@challenge | authenticators]})
       |> Repo.update()
     end
+  end
+
+  defp update_email_verified(%Email{} = email) do
+    email
+    |> Email.changeset(%{verified: true})
+    |> Repo.update()
   end
 
   defp unsubscribe_url(%EmailUnsubscribeLinkMapping{} = link) do

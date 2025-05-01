@@ -60,7 +60,6 @@ defmodule PasswordlessApi.Routes do
             ]
 
             post "/authenticate", ActionController, :authenticate
-            post "/continue", ActionController, :continue
           end
         end
       end
