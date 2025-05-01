@@ -560,6 +560,12 @@ defmodule PasswordlessWeb.DashboardComponents do
     """
   end
 
+  def sentry_user_setter(assigns) do
+    ~H"""
+    <div></div>
+    """
+  end
+
   # Private
 
   defp generate_qrcode(uri, opts \\ []) do

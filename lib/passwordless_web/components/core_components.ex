@@ -240,7 +240,7 @@ defmodule PasswordlessWeb.CoreComponents do
         />
       </div>
 
-      <.or_break or_text="Or" />
+      <.or_break or_text="or" />
     <% end %>
     """
   end
@@ -250,15 +250,12 @@ defmodule PasswordlessWeb.CoreComponents do
 
   def or_break(assigns) do
     ~H"""
-    <div class="relative my-5">
-      <div class="absolute inset-0 flex items-center">
-        <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
-      </div>
-      <div class="relative flex justify-center text-sm">
-        <span class="px-2 text-gray-500 bg-white dark:bg-gray-800">
-          {@or_text}
-        </span>
-      </div>
+    <div class="flex items-center gap-4 my-6">
+      <div class="w-full h-[1px] bg-gray-200 dark:bg-gray-700/70"></div>
+      <span class="text-gray-500">
+        {@or_text}
+      </span>
+      <div class="w-full h-[1px] bg-gray-200 dark:bg-gray-700/70"></div>
     </div>
     """
   end

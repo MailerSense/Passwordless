@@ -15,7 +15,7 @@
       <.field type="checkbox" field={@form[:enabled]} />
       <.field
         field={@form[:relying_party_id]}
-        label={gettext("Relying Party ID")}
+        label={gettext("Relying party ID")}
         disabled={not @enabled}
         required
       />
@@ -23,7 +23,7 @@
     <.box padded>
       <.form_header title={gettext("Origins")} />
       <.p class="mb-6">
-        The expected origins are the domains that the security key can be used on. The security key will only be valid for the specified domains.
+        The expected origins are the domains that the key can be used on. The key will only be valid for the specified domains.
       </.p>
       <div class="pc-form-field-wrapper">
         <.field_label required>{gettext("Expected origins")}</.field_label>
