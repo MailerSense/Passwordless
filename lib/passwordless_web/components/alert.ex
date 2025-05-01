@@ -34,6 +34,9 @@ defmodule PasswordlessWeb.Components.Alert do
       <% end %>
 
       <div class="pc-alert">
+        <div :if={Util.present?(@heading)} class="pc-alert__heading">
+          {@heading}
+        </div>
         <div class="pc-alert__inner">
           <div class="pc-alert__label">
             {render_slot(@inner_block) || @label}

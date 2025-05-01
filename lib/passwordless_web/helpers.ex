@@ -287,7 +287,14 @@ defmodule PasswordlessWeb.Helpers do
   def admin?(%User{} = user), do: User.admin?(user)
   def admin?(_user), do: false
 
-  @common_colors ~w(blue indigo purple fuchsia pink cyan teal sky)
+  @common_colors ~w(
+    indigo
+    purple
+    fuchsia
+    pink
+    rose
+    cyan
+  )
 
   def translate_action(action) do
     Phoenix.Naming.humanize(action)

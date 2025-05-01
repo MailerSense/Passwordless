@@ -39,12 +39,18 @@ defmodule Passwordless.OTP do
   @doc """
   Checks if the OTP is valid.
   """
-  def valid?(%__MODULE__{code: code, expires_at: expires_at, attempts: attempts}, candidate)
-      when attempts < @attempts and is_binary(code) and is_binary(candidate) and byte_size(candidate) == @size do
-    DateTime.after?(expires_at, DateTime.utc_now()) and Plug.Crypto.secure_compare(code, candidate)
-  end
+  def valid?(%__MODULE__{code: code, attempts: attempts}, candidate)
+      when attempts < @attempts and is_binary(code) and is_binary(candidate) and byte_size(candidate) == @size,
+      do: Plug.Crypto.secure_compare(code, candidate)
 
   def valid?(%__MODULE__{}, _candidate), do: false
+
+  @doc """
+  Checks if the OTP is expired.
+  """
+  def expired?(%__MODULE__{expires_at: expires_at}) do
+    DateTime.before?(expires_at, DateTime.utc_now())
+  end
 
   @doc """
   Generates a new OTP code.

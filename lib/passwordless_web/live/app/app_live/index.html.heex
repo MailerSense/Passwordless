@@ -4,7 +4,7 @@
       <.form id="edit-app-form" for={@form} phx-submit="save" phx-change="validate">
         <.form_header title={gettext("App")} />
         <.p class="mb-6">
-          App is a single software project - a website, mobile app or an API. You can create multiple apps under a single organization e.g. for dev, staging, prod. Apps are separate from each other.
+          App is a container for your users, authentication methods and other data. Create one app per project or environment.
         </.p>
         <.inputs_for :let={settings} field={@form[:settings]}>
           <.image_input

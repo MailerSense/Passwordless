@@ -33,218 +33,141 @@
         </div>
       </.subpage_header>
 
-      <.box padded>
-        <.field
-          field={@form[:state]}
-          type="select"
-          options={@states}
-          icon_class={"pc-field-icon__icon " <> (
+      <div class="flex flex-col xl:flex-row gap-6">
+        <.box padded class="xl:w-1/3 xl:min-w-[350px]">
+          <.form_header title={gettext("Personal")} />
+          <.field
+            field={@form[:state]}
+            type="select"
+            options={@states}
+            icon_class={"pc-field-icon__icon " <> (
         case @user_state do
           :active -> "text-success-600 dark:text-success-300"
           :locked -> "text-danger-600 dark:text-danger-300"
         end
       )}
-          icon_mapping={@icon_mapping}
-          required
-          required_asterix={false}
-          help_text={
-            if @user_active do
-              gettext("User is active and can authenticate with %{app}.",
-                app: user_app_name(@current_user)
-              )
-            else
-              gettext("User is locked and cannot authenticate with %{app}.",
-                app: user_app_name(@current_user)
-              )
-            end
-          }
-        />
-        <.field
-          field={@form[:username]}
-          disabled={not @user_active}
-          copyable={true}
-          nonce={get_csp_nonce()}
-          placeholder={gettext("Unique user ID from your own system")}
-          autocomplete="username"
-        />
-        <.field
-          field={@form[:language]}
-          type="select"
-          options={@languages}
-          icon_class="pc-select-input__flag"
-          icon_mapping={@flag_mapping}
-          required
-          required_asterix={false}
-          disabled={not @user_active}
-        />
-        <%= if @property_editor do %>
+            icon_mapping={@icon_mapping}
+            required
+            required_asterix={false}
+          />
           <.field
-            type="textarea"
-            field={@form[:properties_text]}
-            label={gettext("Properties")}
-            disabled={not @user_active}
-            class="font-mono"
-            rows={Util.count_json_lines(@user_properties)}
-          />
-          <.a
-            label={gettext("Finish editing properties")}
-            style="link"
-            link_type="a"
-            phx-click="toggle_property_editor"
-            disabled={not @form.source.valid?}
-          />
-        <% else %>
-          <.field
-            type="hidden"
-            field={@form[:properties_text]}
-            value={Jason.encode!(@user_properties)}
-          />
-          <.json_block
-            label={gettext("Properties")}
-            code={@user_properties}
+            field={@form[:language]}
+            type="select"
+            options={@languages}
+            icon_class="pc-select-input__flag"
+            icon_mapping={@flag_mapping}
+            required
+            required_asterix={false}
             disabled={not @user_active}
           />
-          <div class="flex items-center gap-3 flex-wrap">
+          <.field
+            field={@form[:username]}
+            disabled={not @user_active}
+            copyable={true}
+            nonce={get_csp_nonce()}
+            placeholder={gettext("Unique user ID from your own system")}
+            autocomplete="username"
+          />
+          <%= if @property_editor do %>
+            <.field
+              type="textarea"
+              field={@form[:properties_text]}
+              label={gettext("Properties")}
+              disabled={not @user_active}
+              class="font-mono"
+              rows={Util.count_json_lines(@user_properties)}
+            />
             <.a
-              label={gettext("Edit properties")}
+              label={gettext("Finish editing properties")}
               style="link"
               link_type="a"
               phx-click="toggle_property_editor"
+              disabled={not @form.source.valid?}
             />
-            <.a
-              label={gettext("Add new email")}
-              style="link"
-              link_type="live_patch"
-              to={~p"/users/#{@actor}/edit/email/new"}
+          <% else %>
+            <.field
+              type="hidden"
+              field={@form[:properties_text]}
+              value={Jason.encode!(@user_properties)}
             />
-            <.a
-              label={gettext("Add new phone")}
-              style="link"
-              link_type="live_patch"
-              to={~p"/users/#{@actor}/edit/phone/new"}
+            <.json_block
+              label={gettext("Properties")}
+              code={@user_properties}
+              disabled={not @user_active}
             />
-          </div>
-        <% end %>
-      </.box>
-      <.form_separator no_margin />
-      <.p>
-        Email and phone numbers are used to send notifications and authenticate users. You can add multiple emails and phone numbers to a user account.
-      </.p>
-      <.simple_table items={@emails} count={Enum.count(@emails)} title={gettext("Emails")}>
-        <:if_empty>{gettext("No %{models} defined yet", models: gettext("emails"))}</:if_empty>
-        <:col field={:address} label={gettext("Email")} body_class="w-full" />
-        <:col :let={email} field={:authenticators}>
-          <div class="flex items-center gap-2">
-            <.badge size="sm" label="Magic link" color="cyan" />
-            <.badge size="sm" label="Email OTP" color="pink" />
-          </div>
-        </:col>
-        <:col :let={email} field={:verified}>
-          <.check_mark checked={email.verified} />
-        </:col>
-        <:col :let={email} field={:primary}>
-          <.check_mark checked={email.primary} />
-        </:col>
-        <:col :let={email} field={:opted_out}>
-          <.check_mark checked={email.opted_out_at} />
-        </:col>
-        <:col actions></:col>
-        <:actions :let={email}>
-          <.icon_button
-            to={~p"/users/#{@actor}/edit/email/#{email}/delete"}
-            size="sm"
-            icon="custom-trash"
-            color="light"
-            title={gettext("Remove")}
-            link_type="live_patch"
-          />
-          <.icon_button
-            to={~p"/users/#{@actor}/edit/email/#{email}/edit"}
-            size="sm"
-            icon="custom-edit"
-            color="light"
-            title={gettext("Edit")}
-            link_type="live_patch"
-          />
-        </:actions>
-      </.simple_table>
-      <.simple_table items={@phones} count={Enum.count(@phones)} title={gettext("Phones")}>
-        <:if_empty>{gettext("No %{models} defined yet", models: gettext("phones"))}</:if_empty>
-        <:col :let={phone} label={gettext("Phone")} body_class="w-full">
-          <div class="flex items-center gap-2">
-            <.icon name={"flag-#{String.downcase(phone.region)}"} class="pc-flag-icon" /> {Phone.format(
-              phone
-            )}
-          </div>
-        </:col>
-        <:col :let={phone} field={:channels}>
-          <div class="flex items-center gap-2">
-            <.badge
-              :for={channel <- phone.channels}
-              size="sm"
-              label={translate_channel(channel)}
-              color={random_color(channel)}
-            />
-          </div>
-        </:col>
-        <:col :let={phone} field={:verified}>
-          <.check_mark checked={phone.verified} />
-        </:col>
-        <:col :let={phone} field={:primary}>
-          <.check_mark checked={phone.primary} />
-        </:col>
-        <:col :let={phone} field={:opted_out}>
-          <.check_mark checked={phone.opted_out} />
-        </:col>
-        <:col actions></:col>
-        <:actions :let={phone}>
-          <.icon_button
-            to={~p"/users/#{@actor}/edit/phone/#{phone}/delete"}
-            size="sm"
-            icon="custom-trash"
-            color="light"
-            title={gettext("Remove")}
-            link_type="live_patch"
-          />
-          <.icon_button
-            to={~p"/users/#{@actor}/edit/phone/#{phone}/edit"}
-            size="sm"
-            icon="custom-edit"
-            color="light"
-            title={gettext("Edit")}
-            link_type="live_patch"
-          />
-        </:actions>
-      </.simple_table>
-      <.form_separator no_margin />
-      <.p>
-        Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
-      </.p>
-      <.simple_table items={[]} count={Enum.count([])} title={gettext("Passkeys")}>
-        <:if_empty>{gettext("No %{models} defined yet", models: gettext("passkeys"))}</:if_empty>
-        <:col field={:name} body_class="w-full" />
-        <:col actions></:col>
-      </.simple_table>
-      <.simple_table items={[]} count={Enum.count([])} title={gettext("Security keys")}>
-        <:if_empty>
-          {gettext("No %{models} defined yet", models: gettext("security keys"))}
-        </:if_empty>
-        <:col field={:name} body_class="w-full" />
-        <:col actions></:col>
-      </.simple_table>
-      <.simple_table items={@totps} count={Enum.count([])} title={gettext("Time-based OTPs")}>
-        <:if_empty>{gettext("No %{models} defined yet", models: gettext("TOTPs"))}</:if_empty>
-        <:col field={:name} body_class="w-full" />
-        <:col actions></:col>
-      </.simple_table>
+            <div class="flex items-center gap-3 flex-wrap">
+              <.a
+                label={gettext("Edit properties")}
+                style="link"
+                link_type="a"
+                phx-click="toggle_property_editor"
+              />
+              <.a
+                label={gettext("Add email")}
+                style="link"
+                link_type="live_patch"
+                to={~p"/users/#{@actor}/edit/email/new"}
+              />
+            </div>
+          <% end %>
+        </.box>
+
+        <div class="flex flex-col gap-6 grow">
+          <.simple_table items={@emails} count={Enum.count(@emails)} title={gettext("Emails")}>
+            <:if_empty>{gettext("No %{models} present", models: gettext("emails"))}</:if_empty>
+            <:col field={:address} label={gettext("Email")} body_class="w-full" />
+            <:col :let={email} field={:authenticators}>
+              <div class="flex items-center gap-2">
+                <.badge
+                  :for={authn <- email.authenticators}
+                  size="sm"
+                  label={translate_authenticator(authn)}
+                  color={random_color(authn)}
+                />
+              </div>
+            </:col>
+            <:col :let={email} field={:verified}>
+              <.check_mark checked={email.verified} />
+            </:col>
+            <:col :let={email} field={:primary}>
+              <.check_mark checked={email.primary} />
+            </:col>
+            <:col actions></:col>
+            <:actions :let={email}>
+              <.icon_button
+                to={~p"/users/#{@actor}/edit/email/#{email}/delete"}
+                size="sm"
+                icon="custom-trash"
+                color="light"
+                title={gettext("Remove")}
+                link_type="live_patch"
+              />
+              <.icon_button
+                to={~p"/users/#{@actor}/edit/email/#{email}/edit"}
+                size="sm"
+                icon="custom-edit"
+                color="light"
+                title={gettext("Edit")}
+                link_type="live_patch"
+              />
+            </:actions>
+          </.simple_table>
+          <.simple_table items={[]} count={Enum.count([])} title={gettext("Passkeys")}>
+            <:if_empty>{gettext("No %{models} present", models: gettext("passkeys"))}</:if_empty>
+            <:col field={:name} body_class="w-full" />
+            <:col actions></:col>
+          </.simple_table>
+          <.simple_table items={@totps} count={Enum.count([])} title={gettext("Time-based OTPs")}>
+            <:if_empty>{gettext("No %{models} present", models: gettext("TOTPs"))}</:if_empty>
+            <:col field={:name} body_class="w-full" />
+            <:col actions></:col>
+          </.simple_table>
+        </div>
+      </div>
     </div>
   </.form>
 
   <div class="flex flex-col gap-6 px-6 pb-6 pt-0">
-    <.form_separator no_margin />
-    <.p>
-      Passwordless allows you to authenticate any action users take on your app, like log-in, placing an order or money withdrawal. You specify the action handlers in your backend application code. Here are the top actions taken by users.
-    </.p>
     <.data_table id="actions" meta={@meta} title={gettext("Actions")} items={@actions}>
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
       <:col :let={action} label={gettext("Action")} field={:name}>

@@ -300,6 +300,8 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     end
   end
 
-  defp translate_channel(:sms), do: gettext("SMS")
-  defp translate_channel(:whatsapp), do: gettext("WhatsApp")
+  defp translate_authenticator(:sms_otp), do: gettext("SMS OTP")
+  defp translate_authenticator(:whatsapp_otp), do: gettext("WhatsApp OTP")
+  defp translate_authenticator(:email_otp), do: gettext("Email OTP")
+  defp translate_authenticator(:magic_link), do: gettext("Magic link")
 end
