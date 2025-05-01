@@ -22,11 +22,9 @@ defmodule PasswordlessWeb.Components.AuthLayout do
       <div class="sm:mx-auto sm:w-full sm:max-w-md">
         <div class="p-4 sm:p-10 bg-white shadow-4 sm:rounded-2xl dark:bg-slate-800/30 border border-transparent dark:border-slate-700/40">
           <div class="flex flex-col items-center mb-10">
-            <div class="flex justify-center mb-8">
-              <.link href="/">
-                {render_slot(@logo)}
-              </.link>
-            </div>
+            <.link href="/" class="flex justify-center mb-8">
+              {render_slot(@logo)}
+            </.link>
 
             <.h2>
               {@title}

@@ -631,12 +631,19 @@ defmodule PasswordlessWeb.Components.Field do
         {@label}
       </.field_label>
       <div class="pc-password-field-wrapper" x-data="viewable">
+        <div :if={Util.present?(@icon)} class="pc-field-icon">
+          <Icon.icon name={@icon} class={@icon_class} />
+        </div>
         <input
           id={@id}
           name={@name}
           x-bind:type="fieldType"
           value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-          class={[@class, "pc-password-field-input"]}
+          class={[
+            @class,
+            "pc-password-field-input",
+            if(Util.present?(@icon), do: "pc-field-icon__padding")
+          ]}
           required={@required}
           {@rest}
         />

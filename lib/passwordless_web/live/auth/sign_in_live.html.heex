@@ -1,12 +1,12 @@
 <%= if @step == :sign_in do %>
   <.auth_layout id="sign-in-layout" title={gettext("Sign in")}>
     <:logo>
-      <.logo_icon class="w-16 h-16" />
+      <.logo_icon class="w-12 h-12" />
     </:logo>
 
     <:top_links>
       {gettext("Don't have an account?")}
-      <.link class="text-blue-600 dark:text-blue-300" navigate={~p"/auth/sign-up"}>
+      <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-up"}>
         {gettext("Sign up")}
       </.link>
     </:top_links>
@@ -15,6 +15,7 @@
 
     <.form id="sign-in-form" for={@form} phx-change="validate_email" phx-submit="submit_email">
       <.field
+        icon="remix-mail-fill"
         type="email"
         field={@form[:email]}
         required
@@ -50,12 +51,12 @@
 <%= if @step == :otp_sent do %>
   <.auth_layout id="sign-in-layout" title={gettext("Sign in")}>
     <:logo>
-      <.logo_icon class="w-16 h-16" />
+      <.logo_icon class="w-12 h-12" />
     </:logo>
 
     <:top_links>
       {gettext("Don't have an account?")}
-      <.link class="text-blue-600 dark:text-blue-300" navigate={~p"/auth/sign-up"}>
+      <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-up"}>
         {gettext("Sign up")}
       </.link>
     </:top_links>

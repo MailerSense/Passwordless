@@ -19,7 +19,7 @@ defmodule PasswordlessWeb.ErrorHTML do
     ~H"""
     <.auth_layout title={"#{@status} - #{@message}"}>
       <:logo>
-        <.logo_icon class="w-16 h-16" />
+        <.logo_icon class="w-12 h-12" />
       </:logo>
 
       <:top_links>
@@ -58,7 +58,7 @@ defmodule PasswordlessWeb.ErrorHTML do
     ~H"""
     <.auth_layout title={"#{@status} - #{@message}"}>
       <:logo>
-        <.logo_icon class="w-16 h-16" />
+        <.logo_icon class="w-12 h-12" />
       </:logo>
 
       <:top_links>

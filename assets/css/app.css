@@ -498,9 +498,6 @@
   .pc-heading--margin {
     @apply mb-3;
   }
-  .pc-heading--margin {
-    @apply mb-3;
-  }
   .pc-text {
     @apply text-slate-600 dark:text-slate-400;
   }
@@ -830,6 +827,9 @@
   }
   .pc-form-field-wrapper--error .pc-label,
   .pc-form-field-wrapper--error .pc-checkbox-label {
+    @apply text-danger-600! dark:text-danger-200!;
+  }
+  .pc-form-field-wrapper--error .pc-field-icon__icon {
     @apply text-danger-600! dark:text-danger-200!;
   }
   .pc-checkbox-label {

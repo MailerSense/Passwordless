@@ -1,11 +1,11 @@
 <.auth_layout title={gettext("Sign up")}>
   <:logo>
-    <.logo_icon class="w-16 h-16" />
+    <.logo_icon class="w-12 h-12" />
   </:logo>
 
   <:top_links>
     {gettext("Have an account?")}
-    <.link class="text-blue-600 dark:text-blue-300" navigate={~p"/auth/sign-in"}>
+    <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-in"}>
       {gettext("Sign in")}
     </.link>
   </:top_links>
@@ -22,24 +22,29 @@
     method="post"
   >
     <.field
+      icon="remix-user-3-fill"
       field={@form[:name]}
       label={gettext("Full name")}
       autocomplete="given-name family-name"
       placeholder={gettext("John Doe")}
       phx-debounce="blur"
       required
+      required_asterix={false}
     />
     <.field
       type="email"
+      icon="remix-mail-fill"
       field={@form[:email]}
       label={gettext("Email address")}
       placeholder={gettext("name@company.com")}
       autocomplete="email"
       phx-debounce="blur"
       required
+      required_asterix={false}
     />
     <.field
       type="password"
+      icon="remix-lock-fill"
       phx-debounce="blur"
       placeholder={gettext("Enter strong password")}
       value={@form[:password].value}
@@ -47,6 +52,7 @@
       autocomplete="new-password"
       viewable={true}
       required
+      required_asterix={false}
     />
     <div class="flex mt-6">
       <.button
