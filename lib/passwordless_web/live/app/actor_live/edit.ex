@@ -47,6 +47,14 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
     return_to = Map.get(params, "return_to", ~p"/users")
 
+    icon_mapping = fn
+      nil -> "remix-checkbox-circle-fill"
+      "active" -> "remix-checkbox-circle-fill"
+      :active -> "remix-checkbox-circle-fill"
+      "locked" -> "remix-close-circle-fill"
+      :locked -> "remix-close-circle-fill"
+    end
+
     socket =
       socket
       |> assign(
@@ -55,6 +63,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
         languages: languages,
         flag_mapping: flag_mapping,
         property_editor: false,
+        icon_mapping: icon_mapping,
         return_to: return_to
       )
       |> assign_form(changeset)

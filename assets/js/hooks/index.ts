@@ -10,6 +10,7 @@ import { createLiveToastHook } from "./live-toast";
 import OTPHook from "./otp-hook";
 import ProgressInput from "./progress-input";
 import ResetColorSchemeHook from "./reset-color-scheme-hook";
+import SetSentryUserHook from "./set-sentry-user-hook";
 import TippyHook from "./tippy-hook";
 
 export default {
@@ -25,5 +26,6 @@ export default {
   BackHook,
   JSONHook,
   OTPHook,
+  SetSentryUserHook,
   LiveToast: createLiveToastHook(),
 };

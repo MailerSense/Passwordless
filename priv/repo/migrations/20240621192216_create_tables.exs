@@ -215,7 +215,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create table(:app_settings, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :logo, :string
+      add :logo, :string, null: false
       add :website, :string, null: false
       add :display_name, :string, null: false
       add :primary_button_color, :citext, null: false

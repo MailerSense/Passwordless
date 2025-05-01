@@ -32,16 +32,14 @@
     <.box card>
       <.form_header title={gettext("Email tracking")} no_margin />
       <.p>
-        Email tracking allows you to track whether your emails are opened or not. This is useful for understanding how your users interact with your emails and can help you improve your email campaigns.
+        Enable this to accurately track the deliverability of your emails. All links will be sent via
+        <.a label={@tracking_domain.name} style="link" class="inline-flex" />
+        to track open and click events. We will soon support adding your own tracking domain.
       </.p>
       <.inputs_for :let={settings} field={@form[:settings]}>
         <.form id="edit-app-form" for={@form} phx-submit="save_app" phx-change="validate_app">
           <.field type="checkbox" field={settings[:email_tracking]} label={gettext("Enabled")} />
         </.form>
-        <.alert :if={@email_tracking} color="info" with_icon>
-          Links will be sent from <code>{@tracking_domain.name}</code>
-          to track open and click events. We will soon support adding your own tracking domain.
-        </.alert>
       </.inputs_for>
     </.box>
     <.box card>

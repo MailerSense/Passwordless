@@ -2,6 +2,7 @@ import Alpine from "@alpinejs/csp";
 import * as Sentry from "@sentry/browser";
 import { Hooks as BackpexHooks } from "backpex";
 import hljs from "highlight.js/lib/core";
+import asciidoc from "highlight.js/lib/languages/asciidoc";
 import bash from "highlight.js/lib/languages/bash";
 import javascript from "highlight.js/lib/languages/javascript";
 import json from "highlight.js/lib/languages/json";
@@ -18,6 +19,7 @@ hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("typescript", typescript);
 hljs.registerLanguage("json", json);
 hljs.registerLanguage("bash", bash);
+hljs.registerLanguage("asciidoc", asciidoc);
 
 Sentry.init({
   dsn: "https://30d7d29e2efaacf56cbaf704e4016f62@o4507273188802560.ingest.de.sentry.io/4509240653185104",

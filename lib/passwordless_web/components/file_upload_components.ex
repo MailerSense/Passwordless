@@ -14,6 +14,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
 
   attr :upload, :map, required: true
   attr :current_image_src, :string, default: nil
+  attr :required, :boolean, default: false
 
   attr :current_image_class, :string, default: "h-16 w-16 rounded-md border border-slate-200 dark:border-slate-700"
 
@@ -51,7 +52,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
 
     ~H"""
     <div class={["mb-6", @class]} phx-drop-target={@upload.ref}>
-      <.field_label for={@upload.ref}>{@label}</.field_label>
+      <.field_label for={@upload.ref} required={@required}>{@label}</.field_label>
 
       <div class="flex flex-col gap-4 md:items-center md:flex-row">
         <div class="flex items-center gap-3">

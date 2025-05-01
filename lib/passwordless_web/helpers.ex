@@ -58,6 +58,13 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
+        name: :fingerprint,
+        label: "Rules Engine",
+        icon: "remix-toggle-line",
+        path: ~p"/embed/fingerprint",
+        link_type: "live_patch"
+      },
+      %{
         name: :ui,
         label: "Web Components",
         icon: "remix-reactjs-line",

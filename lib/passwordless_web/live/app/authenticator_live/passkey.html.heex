@@ -15,7 +15,7 @@
       <.field type="checkbox" field={@form[:enabled]} />
       <.field
         field={@form[:relying_party_id]}
-        label={gettext("Relying Party ID")}
+        label={gettext("Relying party ID")}
         disabled={not @enabled}
         required
       />
@@ -89,19 +89,6 @@
         </div>
         <input type="hidden" name="passkey[expected_origins_drop][]" />
       </div>
-    </.box>
-    <.box padded>
-      <.form_header title={gettext("Uplift")} />
-      <.p class="mb-6">
-        The passkey uplift is a prompt that asks users to add a passkey to their device. This prompt will be shown to users when they sign in with a password. The prompt will be shown only once per user.
-      </.p>
-      <.field
-        type="select"
-        field={@form[:uplift_prompt_interval]}
-        options={@intervals}
-        required
-        disabled={not @enabled}
-      />
     </.box>
   </.form>
 </div>

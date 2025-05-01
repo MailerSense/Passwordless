@@ -4,18 +4,52 @@
     <.p>
       You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
     </.p>
+    <.live_component
+      id="intro-code-block"
+      module={PasswordlessWeb.Components.MultiCodeBlock}
+      codes={[
+        %{
+          tab: gettext("Basic Entities"),
+          language: :asciidoc,
+          code: ~s"""
+          WebView metrics set up happens like so:
+
+            Startup()
+              │
+              ├────────────┐
+              │            ▼
+              │         query GMS for consent
+              ▼            │
+            Initialize()   │
+              │            ▼
+              │         SetHaveMetricsConsent()
+              │            │
+              │ ┌──────────┘
+              ▼ ▼
+            MaybeStartMetrics()
+              │
+              ▼
+            MetricsService::Start()
+
+          All the named functions in this diagram happen on the UI thread. Querying GMS
+          happens in the background, and the result is posted back to the UI thread, to
+          SetHaveMetricsConsent(). Querying GMS is slow, so SetHaveMetricsConsent()
+          typically happens after Initialize(), but it may happen before.
+          """
+        },
+        %{
+          tab: gettext("Webhooks"),
+          language: :asciidoc,
+          code: ""
+        },
+        %{
+          tab: gettext("Rules"),
+          language: :asciidoc,
+          code: ""
+        }
+      ]}
+    />
   </.box>
-
-  <.simple_table items={@concepts} count={Enum.count(@concepts)} title={gettext("Key concepts")}>
-    <:if_empty>
-      {gettext("No %{models} defined yet", models: gettext("concepts"))}
-    </:if_empty>
-
-    <:col :let={concept} field={:name}>
-      <.code_line>{concept.name}</.code_line>
-    </:col>
-    <:col field={:description} />
-  </.simple_table>
 
   <.box card>
     <.form_header title={gettext("Email OTP")} no_margin />
