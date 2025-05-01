@@ -24,16 +24,12 @@ defmodule PasswordlessWeb.Components.SocialButton do
     assigns =
       assign(
         assigns,
-        :label,
-        gettext("Continue with %{provider}",
-          mode: if(assigns[:mode] == :sign_in, do: "In", else: "Up"),
-          provider:
-            case assigns[:logo] do
-              "google" -> gettext("Google")
-              "github" -> gettext("GitHub")
-              "passwordless" -> gettext("Email")
-            end
-        )
+        label:
+          case assigns[:logo] do
+            "google" -> gettext("Google")
+            "github" -> gettext("GitHub")
+            "passwordless" -> gettext("Email")
+          end
       )
 
     ~H"""

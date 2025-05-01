@@ -217,7 +217,7 @@ defmodule PasswordlessWeb.CoreComponents do
 
   def auth_providers(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4">
+    <div class="flex gap-4">
       <.social_button
         :if={auth_provider_loaded?("google")}
         link_type="a"

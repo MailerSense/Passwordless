@@ -56,14 +56,14 @@
 
   --shadow-m2: 0 1px 2px 0 rgb(16 24 40 / 0.05);
   --shadow-m3: 0 1px 2px 0 rgb(16 24 40 / 0.05);
-  --shadow-0: 0 1px 3px 0 rgb(16 24 40 / 0.1),
-    0 1px 2px 0px rgb(16 24 40 / 0.06);
-  --shadow-1: 0 4px 8px -2px rgb(16 24 40 / 0.1),
-    0 2px 4px -2px rgb(16 24 40 / 0.06);
-  --shadow-2: 0 12px 16px -4px rgb(16 24 40 / 0.08),
-    0 4px 6px -2px rgb(16 24 40 / 0.03);
-  --shadow-3: 0 20px 24px -4px rgb(16 24 40 / 0.08),
-    0 8px 8px -4px rgb(16 24 40 / 0.03);
+  --shadow-0:
+    0 1px 3px 0 rgb(16 24 40 / 0.1), 0 1px 2px 0px rgb(16 24 40 / 0.06);
+  --shadow-1:
+    0 4px 8px -2px rgb(16 24 40 / 0.1), 0 2px 4px -2px rgb(16 24 40 / 0.06);
+  --shadow-2:
+    0 12px 16px -4px rgb(16 24 40 / 0.08), 0 4px 6px -2px rgb(16 24 40 / 0.03);
+  --shadow-3:
+    0 20px 24px -4px rgb(16 24 40 / 0.08), 0 8px 8px -4px rgb(16 24 40 / 0.03);
   --shadow-4: 0 24px 48px -12px rgb(16 24 40 / 0.18);
 
   --color-preview-100: #ebf2fa;
@@ -895,7 +895,7 @@
   /* OTP Input */
 
   .pc-otp-input {
-    @apply w-12 h-12 text-center border border-gray-300 shadow-m2 rounded-md font-bold focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 focus:outline-hidden;
+    @apply w-12 h-12 text-xl text-center border border-gray-300 shadow-m2 rounded-md font-mono font-bold focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 focus:outline-hidden;
   }
 
   /* Password Input */

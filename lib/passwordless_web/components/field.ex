@@ -110,6 +110,7 @@ defmodule PasswordlessWeb.Components.Field do
   attr :wrapper_class, :string, default: nil, doc: "the wrapper div classes"
   attr :help_text, :string, default: nil, doc: "context/help for your field"
   attr :label_class, :string, default: nil, doc: "extra CSS for your label"
+  attr :label_sr_only, :boolean, default: false, doc: "extra CSS for your label"
   attr :selected, :any, default: nil, doc: "the selected value for select inputs"
 
   attr :required, :boolean,
@@ -127,6 +128,7 @@ defmodule PasswordlessWeb.Components.Field do
     doc: "All other props go on the input"
 
   slot :action, required: false
+  slot :label_action, required: false
 
   def field(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     assigns
@@ -628,7 +630,10 @@ defmodule PasswordlessWeb.Components.Field do
         for={@id}
         class={@label_class}
       >
-        {@label}
+        <.div_wrapper class="flex items-center justify-between" wrap={Util.present?(@label_action)}>
+          {@label}
+          {render_slot(@label_action)}
+        </.div_wrapper>
       </.field_label>
       <div class="pc-password-field-wrapper" x-data="viewable">
         <div :if={Util.present?(@icon)} class="pc-field-icon">

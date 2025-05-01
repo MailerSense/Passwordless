@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/browser";
+
 import { Hook, makeHook } from "./typed-hook";
 
 type UserConfig = Sentry.User & {
