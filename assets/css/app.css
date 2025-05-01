@@ -196,12 +196,13 @@
 
   .json-container {
     font-size: 16px;
-    @apply text-slate-700 dark:text-slate-200 overflow-x-auto;
+    @apply flex flex-col text-slate-700 dark:text-slate-200 overflow-x-auto;
   }
   .json-container .line {
-    margin: 4px 0;
+    margin: 2px 0;
     display: flex;
     justify-content: flex-start;
+    @apply shrink-0;
   }
   .json-container .caret-icon {
     width: 18px;
@@ -210,6 +211,7 @@
   }
   .json-container .empty-icon {
     width: 18px;
+    @apply shrink-0;
   }
   .json-container .json-type {
     margin-right: 4px;
@@ -219,6 +221,7 @@
     @apply text-slate-700 dark:text-slate-200;
     margin-right: 4px;
     margin-left: 4px;
+    @apply shrink-0;
   }
   .json-container .json-index {
     margin-right: 4px;
@@ -226,6 +229,7 @@
   }
   .json-container .json-value {
     margin-left: 8px;
+    @apply shrink-0;
   }
   .json-container .json-number {
     color: #f9ae58;
