@@ -43,7 +43,7 @@ defmodule Passwordless.Challenges.EmailOTP do
          {:ok, email} <- update_email_authenticators(email),
          {:ok, domain} <- Passwordless.get_fallback_domain(app, :email),
          {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email_otp),
-         %EmailTemplate{} = email_template <- get_email_template(authenticator),
+         {:ok, email_template} <- get_email_template(authenticator),
          {:ok, email_template_locale} <- get_email_template_locale(actor, email_template),
          :ok <- update_existing_messages(app, action),
          {:ok, email_message} <-
@@ -57,23 +57,11 @@ defmodule Passwordless.Challenges.EmailOTP do
              authenticator,
              otp_code
            ),
-         {:ok, otp} <- create_otp(app, authenticator, email_message, otp_code),
-         {:ok, challenge} <- update_challenge_state(app, challenge, :otp_sent),
+         {:ok, _otp} <- create_otp(app, authenticator, email_message, otp_code),
+         {:ok, _challenge} <- update_challenge_state(app, challenge, :otp_sent),
          {:ok, _job} <- enqueue_email_message(app, domain, email_message),
          :ok <- apply_rate_limit(app, authenticator, email),
-         do:
-           {:ok,
-            Repo.preload(
-              %Action{
-                action
-                | challenge: %Challenge{
-                    challenge
-                    | email_message: %EmailMessage{email_message | otp: otp},
-                      email_messages: [email_message | challenge.email_messages]
-                  }
-              },
-              [:rule, {:actor, [:totps, :email, :emails, :phone, :phones]}, {:challenge, [:email_message]}, :events]
-            )}
+         do: {:ok, Repo.preload(action, Action.preloads())}
   end
 
   @impl true
@@ -84,15 +72,21 @@ defmodule Passwordless.Challenges.EmailOTP do
         event: "validate_otp",
         attrs: %{code: code}
       )
-      when state in [:otp_sent] and is_binary(code) do
+      when state in [:otp_sent, :otp_invalid] and is_binary(code) do
     case challenge |> Ecto.assoc(:email_message) |> Repo.one() |> Repo.preload(:otp) do
       %EmailMessage{otp: %OTP{} = otp} ->
-        if OTP.valid?(otp, code) do
-          with {:ok, challenge} <- update_challenge_state(app, challenge, :otp_validated) do
-            {:ok, %Action{action | challenge: challenge}}
-          end
-        else
-          {:error, :otp_invalid}
+        cond do
+          OTP.expired?(otp) ->
+            {:error, :otp_not_found}
+
+          OTP.valid?(otp) ->
+            with {:ok, challenge} <- update_challenge_state(app, challenge, :otp_validated),
+                 do: {:ok, %Action{action | challenge: challenge}}
+
+          true ->
+            with {:ok, _otp} <- increment_otp_attempts(app, otp),
+                 {:ok, challenge} <- update_challenge_state(app, challenge, :otp_invalid),
+                 do: {:ok, %Action{action | challenge: challenge}}
         end
 
       _ ->
@@ -103,7 +97,13 @@ defmodule Passwordless.Challenges.EmailOTP do
   # Private
 
   defp get_email_template(%Authenticators.EmailOTP{} = authenticator) do
-    Repo.preload(authenticator, :email_template).email_template
+    case Repo.preload(authenticator, :email_template) do
+      %Authenticators.EmailOTP{email_template: %EmailTemplate{} = template} ->
+        {:ok, template}
+
+      _ ->
+        {:error, :email_template_not_found}
+    end
   end
 
   defp get_email_template_locale(%Actor{} = actor, %EmailTemplate{} = template) do
@@ -219,6 +219,14 @@ defmodule Passwordless.Challenges.EmailOTP do
 
     challenge
     |> Challenge.state_changeset(%{state: state})
+    |> Repo.update(opts)
+  end
+
+  defp increment_otp_attempts(%App{} = app, %OTP{} = otp) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    otp
+    |> OTP.changeset(%{attempts: otp.attempts + 1})
     |> Repo.update(opts)
   end
 

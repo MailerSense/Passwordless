@@ -47,6 +47,13 @@ defmodule Passwordless.OTP do
   def valid?(%__MODULE__{}, _candidate), do: false
 
   @doc """
+  Checks if the OTP is expired.
+  """
+  def expired?(%__MODULE__{expires_at: expires_at}) do
+    DateTime.before?(expires_at, DateTime.utc_now())
+  end
+
+  @doc """
   Generates a new OTP code.
   """
   def generate_code, do: Util.random_numeric_string(@size)

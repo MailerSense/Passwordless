@@ -45,7 +45,8 @@ defmodule Passwordless.Challenge do
   @state_machines [
     email_otp: [
       started: [:otp_sent],
-      otp_sent: [:otp_sent, :otp_validated]
+      otp_sent: [:otp_sent, :otp_validated, :otp_invalid],
+      otp_invalid: [:otp_validated]
     ],
     magic_link: [
       started: [:magic_link_sent],
