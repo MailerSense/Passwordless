@@ -38,7 +38,7 @@ defmodule PasswordlessWeb.Components.AuthLayout do
           {render_slot(@inner_block)}
         </div>
 
-        <div :if={Util.present?(@bottom_links)} class="mt-8 text-center">
+        <div :if={Util.present?(@bottom_links)} class="my-8 text-center">
           {render_slot(@bottom_links)}
         </div>
       </div>

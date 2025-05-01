@@ -217,31 +217,29 @@ defmodule PasswordlessWeb.CoreComponents do
 
   def auth_providers(assigns) do
     ~H"""
-    <%= if auth_provider_loaded?("google") || auth_provider_loaded?("passwordless") do %>
-      <div class="flex flex-col gap-4">
-        <.social_button
-          :if={auth_provider_loaded?("google")}
-          link_type="a"
-          to={~p"/auth/google"}
-          variant="outline"
-          logo="google"
-          class="w-full"
-          mode={@mode}
-        />
+    <div class="flex flex-col gap-4">
+      <.social_button
+        :if={auth_provider_loaded?("google")}
+        link_type="a"
+        to={~p"/auth/google"}
+        variant="outline"
+        logo="google"
+        class="w-full"
+        mode={@mode}
+      />
 
-        <.social_button
-          :if={auth_provider_loaded?("github")}
-          link_type="a"
-          to={~p"/auth/github"}
-          variant="outline"
-          logo="github"
-          class="w-full"
-          mode={@mode}
-        />
-      </div>
+      <.social_button
+        :if={auth_provider_loaded?("github")}
+        link_type="a"
+        to={~p"/auth/github"}
+        variant="outline"
+        logo="github"
+        class="w-full"
+        mode={@mode}
+      />
+    </div>
 
-      <.or_break or_text="or" />
-    <% end %>
+    <.or_break or_text="or" />
     """
   end
 
@@ -250,7 +248,7 @@ defmodule PasswordlessWeb.CoreComponents do
 
   def or_break(assigns) do
     ~H"""
-    <div class="flex items-center gap-4 my-6">
+    <div class="flex items-center gap-4 my-4">
       <div class="w-full h-[1px] bg-gray-200 dark:bg-gray-700/70"></div>
       <span class="text-gray-500">
         {@or_text}
