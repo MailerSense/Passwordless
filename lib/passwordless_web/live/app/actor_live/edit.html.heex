@@ -162,7 +162,7 @@
           </.simple_table>
           <div class={[unless(@finished, do: "pb-[calc(200vh)]")]}>
             <.box padded>
-              <.form_header title={gettext("Audit trail")} />
+              <.form_header title={gettext("Timeline")} />
               <div
                 id="uptime-events"
                 role="list"
@@ -178,7 +178,7 @@
                   <.alert color={color} with_icon>
                     {name}
                   </.alert>
-                  <.ul class="list-none text-sm text-slate-400 dark:text-slate-500">
+                  <.ul class="list-none text-xs text-slate-400 dark:text-slate-500">
                     <li :for={event <- events}>{event.name}</li>
                   </.ul>
                 </.timeline_box>
