@@ -31,15 +31,38 @@ defmodule PasswordlessWeb.Helpers do
 
   def action_state_badge(%Action{} = action),
     do:
-      {Phoenix.Naming.humanize(action.state),
+      {case action.state do
+         :allow -> "Allow to"
+         :timeout -> "Timeout when trying to"
+         :block -> "Block attempt to"
+         _ -> "Attempting to"
+       end,
        case action.state do
          :allow -> "success"
          :timeout -> "warning"
          :block -> "danger"
-         _ -> "gray"
+         _ -> "info"
        end}
 
-  def action_state_badge(_actor), do: {nil, "gray"}
+  def action_state_badge(_actor), do: {nil, "info"}
+
+  def action_icon(%Action{} = action),
+    do:
+      {Phoenix.Naming.humanize(action.state),
+       case action.state do
+         :allow -> "remix-checkbox-circle-fill"
+         :timeout -> "remix-error-warning-fill"
+         :block -> "remix-close-circle-fill"
+         _ -> "remix-question-fill"
+       end,
+       case action.state do
+         :allow -> "text-success-500"
+         :timeout -> "text-warning-500"
+         :block -> "text-danger-500"
+         _ -> "text-gray-500"
+       end}
+
+  def action_icon(_actor), do: {nil, "text-gray-500"}
 
   def embed_menu_items do
     [

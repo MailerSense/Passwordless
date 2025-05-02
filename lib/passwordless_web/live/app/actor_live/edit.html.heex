@@ -33,20 +33,13 @@
         </div>
       </.subpage_header>
 
-      <div class="flex flex-col xl:flex-row gap-6">
-        <.box padded class="xl:w-1/3 xl:min-w-[350px]">
+      <div class="flex flex-col 2xl:flex-row gap-6 2xl:items-start">
+        <.box padded class="2xl:w-1/3 2xl:min-w-[350px]">
           <.form_header title={gettext("Personal")} />
           <.field
             field={@form[:state]}
             type="select"
             options={@states}
-            icon_class={"pc-field-icon__icon " <> (
-        case @user_state do
-          :active -> "text-success-600 dark:text-success-300"
-          :locked -> "text-danger-600 dark:text-danger-300"
-        end
-      )}
-            icon_mapping={@icon_mapping}
             required
             required_asterix={false}
           />
@@ -152,48 +145,54 @@
               />
             </:actions>
           </.simple_table>
-          <.simple_table items={[]} count={Enum.count([])} title={gettext("Passkeys")}>
+          <.simple_table :if={false} items={[]} count={Enum.count([])} title={gettext("Passkeys")}>
             <:if_empty>{gettext("No %{models} present", models: gettext("passkeys"))}</:if_empty>
             <:col field={:name} body_class="w-full" />
             <:col actions></:col>
           </.simple_table>
-          <.simple_table items={@totps} count={Enum.count([])} title={gettext("Time-based OTPs")}>
+          <.simple_table
+            :if={not Enum.empty?(@totps)}
+            items={@totps}
+            count={Enum.count(@totps)}
+            title={gettext("Time-based OTPs")}
+          >
             <:if_empty>{gettext("No %{models} present", models: gettext("TOTPs"))}</:if_empty>
             <:col field={:name} body_class="w-full" />
             <:col actions></:col>
           </.simple_table>
+          <div class={[
+            "flex flex-col gap-6",
+            unless(@finished, do: "pb-[calc(200vh)]")
+          ]}>
+            <.box padded>
+              <.form_header title={gettext("Actions")} />
+              <div
+                id="uptime-events"
+                role="list"
+                class="flex flex-col w-full grow mt-6"
+                phx-update="stream"
+                phx-viewport-bottom={!@finished && "load_more"}
+              >
+                <.timeline_box :for={{_id, action} <- @streams.actions} date={action.inserted_at}>
+                  <% {badge_label, badge_color} = action_state_badge(action) %>
+                  <.p size="sm">
+                    {Timex.from_now(action.inserted_at)}
+                  </.p>
+                  <.alert color={badge_color} with_icon>
+                    {gettext("%{label} \"%{action}\" via Email OTP",
+                      label: badge_label,
+                      action: Action.readable_name(action),
+                      user: Actor.handle(action.actor)
+                    )}
+                  </.alert>
+                </.timeline_box>
+              </div>
+            </.box>
+          </div>
         </div>
       </div>
     </div>
   </.form>
-
-  <div class="flex flex-col gap-6 px-6 pb-6 pt-0">
-    <.data_table id="actions" meta={@meta} title={gettext("Actions")} items={@actions}>
-      <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-      <:col :let={action} label={gettext("Action")} field={:name}>
-        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
-      </:col>
-      <:col :let={action} label={gettext("Location")} field={:location}>
-        <%= case Action.first_event(action) do %>
-          <% %ActionEvent{city: city, country: country} -> %>
-            <div class="flex items-center gap-2">
-              <.icon name={"flag-#{String.downcase(country)}"} class="pc-flag-icon" /> {city}
-            </div>
-          <% _ -> %>
-        <% end %>
-      </:col>
-      <:col :let={action} label={gettext("When")} field={:inserted_at}>
-        {Timex.from_now(action.inserted_at)}
-      </:col>
-      <:col :let={action} label={gettext("State")} field={:state}>
-        <% {badge_label, badge_color} = action_state_badge(action) %>
-        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-      </:col>
-      <:col :let={action} label={gettext("Details")} field={:details}>
-        <.json_block code={action} expanded={false} compact={true} />
-      </:col>
-    </.data_table>
-  </div>
 </.layout>
 
 <%= case @live_action do %>
