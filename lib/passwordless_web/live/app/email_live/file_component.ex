@@ -62,7 +62,7 @@ defmodule PasswordlessWeb.App.EmailLive.FileComponent do
            gettext("File deleted."),
            title: gettext("Success")
          )
-         |> push_patch(
+         |> push_navigate(
            to: ~p"/emails/#{socket.assigns.template}/#{socket.assigns.language}/#{socket.assigns.live_action}"
          )}
 
@@ -74,7 +74,7 @@ defmodule PasswordlessWeb.App.EmailLive.FileComponent do
            gettext("Failed to delete file."),
            title: gettext("Error")
          )
-         |> push_patch(
+         |> push_navigate(
            to: ~p"/emails/#{socket.assigns.template}/#{socket.assigns.language}/#{socket.assigns.live_action}"
          )}
     end
@@ -141,7 +141,7 @@ defmodule PasswordlessWeb.App.EmailLive.FileComponent do
            gettext("File uploaded."),
            title: gettext("Success")
          )
-         |> push_patch(
+         |> push_navigate(
            to: ~p"/emails/#{socket.assigns.template}/#{socket.assigns.language}/#{socket.assigns.live_action}"
          )}
 

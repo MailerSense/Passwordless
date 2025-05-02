@@ -178,9 +178,11 @@
                   <.alert color={color} with_icon>
                     {name}
                   </.alert>
-                  <.ul class="list-none text-xs text-slate-400 dark:text-slate-500">
-                    <li :for={event <- events}>{event.name}</li>
-                  </.ul>
+                  <div class="p-2 rounded-lg border border-slate-200 dark:border-slate-700/40">
+                    <.ul class="list-none text-sm text-slate-400 dark:text-slate-500">
+                      <li :for={event <- events}>{event.name}</li>
+                    </.ul>
+                  </div>
                 </.timeline_box>
               </div>
             </.box>
