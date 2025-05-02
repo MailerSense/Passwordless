@@ -574,7 +574,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   def timeline_box(assigns) do
     ~H"""
     <div class={["flex gap-3", @class]} {@rest}>
-      <div class="flex flex-col items-center gap-4 min-w-8">
+      <div class="flex flex-col items-center gap-4">
         <.icon name="custom-play-circle" class={["w-5 h-5", "text-slate-300 dark:text-white/30"]} />
         <span class="w-[1px] border border-dashed border-slate-300 dark:border-white/30 grow mb-4">
         </span>

@@ -170,7 +170,7 @@
                 phx-update="stream"
                 phx-viewport-bottom={!@finished && "load_more"}
               >
-                <.timeline_box :for={{_id, action} <- @streams.actions}>
+                <.timeline_box :for={{id, action} <- @streams.actions} id={id}>
                   <% %{name: name, color: color, events: events} = verbalize_action(action) %>
                   <.p size="sm">
                     {format_relative(action.inserted_at)}
