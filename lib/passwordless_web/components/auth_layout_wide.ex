@@ -3,6 +3,7 @@ defmodule PasswordlessWeb.Components.AuthLayoutWide do
   use Phoenix.Component
   use PasswordlessWeb, :verified_routes
 
+  import PasswordlessWeb.Components.ThemeSwitch
   import PasswordlessWeb.Components.Typography
 
   attr :title, :string
@@ -15,12 +16,12 @@ defmodule PasswordlessWeb.Components.AuthLayoutWide do
     ~H"""
     <div class="fixed w-full h-full">
       <div class="grid grid-cols-1 lg:grid-cols-2 h-full">
-        <div class="relative flex md:items-center md:justify-between overflow-x-auto">
-          <.link class="absolute hidden md:flex left-0 top-0 py-5 px-5 lg:p-8" href="/">
+        <div class="relative flex md:items-center md:justify-between overflow-x-auto bg-white dark:bg-slate-900">
+          <.link href="/" class="absolute hidden md:flex left-0 top-0 right-0 py-5 px-5 lg:p-8">
             {render_slot(@logo)}
           </.link>
 
-          <div class="flex flex-col w-full md:max-w-sm md:mx-auto px-5 py-4 md:py-0 gap-8">
+          <div class="flex flex-col w-full md:max-w-sm md:mx-auto px-5 py-4 md:p-0 gap-8">
             <div class="flex flex-col gap-3">
               <.h2 no_margin>
                 {@title}
@@ -42,8 +43,12 @@ defmodule PasswordlessWeb.Components.AuthLayoutWide do
             </div>
           </div>
 
-          <div class="absolute left-0 bottom-0 hidden md:flex items-center py-4 px-5 lg:p-8 text-slate-600 dark:text-slate-300 text-sm font-normal leading-tight">
-            Copyright © {Timex.now().year} {Passwordless.config(:business_name)}
+          <div class="absolute hidden md:flex items-center justify-between left-0 bottom-0 right-0 p-6">
+            <span class="text-slate-600 dark:text-slate-300 text-sm font-normal leading-tight">
+              Copyright © {Timex.now().year} {Passwordless.config(:business_name)}
+            </span>
+
+            <.theme_switch />
           </div>
         </div>
 
