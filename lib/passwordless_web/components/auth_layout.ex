@@ -20,7 +20,7 @@ defmodule PasswordlessWeb.Components.AuthLayout do
       {@rest}
     >
       <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="p-6 sm:p-10 bg-white shadow-0 sm:rounded-2xl dark:bg-slate-800/30 sm:border border-transparent dark:border-slate-700/40">
+        <div class="p-6 sm:p-10 bg-white shadow-4 sm:rounded-2xl dark:bg-slate-800/30 sm:border border-transparent dark:border-slate-700/40">
           <div class="flex flex-col items-center mb-6 sm:mb-10">
             <.link href="/" class="flex justify-center mb-8">
               {render_slot(@logo)}
