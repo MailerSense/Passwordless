@@ -284,6 +284,7 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     app
     |> Action.get_by_actor(actor)
     |> Action.preload_actor()
+    |> Action.preload_events()
   end
 
   defp load_actions(query, %{cursor: cursor}) do

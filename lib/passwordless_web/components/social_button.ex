@@ -83,7 +83,7 @@ defmodule PasswordlessWeb.Components.SocialButton do
   defp social_icon(%{provider: "github"} = assigns) do
     ~H"""
     <svg
-      class="w-6 h-6 dark:fill-white fill-gray-800"
+      class="w-6 h-6 dark:fill-white fill-slate-800"
       viewBox="0 0 21 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

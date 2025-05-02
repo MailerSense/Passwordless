@@ -35,7 +35,7 @@
 
       <div class="flex flex-col xl:flex-row gap-4 xl:items-start">
         <.box padded class="xl:w-1/3 xl:min-w-[400px]">
-          <.form_header title={gettext("Profile")} />
+          <.form_header title={gettext("Personal")} />
           <.field
             field={@form[:state]}
             type="select"
@@ -162,7 +162,7 @@
           </.simple_table>
           <div class={[unless(@finished, do: "pb-[calc(200vh)]")]}>
             <.box padded>
-              <.form_header title={gettext("Actions")} />
+              <.form_header title={gettext("Audit trail")} />
               <div
                 id="uptime-events"
                 role="list"
@@ -171,17 +171,16 @@
                 phx-viewport-bottom={!@finished && "load_more"}
               >
                 <.timeline_box :for={{_id, action} <- @streams.actions}>
-                  <% {badge_label, badge_color} = action_state_badge(action) %>
+                  <% %{name: name, color: color, events: events} = verbalize_action(action) %>
                   <.p size="sm">
                     {format_relative(action.inserted_at)}
                   </.p>
-                  <.alert color={badge_color} with_icon>
-                    {gettext("%{label} \"%{action}\" via Email OTP",
-                      label: badge_label,
-                      action: Action.readable_name(action),
-                      user: Actor.handle(action.actor)
-                    )}
+                  <.alert color={color} with_icon>
+                    {name}
                   </.alert>
+                  <.ul class="list-none text-sm text-slate-400 dark:text-slate-500">
+                    <li :for={event <- events}>{event.name}</li>
+                  </.ul>
                 </.timeline_box>
               </div>
             </.box>

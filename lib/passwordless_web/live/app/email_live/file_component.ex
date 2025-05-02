@@ -160,14 +160,14 @@ defmodule PasswordlessWeb.App.EmailLive.FileComponent do
 
   defp file_card(assigns) do
     ~H"""
-    <div class="p-3 rounded-lg flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700 group">
+    <div class="p-3 rounded-lg flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-700 group">
       <div class="flex items-center gap-6">
         <img class="size-[50px] xl:size-[76px] rounded-lg flex-shrink-0" src={@public_url} />
         <div class="flex-col justify-start items-start gap-1 inline-flex grow">
-          <span class="text-gray-900 dark:text-white text-base font-semibold line-clamp-1 break-all">
+          <span class="text-slate-900 dark:text-white text-base font-semibold line-clamp-1 break-all">
             {@name}
           </span>
-          <span class="text-gray-600 dark:text-gray-300 text-sm font-medium leading-tight line-clamp-1">
+          <span class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-tight line-clamp-1">
             {Sizeable.filesize(@size)}, {format_date(@updated_at)}
           </span>
         </div>

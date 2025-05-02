@@ -249,11 +249,11 @@ defmodule PasswordlessWeb.CoreComponents do
   def or_break(assigns) do
     ~H"""
     <div class="flex items-center gap-4 my-4">
-      <div class="w-full h-[1px] bg-gray-200 dark:bg-gray-700/70"></div>
-      <span class="text-gray-500">
+      <div class="w-full h-[1px] bg-slate-200 dark:bg-slate-700/70"></div>
+      <span class="text-slate-500">
         {@or_text}
       </span>
-      <div class="w-full h-[1px] bg-gray-200 dark:bg-gray-700/70"></div>
+      <div class="w-full h-[1px] bg-slate-200 dark:bg-slate-700/70"></div>
     </div>
     """
   end

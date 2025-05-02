@@ -8,6 +8,7 @@ defmodule PasswordlessWeb.Helpers do
 
   alias Passwordless.Accounts.User
   alias Passwordless.Action
+  alias Passwordless.ActionEvent
   alias Passwordless.Activity.Log
   alias Passwordless.Actor
   alias Passwordless.App
@@ -29,13 +30,30 @@ defmodule PasswordlessWeb.Helpers do
          :locked -> "danger"
        end}
 
-  def action_state_badge(%Action{} = action),
+  def action_state_info(%Action{} = action),
     do:
       {case action.state do
          :allow -> "Allow to"
          :timeout -> "Timeout when trying to"
          :block -> "Block attempt to"
          _ -> "Attempting to"
+       end,
+       case action.state do
+         :allow -> "success"
+         :timeout -> "warning"
+         :block -> "danger"
+         _ -> "info"
+       end}
+
+  def action_state_info(_actor), do: {nil, "info"}
+
+  def action_state_badge(%Action{} = action),
+    do:
+      {case action.state do
+         :allow -> "Allow"
+         :timeout -> "Timeout"
+         :block -> "Block"
+         _ -> "Attempt"
        end,
        case action.state do
          :allow -> "success"
@@ -59,10 +77,10 @@ defmodule PasswordlessWeb.Helpers do
          :allow -> "text-success-500"
          :timeout -> "text-warning-500"
          :block -> "text-danger-500"
-         _ -> "text-gray-500"
+         _ -> "text-slate-500"
        end}
 
-  def action_icon(_actor), do: {nil, "text-gray-500"}
+  def action_icon(_actor), do: {nil, "text-slate-500"}
 
   def embed_menu_items do
     [
@@ -142,6 +160,69 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       }
     ]
+  end
+
+  def verbalize_action(%Action{challenge: %Challenge{} = challenge, events: events} = action) do
+    name = Recase.to_sentence(action.name)
+
+    challenge_name =
+      case challenge.kind do
+        :email_otp -> gettext("email OTP")
+        :magic_link -> gettext("magic link")
+        :password -> gettext("password")
+        _ -> gettext("Unknown Challenge")
+      end
+
+    label =
+      case action.state do
+        :allow -> gettext("%{action} confirmed with %{challenge}", action: name, challenge: challenge_name)
+        :timeout -> gettext("%{action} timed out with %{challenge}", action: name, challenge: challenge_name)
+        :block -> gettext("%{action} blocked with %{challenge}", action: name, challenge: challenge_name)
+        _ -> gettext("%{action} requested via %{challenge}", action: name, challenge: challenge_name)
+      end
+
+    color =
+      case action.state do
+        :allow -> "success"
+        :timeout -> "warning"
+        :block -> "danger"
+        _ -> "info"
+      end
+
+    events =
+      Enum.map(events, fn %ActionEvent{event: event, inserted_at: inserted_at} = event_struct ->
+        name =
+          case event do
+            "send_otp" -> gettext("User requested a %{challenge}", challenge: challenge_name)
+            "send_link" -> gettext("User requested a %{challenge}", challenge: challenge_name)
+            "verify_otp" -> gettext("User presented valid OTP")
+            "verify_link" -> gettext("User clicked the link")
+            "verify_password" -> gettext("User presented valid password")
+            _ -> gettext("Unknown event")
+          end
+
+        name =
+          if not is_nil(event_struct.country) and not is_nil(event_struct.city) do
+            gettext("%{time} - %{event} from %{city}, %{country}",
+              time: format_hour(inserted_at),
+              event: name,
+              city: event_struct.city,
+              country: event_struct.country
+            )
+          else
+            gettext("%{time} - %{event}", time: format_hour(inserted_at), event: name)
+          end
+
+        %{
+          name: name
+        }
+      end)
+
+    %{
+      name: label,
+      color: color,
+      events: events
+    }
   end
 
   def flow_details(%Action{challenge: %Challenge{kind: kind}}) do
@@ -276,6 +357,10 @@ defmodule PasswordlessWeb.Helpers do
   def format_date_time(date, format \\ "%d %B %Y, %H:%M")
   def format_date_time(nil, _format), do: ""
   def format_date_time(date, format), do: Timex.format!(date, format, :strftime)
+
+  def format_hour(date, format \\ "%H:%M")
+  def format_hour(nil, _format), do: ""
+  def format_hour(date, format), do: Timex.format!(date, format, :strftime)
 
   def format_date(date, format \\ "%-d %B %Y")
   def format_date(nil, _format), do: ""

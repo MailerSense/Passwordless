@@ -8,7 +8,7 @@
   >
     <.live_file_input upload={@uploads.new_media} class="hidden" />
 
-    <div class="p-3 rounded-lg items-center gap-3 xl:gap-6 inline-flex hover:bg-gray-100 dark:hover:bg-gray-700 w-full">
+    <div class="p-3 rounded-lg items-center gap-3 xl:gap-6 inline-flex hover:bg-slate-100 dark:hover:bg-slate-700 w-full">
       <button
         :if={Enum.empty?(@uploads.new_media.entries)}
         class="p-2 xl:p-5 rounded-lg border-2 border-primary-200 dark:border-primary-600 justify-center items-center flex"
@@ -38,7 +38,7 @@
         </div>
 
         <%= if @uploads.new_media.max_file_size do %>
-          <div class="text-gray-600 dark:text-gray-300 text-sm font-medium leading-tight line-clamp-1">
+          <div class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-tight line-clamp-1">
             {if Enum.empty?(@uploads.new_media.entries),
               do:
                 gettext("%{size} max.", size: Sizeable.filesize(@uploads.new_media.max_file_size)),
