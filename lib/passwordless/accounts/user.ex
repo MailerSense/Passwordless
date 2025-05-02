@@ -20,12 +20,11 @@ defmodule Passwordless.Accounts.User do
     field :name, :string
     field :email, :string
     field :state, Ecto.Enum, values: @states, default: :active
-
     field :password, :string, virtual: true, redact: true
     field :password_hash, :string, redact: true
     field :current_password, :string, virtual: true, redact: true
-
     field :confirmed_at, :utc_datetime_usec
+    field :company, :string, virtual: true
 
     # Virtuals
     field :role, :any, virtual: true
@@ -105,7 +104,7 @@ defmodule Passwordless.Accounts.User do
   @registration_fields ~w(
     name
     email
-    password
+    company
   )a
   @registration_required_fields @registration_fields
 
@@ -119,7 +118,6 @@ defmodule Passwordless.Accounts.User do
     |> validate_name()
     |> validate_email()
     |> validate_state()
-    |> validate_password(opts)
   end
 
   @external_registration_fields ~w(

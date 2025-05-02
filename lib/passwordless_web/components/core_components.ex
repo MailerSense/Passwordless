@@ -217,7 +217,9 @@ defmodule PasswordlessWeb.CoreComponents do
 
   def auth_providers(assigns) do
     ~H"""
-    <div class="flex gap-4">
+    <.or_break or_text="or" />
+
+    <div class="flex gap-3">
       <.social_button
         :if={auth_provider_loaded?("google")}
         link_type="a"
@@ -238,8 +240,6 @@ defmodule PasswordlessWeb.CoreComponents do
         mode={@mode}
       />
     </div>
-
-    <.or_break or_text="or" />
     """
   end
 
