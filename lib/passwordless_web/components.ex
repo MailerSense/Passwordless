@@ -4,6 +4,7 @@ defmodule PasswordlessWeb.Components do
     quote do
       import PasswordlessWeb.Components.Alert
       import PasswordlessWeb.Components.AuthLayout
+      import PasswordlessWeb.Components.AuthLayoutWide
       import PasswordlessWeb.Components.Avatar
       import PasswordlessWeb.Components.Badge
       import PasswordlessWeb.Components.BadgeSelect

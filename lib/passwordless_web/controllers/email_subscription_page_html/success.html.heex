@@ -1,6 +1,6 @@
-<.auth_layout title={gettext("Secure Email")}>
+<.auth_layout_wide title={gettext("Email settings")}>
   <:logo>
-    <.logo_icon class="w-12 h-12" />
+    <.logo class="h-6" />
   </:logo>
 
   <:top_links>
@@ -10,13 +10,15 @@
   <.alert color="success" with_icon class="mb-6">
     {gettext("You have been unsubscribed!")}
   </.alert>
+
   <.p class="mb-6">
     {gettext("No more emails will be sent from %{app} to %{email}. Thank you!",
       app: @app.name,
       email: @email.address
     )}
   </.p>
+
   <div class="flex">
     <.button size="xl" link_type="a" title={gettext("Go Home")} to={~p"/"} class="flex flex-1" />
   </div>
-</.auth_layout>
+</.auth_layout_wide>

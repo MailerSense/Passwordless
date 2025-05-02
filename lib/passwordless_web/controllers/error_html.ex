@@ -17,12 +17,26 @@ defmodule PasswordlessWeb.ErrorHTML do
     assigns = Map.put(assigns, :status_message, Phoenix.Controller.status_message_from_template(template))
 
     ~H"""
-    <.auth_layout title={"#{@status} - #{@message}"}>
+    <.auth_layout_wide title={@message}>
       <:logo>
-        <.logo_icon class="w-12 h-12" />
+        <.logo class="h-6" />
       </:logo>
 
       <:top_links>
+        {gettext(
+          "We're sorry, the page you've requested cannot be shown. Please go back to the homepage, or report the bug above."
+        )}
+      </:top_links>
+
+      <.alert color={status_color(@status)} with_icon class="mb-6">
+        {gettext("%{code} - %{reason}", code: @status, reason: @message)}
+      </.alert>
+
+      <div class="flex">
+        <.button size="xl" link_type="a" title={gettext("Go Home")} to={~p"/"} class="flex flex-1" />
+      </div>
+
+      <:bottom_links>
         Found a bug?
         <button
           class="text-blue-600 dark:text-blue-400"
@@ -31,20 +45,8 @@ defmodule PasswordlessWeb.ErrorHTML do
         >
           {gettext("Report it")}
         </button>
-      </:top_links>
-
-      <.alert color={status_color(@status)} with_icon class="mb-6">
-        {@message}
-      </.alert>
-      <.p class="mb-6">
-        {gettext(
-          "We're sorry, the page you've requested cannot be shown. Please go back to the homepage, or report the bug above."
-        )}
-      </.p>
-      <div class="flex">
-        <.button size="xl" link_type="a" title={gettext("Go Home")} to={~p"/"} class="flex flex-1" />
-      </div>
-    </.auth_layout>
+      </:bottom_links>
+    </.auth_layout_wide>
     """
   end
 
@@ -56,20 +58,15 @@ defmodule PasswordlessWeb.ErrorHTML do
       |> Map.put(:reason_message, reason_message(assigns[:reason]))
 
     ~H"""
-    <.auth_layout title={"#{@status} - #{@message}"}>
+    <.auth_layout_wide title={@message}>
       <:logo>
-        <.logo_icon class="w-12 h-12" />
+        <.logo class="h-6" />
       </:logo>
 
       <:top_links>
-        Found a bug?
-        <button
-          class="text-blue-600 dark:text-blue-400"
-          x-data="sentryCrashPopup"
-          x-on:click="toggleShow"
-        >
-          {gettext("Report it")}
-        </button>
+        {gettext(
+          "We're sorry, the page you've requested cannot be shown. Please go back to the homepage, or report the bug above."
+        )}
       </:top_links>
 
       <.alert
@@ -78,17 +75,24 @@ defmodule PasswordlessWeb.ErrorHTML do
         with_icon
         class="mb-6 break-all"
       >
-        {@reason_message}
+        {gettext("%{code} - %{reason}", code: @status, reason: @reason_message)}
       </.alert>
-      <.p class="mb-6">
-        {gettext(
-          "We're sorry, the page you've requested cannot be shown. Please go back to the homepage, or report the bug above."
-        )}
-      </.p>
+
       <div class="flex">
         <.button size="xl" link_type="a" title={gettext("Go Home")} to={~p"/"} class="flex flex-1" />
       </div>
-    </.auth_layout>
+
+      <:bottom_links>
+        Found a bug?
+        <button
+          class="text-blue-600 dark:text-blue-400"
+          x-data="sentryCrashPopup"
+          x-on:click="toggleShow"
+        >
+          {gettext("Report it")}
+        </button>
+      </:bottom_links>
+    </.auth_layout_wide>
     """
   end
 

@@ -117,9 +117,11 @@ defmodule PasswordlessWeb.Auth.PasswordlessLive do
     assign(socket, form: to_form(changeset))
   end
 
-  defp apply_action(socket, :sign_in, _params), do: assign(socket, page_title: gettext("Email Code"), error_message: nil)
+  defp apply_action(socket, :sign_in, _params), do: assign(socket, page_title: gettext("Sign in"), error_message: nil)
 
   defp apply_action(socket, :otp_sent, %{"token" => token}) when is_binary(token) do
+    socket = assign(socket, page_title: gettext("Email code"))
+
     case socket.assigns[:auth_user] do
       %User{} ->
         socket

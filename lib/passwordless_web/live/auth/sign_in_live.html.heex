@@ -1,17 +1,12 @@
 <%= if @step == :sign_in do %>
-  <.auth_layout id="sign-in-layout" title={gettext("Sign in")}>
+  <.auth_layout_wide title={gettext("Sign in")}>
     <:logo>
-      <.logo_icon class="w-12 h-12" />
+      <.logo class="h-6" />
     </:logo>
 
     <:top_links>
-      {gettext("Don't have an account?")}
-      <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-up"}>
-        {gettext("Sign up")}
-      </.link>
+      {gettext("Welcome! Please enter your details below.")}
     </:top_links>
-
-    <.auth_providers mode={:sign_in} conn_or_socket={@socket} />
 
     <.form id="sign-in-form" for={@form} phx-change="validate_email" phx-submit="submit_email">
       <.field
@@ -36,29 +31,31 @@
         />
       </div>
     </.form>
-  </.auth_layout>
-<% end %>
 
-<%= if @step == :otp_sent do %>
-  <.auth_layout id="sign-in-layout" title={gettext("Sign in")}>
-    <:logo>
-      <.logo_icon class="w-12 h-12" />
-    </:logo>
+    <.auth_providers mode={:sign_in} conn_or_socket={@socket} />
 
-    <:top_links>
+    <:bottom_links>
       {gettext("Don't have an account?")}
       <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-up"}>
         {gettext("Sign up")}
       </.link>
+    </:bottom_links>
+  </.auth_layout_wide>
+<% end %>
+
+<%= if @step == :otp_sent do %>
+  <.auth_layout_wide title={gettext("Email code sent")}>
+    <:logo>
+      <.logo class="h-6" />
+    </:logo>
+
+    <:top_links>
+      {gettext("We've sent a 6 digit one-time code to %{email}. Enter it below to continue.",
+        email: @auth_user.email
+      )}
     </:top_links>
 
     <div class="flex flex-col gap-6">
-      <.p>
-        {gettext(
-          "We've sent a 6-digit code to %{email}. Enter it below to continue.",
-          email: @auth_user.email
-        )}
-      </.p>
       <.form
         for={@token_form}
         action={~p"/auth/sign-in/passwordless/form"}
@@ -84,5 +81,12 @@
           </.button>
       <% end %>
     </div>
-  </.auth_layout>
+
+    <:bottom_links>
+      {gettext("Not working as expected?")}
+      <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-up"}>
+        {gettext("Sign up")}
+      </.link>
+    </:bottom_links>
+  </.auth_layout_wide>
 <% end %>

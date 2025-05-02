@@ -1,16 +1,11 @@
-<.auth_layout title={gettext("Create your account")}>
+<.auth_layout_wide title={gettext("Create your account")}>
   <:logo>
-    <.logo_icon class="w-12 h-12" />
+    <.logo class="h-6" />
   </:logo>
 
   <:top_links>
-    {gettext("Have an account?")}
-    <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-in"}>
-      {gettext("Sign in")}
-    </.link>
+    {gettext("Welcome! Please fill out the form below.")}
   </:top_links>
-
-  <.auth_providers mode={:sign_up} conn_or_socket={@socket} />
 
   <.form
     id="registration_form"
@@ -27,7 +22,6 @@
       label={gettext("Full name")}
       autocomplete="given-name family-name"
       placeholder={gettext("John Doe")}
-      phx-debounce="blur"
       required
       required_asterix={false}
     />
@@ -38,12 +32,20 @@
       label={gettext("Email address")}
       placeholder={gettext("name@company.com")}
       autocomplete="email"
-      phx-debounce="blur"
+      required
+      required_asterix={false}
+    />
+    <.field
+      icon="remix-building-fill"
+      field={@form[:company]}
+      label={gettext("Company")}
+      autocomplete="organization"
+      placeholder={gettext("MyCompany")}
       required
       required_asterix={false}
     />
 
-    <div class="flex mt-6">
+    <div class="flex">
       <.button
         size="xl"
         label={gettext("Continue")}
@@ -52,5 +54,14 @@
         disabled={not @form.source.valid?}
       />
     </div>
+
+    <.auth_providers mode={:sign_up} conn_or_socket={@socket} />
   </.form>
-</.auth_layout>
+
+  <:bottom_links>
+    {gettext("Have an account?")}
+    <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-in"}>
+      {gettext("Sign in")}
+    </.link>
+  </:bottom_links>
+</.auth_layout_wide>
