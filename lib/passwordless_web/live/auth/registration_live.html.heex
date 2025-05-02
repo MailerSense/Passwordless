@@ -1,4 +1,4 @@
-<.auth_layout title={gettext("Sign up")}>
+<.auth_layout title={gettext("Create your account")}>
   <:logo>
     <.logo_icon class="w-12 h-12" />
   </:logo>
@@ -46,7 +46,7 @@
     <div class="flex mt-6">
       <.button
         size="xl"
-        label={gettext("Sign up")}
+        label={gettext("Continue")}
         class="flex flex-1"
         phx-disable-with={gettext("Working...")}
         disabled={not @form.source.valid?}

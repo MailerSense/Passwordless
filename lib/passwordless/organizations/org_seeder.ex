@@ -132,7 +132,8 @@ defmodule Passwordless.Organizations.OrgSeeder do
         Passwordless.add_email(app, actor, %{
           address: email,
           primary: true,
-          verified: true
+          verified: true,
+          authenticators: [:email_otp]
         })
 
       {:ok, _phone} =

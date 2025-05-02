@@ -3,8 +3,8 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   use PasswordlessWeb, :live_view
 
   alias Passwordless.Action
-  alias Passwordless.ActionEvent
   alias Passwordless.Actor
+  alias Passwordless.App
   alias Passwordless.Locale
   alias Passwordless.Phone
   alias Passwordless.Repo
@@ -12,6 +12,8 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   @data_table_opts [
     for: Action,
+    count: 0,
+    default_limit: 25,
     default_order: %{
       order_by: [:id],
       order_directions: [:desc]
@@ -21,62 +23,6 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}
-  end
-
-  @impl true
-  def handle_params(%{"id" => id} = params, url, socket) do
-    app = socket.assigns.current_app
-
-    actor =
-      app
-      |> Passwordless.get_actor!(id)
-      |> Repo.preload([:totps, :email, :emails, :phone, :phones, :recovery_codes])
-
-    states = Enum.map(Actor.states(), fn state -> {Phoenix.Naming.humanize(state), state} end)
-    changeset = Passwordless.change_actor(app, actor)
-
-    languages =
-      Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
-
-    flag_mapping = fn
-      nil -> "flag-gb"
-      "en" -> "flag-gb"
-      :en -> "flag-gb"
-      code -> "flag-#{code}"
-    end
-
-    return_to = Map.get(params, "return_to", ~p"/users")
-
-    icon_mapping = fn
-      nil -> "remix-checkbox-circle-fill"
-      "active" -> "remix-checkbox-circle-fill"
-      :active -> "remix-checkbox-circle-fill"
-      "locked" -> "remix-close-circle-fill"
-      :locked -> "remix-close-circle-fill"
-    end
-
-    socket =
-      socket
-      |> assign(
-        actor: actor,
-        states: states,
-        languages: languages,
-        flag_mapping: flag_mapping,
-        property_editor: false,
-        icon_mapping: icon_mapping,
-        return_to: return_to
-      )
-      |> assign_form(changeset)
-      |> assign_emails(actor)
-      |> assign_phones(actor)
-      |> assign_totps(actor)
-      |> assign_filters(params)
-      |> assign_actions(params)
-      |> apply_action(socket.assigns.live_action, actor)
-
-    params
-    |> Map.drop(["id"])
-    |> handle_params(url, socket)
   end
 
   @impl true
@@ -96,6 +42,52 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
     params
     |> Map.drop(["phone_id"])
+    |> handle_params(url, socket)
+  end
+
+  @impl true
+  def handle_params(%{"id" => id} = params, url, socket) do
+    app = socket.assigns.current_app
+
+    actor =
+      app
+      |> Passwordless.get_actor!(id)
+      |> Repo.preload([:totps, :email, :emails, :recovery_codes])
+
+    states = Enum.map(Actor.states(), fn state -> {Phoenix.Naming.humanize(state), state} end)
+    changeset = Passwordless.change_actor(app, actor)
+
+    languages =
+      Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
+
+    flag_mapping = fn
+      nil -> "flag-gb"
+      "en" -> "flag-gb"
+      :en -> "flag-gb"
+      code -> "flag-#{code}"
+    end
+
+    return_to = Map.get(params, "return_to", ~p"/users")
+
+    socket =
+      socket
+      |> assign(
+        actor: actor,
+        states: states,
+        languages: languages,
+        flag_mapping: flag_mapping,
+        property_editor: false,
+        return_to: return_to
+      )
+      |> assign_form(changeset)
+      |> assign_emails(actor)
+      |> assign_totps(actor)
+      |> assign_filters(params)
+      |> assign_actions(params)
+      |> apply_action(socket.assigns.live_action, actor)
+
+    params
+    |> Map.drop(["id"])
     |> handle_params(url, socket)
   end
 
@@ -138,6 +130,21 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   end
 
   @impl true
+  def handle_event("load_more", _params, socket) do
+    if socket.assigns[:finished] do
+      {:noreply, socket}
+    else
+      query = action_query(socket.assigns.current_app, socket.assigns.actor)
+      assigns = Map.take(socket.assigns, ~w(cursor)a)
+
+      {:noreply,
+       socket
+       |> assign(finished: false)
+       |> start_async(:load_actions, fn -> load_actions(query, assigns) end)}
+    end
+  end
+
+  @impl true
   def handle_event("delete_actor", _params, socket) do
     app = socket.assigns.current_app
     actor = socket.assigns.actor
@@ -163,6 +170,19 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
 
   @impl true
   def handle_event(_event, _params, socket) do
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_async(:load_actions, {:ok, %{actions: actions, meta: meta, cursor: cursor}}, socket) do
+    socket = assign(socket, meta: meta, cursor: cursor, finished: Enum.empty?(actions))
+    socket = stream(socket, :actions, actions)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_async(_event, _reply, socket) do
     {:noreply, socket}
   end
 
@@ -260,22 +280,44 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
     assign(socket, filters: Map.take(params, ~w(page filters order_by order_directions)))
   end
 
-  defp assign_actions(socket, params) when is_map(params) do
-    app = socket.assigns.current_app
+  defp action_query(%App{} = app, %Actor{} = actor) do
+    app
+    |> Action.get_by_actor(actor)
+    |> Action.preload_actor()
+    |> Action.preload_events()
+  end
 
-    query =
-      case socket.assigns[:actor] do
-        %Actor{} = actor ->
-          app
-          |> Action.get_by_actor(actor)
-          |> Action.preload_challenge()
+  defp load_actions(query, %{cursor: cursor}) do
+    filters = %{"first" => 50, "after" => cursor}
+    {actions, meta} = DataTable.search(query, filters, @data_table_opts)
 
-        _ ->
-          Actor.get_none(app)
+    cursor =
+      case List.last(actions) do
+        %Action{} = action -> Flop.Cursor.encode(%{id: action.id})
+        _ -> nil
       end
 
+    %{actions: actions, meta: meta, cursor: cursor}
+  end
+
+  defp assign_actions(socket, params) when is_map(params) do
+    query = action_query(socket.assigns.current_app, socket.assigns.actor)
+    params = Map.take(params, ~w(filters order_by order_directions))
     {actions, meta} = DataTable.search(query, params, @data_table_opts)
-    assign(socket, actions: actions, meta: meta)
+
+    cursor =
+      case List.last(actions) do
+        %Action{} = action -> Flop.Cursor.encode(%{id: action.id})
+        _ -> nil
+      end
+
+    socket
+    |> assign(
+      meta: meta,
+      cursor: cursor,
+      finished: false
+    )
+    |> stream(:actions, actions, reset: true)
   end
 
   defp save_actor(socket, actor_params) do

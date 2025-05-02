@@ -37,8 +37,8 @@
       </.subpage_header>
     </.form>
 
-    <.box class="flex flex-col xl:flex-row divide-x divide-slate-200 dark:divide-slate-700 overflow-hidden">
-      <div class={[
+    <div class="flex flex-col xl:flex-row gap-4">
+      <.box class={[
         "grow xl:flex-none",
         "transition-all duration-150 ease-linear",
         "xl:min-w-[400px]",
@@ -61,8 +61,8 @@
           locale_form={@locale_form}
           module={@module}
         />
-      </div>
-      <div class="grow" id="preview-container-mjml" phx-update="ignore">
+      </.box>
+      <.box class="grow overflow-hidden" id="preview-container-mjml" phx-update="ignore">
         <iframe
           id="html-preview"
           src="about:blank"
@@ -70,8 +70,8 @@
           data-source="html-preview-data"
         >
         </iframe>
-      </div>
-    </.box>
+      </.box>
+    </div>
   </div>
 </.layout>
 

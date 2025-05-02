@@ -566,6 +566,26 @@ defmodule PasswordlessWeb.DashboardComponents do
     """
   end
 
+  attr :class, :any, default: nil, doc: "CSS class to add to the table"
+  attr :rest, :global
+
+  slot :inner_block, required: true
+
+  def timeline_box(assigns) do
+    ~H"""
+    <div class={["flex gap-3", @class]} {@rest}>
+      <div class="flex flex-col items-center gap-4">
+        <.icon name="custom-play-circle" class={["w-5 h-5", "text-slate-300 dark:text-white/30"]} />
+        <span class="w-[1px] border border-dashed border-slate-300 dark:border-white/30 grow mb-4">
+        </span>
+      </div>
+      <div class="flex flex-col items-start gap-2 mb-10">
+        {render_slot(@inner_block)}
+      </div>
+    </div>
+    """
+  end
+
   # Private
 
   defp generate_qrcode(uri, opts \\ []) do

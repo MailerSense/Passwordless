@@ -249,11 +249,11 @@ defmodule PasswordlessWeb.CoreComponents do
   def or_break(assigns) do
     ~H"""
     <div class="flex items-center gap-4 my-4">
-      <div class="w-full h-[1px] bg-gray-200 dark:bg-gray-700/70"></div>
-      <span class="text-gray-500">
+      <div class="w-full h-[1px] bg-slate-200 dark:bg-slate-700/70"></div>
+      <span class="text-slate-500">
         {@or_text}
       </span>
-      <div class="w-full h-[1px] bg-gray-200 dark:bg-gray-700/70"></div>
+      <div class="w-full h-[1px] bg-slate-200 dark:bg-slate-700/70"></div>
     </div>
     """
   end
@@ -405,6 +405,8 @@ defmodule PasswordlessWeb.CoreComponents do
   attr :disabled, :boolean, default: false
   attr :expanded, :boolean, default: true
   attr :compact, :boolean, default: false
+  attr :flex, :boolean, default: false
+  attr :style, :atom, values: [:normal, :compact, :flex], default: :normal
   attr :rest, :global
 
   def json_block(assigns) do
@@ -422,9 +424,13 @@ defmodule PasswordlessWeb.CoreComponents do
         <.form_label>{@label}</.form_label>
         <div class={[
           @class,
-          "text-sm rounded-lg border border-slate-300 dark:border-slate-600 shadow-m2",
-          if(@disabled, do: "bg-slate-100 dark:bg-slate-700", else: "dark:bg-slate-900"),
-          if(@compact, do: "p-1", else: "p-2")
+          "text-sm",
+          case @style do
+            :normal -> "rounded-lg border border-slate-300 dark:border-slate-600 shadow-m2 p-2"
+            :compact -> "rounded-lg border border-slate-300 dark:border-slate-600 shadow-m2 p-1"
+            :flex -> ""
+          end,
+          if(@disabled, do: "bg-slate-100 dark:bg-slate-700", else: "dark:bg-slate-900")
         ]}>
           <code id={@id} phx-hook="JSONHook" data-json={@code} data-expand={@expanded}></code>
         </div>
@@ -432,9 +438,13 @@ defmodule PasswordlessWeb.CoreComponents do
     <% else %>
       <div class={[
         @class,
-        "text-sm rounded-lg border border-slate-300 dark:border-slate-600 shadow-m2",
-        if(@disabled, do: "bg-slate-100 dark:bg-slate-800", else: "dark:bg-slate-900"),
-        if(@compact, do: "px-2 py-0.5", else: "p-2")
+        "text-sm",
+        case @style do
+          :normal -> "rounded-lg border border-slate-300 dark:border-slate-600 shadow-m2 p-2"
+          :compact -> "rounded-lg border border-slate-300 dark:border-slate-600 shadow-m2 p-1"
+          :flex -> ""
+        end,
+        if(@disabled, do: "bg-slate-100 dark:bg-slate-700", else: "dark:bg-slate-900")
       ]}>
         <code id={@id} phx-hook="JSONHook" data-json={@code} data-expand={@expanded}></code>
       </div>

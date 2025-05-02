@@ -107,7 +107,7 @@ defmodule Passwordless.Action do
   Preload events.
   """
   def preload_events(query \\ __MODULE__) do
-    from q in query, preload: :events
+    from q in query, preload: [{:challenge, [:email_message]}, :events]
   end
 
   @doc """

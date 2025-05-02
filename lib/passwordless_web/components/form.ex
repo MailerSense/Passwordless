@@ -7,6 +7,7 @@ defmodule PasswordlessWeb.Components.Form do
 
   use Phoenix.Component
 
+  alias PasswordlessWeb.Components.Badge
   alias PhoenixHTMLHelpers.Form
 
   @form_attrs ~w(
@@ -774,15 +775,19 @@ defmodule PasswordlessWeb.Components.Form do
 
   attr(:class, :any, default: "", doc: "extra classes for the help text")
   attr(:title, :string, default: nil, doc: "context/help for your field")
+  attr(:count, :integer, default: nil, doc: "context/help for your field")
   attr(:subtitle, :string, default: nil, doc: "context/help for your field")
   attr(:no_margin, :boolean, default: false, doc: "context/help for your field")
   attr(:rest, :global)
 
   def form_header(assigns) do
     ~H"""
-    <h1 class={["pc-form-header", unless(@no_margin, do: "mb-6"), @class]} {@rest}>
-      {@title}
-    </h1>
+    <.div_wrapper class="flex items-center gap-2" wrap={Util.present?(@count)}>
+      <h1 class={["pc-form-header", unless(@no_margin, do: "mb-6"), @class]} {@rest}>
+        {@title}
+      </h1>
+      <Badge.badge :if={Util.present?(@count)} size="sm" color="primary" label={@count} />
+    </.div_wrapper>
     """
   end
 
@@ -936,4 +941,20 @@ defmodule PasswordlessWeb.Components.Form do
   end
 
   defp field_has_errors?(_), do: false
+
+  attr :wrap, :boolean, default: false
+  attr :class, :any, default: nil
+  slot :inner_block, required: true
+
+  defp div_wrapper(assigns) do
+    ~H"""
+    <%= if @wrap do %>
+      <div class={@class}>
+        {render_slot(@inner_block)}
+      </div>
+    <% else %>
+      {render_slot(@inner_block)}
+    <% end %>
+    """
+  end
 end
