@@ -33,8 +33,8 @@
         </div>
       </.subpage_header>
 
-      <div class="flex flex-col 2xl:flex-row gap-6 2xl:items-start">
-        <.box padded class="2xl:w-1/3 2xl:min-w-[350px]">
+      <div class="flex flex-col xl:flex-row gap-4 xl:items-start">
+        <.box padded class="xl:w-1/3 xl:min-w-[400px]">
           <.form_header title={gettext("Profile")} />
           <.field
             field={@form[:state]}
@@ -105,8 +105,8 @@
           <% end %>
         </.box>
 
-        <div class="flex flex-col gap-6 grow">
-          <.simple_table items={@emails} count={Enum.count(@emails)} title={gettext("Emails")}>
+        <div class="flex flex-col gap-4 grow">
+          <.simple_table items={@emails} title={gettext("Emails")}>
             <:if_empty>{gettext("No %{models} present", models: gettext("emails"))}</:if_empty>
             <:col field={:address} label={gettext("Email")} body_class="w-full" />
             <:col :let={email} field={:authenticators}>
@@ -160,23 +160,20 @@
             <:col field={:name} body_class="w-full" />
             <:col actions></:col>
           </.simple_table>
-          <div class={[
-            "flex flex-col gap-6",
-            unless(@finished, do: "pb-[calc(200vh)]")
-          ]}>
+          <div class={[unless(@finished, do: "pb-[calc(200vh)]")]}>
             <.box padded>
               <.form_header title={gettext("Actions")} />
               <div
                 id="uptime-events"
                 role="list"
-                class="flex flex-col w-full grow mt-6"
+                class="flex flex-col"
                 phx-update="stream"
                 phx-viewport-bottom={!@finished && "load_more"}
               >
-                <.timeline_box :for={{_id, action} <- @streams.actions} date={action.inserted_at}>
+                <.timeline_box :for={{_id, action} <- @streams.actions}>
                   <% {badge_label, badge_color} = action_state_badge(action) %>
                   <.p size="sm">
-                    {Timex.from_now(action.inserted_at)}
+                    {format_relative(action.inserted_at)}
                   </.p>
                   <.alert color={badge_color} with_icon>
                     {gettext("%{label} \"%{action}\" via Email OTP",

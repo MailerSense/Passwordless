@@ -566,7 +566,6 @@ defmodule PasswordlessWeb.DashboardComponents do
     """
   end
 
-  attr :date, DateTime, default: nil
   attr :class, :any, default: nil, doc: "CSS class to add to the table"
   attr :rest, :global
 

@@ -281,6 +281,14 @@ defmodule PasswordlessWeb.Helpers do
   def format_date(nil, _format), do: ""
   def format_date(date, format), do: Timex.format!(date, format, :strftime)
 
+  def format_relative(date, format \\ "%d %B %Y, %H:%M") do
+    one_day_ago = Timex.shift(DateTime.utc_now(), days: -1)
+
+    if Timex.before?(date, one_day_ago),
+      do: format_date_time(date, format),
+      else: Timex.from_now(date)
+  end
+
   def format_month_range(%Date{} = month) do
     start_date = Timex.beginning_of_month(month)
     end_date = Timex.end_of_month(month)

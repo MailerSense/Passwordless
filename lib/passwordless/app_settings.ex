@@ -68,7 +68,7 @@ defmodule Passwordless.AppSettings do
     allowlist_api_access
     app_id
   )a
-  @required_fields @fields -- [:email_configuration_set, :app_id]
+  @required_fields @fields -- [:logo, :email_configuration_set, :app_id]
 
   @doc """
   A changeset to update an existing organization.
