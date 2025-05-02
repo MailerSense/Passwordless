@@ -105,8 +105,9 @@ defmodule Passwordless.Accounts.User do
     name
     email
     company
+    password
   )a
-  @registration_required_fields @registration_fields
+  @registration_required_fields @registration_fields -- [:company]
 
   @doc """
   A user changeset for registration.
@@ -118,6 +119,7 @@ defmodule Passwordless.Accounts.User do
     |> validate_name()
     |> validate_email()
     |> validate_state()
+    |> validate_password(opts)
   end
 
   @external_registration_fields ~w(

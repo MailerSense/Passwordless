@@ -38,6 +38,7 @@ if Mix.env() == :dev do
       email: "marcin.praski@gmail.com",
       name: "Sarah Cunningham",
       password: "Qwerty1234!",
+      company: "OpenTide GmbH",
       confirmed_at: DateTime.utc_now()
     })
 
