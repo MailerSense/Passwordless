@@ -159,7 +159,7 @@ defmodule PasswordlessWeb.User.OnboardingLive do
                 step: :user,
                 user_form: to_form(User.profile_changeset(user)),
                 page_title: gettext("Your account"),
-                title: gettext("Welcome onboard 👋"),
+                title: gettext("Welcome aboard 👋"),
                 subtitle:
                   gettext(
                     "We just need a few more details to get started. Afterwards, you'll be able to create your first app."
@@ -184,7 +184,7 @@ defmodule PasswordlessWeb.User.OnboardingLive do
                   |> App.changeset()
                   |> to_form(),
                 page_title: gettext("Create an app"),
-                title: gettext("Now you're ready! 🚀"),
+                title: gettext("Let's build together! 🚀"),
                 subtitle:
                   gettext("You can now create your first Passwordless app. Enter the basics and we'll get you started.")
               )

@@ -27,7 +27,7 @@
           icon="remix-building-fill"
           field={@user_form[:company]}
           autocomplete="organization"
-          placeholder={gettext("Enter your organization name")}
+          placeholder={gettext("Enter your company name")}
           required
         />
 
@@ -69,7 +69,7 @@
           <.inputs_for :let={settings} field={@app_form[:settings]}>
             <.field
               field={@app_form[:name]}
-              placeholder={gettext("Enter name of your app")}
+              placeholder={gettext("Enter app name")}
               autocomplete="organization"
               required
             />
