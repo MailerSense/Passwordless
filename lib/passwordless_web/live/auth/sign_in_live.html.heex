@@ -85,7 +85,11 @@
         <% true -> %>
           <.button size="xl" type="button" disabled with_icon class="flex flex-1">
             <.icon name="remix-reset-right-fill" />
-            {gettext("Wait %{seconds} seconds to resend", seconds: @seconds_till_resend)}
+            {ngettext(
+              "Wait 1 second to resend",
+              "Wait %{count} seconds to resend",
+              @seconds_till_resend
+            )}
           </.button>
       <% end %>
     </div>

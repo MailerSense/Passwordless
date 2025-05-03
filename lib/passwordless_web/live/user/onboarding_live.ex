@@ -109,8 +109,8 @@ defmodule PasswordlessWeb.User.OnboardingLive do
                 step: :org,
                 org_form: to_form(Org.changeset(%Org{}, %{email: user.email})),
                 page_title: gettext("Your company"),
-                title: gettext("Now your company... 💼"),
-                subtitle: gettext("It's just a way to group your apps later on.")
+                title: gettext("Name your company 💼"),
+                subtitle: gettext("It's just a way to group your apps, users etc.")
               )
 
             {:yes, {:org_invitation, invitations}} ->
@@ -125,7 +125,11 @@ defmodule PasswordlessWeb.User.OnboardingLive do
               assign(socket,
                 step: :app,
                 org: org,
-                app_form: org |> Ecto.build_assoc(:apps) |> App.changeset() |> to_form(),
+                app_form:
+                  org
+                  |> Ecto.build_assoc(:apps)
+                  |> App.changeset(%{name: "My First App", settings: %{website: "https://passwordless.tools"}})
+                  |> to_form(),
                 page_title: gettext("Create an app"),
                 title: gettext("Now you're ready! 🚀"),
                 subtitle: gettext("You can now create your first Passwordless app.")
