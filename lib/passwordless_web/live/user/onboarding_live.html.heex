@@ -23,6 +23,13 @@
           required
           autofocus
         />
+        <.field
+          icon="remix-building-fill"
+          field={@user_form[:company]}
+          autocomplete="organization"
+          placeholder={gettext("Enter your organization name")}
+          required
+        />
 
         <div class="flex mt-6">
           <.button
@@ -32,41 +39,6 @@
             class="flex flex-1"
             phx-disable-with={gettext("Working...")}
             disabled={not @user_form.source.valid?}
-          />
-        </div>
-      </.form>
-    <% :org -> %>
-      <.form
-        id="create-org-form"
-        for={@org_form}
-        phx-submit="submit_org"
-        phx-change="validate_org"
-      >
-        <.field
-          icon="remix-building-fill"
-          field={@org_form[:name]}
-          autocomplete="organization"
-          placeholder={gettext("MyCompany")}
-          required
-          {alpine_autofocus()}
-        />
-        <.field
-          icon="remix-mail-fill"
-          type="email"
-          field={@org_form[:email]}
-          placeholder={gettext("name@company.com")}
-          autocomplete="email"
-          required
-        />
-
-        <div class="flex mt-6">
-          <.button
-            size="xl"
-            type="submit"
-            label={gettext("Continue")}
-            class="flex flex-1"
-            phx-disable-with={gettext("Working...")}
-            disabled={not @org_form.source.valid?}
           />
         </div>
       </.form>
@@ -91,35 +63,33 @@
         <.form
           id="create-app-form"
           for={@app_form}
-          phx-submit="save_app"
+          phx-submit="submit_app"
           phx-change="validate_app"
         >
           <.inputs_for :let={settings} field={@app_form[:settings]}>
             <.field
               field={@app_form[:name]}
-              placeholder={gettext("FactBook")}
+              placeholder={gettext("Enter name of your app")}
               autocomplete="organization"
               required
             />
             <.field
               type="url"
               field={settings[:website]}
-              placeholder={gettext("https://factbook.com")}
+              placeholder={gettext("https://mycompany.com")}
               autocomplete="url"
               required
             />
             <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
               <.field
-                field={settings[:primary_button_color]}
-                label={gettext("Primary color")}
+                field={settings[:primary_color]}
                 type="color"
                 required
                 required_asterix={false}
                 wrapper_class="mb-0!"
               />
               <.field
-                field={settings[:secondary_button_color]}
-                label={gettext("Background color")}
+                field={settings[:background_color]}
                 type="color"
                 required
                 required_asterix={false}

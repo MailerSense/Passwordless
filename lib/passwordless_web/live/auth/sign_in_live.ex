@@ -85,12 +85,14 @@ defmodule PasswordlessWeb.Auth.SignInLive do
   @impl true
   def handle_event("resend", _, socket) do
     case {socket.assigns[:auth_user], socket.assigns[:resend_enabled]} do
-      {%User{} = user, true} ->
-        send_email_otp(socket, user.email)
-
-      _ ->
-        {:noreply, socket}
+      {%User{} = user, true} -> send_email_otp(socket, user.email)
+      _ -> {:noreply, socket}
     end
+  end
+
+  @impl true
+  def handle_event(_event, _params, socket) do
+    {:noreply, socket}
   end
 
   @impl true

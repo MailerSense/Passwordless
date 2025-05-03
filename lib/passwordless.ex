@@ -96,18 +96,25 @@ defmodule Passwordless do
   end
 
   def create_full_app(%Org{} = org, attrs \\ %{}) do
-    Repo.transact(fn ->
+    fn ->
       with {:ok, app} <- create_app(org, attrs),
+           {:ok, _auth_token} <- create_auth_token(app, %{permissions: [:actions]}),
+           {:ok, magic_link_template} <-
+             seed_email_template(app, :magic_link, :en, :magic_link_clean, %{tags: [:magic_link]}),
+           {:ok, email_otp_template} <-
+             seed_email_template(app, :email_otp, :en, :email_otp_clean, %{tags: [:email_otp]}),
            {:ok, _authenticators} <-
              create_authenticators(app, %{
                magic_link: %{
                  sender: "verify",
                  sender_name: app.name,
-                 redirect_urls: [%{url: app.settings.website}]
+                 redirect_urls: [%{url: app.settings.website}],
+                 email_template_id: magic_link_template.id
                },
                email_otp: %{
                  sender: "verify",
-                 sender_name: app.name
+                 sender_name: app.name,
+                 email_template_id: email_otp_template.id
                },
                passkey: %{
                  relying_party_id: URI.parse(app.settings.website).host,
@@ -122,7 +129,15 @@ defmodule Passwordless do
                }
              }),
            do: {:ok, app}
-    end)
+    end
+    |> Repo.transact()
+    |> case do
+      {:ok, app} ->
+        with {:ok, _tenant} <- Tenant.create(app), do: {:ok, app}
+
+      error ->
+        error
+    end
   end
 
   def update_app(%App{} = app, attrs) do
@@ -393,7 +408,10 @@ defmodule Passwordless do
         {:ok, domain}
 
       _ ->
-        case Repo.one(Domain.get_by_tags([:system, :default])) do
+        case Domain
+             |> Domain.get_by_purpose(purpose)
+             |> Domain.get_by_tags([:system, :default])
+             |> Repo.one() do
           %Domain{purpose: ^purpose} = domain -> {:ok, domain}
           _ -> {:error, :default_domain_not_found}
         end

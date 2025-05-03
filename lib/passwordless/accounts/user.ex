@@ -132,7 +132,7 @@ defmodule Passwordless.Accounts.User do
   @doc """
   A user changeset for internal registration.
   """
-  def internal_registration_changeset(%__MODULE__{} = user, attrs \\ %{}, opts \\ []) do
+  def internal_registration_changeset(%__MODULE__{} = user, attrs \\ %{}) do
     user
     |> cast(attrs, @internal_registration_fields)
     |> validate_required(@internal_registration_required_fields)

@@ -22,8 +22,8 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.App do
     logo
     website
     display_name
-    primary_button_color
-    secondary_button_color
+    primary_color
+    background_color
   )a
 
   def name(_), do: "app"

@@ -114,6 +114,13 @@ defmodule Passwordless.Domain do
   end
 
   @doc """
+  Get the domain by purpose.
+  """
+  def get_by_purpose(query \\ __MODULE__, purpose) do
+    from q in query, where: q.purpose == ^purpose
+  end
+
+  @doc """
   Produce the AWS ARN for the domain.
   """
   def arn(%__MODULE__{name: name}, region, account) do

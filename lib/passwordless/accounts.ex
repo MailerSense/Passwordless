@@ -118,6 +118,9 @@ defmodule Passwordless.Accounts do
       end
 
     case Repo.transaction(multi) do
+      {:ok, %{user: user, org: org, membership: membership}} ->
+        {:ok, user, org, membership}
+
       {:ok, %{user: user}} ->
         {:ok, user}
 
@@ -126,6 +129,40 @@ defmodule Passwordless.Accounts do
 
       {:error, :credential, _changeset, _} ->
         {:error, :credential_failed}
+
+      {:error, :membership, _changeset, _} ->
+        {:error, :membership_failed}
+
+      {:error, :org, _changeset, _} ->
+        {:error, :org_failed}
+    end
+  end
+
+  @doc """
+  Updates a user and creates an organization.
+  """
+  def update_user_and_create_org(%User{} = user, attrs \\ %{}) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:user, User.internal_registration_changeset(user, attrs))
+    |> Ecto.Multi.insert(:org, fn %{user: %User{} = user} ->
+      Org.changeset(%Org{}, %{name: user.company, email: user.email})
+    end)
+    |> Ecto.Multi.insert(:membership, fn %{user: %User{} = user, org: %Org{} = org} ->
+      Membership.insert_changeset(org, user, :owner)
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{user: user, org: org, membership: membership}} ->
+        {:ok, user, org, membership}
+
+      {:error, :user, changeset, _} ->
+        {:error, changeset}
+
+      {:error, :membership, _changeset, _} ->
+        {:error, :membership_failed}
+
+      {:error, :org, _changeset, _} ->
+        {:error, :org_failed}
     end
   end
 
@@ -229,6 +266,9 @@ defmodule Passwordless.Accounts do
     end
   end
 
+  @doc """
+  Updates the user profile.
+  """
   def update_user_profile(%User{} = user, attrs \\ %{}) do
     user
     |> User.profile_changeset(attrs)
@@ -360,13 +400,13 @@ defmodule Passwordless.Accounts do
       # We have no outstanding invitation(s), so
       # ask the user to create their own organization.
       Enum.empty?(user.memberships) ->
-        {:yes, :org}
+        {:yes, :user}
 
       # Check for at least one app
       true ->
         case user do
           %User{memberships: [%Membership{org: %Org{apps: []} = org} | _]} -> {:yes, {:app, org}}
-          %User{memberships: [%Membership{org: %Org{apps: [_ | _]} = org} | _]} -> :no
+          %User{memberships: [%Membership{org: %Org{apps: [_ | _]}} | _]} -> :no
           _ -> :no
         end
     end
