@@ -5,6 +5,7 @@ defmodule PasswordlessWeb.User.OnboardingLive do
   alias Passwordless.Accounts
   alias Passwordless.Accounts.User
   alias Passwordless.Activity
+  alias Passwordless.App
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
@@ -98,21 +99,36 @@ defmodule PasswordlessWeb.User.OnboardingLive do
               assign(socket,
                 step: :user,
                 user_form: to_form(User.profile_changeset(user)),
-                page_title: gettext("Your Details")
+                page_title: gettext("Your account"),
+                title: gettext("Welcome onboard 👋"),
+                subtitle: gettext("We just need a few more details to get started.")
               )
 
             {:yes, :org} ->
               assign(socket,
                 step: :org,
-                org_form: to_form(Org.changeset(%Org{})),
-                page_title: gettext("Your Organization")
+                org_form: to_form(Org.changeset(%Org{}, %{email: user.email})),
+                page_title: gettext("Your company"),
+                title: gettext("Now your company... 💼"),
+                subtitle: gettext("It's just a way to group your apps later on.")
               )
 
             {:yes, {:org_invitation, invitations}} ->
               assign(socket,
                 step: :org_invitation,
                 invitations: invitations,
-                page_title: gettext("Accept Your Invitation")
+                page_title: gettext("You've got mail! 📩"),
+                title: gettext("Accept your invitation")
+              )
+
+            {:yes, {:app, org}} ->
+              assign(socket,
+                step: :app,
+                org: org,
+                app_form: org |> Ecto.build_assoc(:apps) |> App.changeset() |> to_form(),
+                page_title: gettext("Create an app"),
+                title: gettext("Now you're ready! 🚀"),
+                subtitle: gettext("You can now create your first Passwordless app.")
               )
 
             :no ->

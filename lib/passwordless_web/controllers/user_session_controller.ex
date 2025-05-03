@@ -46,7 +46,7 @@ defmodule PasswordlessWeb.UserSessionController do
   defp create_user_from_token(%Plug.Conn{} = conn, params, token) when is_binary(token) do
     case Accounts.get_user_by_token(token, :passwordless_sign_in) do
       %User{} = user ->
-        user_return_to = if params["user_return_to"] == "", do: nil, else: params["user_return_to"]
+        user_return_to = if Util.blank?(params["user_return_to"]), do: nil, else: params["user_return_to"]
 
         conn = if user_return_to, do: put_session(conn, :user_return_to, user_return_to), else: conn
 

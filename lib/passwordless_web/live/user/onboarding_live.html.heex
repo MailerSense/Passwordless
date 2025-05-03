@@ -1,132 +1,156 @@
-<div class="fixed inset-0 z-10 overflow-y-auto">
-  <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-    <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-      <div class="absolute inset-0 bg-slate-500 opacity-75 dark:bg-slate-800" />
-    </div>
+<.auth_layout_wide title={@title}>
+  <:logo>
+    <.logo class="h-6" />
+  </:logo>
 
-    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
-      &#8203;
-    </span>
-    <div
-      class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-slate-900 sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-headline"
-    >
-      <div>
-        <div class="flex items-center justify-center w-12 h-12 mx-auto text-2xl bg-primary-100 rounded-full dark:bg-primary-800">
-          <%= case @step do %>
-            <% :user -> %>
-              👋
-            <% :org -> %>
-              🏢
-            <% :org_invitation -> %>
-              ✉️
-          <% end %>
+  <:top_links>
+    {@subtitle}
+  </:top_links>
+
+  <%= case @step do %>
+    <% :user -> %>
+      <.form
+        id="create-user-form"
+        for={@user_form}
+        phx-submit="submit_user"
+        phx-change="validate_user"
+      >
+        <.field
+          icon="remix-user-3-fill"
+          field={@user_form[:name]}
+          label={gettext("Full name")}
+          autocomplete="given-name family-name"
+          placeholder={gettext("John Doe")}
+          required
+          autofocus
+        />
+
+        <div class="flex mt-6">
+          <.button
+            size="xl"
+            type="submit"
+            label={gettext("Continue")}
+            class="flex flex-1"
+            phx-disable-with={gettext("Working...")}
+            disabled={not @user_form.source.valid?}
+          />
         </div>
-        <div class="mt-3 text-center sm:mt-5">
-          <h3
-            class="text-xl font-medium leading-6 text-slate-900 dark:text-white"
-            id="modal-headline"
-          >
-            <%= case @step do %>
-              <% :user -> %>
-                {gettext("Welcome")}
-              <% :org -> %>
-                {gettext("Almost there!")}
-              <% :org_invitation -> %>
-                {gettext("Welcome")}
-            <% end %>
-          </h3>
-          <div class="mt-2 text-base prose-sm text-slate-500 dark:text-slate-400">
-            <p>
-              <%= case @step do %>
-                <% :user -> %>
-                  {gettext("Please tell us your name and email to complete account setup.")}
-                <% :org -> %>
-                  {gettext(
-                    "Please tell us more about your organization. We only need it for internal bookkeeping."
-                  )}
-                <% :org_invitation -> %>
-                  {gettext("Please join the organizations you have been invited to.")}
-              <% end %>
-            </p>
-          </div>
+      </.form>
+    <% :org -> %>
+      <.form
+        id="create-org-form"
+        for={@org_form}
+        phx-submit="submit_org"
+        phx-change="validate_org"
+      >
+        <.field
+          icon="remix-building-fill"
+          field={@org_form[:name]}
+          autocomplete="organization"
+          placeholder={gettext("MyCompany")}
+          required
+          {alpine_autofocus()}
+        />
+        <.field
+          icon="remix-mail-fill"
+          type="email"
+          field={@org_form[:email]}
+          label={gettext("Email address")}
+          placeholder={gettext("name@company.com")}
+          autocomplete="email"
+          required
+        />
+
+        <div class="flex mt-6">
+          <.button
+            size="xl"
+            type="submit"
+            label={gettext("Continue")}
+            class="flex flex-1"
+            phx-disable-with={gettext("Working...")}
+            disabled={not @org_form.source.valid?}
+          />
         </div>
+      </.form>
+    <% :org_invitation -> %>
+      <div class="flex flex-col gap-4">
+        <.form
+          :for={invitation <- @invitations}
+          for={nil}
+          action={~p"/invitation/accept"}
+          method="post"
+        >
+          <.input type="hidden" name="invitation_id" value={invitation.id} />
+          <.button
+            type="submit"
+            class="w-full"
+            label={gettext("Join %{org}", org: invitation.org.name)}
+          />
+        </.form>
       </div>
-      <div class="mt-5 sm:mt-6">
-        <%= case @step do %>
-          <% :user -> %>
-            <.form
-              id="update_profile_form"
-              for={@user_form}
-              phx-submit="submit_user"
-              phx-change="validate_user"
-            >
+    <% :app -> %>
+      <div class="flex flex-col gap-4">
+        <.form
+          id="create-app-form"
+          for={@app_form}
+          phx-submit="save_app"
+          phx-change="validate_app"
+        >
+          <.inputs_for :let={settings} field={@app_form[:settings]}>
+            <.field
+              field={@app_form[:name]}
+              placeholder={gettext("FactBook")}
+              autocomplete="organization"
+              required
+            />
+            <.field
+              type="url"
+              field={settings[:website]}
+              placeholder={gettext("https://factbook.com")}
+              autocomplete="url"
+              required
+            />
+            <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
               <.field
-                field={@user_form[:name]}
-                label={gettext("What is your name?")}
-                placeholder={gettext("eg. John Smith")}
-                phx-debounce="blur"
-                autocomplete="given-name family-name"
-                autofocus
-              />
-
-              <div class="flex items-center justify-between">
-                <.link class="text-sm underline" href={~p"/auth/sign-out"} method="delete">
-                  {gettext("Sign out")}
-                </.link>
-                <.button>{gettext("Submit")}</.button>
-              </div>
-            </.form>
-          <% :org -> %>
-            <.form
-              id="create-org-form"
-              for={@org_form}
-              phx-submit="submit_org"
-              phx-change="validate_org"
-            >
-              <.field
-                field={@org_form[:name]}
-                placeholder={gettext("e.g. YourOrg")}
-                autocomplete="organization"
-                phx-debounce="100"
+                field={settings[:primary_button_color]}
+                label={gettext("Primary color")}
+                type="color"
                 required
-                {alpine_autofocus()}
+                required_asterix={false}
+                wrapper_class="mb-0!"
               />
               <.field
-                field={@org_form[:email]}
-                placeholder={gettext("e.g. you@org.com")}
-                autocomplete="email"
-                phx-debounce="100"
+                field={settings[:secondary_button_color]}
+                label={gettext("Background color")}
+                type="color"
                 required
+                required_asterix={false}
+                wrapper_class="mb-0!"
               />
-
-              <div class="flex items-center justify-between">
-                <.link class="text-sm underline" href={~p"/auth/sign-out"} method="delete">
-                  {gettext("Sign out")}
-                </.link>
-                <.button>{gettext("Complete Registration")}</.button>
-              </div>
-            </.form>
-          <% :org_invitation -> %>
-            <div class="flex flex-col gap-4">
-              <.form
-                :for={invitation <- @invitations}
-                for={nil}
-                action={~p"/invitation/accept"}
-                method="post"
-              >
-                <.input type="hidden" name="invitation_id" value={invitation.id} />
-                <.button
-                  type="submit"
-                  class="w-full"
-                  label={gettext("Join %{org}", org: invitation.org.name)}
-                />
-              </.form>
             </div>
-        <% end %>
+            <div class="flex mt-6">
+              <.button
+                size="xl"
+                type="submit"
+                label={gettext("Continue")}
+                class="flex flex-1"
+                phx-disable-with={gettext("Working...")}
+                disabled={not @app_form.source.valid?}
+              />
+            </div>
+          </.inputs_for>
+        </.form>
       </div>
-    </div>
-  </div>
-</div>
+  <% end %>
+
+  <:bottom_links>
+    {gettext("Want to finish this later?")}
+    <.link
+      class="text-blue-600 dark:text-blue-300 font-semibold"
+      href={~p"/auth/sign-out"}
+      method="delete"
+    >
+      {gettext("Sign out")}
+    </.link>
+  </:bottom_links>
+</.auth_layout_wide>

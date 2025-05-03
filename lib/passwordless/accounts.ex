@@ -11,6 +11,8 @@ defmodule Passwordless.Accounts do
   alias Passwordless.Accounts.User
   alias Passwordless.Activity
   alias Passwordless.Cache
+  alias Passwordless.Organizations.Membership
+  alias Passwordless.Organizations.Org
   alias Passwordless.Repo
 
   require Logger
@@ -89,8 +91,18 @@ defmodule Passwordless.Accounts do
 
     multi =
       case via do
+        :internal ->
+          Ecto.Multi.new()
+          |> Ecto.Multi.insert(:user, User.internal_registration_changeset(%User{}, attrs))
+          |> Ecto.Multi.insert(:org, fn %{user: %User{} = user} ->
+            Org.changeset(%Org{}, %{name: user.company, email: user.email})
+          end)
+          |> Ecto.Multi.insert(:membership, fn %{user: %User{} = user, org: %Org{} = org} ->
+            Membership.insert_changeset(org, user, :owner)
+          end)
+
         :password ->
-          Ecto.Multi.insert(Ecto.Multi.new(), :user, User.registration_changeset(%User{}, attrs))
+          Ecto.Multi.insert(Ecto.Multi.new(), :user, User.password_registration_changeset(%User{}, attrs))
 
         :passwordless ->
           Ecto.Multi.insert(Ecto.Multi.new(), :user, User.passwordless_registration_changeset(%User{}, attrs))
@@ -129,8 +141,8 @@ defmodule Passwordless.Accounts do
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
   """
-  def change_user_registration(%User{} = user, attrs \\ %{}) do
-    User.registration_changeset(user, attrs, hash_password: false)
+  def change_user_internal_registration(%User{} = user, attrs \\ %{}) do
+    User.internal_registration_changeset(user, attrs)
   end
 
   ## Settings
@@ -337,17 +349,26 @@ defmodule Passwordless.Accounts do
   def user_needs_onboarding?(%User{name: nil}), do: {:yes, :user}
 
   def user_needs_onboarding?(%User{} = user) do
-    user = Repo.preload(user, [{:invitations, :org}, :memberships])
+    user = Repo.preload(user, [{:invitations, :org}, {:memberships, [{:org, :apps}]}])
 
     cond do
       # We have outstanding invitation(s), so
       # ask the user to join one of these organizations.
-      Enum.empty?(user.memberships) and not Enum.empty?(user.invitations) -> {:yes, {:org_invitation, user.invitations}}
+      Enum.empty?(user.memberships) and not Enum.empty?(user.invitations) ->
+        {:yes, {:org_invitation, user.invitations}}
+
       # We have no outstanding invitation(s), so
       # ask the user to create their own organization.
-      Enum.empty?(user.memberships) -> {:yes, :org}
-      # We're good to go
-      true -> :no
+      Enum.empty?(user.memberships) ->
+        {:yes, :org}
+
+      # Check for at least one app
+      true ->
+        case user do
+          %User{memberships: [%Membership{org: %Org{apps: []} = org} | _]} -> {:yes, {:app, org}}
+          %User{memberships: [%Membership{org: %Org{apps: [_ | _]} = org} | _]} -> :no
+          _ -> :no
+        end
     end
   end
 
@@ -541,6 +562,15 @@ defmodule Passwordless.Accounts do
          %User{} = user <- get_user(user_id),
          do: {:ok, user}
   end
+
+  @doc """
+  Decodes the temporary token.
+  """
+  def decode_user_temporary_token(token) when is_binary(token) do
+    Token.verify_key(token, :passwordless_session)
+  end
+
+  def decode_user_temporary_token(_), do: {:error, :invalid_token}
 
   @doc """
   Delivers the magic link to the given User.

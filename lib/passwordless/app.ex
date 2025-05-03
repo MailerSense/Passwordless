@@ -84,8 +84,8 @@ defmodule Passwordless.App do
   @doc """
   A changeset to update an existing organization.
   """
-  def changeset(org, attrs \\ %{}, _metadata \\ []) do
-    org
+  def changeset(app, attrs \\ %{}, _metadata \\ []) do
+    app
     |> cast(attrs, @fields)
     |> cast_assoc(:settings)
     |> validate_required(@required_fields)

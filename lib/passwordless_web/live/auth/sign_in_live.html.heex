@@ -1,4 +1,4 @@
-<%= if @step == :sign_in do %>
+<%= if @live_action == :sign_in do %>
   <.auth_layout_wide title={gettext("Sign in")}>
     <:logo>
       <.logo class="h-6" />
@@ -43,7 +43,7 @@
   </.auth_layout_wide>
 <% end %>
 
-<%= if @step == :otp_sent do %>
+<%= if @live_action == :otp_sent do %>
   <.auth_layout_wide title={gettext("Email code sent")}>
     <:logo>
       <.logo class="h-6" />
@@ -62,13 +62,21 @@
         phx-trigger-action={@trigger_submit}
         phx-change="validate_code"
       >
-        <.otp_input name={@token_form[:code].name} label={gettext("Email OTP")} />
+        <.otp_input
+          field={@token_form[:code]}
+          label=""
+          disabled={@loading}
+          code_errors={@code_errors}
+        />
         <.input type="hidden" field={@token_form[:sign_in_token]} />
       </.form>
 
       <%= cond do %>
         <% @loading -> %>
-          <.button size="xl" color="success" label={gettext("Success")} class="flex flex-1" />
+          <.button size="xl" color="success" with_icon class="flex flex-1">
+            <.icon name="remix-check-line" />
+            {gettext("Success")}
+          </.button>
         <% @resend_enabled -> %>
           <.button size="xl" type="button" phx-click="resend" with_icon class="flex flex-1">
             <.icon name="remix-reset-right-fill" />

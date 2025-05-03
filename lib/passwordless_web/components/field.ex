@@ -1029,6 +1029,80 @@ defmodule PasswordlessWeb.Components.Field do
     """
   end
 
+  def translate_field_error(args), do: translate_error(args)
+
+  attr :id, :any
+  attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
+  attr :label, :string
+  attr :class, :string, default: nil, doc: "the class to add to the input"
+  attr :code_errors, :list, default: []
+  attr :disabled, :boolean, default: false, doc: "indicates a disabled state"
+
+  attr :required, :boolean,
+    default: false,
+    doc: "is this field required? is passed to the input and adds an asterisk next to the label"
+
+  attr :required_asterix, :boolean,
+    default: true,
+    doc: "whether to add an asterisk next to the label if field is required"
+
+  attr :rest, :global,
+    include:
+      ~w(autocomplete autocorrect autocapitalize disabled form max maxlength min minlength list
+    pattern placeholder readonly required size step value name multiple prompt selected default year month day hour minute second builder options layout cols rows wrap checked accept)
+
+  def otp_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    assigns =
+      assigns
+      |> assign(field: nil)
+      |> assign(:errors, Enum.map(field.errors, &PasswordlessWeb.Components.Field.translate_field_error/1))
+      |> assign_new(:name, fn -> field.name end)
+      |> assign_new(:value, fn -> field.value end)
+      |> assign_new(:label, fn -> PhoenixHTMLHelpers.Form.humanize(field.field) end)
+      |> assign_new(:id, fn -> Util.id("otp-input") end)
+
+    ~H"""
+    <div class={@class} {@rest}>
+      <div id={@id} phx-hook="OTPHook">
+        <.field_label
+          :if={Util.present?(@label)}
+          required={@required}
+          required_asterix={@required_asterix}
+          for={"#{@id}-input-#{1}"}
+        >
+          {@label}
+        </.field_label>
+        <div
+          phx-feedback-for={@name}
+          class={[
+            "otp-input-container flex items-center justify-between",
+            @code_errors != [] && "pc-form-field-wrapper--error"
+          ]}
+        >
+          <input
+            :for={i <- 1..6}
+            id={"#{@id}-input-#{i}"}
+            type="text"
+            class="pc-otp-input"
+            disabled={@disabled}
+          />
+        </div>
+        <.field_error :for={msg <- @code_errors}>
+          {msg}
+        </.field_error>
+        <input
+          id={@id <> "-hidden"}
+          type="hidden"
+          name={@name}
+          class="otp-result-input"
+          autofill="off"
+          autocomplete="off"
+        />
+      </div>
+    </div>
+    """
+  end
+
   # Private
 
   defp get_class_for_type("radio", _size), do: "pc-radio"

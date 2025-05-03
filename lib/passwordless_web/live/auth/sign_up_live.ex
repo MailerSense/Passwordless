@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.Auth.RegistrationLive do
+defmodule PasswordlessWeb.Auth.SignUpLive do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
@@ -11,7 +11,7 @@ defmodule PasswordlessWeb.Auth.RegistrationLive do
       socket
       |> assign(trigger_submit: false)
       |> assign_form(%User{})
-      |> assign(page_title: gettext("Sign Up"))
+      |> assign(page_title: gettext("Create account"))
 
     {:ok, socket, temporary_assigns: [changeset: nil]}
   end
@@ -20,7 +20,7 @@ defmodule PasswordlessWeb.Auth.RegistrationLive do
   def handle_event("validate", %{"user" => user_params}, socket) do
     changeset =
       %User{}
-      |> Accounts.change_user_registration(user_params)
+      |> Accounts.change_user_internal_registration(user_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, form: to_form(changeset))}
@@ -28,7 +28,7 @@ defmodule PasswordlessWeb.Auth.RegistrationLive do
 
   @impl true
   def handle_event("submit", %{"user" => user_params}, socket) do
-    case Accounts.register_user(user_params, via: :password) do
+    case Accounts.register_user(user_params, via: :internal) do
       {:ok, user} ->
         case Accounts.deliver_user_confirmation_instructions(user, &url(~p"/auth/confirm/#{&1}")) do
           {:ok, _} ->
@@ -56,6 +56,6 @@ defmodule PasswordlessWeb.Auth.RegistrationLive do
   # Private
 
   defp assign_form(socket, %User{} = user, changes \\ %{}) do
-    assign(socket, form: to_form(Accounts.change_user_registration(user, changes)))
+    assign(socket, form: to_form(Accounts.change_user_internal_registration(user, changes)))
   end
 end

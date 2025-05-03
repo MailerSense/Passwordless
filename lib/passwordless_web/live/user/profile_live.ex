@@ -87,7 +87,7 @@ defmodule PasswordlessWeb.User.ProfileLive do
   defp apply_action(socket, :change_email) do
     assign(socket,
       page_title: gettext("Change email"),
-      page_subtitle: gettext("Update your account email address. We'll send a confirmation link to the new address.")
+      page_subtitle: gettext("Update your account email address. We'll send you a one-time code to confirm.")
     )
   end
 
