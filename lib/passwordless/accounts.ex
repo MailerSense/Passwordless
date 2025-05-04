@@ -3,6 +3,7 @@ defmodule Passwordless.Accounts do
   The Account context.
   """
 
+  alias Ecto.Multi
   alias Passwordless.Accounts.Credential
   alias Passwordless.Accounts.Notifier
   alias Passwordless.Accounts.OTP
@@ -92,25 +93,25 @@ defmodule Passwordless.Accounts do
     multi =
       case via do
         :internal ->
-          Ecto.Multi.new()
-          |> Ecto.Multi.insert(:user, User.internal_registration_changeset(%User{}, attrs))
-          |> Ecto.Multi.insert(:org, fn %{user: %User{} = user} ->
+          Multi.new()
+          |> Multi.insert(:user, User.internal_registration_changeset(%User{}, attrs))
+          |> Multi.insert(:org, fn %{user: %User{} = user} ->
             Org.changeset(%Org{}, %{name: user.company, email: user.email})
           end)
-          |> Ecto.Multi.insert(:membership, fn %{user: %User{} = user, org: %Org{} = org} ->
+          |> Multi.insert(:membership, fn %{user: %User{} = user, org: %Org{} = org} ->
             Membership.insert_changeset(org, user, :owner)
           end)
 
         :password ->
-          Ecto.Multi.insert(Ecto.Multi.new(), :user, User.password_registration_changeset(%User{}, attrs))
+          Multi.insert(Multi.new(), :user, User.password_registration_changeset(%User{}, attrs))
 
         :passwordless ->
-          Ecto.Multi.insert(Ecto.Multi.new(), :user, User.passwordless_registration_changeset(%User{}, attrs))
+          Multi.insert(Multi.new(), :user, User.passwordless_registration_changeset(%User{}, attrs))
 
         :external_provider ->
-          Ecto.Multi.new()
-          |> Ecto.Multi.insert(:user, User.external_registration_changeset(%User{}, attrs))
-          |> Ecto.Multi.insert(:credential, fn %{user: %User{} = user} ->
+          Multi.new()
+          |> Multi.insert(:user, User.external_registration_changeset(%User{}, attrs))
+          |> Multi.insert(:credential, fn %{user: %User{} = user} ->
             user
             |> Ecto.build_assoc(:credentials)
             |> Credential.changeset(opts |> Keyword.take([:subject, :provider]) |> Map.new())
@@ -142,12 +143,12 @@ defmodule Passwordless.Accounts do
   Updates a user and creates an organization.
   """
   def update_user_and_create_org(%User{} = user, attrs \\ %{}) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, User.internal_registration_changeset(user, attrs))
-    |> Ecto.Multi.insert(:org, fn %{user: %User{} = user} ->
+    Multi.new()
+    |> Multi.update(:user, User.internal_registration_changeset(user, attrs))
+    |> Multi.insert(:org, fn %{user: %User{} = user} ->
       Org.changeset(%Org{}, %{name: user.company, email: user.email})
     end)
-    |> Ecto.Multi.insert(:membership, fn %{user: %User{} = user, org: %Org{} = org} ->
+    |> Multi.insert(:membership, fn %{user: %User{} = user, org: %Org{} = org} ->
       Membership.insert_changeset(org, user, :owner)
     end)
     |> Repo.transaction()
@@ -256,9 +257,9 @@ defmodule Passwordless.Accounts do
       |> User.password_changeset(attrs)
       |> User.validate_current_password(password)
 
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, changeset)
-    |> Ecto.Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, :password_reset))
+    Multi.new()
+    |> Multi.update(:user, changeset)
+    |> Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, :password_reset))
     |> Repo.transaction()
     |> case do
       {:ok, %{user: user}} -> {:ok, user}
@@ -471,9 +472,9 @@ defmodule Passwordless.Accounts do
   Resets the user password.
   """
   def reset_user_password(%User{} = user, attrs \\ %{}) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, User.password_changeset(user, attrs))
-    |> Ecto.Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, :password_reset))
+    Multi.new()
+    |> Multi.update(:user, User.password_changeset(user, attrs))
+    |> Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, :password_reset))
     |> Repo.transaction()
     |> case do
       {:ok, %{user: user}} -> {:ok, user}
@@ -709,15 +710,15 @@ defmodule Passwordless.Accounts do
   # Private
 
   defp update_email_multi(%User{} = user, email, context) when is_binary(email) and is_atom(context) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, User.email_changeset(user, %{email: email}))
-    |> Ecto.Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, context))
+    Multi.new()
+    |> Multi.update(:user, User.email_changeset(user, %{email: email}))
+    |> Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, context))
   end
 
   defp confirm_user_multi(%User{} = user) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, User.confirmation_changeset(user))
-    |> Ecto.Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, :email_confirmation))
+    Multi.new()
+    |> Multi.update(:user, User.confirmation_changeset(user))
+    |> Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, :email_confirmation))
   end
 
   defp attach_action_if_current_password(changeset, nil), do: changeset
