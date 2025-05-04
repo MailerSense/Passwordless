@@ -100,7 +100,7 @@ defmodule PasswordlessWeb.Helpers do
       },
       %{
         name: :fingerprint,
-        label: "Rules Engine",
+        label: "Rule Engine",
         icon: "remix-toggle-line",
         path: ~p"/embed/fingerprint",
         link_type: "live_patch"
