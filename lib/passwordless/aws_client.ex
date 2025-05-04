@@ -83,7 +83,7 @@ defmodule Passwordless.AWSClient do
 
   defp error_retryable?(error_type) when is_binary(error_type) do
     error_type
-    |> String.split("#")
+    |> String.split("#", parts: 2)
     |> case do
       [_, type] when type in @retryable_errors -> true
       [type] when type in @retryable_errors -> true

@@ -32,7 +32,7 @@ defmodule Passwordless.AWS.Lambda.Loop.Handler do
       %Passwordless.AWS.Lambda.Loop.Handler{module: Elixir.Example, function: :handle}
   """
   def configured do
-    [module, function] = String.split(handler_string(), ":", trim: true)
+    [module, function] = String.split(handler_string(), ":", trim: true, parts: 2)
     new(String.to_atom(module), String.to_atom(function))
   end
 

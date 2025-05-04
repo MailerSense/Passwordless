@@ -369,8 +369,8 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :event, :string, null: false
       add :metadata, :map, null: false, default: %{}
       add :user_agent, :string
-      add :ip_address, :string
-      add :country, :string
+      add :ip_address, :inet
+      add :country, :char, size: 2
       add :city, :string
 
       add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false

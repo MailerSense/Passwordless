@@ -6,6 +6,7 @@ defmodule Passwordless.ActionEvent do
   use Passwordless.Schema, prefix: "event"
 
   alias Database.ChangesetExt
+  alias Database.Inet
   alias Passwordless.Action
 
   @derive {
@@ -33,7 +34,7 @@ defmodule Passwordless.ActionEvent do
     end
 
     field :user_agent, :string
-    field :ip_address, :string
+    field :ip_address, Inet
     field :country, :string
     field :city, :string
 

@@ -176,7 +176,7 @@ defmodule Util.Email do
   )
 
   defp check_common_catch_all(email) when is_binary(email) do
-    case String.split(email, "@") do
+    case String.split(email, "@", parts: 2) do
       [name, _] when is_binary(name) and name not in @catch_all_names -> true
       _ -> false
     end
