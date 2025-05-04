@@ -14,6 +14,13 @@ defmodule PasswordlessWeb.FallbackController do
     |> render(:error, changeset: changeset)
   end
 
+  def call(conn, {:error, [_ | _] = list}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(json: PasswordlessWeb.ChangesetJSON)
+    |> render(:error, changeset: Enum.map(list, &to_string/1))
+  end
+
   def call(conn, {:error, :unauthorized}) do
     conn
     |> put_status(:unauthorized)

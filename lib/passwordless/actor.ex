@@ -29,9 +29,8 @@ defmodule Passwordless.Actor do
       :state,
       :username,
       :language,
-      :totps,
-      :emails,
-      :phones,
+      :email,
+      :phone,
       :properties,
       :inserted_at,
       :updated_at

@@ -133,6 +133,7 @@ defmodule Passwordless.MixProject do
       {:typedstruct, "~> 0.5.3"},
       {:elixlsx, "~> 0.6.0"},
       {:recase, "~> 0.8.1"},
+      {:drops, "~> 0.2.1"},
 
       # Markdown
       {:earmark, "~> 1.4"},
