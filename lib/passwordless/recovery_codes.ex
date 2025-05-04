@@ -21,7 +21,7 @@ defmodule Passwordless.RecoveryCodes do
     embeds_many :codes, Code, on_replace: :delete do
       @derive {Jason.Encoder, only: [:used_at]}
 
-      field :code, Passwordless.EncryptedBinary, redact: true
+      field :code, Passwordless.EncryptedJSONBinary, redact: true
       field :used_at, :utc_datetime_usec
     end
 
