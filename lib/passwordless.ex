@@ -45,7 +45,9 @@ defmodule Passwordless do
 
   @challenges [
     email_otp: Challenges.EmailOTP,
-    magic_link: Challenges.MagicLink
+    magic_link: Challenges.MagicLink,
+    totp: Challenges.TOTP,
+    recovery_codes: Challenges.RecoveryCodes
   ]
 
   @doc """

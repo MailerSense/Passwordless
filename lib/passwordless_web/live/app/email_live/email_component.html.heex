@@ -5,8 +5,8 @@
     phx-change="validate_locale"
     phx-submit="save_locale"
   >
-    <.field field={@locale_form[:subject]} required />
-    <.field field={@locale_form[:preheader]} required />
+    <.field field={@locale_form[:subject]} required required_asterix={false} />
+    <.field field={@locale_form[:preheader]} required required_asterix={false} />
     <.field
       type="select"
       field={@locale_form[:current_language]}

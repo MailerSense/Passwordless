@@ -34,7 +34,7 @@ defmodule Passwordless.RecoveryCodes do
   @doc """
   Validates the TOTP backup code and updates the used_at field if the code is valid.
   """
-  def validate_backup_code(%__MODULE__{} = recovery_codes, code) when is_binary(code) do
+  def validate_code(%__MODULE__{} = recovery_codes, code) when is_binary(code) do
     recovery_codes.codes
     |> Enum.map_reduce(false, fn %__MODULE__.Code{} = backup, valid? ->
       if Plug.Crypto.secure_compare(backup.code, code) and is_nil(backup.used_at) do
