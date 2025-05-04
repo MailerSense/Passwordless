@@ -47,6 +47,12 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
         _ -> assign(socket, tracking_domain: nil)
       end
 
+    socket =
+      case Passwordless.get_fallback_domain(current_app, :email) do
+        {:ok, email_domain} -> assign(socket, default_email_domain: email_domain)
+        _ -> assign(socket, default_email_domain: nil)
+      end
+
     {:noreply,
      socket
      |> assign(

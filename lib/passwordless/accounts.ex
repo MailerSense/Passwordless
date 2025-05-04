@@ -3,6 +3,7 @@ defmodule Passwordless.Accounts do
   The Account context.
   """
 
+  alias Ecto.Multi
   alias Passwordless.Accounts.Credential
   alias Passwordless.Accounts.Notifier
   alias Passwordless.Accounts.OTP
@@ -11,6 +12,8 @@ defmodule Passwordless.Accounts do
   alias Passwordless.Accounts.User
   alias Passwordless.Activity
   alias Passwordless.Cache
+  alias Passwordless.Organizations.Membership
+  alias Passwordless.Organizations.Org
   alias Passwordless.Repo
 
   require Logger
@@ -89,16 +92,26 @@ defmodule Passwordless.Accounts do
 
     multi =
       case via do
+        :internal ->
+          Multi.new()
+          |> Multi.insert(:user, User.internal_registration_changeset(%User{}, attrs))
+          |> Multi.insert(:org, fn %{user: %User{} = user} ->
+            Org.changeset(%Org{}, %{name: user.company, email: user.email})
+          end)
+          |> Multi.insert(:membership, fn %{user: %User{} = user, org: %Org{} = org} ->
+            Membership.insert_changeset(org, user, :owner)
+          end)
+
         :password ->
-          Ecto.Multi.insert(Ecto.Multi.new(), :user, User.registration_changeset(%User{}, attrs))
+          Multi.insert(Multi.new(), :user, User.password_registration_changeset(%User{}, attrs))
 
         :passwordless ->
-          Ecto.Multi.insert(Ecto.Multi.new(), :user, User.passwordless_registration_changeset(%User{}, attrs))
+          Multi.insert(Multi.new(), :user, User.passwordless_registration_changeset(%User{}, attrs))
 
         :external_provider ->
-          Ecto.Multi.new()
-          |> Ecto.Multi.insert(:user, User.external_registration_changeset(%User{}, attrs))
-          |> Ecto.Multi.insert(:credential, fn %{user: %User{} = user} ->
+          Multi.new()
+          |> Multi.insert(:user, User.external_registration_changeset(%User{}, attrs))
+          |> Multi.insert(:credential, fn %{user: %User{} = user} ->
             user
             |> Ecto.build_assoc(:credentials)
             |> Credential.changeset(opts |> Keyword.take([:subject, :provider]) |> Map.new())
@@ -106,6 +119,9 @@ defmodule Passwordless.Accounts do
       end
 
     case Repo.transaction(multi) do
+      {:ok, %{user: user, org: org, membership: membership}} ->
+        {:ok, user, org, membership}
+
       {:ok, %{user: user}} ->
         {:ok, user}
 
@@ -114,6 +130,40 @@ defmodule Passwordless.Accounts do
 
       {:error, :credential, _changeset, _} ->
         {:error, :credential_failed}
+
+      {:error, :membership, _changeset, _} ->
+        {:error, :membership_failed}
+
+      {:error, :org, _changeset, _} ->
+        {:error, :org_failed}
+    end
+  end
+
+  @doc """
+  Updates a user and creates an organization.
+  """
+  def update_user_and_create_org(%User{} = user, attrs \\ %{}) do
+    Multi.new()
+    |> Multi.update(:user, User.internal_registration_changeset(user, attrs))
+    |> Multi.insert(:org, fn %{user: %User{} = user} ->
+      Org.changeset(%Org{}, %{name: user.company, email: user.email})
+    end)
+    |> Multi.insert(:membership, fn %{user: %User{} = user, org: %Org{} = org} ->
+      Membership.insert_changeset(org, user, :owner)
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{user: user, org: org, membership: membership}} ->
+        {:ok, user, org, membership}
+
+      {:error, :user, changeset, _} ->
+        {:error, changeset}
+
+      {:error, :membership, _changeset, _} ->
+        {:error, :membership_failed}
+
+      {:error, :org, _changeset, _} ->
+        {:error, :org_failed}
     end
   end
 
@@ -129,8 +179,8 @@ defmodule Passwordless.Accounts do
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
   """
-  def change_user_registration(%User{} = user, attrs \\ %{}) do
-    User.registration_changeset(user, attrs, hash_password: false)
+  def change_user_internal_registration(%User{} = user, attrs \\ %{}) do
+    User.internal_registration_changeset(user, attrs)
   end
 
   ## Settings
@@ -207,9 +257,9 @@ defmodule Passwordless.Accounts do
       |> User.password_changeset(attrs)
       |> User.validate_current_password(password)
 
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, changeset)
-    |> Ecto.Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, :password_reset))
+    Multi.new()
+    |> Multi.update(:user, changeset)
+    |> Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, :password_reset))
     |> Repo.transaction()
     |> case do
       {:ok, %{user: user}} -> {:ok, user}
@@ -217,6 +267,9 @@ defmodule Passwordless.Accounts do
     end
   end
 
+  @doc """
+  Updates the user profile.
+  """
   def update_user_profile(%User{} = user, attrs \\ %{}) do
     user
     |> User.profile_changeset(attrs)
@@ -337,17 +390,26 @@ defmodule Passwordless.Accounts do
   def user_needs_onboarding?(%User{name: nil}), do: {:yes, :user}
 
   def user_needs_onboarding?(%User{} = user) do
-    user = Repo.preload(user, [{:invitations, :org}, :memberships])
+    user = Repo.preload(user, [{:invitations, :org}, {:memberships, [{:org, :apps}]}])
 
     cond do
       # We have outstanding invitation(s), so
       # ask the user to join one of these organizations.
-      Enum.empty?(user.memberships) and not Enum.empty?(user.invitations) -> {:yes, {:org_invitation, user.invitations}}
+      Enum.empty?(user.memberships) and not Enum.empty?(user.invitations) ->
+        {:yes, {:org_invitation, user.invitations}}
+
       # We have no outstanding invitation(s), so
       # ask the user to create their own organization.
-      Enum.empty?(user.memberships) -> {:yes, :org}
-      # We're good to go
-      true -> :no
+      Enum.empty?(user.memberships) ->
+        {:yes, :user}
+
+      # Check for at least one app
+      true ->
+        case user do
+          %User{memberships: [%Membership{org: %Org{apps: []} = org} | _]} -> {:yes, {:app, org}}
+          %User{memberships: [%Membership{org: %Org{apps: [_ | _]}} | _]} -> :no
+          _ -> :no
+        end
     end
   end
 
@@ -410,9 +472,9 @@ defmodule Passwordless.Accounts do
   Resets the user password.
   """
   def reset_user_password(%User{} = user, attrs \\ %{}) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, User.password_changeset(user, attrs))
-    |> Ecto.Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, :password_reset))
+    Multi.new()
+    |> Multi.update(:user, User.password_changeset(user, attrs))
+    |> Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, :password_reset))
     |> Repo.transaction()
     |> case do
       {:ok, %{user: user}} -> {:ok, user}
@@ -543,6 +605,15 @@ defmodule Passwordless.Accounts do
   end
 
   @doc """
+  Decodes the temporary token.
+  """
+  def decode_user_temporary_token(token) when is_binary(token) do
+    Token.verify_key(token, :passwordless_session)
+  end
+
+  def decode_user_temporary_token(_), do: {:error, :invalid_token}
+
+  @doc """
   Delivers the magic link to the given User.
   """
   def deliver_magic_link(%User{} = user, magic_link_url_fun) when is_function(magic_link_url_fun, 1) do
@@ -639,15 +710,15 @@ defmodule Passwordless.Accounts do
   # Private
 
   defp update_email_multi(%User{} = user, email, context) when is_binary(email) and is_atom(context) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, User.email_changeset(user, %{email: email}))
-    |> Ecto.Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, context))
+    Multi.new()
+    |> Multi.update(:user, User.email_changeset(user, %{email: email}))
+    |> Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, context))
   end
 
   defp confirm_user_multi(%User{} = user) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, User.confirmation_changeset(user))
-    |> Ecto.Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, :email_confirmation))
+    Multi.new()
+    |> Multi.update(:user, User.confirmation_changeset(user))
+    |> Multi.delete_all(:tokens, Token.get_tokens_by_user_and_context(user, :email_confirmation))
   end
 
   defp attach_action_if_current_password(changeset, nil), do: changeset

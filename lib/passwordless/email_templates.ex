@@ -37,7 +37,7 @@ defmodule Passwordless.EmailTemplates do
                         <mj-all font-size="16px" line-height="26px" font-family="Inter, sans-serif, Arial" line-height="36px" />
                         <mj-button
                           color="#FFFFFF"
-                          background-color="{{ app.primary_button_color }}"
+                          background-color="{{ app.primary_color }}"
                           font-family="Inter, sans-serif, Arial"
                         ></mj-button>
                       </mj-attributes>

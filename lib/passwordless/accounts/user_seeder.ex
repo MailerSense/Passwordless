@@ -51,7 +51,7 @@ defmodule Passwordless.Accounts.UserSeeder do
       end)
 
     for user <- users_data do
-      Repo.insert(User.registration_changeset(%User{}, user))
+      Repo.insert(User.password_registration_changeset(%User{}, user))
     end
   end
 

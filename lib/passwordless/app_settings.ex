@@ -17,8 +17,8 @@ defmodule Passwordless.AppSettings do
       :logo,
       :website,
       :display_name,
-      :primary_button_color,
-      :secondary_button_color,
+      :primary_color,
+      :background_color,
       :email_configuration_set,
       :email_tracking,
       :default_action,
@@ -36,8 +36,8 @@ defmodule Passwordless.AppSettings do
     field :logo, :string
     field :website, :string
     field :display_name, :string
-    field :primary_button_color, :string, default: "#2e90fa"
-    field :secondary_button_color, :string, default: "#ffffff"
+    field :primary_color, :string, default: "#2e90fa"
+    field :background_color, :string, default: "#ffffff"
     field :email_configuration_set, :string
     field :email_tracking, :boolean, default: false
     field :default_action, Ecto.Enum, values: @actions, default: :block
@@ -60,8 +60,8 @@ defmodule Passwordless.AppSettings do
     logo
     website
     display_name
-    primary_button_color
-    secondary_button_color
+    primary_color
+    background_color
     email_configuration_set
     email_tracking
     default_action
@@ -84,8 +84,8 @@ defmodule Passwordless.AppSettings do
     )
     |> validate_required(@required_fields)
     |> validate_string(:display_name)
-    |> validate_hex_color(:primary_button_color)
-    |> validate_hex_color(:secondary_button_color)
+    |> validate_hex_color(:primary_color)
+    |> validate_hex_color(:background_color)
     |> validate_website()
     |> unique_constraint(:app_id)
     |> assoc_constraint(:app)

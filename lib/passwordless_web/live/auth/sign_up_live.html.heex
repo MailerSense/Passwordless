@@ -1,29 +1,44 @@
-<%= if @live_action == :sign_in do %>
-  <.auth_layout_wide title={gettext("Sign in")}>
+<%= if @live_action == :sign_up do %>
+  <.auth_layout_wide title={gettext("Create your account")}>
     <:logo>
       <.logo class="h-6" />
     </:logo>
 
     <:top_links>
-      {gettext("Welcome! Please enter your details below.")}
+      {gettext("Welcome! Please fill out the form below.")}
     </:top_links>
 
-    <.form id="sign-in-form" for={@form} phx-change="validate_email" phx-submit="submit_email">
+    <.form id="sign-up-form" for={@form} phx-change="validate" phx-submit="submit">
       <.field
-        icon="remix-mail-fill"
-        type="email"
-        field={@form[:email]}
-        label=""
+        icon="remix-user-3-fill"
+        field={@form[:name]}
+        autocomplete="given-name family-name"
+        placeholder={gettext("John Doe")}
         required
         required_asterix={false}
+      />
+      <.field
+        type="email"
+        icon="remix-mail-fill"
+        field={@form[:email]}
+        placeholder={gettext("name@company.com")}
         autocomplete="email"
-        placeholder={gettext("Enter your email address")}
+        required
+        required_asterix={false}
+      />
+      <.field
+        icon="remix-building-fill"
+        field={@form[:company]}
+        label={gettext("Company")}
+        autocomplete="organization"
+        placeholder={gettext("Enter your company name")}
+        required
+        required_asterix={false}
       />
 
-      <div class="flex mt-6">
+      <div class="flex">
         <.button
           size="xl"
-          type="submit"
           label={gettext("Continue")}
           class="flex flex-1"
           phx-disable-with={gettext("Working...")}
@@ -32,12 +47,12 @@
       </div>
     </.form>
 
-    <.auth_providers mode={:sign_in} conn_or_socket={@socket} />
+    <.auth_providers mode={:sign_up} conn_or_socket={@socket} />
 
     <:bottom_links>
-      {gettext("Don't have an account?")}
-      <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-up"}>
-        {gettext("Sign up")}
+      {gettext("Have an account?")}
+      <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-in"}>
+        {gettext("Sign in")}
       </.link>
     </:bottom_links>
   </.auth_layout_wide>
@@ -96,8 +111,8 @@
 
     <:bottom_links>
       {gettext("Not working as expected?")}
-      <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-up"}>
-        {gettext("Sign up")}
+      <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-in"}>
+        {gettext("Sign in")}
       </.link>
     </:bottom_links>
   </.auth_layout_wide>

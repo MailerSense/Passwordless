@@ -101,25 +101,45 @@ defmodule Passwordless.Accounts.User do
     |> validate_password()
   end
 
-  @registration_fields ~w(
+  @password_registration_fields ~w(
     name
     email
     company
     password
   )a
-  @registration_required_fields @registration_fields -- [:company]
+  @password_registration_required_fields @password_registration_fields -- [:company]
 
   @doc """
   A user changeset for registration.
   """
-  def registration_changeset(%__MODULE__{} = user, attrs \\ %{}, opts \\ []) do
+  def password_registration_changeset(%__MODULE__{} = user, attrs \\ %{}, opts \\ []) do
     user
-    |> cast(attrs, @registration_fields)
-    |> validate_required(@registration_required_fields)
+    |> cast(attrs, @password_registration_fields)
+    |> validate_required(@password_registration_required_fields)
     |> validate_name()
     |> validate_email()
     |> validate_state()
     |> validate_password(opts)
+  end
+
+  @internal_registration_fields ~w(
+    name
+    email
+    company
+  )a
+  @internal_registration_required_fields @internal_registration_fields
+
+  @doc """
+  A user changeset for internal registration.
+  """
+  def internal_registration_changeset(%__MODULE__{} = user, attrs \\ %{}) do
+    user
+    |> cast(attrs, @internal_registration_fields)
+    |> validate_required(@internal_registration_required_fields)
+    |> validate_name()
+    |> validate_email()
+    |> validate_state()
+    |> validate_company()
   end
 
   @external_registration_fields ~w(
@@ -294,6 +314,12 @@ defmodule Passwordless.Accounts.User do
     |> ChangesetExt.validate_email()
     |> unique_constraint(:email)
     |> unsafe_validate_unique(:email, Passwordless.Repo)
+  end
+
+  defp validate_company(changeset) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(:company)
+    |> validate_length(:company, min: 1, max: 255)
   end
 
   defp validate_password(changeset, opts \\ []) do

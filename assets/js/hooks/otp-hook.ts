@@ -1,7 +1,9 @@
-import { Hook, makeHook } from "./typed-hook";
 import OTP from "../lib/otp";
+import { Hook, makeHook } from "./typed-hook";
 
 class OTPHook extends Hook {
+  private otp: OTP | null = null;
+
   public mounted() {
     this.run("mounted", this.el);
   }
@@ -24,7 +26,9 @@ class OTPHook extends Hook {
       throw new Error("Editor element not found");
     }
 
-    const _initOTPInput = new OTP(place, source);
+    if (!this.otp) {
+      this.otp = new OTP(place, source);
+    }
   }
 }
 

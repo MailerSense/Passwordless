@@ -94,7 +94,7 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
 
   # Private
 
-  defp behaviour_translation(:authenticate), do: gettext("authenticate user")
+  defp behaviour_translation(:authenticate), do: gettext("allow user immediately")
   defp behaviour_translation(:click), do: gettext("ask user to press a button")
   defp behaviour_translation(:short_code), do: gettext("ask user to type a short-code")
 

@@ -52,6 +52,12 @@ defmodule Passwordless.Challenge do
       started: [:magic_link_sent],
       magic_link_sent: [:magic_link_sent, :magic_link_validated]
     ],
+    totp: [
+      started: [:totp_validated]
+    ],
+    recovery_codes: [
+      started: [:recovery_code_accepted]
+    ],
     password: [
       started: [:password_validated]
     ]

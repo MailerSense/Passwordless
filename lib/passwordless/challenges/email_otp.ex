@@ -213,6 +213,14 @@ defmodule Passwordless.Challenges.EmailOTP do
     |> Oban.insert()
   end
 
+  defp update_action_state(%App{} = app, %Action{} = action, state) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    action
+    |> Action.state_changeset(%{state: state})
+    |> Repo.update(opts)
+  end
+
   defp update_challenge_state(%App{} = app, %Challenge{} = challenge, state) do
     opts = [prefix: Tenant.to_prefix(app)]
 

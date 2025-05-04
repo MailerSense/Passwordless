@@ -1,17 +1,5 @@
-defmodule PasswordlessWeb.Auth.SignInLive do
-  @moduledoc """
-  This module is used to handle the passwordless auth flow.
-  A user enters their email and submits. If no user exists for the user, then one is created with a random password.
-  A user will fill in their name at the onboarding screen.
-
-  Process:
-  1: User submits email.
-  2: Find or create a user, set it as assigns.auth_user
-  3: Push patch to /passwordless/sign-in-code/:token
-  4: User enters code that was sent to their email.
-  5: A form is submited that POSTs a token to UserSessionController.create_from_token/2
-  6: User is logged in
-  """
+defmodule PasswordlessWeb.Auth.SignUpLive do
+  @moduledoc false
   use PasswordlessWeb, :live_view
 
   alias Passwordless.Accounts
@@ -40,28 +28,40 @@ defmodule PasswordlessWeb.Auth.SignInLive do
         loading: false,
         code_errors: [],
         trigger_submit: false,
-        error_message: nil,
-        token_form: to_form(build_token_changeset(), as: :auth)
+        error_message: nil
       )
-      |> assign_form(User.naive_email_changeset(%User{}))
+      |> assign_form(Accounts.change_user_internal_registration(%User{}))
+      |> assign_token_form()
       |> apply_action(socket.assigns.live_action)
 
     {:noreply, socket}
   end
 
   @impl true
-  def handle_event("validate_email", %{"user" => user_params}, socket) do
+  def handle_event("validate", %{"user" => user_params}, socket) do
     changeset =
       %User{}
-      |> User.naive_email_changeset(user_params)
+      |> Accounts.change_user_internal_registration(user_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign(socket, form: to_form(changeset))}
+    {:noreply, assign_form(socket, changeset)}
   end
 
   @impl true
-  def handle_event("submit_email", %{"user" => %{"email" => email}}, socket) do
-    send_email_otp(socket, email)
+  def handle_event("submit", %{"user" => user_params}, socket) do
+    case Accounts.register_user(user_params, via: :internal) do
+      {:ok, user, _org, _membership} ->
+        send_email_otp(socket, user)
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, :form, to_form(changeset))}
+
+      {:error, error} ->
+        {:noreply,
+         socket
+         |> put_toast(:error, gettext("Sign up failed: %{error}", error: inspect(error)), title: gettext("Error"))
+         |> push_patch(to: ~p"/auth/sign-in")}
+    end
   end
 
   @impl true
@@ -85,7 +85,7 @@ defmodule PasswordlessWeb.Auth.SignInLive do
   @impl true
   def handle_event("resend", _, socket) do
     case {socket.assigns[:auth_user], socket.assigns[:resend_enabled]} do
-      {%User{} = user, true} -> send_email_otp(socket, user.email)
+      {%User{} = user, true} -> send_email_otp(socket, user)
       _ -> {:noreply, socket}
     end
   end
@@ -114,6 +114,15 @@ defmodule PasswordlessWeb.Auth.SignInLive do
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     assign(socket, form: to_form(changeset))
+  end
+
+  defp assign_token_form(socket, changes \\ %{}) do
+    assign(socket, token_form: to_form(build_token_changeset(changes), as: :auth))
+  end
+
+  defp build_token_changeset(params) do
+    types = %{sign_in_token: :string}
+    Ecto.Changeset.cast({%{}, types}, params, Map.keys(types))
   end
 
   defp assign_temporary_token(socket, %{"token" => token}) when is_binary(token) do
@@ -163,7 +172,7 @@ defmodule PasswordlessWeb.Auth.SignInLive do
     end
   end
 
-  defp ensure_temporary_token(%{assigns: %{live_action: :sign_in}} = socket, _params), do: socket
+  defp ensure_temporary_token(%{assigns: %{live_action: :sign_up}} = socket, _params), do: socket
 
   defp ensure_temporary_token(%{assigns: %{live_action: :otp_sent}} = socket, %{"token" => token})
        when is_binary(token) do
@@ -175,46 +184,34 @@ defmodule PasswordlessWeb.Auth.SignInLive do
     end
   end
 
-  defp send_email_otp(socket, email) when is_binary(email) do
-    case Accounts.get_or_register_user(email, %{}, via: :passwordless) do
-      {:ok, %User{} = user} ->
-        with {:ok, otp} <- Accounts.insert_user_otp(user), {:ok, _sent_email} <- Accounts.deliver_email_otp(user, otp) do
-          token = Accounts.generate_user_temporary_token(user)
+  defp send_email_otp(socket, %User{} = user) do
+    with {:ok, otp} <- Accounts.insert_user_otp(user), {:ok, _sent_email} <- Accounts.deliver_email_otp(user, otp) do
+      token = Accounts.generate_user_temporary_token(user)
 
-          if Passwordless.config(:env) == :dev do
-            Logger.info("----------- OTP ------------")
-            Logger.info(otp.code)
-          end
+      if Passwordless.config(:env) == :dev do
+        Logger.info("----------- OTP ------------")
+        Logger.info(otp.code)
+      end
 
-          {:noreply,
-           socket
-           |> assign(auth_user: user, token_form: to_form(build_token_changeset(), as: :auth))
-           |> push_patch(to: ~p"/auth/sign-in/otp/#{token}")}
-        else
-          {:error, error} ->
-            assign(socket, error_message: inspect(error))
-        end
-
-      {:error, changeset} ->
-        {:noreply, assign(socket, changeset: changeset)}
+      {:noreply,
+       socket
+       |> assign(auth_user: user)
+       |> assign_token_form()
+       |> push_patch(to: ~p"/auth/sign-up/otp/#{token}")}
+    else
+      {:error, error} ->
+        assign(socket, error_message: inspect(error))
     end
-  end
-
-  defp build_token_changeset(params \\ %{}) do
-    types = %{
-      code: :string,
-      sign_in_token: :string
-    }
-
-    Ecto.Changeset.cast({%{}, types}, params, Map.keys(types))
   end
 
   defp handle_validation(socket, {:ok, _otp}) do
     with %User{} = user <- socket.assigns[:auth_user],
          {:ok, sign_in_token} <- Accounts.generate_user_passwordless_token(user) do
-      changeset = build_token_changeset(%{sign_in_token: sign_in_token})
       Process.send_after(self(), :trigger_submit, 500)
-      assign(socket, token_form: to_form(changeset, as: :auth), loading: true, code_errors: [])
+
+      socket
+      |> assign(loading: true, code_errors: [])
+      |> assign_token_form(%{sign_in_token: sign_in_token})
     else
       _ ->
         {:noreply, socket}
@@ -284,6 +281,6 @@ defmodule PasswordlessWeb.Auth.SignInLive do
     |> push_patch(to: ~p"/auth/sign-in")
   end
 
-  defp apply_action(socket, :sign_in), do: assign(socket, page_title: gettext("Sign in"))
+  defp apply_action(socket, :sign_up), do: assign(socket, page_title: gettext("Sign up"))
   defp apply_action(socket, :otp_sent), do: assign(socket, page_title: gettext("Email code"))
 end

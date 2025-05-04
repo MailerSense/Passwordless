@@ -23,7 +23,7 @@ defmodule Passwordless.Accounts.OTP do
   }
   schema "user_otps" do
     field :code, Passwordless.EncryptedBinary
-    field :attempts, :integer, default: 0
+    field :attempts, :integer, default: 1
     field :expires_at, :utc_datetime_usec
     field :accepted_at, :utc_datetime_usec
 
@@ -33,6 +33,7 @@ defmodule Passwordless.Accounts.OTP do
   end
 
   def size, do: @size
+  def attempts, do: @attempts
 
   @doc """
   Checks if the OTP is expired.
@@ -53,7 +54,7 @@ defmodule Passwordless.Accounts.OTP do
         {:error, :too_many_incorrect_attempts}
 
       not Plug.Crypto.secure_compare(otp.code, candidate) ->
-        {:error, :incorrect_code}
+        {:error, :incorrect_code, otp.attempts}
 
       true ->
         {:ok, otp}

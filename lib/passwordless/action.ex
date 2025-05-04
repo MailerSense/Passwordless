@@ -21,6 +21,7 @@ defmodule Passwordless.Action do
     Jason.Encoder,
     only: [
       :id,
+      :data,
       :name,
       :state,
       :challenge,
@@ -37,6 +38,7 @@ defmodule Passwordless.Action do
   }
   schema "actions" do
     field :name, :string
+    field :data, Passwordless.EncryptedMap
     field :state, Ecto.Enum, values: @states, default: :pending
 
     has_one :challenge, Challenge, where: [current: true]
@@ -125,11 +127,12 @@ defmodule Passwordless.Action do
 
   @fields ~w(
     name
+    data
     state
     rule_id
     actor_id
   )a
-  @required_fields @fields
+  @required_fields @fields -- [:data]
 
   @doc """
   A changeset.
@@ -139,6 +142,7 @@ defmodule Passwordless.Action do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_name()
+    |> validate_data()
     |> validate_state()
     |> assoc_constraint(:actor)
   end
@@ -159,6 +163,20 @@ defmodule Passwordless.Action do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
     |> validate_length(:name, min: 1, max: 255)
+  end
+
+  defp validate_data(changeset) do
+    changeset
+    |> update_change(:data, fn
+      data when is_map(data) ->
+        (changeset.data.data || %{})
+        |> Map.merge(data)
+        |> Util.cast_property_map()
+
+      data ->
+        data
+    end)
+    |> ChangesetExt.validate_property_map(:data)
   end
 
   defp validate_state(changeset) do

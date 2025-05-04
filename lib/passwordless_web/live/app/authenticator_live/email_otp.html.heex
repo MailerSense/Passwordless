@@ -84,7 +84,7 @@
         type="number"
         min="1"
         max="5"
-        prefix={gettext("Once wrong code is entered")}
+        prefix={gettext("After wrong code is entered")}
         suffix={gettext("times")}
         disabled={not @enabled}
         required
@@ -96,7 +96,6 @@
     <.p>
       The Email OTP authenticator can be used to authenticate users via email. The user provides their email address and the application sends a one-time code to the user. The user then provides the code back to the application.
     </.p>
-
     <.live_component
       id="installation-intro"
       module={PasswordlessWeb.Components.MultiCodeBlock}

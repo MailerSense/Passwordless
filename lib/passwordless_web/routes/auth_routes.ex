@@ -33,8 +33,9 @@ defmodule PasswordlessWeb.AuthRoutes do
           # Password sign in
           live "/sign-in/password", Auth.PasswordLive, :new
 
-          # Register
-          live "/sign-up", Auth.RegistrationLive, :new
+          # Sign up
+          live "/sign-up", Auth.SignUpLive, :sign_up
+          live "/sign-up/otp/:token", Auth.SignUpLive, :otp_sent
 
           # Reset password
           live "/reset-password", Auth.ForgotPasswordLive, :new

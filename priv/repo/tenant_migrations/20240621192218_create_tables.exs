@@ -44,6 +44,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create table(:actions, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
+      add :data, :binary
       add :state, :string, null: false
       add :completed_at, :utc_datetime_usec
 
