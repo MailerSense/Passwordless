@@ -117,6 +117,7 @@ defmodule PasswordlessWeb.User.OnboardingLive do
   def handle_event("submit_app", %{"app" => app_params}, socket) do
     case socket.assigns[:current_user] do
       %User{current_org: %Org{} = org} = user ->
+        app_params = maybe_add_logo(app_params, socket)
         app_name = get_in(app_params, ["name"])
 
         app_params =
@@ -141,6 +142,11 @@ defmodule PasswordlessWeb.User.OnboardingLive do
       _ ->
         {:noreply, socket}
     end
+  end
+
+  @impl true
+  def handle_event("cancel_upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :logo, ref)}
   end
 
   @impl true
@@ -225,5 +231,17 @@ defmodule PasswordlessWeb.User.OnboardingLive do
     socket
     |> assign(app_form: to_form(changeset))
     |> assign(logo_src: settings.logo)
+  end
+
+  defp maybe_add_logo(user_params, socket) do
+    uploaded_files = FileUploads.consume_uploaded_entries(socket, :logo)
+
+    case uploaded_files do
+      [{path, _entry} | _] ->
+        put_in(user_params, [Access.key("settings", %{}), Access.key("logo")], path)
+
+      [] ->
+        user_params
+    end
   end
 end
