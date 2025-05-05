@@ -140,9 +140,6 @@ defmodule PasswordlessWeb.Router do
       live "/users/new", App.ActorLive.Index, :new
       live "/users/import", App.ActorLive.Index, :import
       live "/users/:id/edit", App.ActorLive.Index, :edit
-      live "/users/:id/edit/email/new", App.ActorLive.Edit, :new_email
-      live "/users/:id/edit/email/:email_id/edit", App.ActorLive.Edit, :edit_email
-      live "/users/:id/edit/email/:email_id/delete", App.ActorLive.Edit, :delete_email
       live "/users/:id/delete", App.ActorLive.Index, :delete
 
       # Authenticators
