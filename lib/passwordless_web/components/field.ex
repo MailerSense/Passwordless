@@ -300,8 +300,12 @@ defmodule PasswordlessWeb.Components.Field do
         for={@id}
         class={@label_class}
       >
-        {@label}
+        <.div_wrapper class="flex items-center justify-between" wrap={Util.present?(@label_action)}>
+          {@label}
+          {render_slot(@label_action)}
+        </.div_wrapper>
       </.field_label>
+
       <textarea
         id={@id}
         name={@name}

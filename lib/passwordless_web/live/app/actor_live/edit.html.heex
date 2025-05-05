@@ -33,79 +33,81 @@
         </div>
       </.subpage_header>
 
-      <div class="flex flex-col xl:flex-row gap-4 xl:items-start">
-        <.box padded class="xl:w-1/3 xl:min-w-[400px]">
-          <.form_header title={gettext("Personal")} />
-          <.field
-            field={@form[:state]}
-            type="select"
-            options={@states}
-            required
-            required_asterix={false}
-          />
-          <.field
-            field={@form[:language]}
-            type="select"
-            options={@languages}
-            icon_class="pc-select-input__flag"
-            icon_mapping={@flag_mapping}
-            required
-            required_asterix={false}
-            disabled={not @user_active}
-          />
-          <.field
-            field={@form[:username]}
-            disabled={not @user_active}
-            copyable={true}
-            nonce={get_csp_nonce()}
-            placeholder={gettext("Unique user ID from your own system")}
-            autocomplete="username"
-          />
-          <%= if @property_editor do %>
+      <div class="grid grid-cols-1 xl:grid-cols-5 gap-4">
+        <div class="flex flex-col gap-4 xl:col-span-2">
+          <.box padded>
+            <.form_header title={gettext("Profile")} />
             <.field
-              type="textarea"
-              field={@form[:properties_text]}
-              label={gettext("Properties")}
-              disabled={not @user_active}
-              class="font-mono"
-              rows={Util.count_json_lines(@user_properties)}
+              field={@form[:state]}
+              type="select"
+              options={@states}
+              required
+              required_asterix={false}
             />
-            <.a
-              label={gettext("Finish editing properties")}
-              style="link"
-              link_type="a"
-              phx-click="toggle_property_editor"
-              disabled={not @form.source.valid?}
-            />
-          <% else %>
             <.field
-              type="hidden"
-              field={@form[:properties_text]}
-              value={Jason.encode!(@user_properties)}
-            />
-            <.json_block
-              label={gettext("Properties")}
-              code={@user_properties}
+              field={@form[:language]}
+              type="select"
+              options={@languages}
+              icon_class="pc-select-input__flag"
+              icon_mapping={@flag_mapping}
+              required
+              required_asterix={false}
               disabled={not @user_active}
             />
-            <div class="flex items-center gap-3 flex-wrap">
+            <.field
+              field={@form[:username]}
+              disabled={not @user_active}
+              copyable={true}
+              nonce={get_csp_nonce()}
+              placeholder={gettext("Unique user ID from your own system")}
+              autocomplete="username"
+            />
+            <%= if @property_editor do %>
+              <.field
+                type="textarea"
+                field={@form[:properties_text]}
+                label={gettext("Properties")}
+                disabled={not @user_active}
+                class="font-mono"
+                rows={Util.count_json_lines(@user_properties)}
+              />
               <.a
-                label={gettext("Edit properties")}
+                label={gettext("Finish editing properties")}
                 style="link"
                 link_type="a"
                 phx-click="toggle_property_editor"
+                disabled={not @form.source.valid?}
               />
-              <.a
-                label={gettext("Add email")}
-                style="link"
-                link_type="live_patch"
-                to={~p"/users/#{@actor}/edit/email/new"}
+            <% else %>
+              <.field
+                type="hidden"
+                field={@form[:properties_text]}
+                value={Jason.encode!(@user_properties)}
               />
-            </div>
-          <% end %>
-        </.box>
+              <.json_block
+                label={gettext("Properties")}
+                code={@user_properties}
+                disabled={not @user_active}
+              />
+              <div class="flex items-center gap-3 flex-wrap">
+                <.a
+                  label={gettext("Edit properties")}
+                  style="link"
+                  link_type="a"
+                  phx-click="toggle_property_editor"
+                />
+                <.a
+                  label={gettext("Add email")}
+                  style="link"
+                  link_type="live_patch"
+                  to={~p"/users/#{@actor}/edit/email/new"}
+                />
+              </div>
+            <% end %>
+          </.box>
+        </div>
 
-        <div class="flex flex-col gap-4 grow">
+        <div class="flex flex-col gap-4 2xl:col-span-3">
           <.simple_table items={@emails} title={gettext("Emails")}>
             <:if_empty>{gettext("No %{models} present", models: gettext("emails"))}</:if_empty>
             <:col field={:address} label={gettext("Email")} body_class="w-full" />
@@ -167,6 +169,7 @@
                 id="uptime-events"
                 role="list"
                 class="flex flex-col"
+                phx-target={@myself}
                 phx-update="stream"
                 phx-viewport-bottom={!@finished && "load_more"}
               >

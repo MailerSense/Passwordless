@@ -409,6 +409,8 @@ defmodule PasswordlessWeb.CoreComponents do
   attr :style, :atom, values: [:normal, :compact, :flex], default: :normal
   attr :rest, :global
 
+  slot :label_action, required: false
+
   def json_block(assigns) do
     assigns =
       assigns
@@ -421,7 +423,13 @@ defmodule PasswordlessWeb.CoreComponents do
     ~H"""
     <%= if Util.present?(@label) do %>
       <div class="pc-form-field-wrapper">
-        <.form_label>{@label}</.form_label>
+        <.field_label for={@id}>
+          <.div_wrapper class="flex items-center justify-between" wrap={Util.present?(@label_action)}>
+            {@label}
+            {render_slot(@label_action)}
+          </.div_wrapper>
+        </.field_label>
+
         <div class={[
           @class,
           "text-sm",

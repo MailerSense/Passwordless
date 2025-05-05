@@ -592,7 +592,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   def article_list(assigns) do
     ~H"""
     <div class={["flex flex-col gap-3", @class]} role="list">
-      <div :for={item <- @items} class="flex items-center gap-3" role="listitem">
+      <div :for={item <- @items} class="flex items-center gap-4" role="listitem">
         <.icon name="custom-check-fancy" class="w-8 h-8 text-primary-500" />
         <.p>{Phoenix.HTML.raw(item)}</.p>
       </div>

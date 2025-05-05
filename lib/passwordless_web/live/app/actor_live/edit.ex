@@ -145,30 +145,6 @@ defmodule PasswordlessWeb.App.ActorLive.Edit do
   end
 
   @impl true
-  def handle_event("delete_actor", _params, socket) do
-    app = socket.assigns.current_app
-    actor = socket.assigns.actor
-
-    case Passwordless.delete_actor(app, actor) do
-      {:ok, actor} ->
-        {:noreply,
-         socket
-         |> put_toast(
-           :info,
-           gettext("User \"%{name}\" has been deleted.", name: actor_name(actor)),
-           title: gettext("Success")
-         )
-         |> push_navigate(to: ~p"/users")}
-
-      {:error, _} ->
-        {:noreply,
-         socket
-         |> put_toast(:error, gettext("Failed to delete actor!"), title: gettext("Error"))
-         |> push_patch(to: ~p"/users/#{actor}/edit")}
-    end
-  end
-
-  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end

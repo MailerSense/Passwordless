@@ -99,10 +99,10 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
-        name: :fingerprint,
-        label: "Rule Engine",
+        name: :rules_engine,
+        label: "Rules Engine",
         icon: "remix-toggle-line",
-        path: ~p"/embed/fingerprint",
+        path: ~p"/embed/rules-engine",
         link_type: "live_patch"
       },
       %{
@@ -193,11 +193,11 @@ defmodule PasswordlessWeb.Helpers do
       Enum.map(events, fn %ActionEvent{event: event, inserted_at: inserted_at} = event_struct ->
         name =
           case event do
-            "send_otp" -> gettext("User requested a %{challenge}", challenge: challenge_name)
-            "send_link" -> gettext("User requested a %{challenge}", challenge: challenge_name)
-            "verify_otp" -> gettext("User presented valid OTP")
-            "verify_link" -> gettext("User clicked the link")
-            "verify_password" -> gettext("User presented valid password")
+            "send_otp" -> gettext("Requested a %{challenge}", challenge: challenge_name)
+            "send_link" -> gettext("Requested a %{challenge}", challenge: challenge_name)
+            "verify_otp" -> gettext("Presented valid OTP")
+            "verify_link" -> gettext("Clicked the link")
+            "verify_password" -> gettext("Presented valid password")
             _ -> gettext("Unknown event")
           end
 

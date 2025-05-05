@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.EmbedLive.Fingerprint do
+defmodule PasswordlessWeb.App.EmbedLive.RulesEngine do
   @moduledoc false
 
   use PasswordlessWeb, :live_component

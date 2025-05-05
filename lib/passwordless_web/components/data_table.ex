@@ -420,7 +420,7 @@ defmodule PasswordlessWeb.Components.DataTable do
       "p-6 flex items-center justify-between gap-4"
     ]}>
       <.div_wrapper class="flex items-center gap-2" wrap={Util.present?(@badge)}>
-        <h1 class="text-xl font-semibold text-slate-900 dark:text-white">
+        <h1 class="text-lg font-semibold text-slate-900 dark:text-white">
           {@title}
         </h1>
         <.badge :if={Util.present?(@badge)} size="sm" color="primary" label={@badge} />
