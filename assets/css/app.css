@@ -903,7 +903,7 @@
   /* OTP Input */
 
   .pc-otp-input {
-    @apply w-12 h-12 text-xl text-center border border-slate-300 shadow-m2 rounded-md font-mono font-bold focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 focus:outline-hidden;
+    @apply w-10 h-10 sm:w-12 sm:h-12 text-xl text-center border border-slate-300 shadow-m2 rounded-md font-mono font-bold focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 focus:outline-hidden;
   }
 
   /* Password Input */
