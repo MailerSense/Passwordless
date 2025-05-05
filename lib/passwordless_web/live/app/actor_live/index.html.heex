@@ -38,7 +38,13 @@
           link_type="live_patch"
         />
         <.icon_button
-          to={~p"/users/#{actor}/edit?return_to=#{apply_filters(@filters, @meta, ~p"/users")}"}
+          to={
+            apply_filters(
+              @filters,
+              @meta,
+              ~p"/users/#{actor}/edit"
+            )
+          }
           size="sm"
           icon="custom-edit"
           color="light"

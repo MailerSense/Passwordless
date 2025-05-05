@@ -37,6 +37,10 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   @impl true
   def handle_event("close_modal", _params, socket) do
+    IO.inspect("here2")
+    IO.inspect(socket.assigns.filters, label: "filters")
+    IO.inspect(socket.assigns.meta, label: "meta")
+
     {:noreply,
      push_patch(socket,
        to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/users")
@@ -45,6 +49,10 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
+    IO.inspect("here")
+    IO.inspect(socket.assigns.filters, label: "filters")
+    IO.inspect(socket.assigns.meta, label: "meta")
+
     {:noreply,
      push_patch(socket,
        to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/users")
