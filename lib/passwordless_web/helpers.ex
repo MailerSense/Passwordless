@@ -175,10 +175,10 @@ defmodule PasswordlessWeb.Helpers do
 
     label =
       case action.state do
-        :allow -> gettext("%{action} confirmed with %{challenge}", action: name, challenge: challenge_name)
-        :timeout -> gettext("%{action} timed out with %{challenge}", action: name, challenge: challenge_name)
-        :block -> gettext("%{action} blocked with %{challenge}", action: name, challenge: challenge_name)
-        _ -> gettext("%{action} requested via %{challenge}", action: name, challenge: challenge_name)
+        :allow -> gettext("\"%{action}\" allowed", action: name, challenge: challenge_name)
+        :timeout -> gettext("\"%{action}\" timed out", action: name, challenge: challenge_name)
+        :block -> gettext("\"%{action}\" blocked", action: name, challenge: challenge_name)
+        _ -> gettext("\"%{action}\" challenged", action: name, challenge: challenge_name)
       end
 
     color =
