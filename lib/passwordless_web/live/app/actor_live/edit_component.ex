@@ -24,6 +24,14 @@ defmodule PasswordlessWeb.App.ActorLive.EditComponent do
     changeset = Passwordless.change_actor(app, actor)
     languages = Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
 
+    icon_mapping = fn
+      nil -> "remix-checkbox-circle-fill"
+      "active" -> "remix-checkbox-circle-fill"
+      :active -> "remix-checkbox-circle-fill"
+      "locked" -> "remix-close-circle-fill"
+      :locked -> "remix-close-circle-fill"
+    end
+
     flag_mapping = fn
       nil -> "flag-gb"
       "en" -> "flag-gb"
@@ -37,6 +45,7 @@ defmodule PasswordlessWeb.App.ActorLive.EditComponent do
       |> assign(
         states: states,
         languages: languages,
+        icon_mapping: icon_mapping,
         flag_mapping: flag_mapping,
         property_editor: false
       )

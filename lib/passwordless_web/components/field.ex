@@ -504,19 +504,19 @@ defmodule PasswordlessWeb.Components.Field do
                 to_string(option[:value]) == to_string(@value) ||
                   to_string(option[:value]) == to_string(@checked)
               }
-              class="sr-only pc-radio-card__input"
+              class="pc-radio-card__input"
               {@rest}
             />
             <div class="pc-radio-card__fake-input"></div>
             <div class="pc-radio-card__content">
-              <Icon.icon :if={option[:icon]} name={option[:icon]} class={option[:icon_class]} />
-
               <div class="pc-radio-card__body">
                 <div class="pc-radio-card__label">{option[:label]}</div>
                 <div :if={option[:description]} class="pc-radio-card__description">
                   {option[:description]}
                 </div>
               </div>
+
+              <Icon.icon :if={option[:icon]} name={option[:icon]} class={option[:icon_class]} />
             </div>
           </label>
         <% end %>

@@ -16,19 +16,21 @@
         phx-change="validate_user"
       >
         <.field
-          icon="remix-user-3-fill"
+          icon="remix-user-line"
           field={@user_form[:name]}
           autocomplete="given-name family-name"
           placeholder={gettext("John Doe")}
           required
+          required_asterix={false}
           autofocus
         />
         <.field
-          icon="remix-building-fill"
+          icon="remix-building-line"
           field={@user_form[:company]}
           autocomplete="organization"
-          placeholder={gettext("Enter your company name")}
+          placeholder={gettext("Macrosoft")}
           required
+          required_asterix={false}
         />
 
         <div class="flex mt-6">
@@ -67,18 +69,27 @@
           phx-change="validate_app"
         >
           <.inputs_for :let={settings} field={@app_form[:settings]}>
+            <.image_input
+              upload={@uploads.logo}
+              label={gettext("Logo")}
+              current_image_src={@logo_src}
+              placeholder_icon="remix-image-line"
+              automatic_help_text
+            />
             <.field
               field={@app_form[:name]}
-              placeholder={gettext("Enter app name")}
+              placeholder={gettext("Enter your app's name")}
               autocomplete="organization"
               required
+              required_asterix={false}
             />
             <.field
               type="url"
               field={settings[:website]}
-              placeholder={gettext("https://mycompany.com")}
+              placeholder={gettext("https://app.mycompany.com")}
               autocomplete="url"
               required
+              required_asterix={false}
             />
             <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
               <.field

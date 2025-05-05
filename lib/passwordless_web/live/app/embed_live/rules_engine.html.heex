@@ -10,37 +10,7 @@
     ]} />
   </.box>
   <.box card>
-    <.form_header title={gettext("Default action")} no_margin />
-    <.p>
-      Rules are evaluated in the order they are defined. The first rule that matches will be applied. If no rules match, the default action will be taken. We recommend blocking the user action by default.
-    </.p>
-    <.form
-      id="app-update-form"
-      for={@form}
-      phx-submit="save"
-      phx-change="validate"
-      phx-target={@myself}
-    >
-      <.inputs_for :let={settings} field={@form[:settings]}>
-        <.field
-          field={settings[:default_action]}
-          type="select"
-          options={@actions}
-          icon_class={"pc-field-icon__icon " <> (
-        case @default_action do
-          :allow -> "text-success-600 dark:text-success-300"
-          :block -> "text-danger-600 dark:text-danger-300"
-        end
-      )}
-          icon_mapping={@icon_mapping}
-          required
-          required_asterix={false}
-        />
-      </.inputs_for>
-    </.form>
-  </.box>
-  <.box card>
-    <.form_header title={gettext("Basic examples")} no_margin />
+    <.form_header title={gettext("Examples to get started")} no_margin />
     <.p>
       Below are some examples of commonly applied rules. You can use these as a starting point for your own rules.
     </.p>
@@ -60,6 +30,37 @@
       ]}
     />
   </.box>
+  <.box card>
+    <.form_header title={gettext("Default action")} no_margin />
+    <.p>
+      Rules are evaluated in the order they are defined. The first rule that matches will be applied. If no rules match, the default action will be taken. We recommend blocking the user action by default.
+    </.p>
+    <.form
+      id="app-update-form"
+      for={@form}
+      phx-submit="save"
+      phx-change="validate"
+      phx-target={@myself}
+    >
+      <.inputs_for :let={settings} field={@form[:settings]}>
+        <.field
+          field={settings[:default_action]}
+          type="select"
+          options={@actions}
+          icon_class={"pc-field-icon__icon " <> (
+        case @default_action do
+          :allow -> "text-success-600 dark:text-success-500"
+          :block -> "text-danger-600 dark:text-danger-500"
+        end
+      )}
+          icon_mapping={@icon_mapping}
+          required
+          required_asterix={false}
+        />
+      </.inputs_for>
+    </.form>
+  </.box>
+
   <.simple_table
     items={@rule_conditions}
     count={Enum.count(@rule_conditions)}

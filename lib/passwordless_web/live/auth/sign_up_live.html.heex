@@ -5,12 +5,12 @@
     </:logo>
 
     <:top_links>
-      {gettext("Welcome! Please fill out the form below.")}
+      {gettext("Welcome! Please enter your details.")}
     </:top_links>
 
     <.form id="sign-up-form" for={@form} phx-change="validate" phx-submit="submit">
       <.field
-        icon="remix-user-3-fill"
+        icon="remix-user-line"
         field={@form[:name]}
         autocomplete="given-name family-name"
         placeholder={gettext("John Doe")}
@@ -18,24 +18,24 @@
         required_asterix={false}
       />
       <.field
+        icon="remix-building-line"
+        field={@form[:company]}
+        label={gettext("Company")}
+        autocomplete="organization"
+        placeholder={gettext("Macrosoft")}
+        required
+        required_asterix={false}
+      />
+      <.field
+        icon="remix-mail-line"
         type="email"
-        icon="remix-mail-fill"
         field={@form[:email]}
+        label={gettext("Work email")}
         placeholder={gettext("name@company.com")}
         autocomplete="email"
         required
         required_asterix={false}
       />
-      <.field
-        icon="remix-building-fill"
-        field={@form[:company]}
-        label={gettext("Company")}
-        autocomplete="organization"
-        placeholder={gettext("Enter your company name")}
-        required
-        required_asterix={false}
-      />
-
       <div class="flex">
         <.button
           size="xl"
@@ -59,10 +59,19 @@
 <% end %>
 
 <%= if @live_action == :otp_sent do %>
-  <.auth_layout_wide title={gettext("Email code sent")}>
+  <.auth_layout_wide title={gettext("Enter verification code")}>
     <:logo>
       <.logo class="h-6" />
     </:logo>
+
+    <:top_logo>
+      <img
+        src={~p"/images/hero_email_icon.svg"}
+        alt={Passwordless.config(:app_name)}
+        title={Passwordless.config(:app_name)}
+        class="h-16 w-16"
+      />
+    </:top_logo>
 
     <:top_links>
       {gettext("We've sent a 6 digit one-time code to %{email}. Enter it below to continue.",

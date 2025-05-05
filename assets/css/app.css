@@ -1069,7 +1069,7 @@
   }
 
   .pc-radio-card-group--row {
-    @apply flex gap-2 flex-wrap;
+    @apply flex gap-3 flex-wrap;
   }
 
   .pc-radio-card-group--col {
@@ -1093,7 +1093,7 @@
   }
 
   .pc-radio-card--md > .pc-radio-card__content {
-    @apply px-6 py-3;
+    @apply px-3.5 py-[11px];
   }
 
   .pc-radio-card--lg > .pc-radio-card__content {
@@ -1144,10 +1144,10 @@
   }
 
   /* Checked State Styles */
-  .pc-radio-card__input:checked ~ .pc-radio-card__fake-input {
+  /*   .pc-radio-card__input:checked ~ .pc-radio-card__fake-input {
     @apply border-2 border-primary-500 bg-primary-50;
     @apply dark:bg-primary-900/50 dark:border-primary-400;
-  }
+  } */
 
   /* Disabled State */
   .pc-radio-card--disabled {
@@ -1156,17 +1156,17 @@
 
   /* Input Styles */
   .pc-radio-card__input {
-    @apply sr-only;
+    @apply z-20 ml-3.5 relative w-4 h-4 border-slate-300 cursor-pointer checked:border-primary-600 dark:checked:border-slate-600 accent-primary-600 text-primary-600 focus:ring-primary-600 dark:ring-primary-300 dark:bg-slate-700 dark:border-slate-600;
   }
 
   /* Fake Input Styles */
   .pc-radio-card__fake-input {
-    @apply absolute inset-0 rounded-lg shadow-m2;
+    @apply absolute inset-0 rounded-lg shadow-m2 flex items-center z-10;
   }
 
   /* Content Styles */
   .pc-radio-card__content {
-    @apply relative pointer-events-none flex items-center gap-3;
+    @apply z-20 relative pointer-events-none flex items-center gap-2;
   }
 
   .pc-radio-card__body {
@@ -1175,7 +1175,7 @@
 
   /* Label Styles */
   .pc-radio-card__label {
-    @apply font-semibold text-slate-900 dark:text-white;
+    @apply font-normal text-slate-900 dark:text-white;
   }
 
   /* Description Styles */

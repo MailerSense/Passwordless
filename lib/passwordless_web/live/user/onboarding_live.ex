@@ -5,6 +5,7 @@ defmodule PasswordlessWeb.User.OnboardingLive do
   alias Passwordless.Accounts
   alias Passwordless.Accounts.User
   alias Passwordless.App
+  alias Passwordless.FileUploads
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
@@ -91,7 +92,7 @@ defmodule PasswordlessWeb.User.OnboardingLive do
   @impl true
   def handle_event("validate_app", %{"app" => app_params}, socket) do
     case socket.assigns[:current_user] do
-      %User{current_org: %Org{} = org} = user ->
+      %User{current_org: %Org{} = org} = _user ->
         app_name = get_in(app_params, ["name"])
 
         app_params =
@@ -162,7 +163,7 @@ defmodule PasswordlessWeb.User.OnboardingLive do
                 title: gettext("Welcome aboard 👋"),
                 subtitle:
                   gettext(
-                    "We just need a few more details to get started. Afterwards, you'll be able to create your first app."
+                    "We just need a few more details to set up your account. Afterwards, you'll create your first app."
                   )
               )
 
@@ -170,23 +171,37 @@ defmodule PasswordlessWeb.User.OnboardingLive do
               assign(socket,
                 step: :org_invitation,
                 invitations: invitations,
-                page_title: gettext("You've got mail! 📩"),
-                title: gettext("Accept your invitation")
+                page_title: gettext("Your invitations"),
+                title: gettext("You've got mail 📩"),
+                subtitle:
+                  gettext(
+                    "You have been invited to join an organization. Click on the link below to accept your invitation."
+                  )
               )
 
             {:yes, {:app, org}} ->
-              assign(socket,
+              upload_opts =
+                FileUploads.prepare(
+                  accept: ~w(.jpg .jpeg .png .svg .webp),
+                  max_entries: 1,
+                  max_file_size: 5_242_880 * 2
+                )
+
+              socket
+              |> assign(
                 step: :app,
                 org: org,
-                app_form:
-                  org
-                  |> Ecto.build_assoc(:apps)
-                  |> App.changeset()
-                  |> to_form(),
                 page_title: gettext("Create an app"),
-                title: gettext("Let's build together! 🚀"),
+                title: gettext("Let's build together 🚀"),
                 subtitle:
-                  gettext("You can now create your first Passwordless app. Enter the basics and we'll get you started.")
+                  gettext("You can now create your first Passwordless app. Enter the basics and we'll get you started."),
+                uploaded_files: []
+              )
+              |> allow_upload(:logo, upload_opts)
+              |> assign_user_form(
+                org
+                |> Ecto.build_assoc(:apps)
+                |> App.changeset(%{settings: %{logo: Passwordless.config(:app_logo)}})
               )
 
             :no ->
@@ -202,5 +217,13 @@ defmodule PasswordlessWeb.User.OnboardingLive do
       _ ->
         socket
     end
+  end
+
+  defp assign_user_form(socket, %Ecto.Changeset{} = changeset) do
+    settings = Ecto.Changeset.get_field(changeset, :settings)
+
+    socket
+    |> assign(app_form: to_form(changeset))
+    |> assign(logo_src: settings.logo)
   end
 end

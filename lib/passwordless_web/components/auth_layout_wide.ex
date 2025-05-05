@@ -9,6 +9,7 @@ defmodule PasswordlessWeb.Components.AuthLayoutWide do
   attr :title, :string
   slot :inner_block
   slot :logo
+  slot :top_logo
   slot :top_links
   slot :bottom_links
 
@@ -23,6 +24,8 @@ defmodule PasswordlessWeb.Components.AuthLayoutWide do
 
           <div class="flex flex-col w-full md:max-w-sm md:mx-auto px-5 py-4 md:p-0 gap-8">
             <div class="flex flex-col gap-3">
+              {render_slot(@top_logo)}
+
               <.h2 no_margin>
                 {@title}
               </.h2>

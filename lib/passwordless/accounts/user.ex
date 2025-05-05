@@ -15,6 +15,7 @@ defmodule Passwordless.Accounts.User do
   alias Passwordless.Organizations.Org
 
   @states ~w(active locked)a
+  @login_methods ~w(email_otp password)a
 
   schema "users" do
     field :name, :string
@@ -25,6 +26,9 @@ defmodule Passwordless.Accounts.User do
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime_usec
     field :company, :string, virtual: true
+    field :login_method, Ecto.Enum, values: @login_methods, default: :email_otp, virtual: true
+    field :terms_accepted, :boolean, virtual: true, default: false
+    field :use_password, :boolean, virtual: true, default: false
 
     # Virtuals
     field :role, :any, virtual: true
@@ -126,6 +130,8 @@ defmodule Passwordless.Accounts.User do
     name
     email
     company
+    login_method
+    terms_accepted
   )a
   @internal_registration_required_fields @internal_registration_fields
 
@@ -211,7 +217,7 @@ defmodule Passwordless.Accounts.User do
   """
   def naive_email_changeset(%__MODULE__{} = user, attrs \\ %{}) do
     user
-    |> cast(attrs, [:email])
+    |> cast(attrs, [:email, :login_method, :use_password])
     |> ChangesetExt.validate_email()
   end
 

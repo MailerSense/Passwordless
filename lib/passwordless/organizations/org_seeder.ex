@@ -43,11 +43,11 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
     {:ok, app} =
       Passwordless.create_app(org, %{
-        name: "Demo App",
+        name: Passwordless.config(:app_name),
         settings: %{
-          logo: "https://cdn.passwordlesstools.com/logos/passwordless.png",
+          logo: Passwordless.config(:app_logo),
           website: "https://passwordless.tools",
-          display_name: "Demo App",
+          display_name: Passwordless.config(:app_name),
           email_tracking: true,
           email_configuration_set: "passwordless-tools-app-ses-config-set",
           allowlisted_ip_addresses: [
