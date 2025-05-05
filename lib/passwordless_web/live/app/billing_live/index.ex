@@ -3,15 +3,6 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
   use PasswordlessWeb, :live_view
   use Gettext, backend: PasswordlessWeb.Gettext
 
-  alias Passwordless.Activity.Log
-
-  @data_table_opts [
-    for: Log,
-    default_order: %{
-      order_by: [:id],
-      order_directions: [:desc]
-    }
-  ]
 
   @impl true
   def mount(_params, _session, socket) do

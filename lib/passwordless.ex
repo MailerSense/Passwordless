@@ -884,9 +884,17 @@ defmodule Passwordless do
   end
 
   def create_rule(%App{} = app, attrs \\ %{}) do
-    %Rule{}
-    |> Rule.changeset(attrs)
-    |> Repo.insert(prefix: Tenant.to_prefix(app))
+    opts = [prefix: Tenant.to_prefix(app)]
+    changeset = Rule.changeset(%Rule{}, attrs)
+
+    with {:ok, rule} <- Ecto.Changeset.apply_action(changeset, :insert) do
+      Repo.transact(fn ->
+        case Repo.get_by(Rule, [hash: rule.hash], opts) do
+          %Rule{} = rule -> {:ok, rule}
+          nil -> Repo.insert(changeset, opts)
+        end
+      end)
+    end
   end
 
   # Email templates

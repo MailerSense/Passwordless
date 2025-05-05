@@ -46,8 +46,8 @@ defmodule PasswordlessApi.ActionController do
         },
         required(:rules) =>
           list(%{
-            required(:if) => boolean(),
-            required(:then) => list(:string)
+            required(:if) => any(),
+            required(:then) => list(any())
           })
       }
     end

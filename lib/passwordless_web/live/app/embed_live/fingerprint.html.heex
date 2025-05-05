@@ -2,18 +2,12 @@
   <.box card>
     <.form_header title={gettext("Rule engine")} no_margin />
     <.p>
-      Passwordless comes with a powerful rules engine that allows you to define complex rules for your authentication flows. You can use the rules engine to define conditions and effects for your actions. If none of the rules match, the default action will take place.
+      Passwordless comes with a powerful rules engine that allows you to control the flow of your authentication process. Leveraging conditional logic, trusted users enjoy good customers flows while bad actors are stopped. We introduce following concepts:
     </.p>
-    <.ul>
-      <li>
-        <strong>Rule conditions</strong>
-        are the conditions that must be met for the rule to be applied, like IP Address location or user history.
-      </li>
-      <li>
-        <strong>Rule effects</strong>
-        are the actions that will be taken if the rule is applied, like challenging the user via Email OTP.
-      </li>
-    </.ul>
+    <.article_list items={[
+      " <strong>Rule conditions</strong> must be met for the rule to be applied, like IP Address location or user action within last 30 minutes.",
+      "<strong>Rule effects</strong> are the actions that will be taken if the rule is applied, like challenging the user via Email OTP."
+    ]} />
   </.box>
   <.box card>
     <.form_header title={gettext("Default action")} no_margin />
@@ -44,6 +38,27 @@
         />
       </.inputs_for>
     </.form>
+  </.box>
+  <.box card>
+    <.form_header title={gettext("Basic examples")} no_margin />
+    <.p>
+      Below are some examples of commonly applied rules. You can use these as a starting point for your own rules.
+    </.p>
+    <.live_component
+      id="rule-example"
+      module={PasswordlessWeb.Components.MultiCodeBlock}
+      codes={[
+        %{
+          tab: gettext("User Action"),
+          language: :typescript,
+          code: ~S"""
+          {
+            and: [true, false],
+          }
+          """
+        }
+      ]}
+    />
   </.box>
   <.simple_table
     items={@rule_conditions}

@@ -94,10 +94,7 @@ defmodule PasswordlessWeb.App.EmbedLive.Fingerprint do
         example:
           Passwordless.Formatter.format!(
             ~S"""
-            {
-               if: true,
-               then: [],
-            }
+            true;
             """,
             :typescript
           )
@@ -110,10 +107,7 @@ defmodule PasswordlessWeb.App.EmbedLive.Fingerprint do
           Passwordless.Formatter.format!(
             ~S"""
             {
-               if: {
-                  and: [true, false],
-               },
-               then: [],
+              and: [true, false],
             }
             """,
             :typescript
@@ -127,10 +121,7 @@ defmodule PasswordlessWeb.App.EmbedLive.Fingerprint do
           Passwordless.Formatter.format!(
             ~S"""
             {
-               if: {
-                  or: [true, false],
-               },
-               then: [],
+              or: [true, false],
             }
             """,
             :typescript
@@ -144,19 +135,16 @@ defmodule PasswordlessWeb.App.EmbedLive.Fingerprint do
           Passwordless.Formatter.format!(
             ~S"""
             {
-               if: {
-                  action: {
-                    name: "action_name",
-                    state: "allow|block|timeout",
-                    within_last: {
-                      days: 1,
-                      hours: 1,
-                      minutes: 1,
-                      seconds: 1,
-                    },
-                  },
-               },
-               then: [],
+              action: {
+                name: "action_name",
+                state: "allow|block|timeout",
+                within_last: {
+                  days: 1,
+                  hours: 1,
+                  minutes: 1,
+                  seconds: 1,
+                },
+              },
             }
             """,
             :typescript
@@ -170,13 +158,10 @@ defmodule PasswordlessWeb.App.EmbedLive.Fingerprint do
           Passwordless.Formatter.format!(
             ~S"""
             {
-               if: {
-                  ip_address: {
-                    country_code: "US",
-                    is_anonymous: true,
-                  },
-               },
-               then: [],
+              ip_address: {
+                country_code: "US",
+                is_anonymous: true,
+              },
             }
             """,
             :typescript
@@ -194,15 +179,10 @@ defmodule PasswordlessWeb.App.EmbedLive.Fingerprint do
           Passwordless.Formatter.format!(
             ~S"""
             {
-              if: true,
-              then: [
-                {
-                  challenge: Passwordless.EMAIL_OTP,
-                  with: {
-                    email: "john.doe@company.com"
-                  }
-                }
-              ],
+              challenge: Passwordless.EMAIL_OTP,
+              with: {
+                email: "john.doe@company.com"
+              }
             }
             """,
             :typescript

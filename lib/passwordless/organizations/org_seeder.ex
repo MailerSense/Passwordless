@@ -146,11 +146,22 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
       {:ok, _recovery_codes} = Passwordless.create_actor_recovery_codes(app, actor)
 
-      {:ok, rule} =
-        Passwordless.create_rule(app, %{
-          conditions: %{},
-          effects: %{}
+      {:ok, mem_rule} =
+        Passwordless.RuleEngine.parse(%{
+          if: %{
+            "or" => [
+              true,
+              %{
+                "ip_address" => %{
+                  "country_code" => "DE"
+                }
+              }
+            ]
+          },
+          then: []
         })
+
+      {:ok, rule} = Passwordless.create_rule(app, Map.from_struct(mem_rule))
 
       for _ <- 1..10 do
         {:ok, action} =

@@ -33,11 +33,14 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create table(:rules, primary_key: false) do
       add :id, :uuid, primary_key: true
+      add :hash, :binary, null: false
       add :condition, :map, null: false, default: %{}
-      add :effects, :map, null: false, default: %{}
+      add :effects, {:array, :map}, null: false, default: []
 
       timestamps()
     end
+
+    create unique_index(:rules, [:hash])
 
     ## Action
 
