@@ -198,9 +198,9 @@ defmodule PasswordlessWeb.User.OnboardingLive do
                 step: :app,
                 org: org,
                 page_title: gettext("Create an app"),
-                title: gettext("Let's build together 🚀"),
+                title: gettext("Let’s build securely 🚀"),
                 subtitle:
-                  gettext("You can now create your first Passwordless app. Enter the basics and we'll get you started."),
+                  gettext("You can now use Passwordless to secure your app. Enter the basics and we'll get you started."),
                 uploaded_files: []
               )
               |> allow_upload(:logo, upload_opts)
