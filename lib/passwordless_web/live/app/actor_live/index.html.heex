@@ -5,7 +5,7 @@
       <:col field={:search} searchable filterable={[:==]} />
       <:col :let={actor} field={:name}>
         <.a
-          to={~p"/users/#{actor}/edit?return_to=#{apply_filters(@filters, @meta, ~p"/users")}"}
+          to={apply_filters(@filters, @meta, ~p"/users/#{actor}/edit")}
           label={Actor.handle(actor)}
           style="link"
           link_type="live_redirect"
@@ -38,13 +38,7 @@
           link_type="live_patch"
         />
         <.icon_button
-          to={
-            apply_filters(
-              @filters,
-              @meta,
-              ~p"/users/#{actor}/edit"
-            )
-          }
+          to={apply_filters(@filters, @meta, ~p"/users/#{actor}/edit")}
           size="sm"
           icon="custom-edit"
           color="light"

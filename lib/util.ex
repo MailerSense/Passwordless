@@ -214,7 +214,7 @@ defmodule Util do
       iex> Util.truncate("This is a very long string", 15)
       "This is a ve..."
   """
-  def truncate(text, count \\ 24) do
+  def truncate(text, count \\ 16) do
     Util.StringExt.truncate(text, length: count)
   end
 

@@ -110,7 +110,7 @@
         {Phoenix.Naming.humanize(Macro.underscore(action.name))}
       </:col>
 
-      <:col :let={action} label={gettext("Location")} field={:location}>
+      <:col :let={action} label={gettext("Country")} field={:country}>
         <%= case Action.first_event(action) do %>
           <% %ActionEvent{city: city, country: country} -> %>
             <div class="flex items-center gap-2">
@@ -120,27 +120,26 @@
         <% end %>
       </:col>
 
+      <:col :let={action} label={gettext("Browser")} field={:browser}>
+        <div class="flex items-center gap-2">
+          <.icon name="browser-chrome" class="w-5 h-5" /> Chrome
+        </div>
+      </:col>
+
+      <:col :let={action} label={gettext("Operating System")} field={:os}>
+        <div class="flex items-center gap-2">
+          <.icon name="os-ios" class="w-5 h-5" /> iOS
+        </div>
+      </:col>
+
       <:col :let={action} label={gettext("State")} field={:state}>
         <% {badge_label, badge_color} = action_state_badge(action) %>
         <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
 
-      <:col :let={action} label={gettext("When")} field={:inserted_at}>
+      <:col :let={action} label={gettext("Last seen")} field={:inserted_at}>
         {Timex.from_now(action.inserted_at)}
       </:col>
-
-      <:col actions></:col>
-      <:actions :let={action}>
-        <.icon_button
-          :if={Util.present?(action.actor)}
-          to={~p"/users/#{action.actor}/edit"}
-          size="sm"
-          icon="custom-edit"
-          color="light"
-          title={gettext("Edit")}
-          link_type="live_patch"
-        />
-      </:actions>
     </.stream_table>
   </div>
 </.layout>

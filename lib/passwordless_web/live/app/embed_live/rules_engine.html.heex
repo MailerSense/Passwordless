@@ -2,38 +2,23 @@
   <.box card>
     <.form_header title={gettext("Rules engine")} no_margin />
     <.p>
-      Passwordless comes with a powerful rules engine that allows you to control the flow of your authentication process. Leveraging conditional logic, trusted users enjoy good customers flows while bad actors are stopped. We introduce following concepts:
+      Passwordless comes with a powerful rules engine that allows you to control the flow of your authentication process. Leveraging conditional logic, trusted users enjoy good customers flows while bad actors are stopped. A rule is made of two parts:
     </.p>
     <.article_list items={[
-      " <strong>Rule conditions</strong> must be met for the rule to be applied, like IP Address location or user action within last 30 minutes.",
-      "<strong>Rule effects</strong> are the actions that will be taken if the rule is applied, like challenging the user via Email OTP."
+      "<strong>Rule conditions</strong> need to be satisfied, for example device location or user action within last 30 minutes.",
+      "<strong>Rule effects</strong> define what the rule actually does, like challenging the user via Email OTP."
     ]} />
-  </.box>
-  <.box card>
-    <.form_header title={gettext("Examples to get started")} no_margin />
-    <.p>
-      Below are some examples of commonly applied rules. You can use these as a starting point for your own rules.
-    </.p>
-    <.live_component
-      id="rule-example"
-      module={PasswordlessWeb.Components.MultiCodeBlock}
-      codes={[
-        %{
-          tab: gettext("User Action"),
-          language: :typescript,
-          code: ~S"""
-          {
-            and: [true, false],
-          }
-          """
-        }
-      ]}
+    <.a
+      to={~p"/embed/api"}
+      label={gettext("Read Rules engine documentation")}
+      style="link"
+      link_type="live_redirect"
     />
   </.box>
   <.box card>
     <.form_header title={gettext("Default action")} no_margin />
     <.p>
-      Rules are evaluated in the order they are defined. The first rule that matches will be applied. If no rules match, the default action will be taken. We recommend blocking the user action by default.
+      Rules are evaluated from top to bottom. The first rule that matches will be applied. If no rules match, the default action will be taken - you can set it below. We recomment blocking user actions by default as a baseline policy.
     </.p>
     <.form
       id="app-update-form"
@@ -60,71 +45,25 @@
       </.inputs_for>
     </.form>
   </.box>
-
-  <.simple_table
-    items={@rule_conditions}
-    count={Enum.count(@rule_conditions)}
-    title={gettext("Rule conditions")}
-  >
-    <:if_empty>{gettext("No %{models} defined", models: gettext("conditions"))}</:if_empty>
-    <:col :let={syntax} field={:name}>
-      <.code_line>
-        {syntax.name}
-      </.code_line>
-    </:col>
-    <:col :let={syntax} field={:description}>
-      {Phoenix.HTML.raw(
-        Passwordless.Templating.Markdown.to_html(syntax.description, %Earmark.Options{
-          code_class_prefix: "language-",
-          escape: false
-        })
-      )}
-    </:col>
-    <:col :let={syntax} field={:example}>
-      <.live_component
-        id={syntax.name}
-        module={PasswordlessWeb.Components.MultiCodeBlock}
-        codes={[
-          %{
-            tab: gettext("Typescript"),
-            language: :typescript,
-            code: syntax.example
+  <.box card>
+    <.form_header title={gettext("Examples to get started")} no_margin />
+    <.p>
+      Below are some examples of commonly applied rules. You can use these as a starting point for your own rules.
+    </.p>
+    <.live_component
+      id="rule-example"
+      module={PasswordlessWeb.Components.MultiCodeBlock}
+      codes={[
+        %{
+          tab: gettext("User Action"),
+          language: :typescript,
+          code: ~S"""
+          {
+            and: [true, false],
           }
-        ]}
-      />
-    </:col>
-  </.simple_table>
-  <.simple_table
-    items={@rule_effects}
-    count={Enum.count(@rule_effects)}
-    title={gettext("Rule effects")}
-  >
-    <:if_empty>{gettext("No %{models} defined", models: gettext("effects"))}</:if_empty>
-    <:col :let={syntax} field={:name}>
-      <.code_line>
-        {syntax.name}
-      </.code_line>
-    </:col>
-    <:col :let={syntax} field={:description}>
-      {Phoenix.HTML.raw(
-        Passwordless.Templating.Markdown.to_html(syntax.description, %Earmark.Options{
-          code_class_prefix: "language-",
-          escape: false
-        })
-      )}
-    </:col>
-    <:col :let={syntax} field={:example}>
-      <.live_component
-        id={syntax.name}
-        module={PasswordlessWeb.Components.MultiCodeBlock}
-        codes={[
-          %{
-            tab: gettext("Typescript"),
-            language: :typescript,
-            code: syntax.example
-          }
-        ]}
-      />
-    </:col>
-  </.simple_table>
+          """
+        }
+      ]}
+    />
+  </.box>
 </div>

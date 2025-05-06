@@ -15,7 +15,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :name, :string
       add :state, :string, null: false
       add :username, :string
-      add :language, :string, null: false
+      add :language, :char, size: 2, null: false
       add :properties, :binary, null: false
 
       timestamps()
@@ -323,9 +323,8 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :state, :string, null: false
 
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
-
       add :totp_id, references(:totps, type: :uuid, on_delete: :nilify_all)
+      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
     end
@@ -373,7 +372,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :metadata, :map, null: false, default: %{}
       add :user_agent, :string
       add :ip_address, :inet
-      add :country, :char, size: 2
+      add :country, :string
       add :city, :string
 
       add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false

@@ -106,6 +106,7 @@ COPY config/runtime.exs config/
 COPY rel rel
 
 RUN mix sentry.package_source_code
+RUN mix ua_inspector.download
 RUN mix release
 
 ########################################

@@ -10,6 +10,22 @@
     >
       <.field field={@form[:name]} autocomplete="name" />
       <.field
+        field={@form[:state]}
+        type="select"
+        options={@states}
+        required
+        required_asterix={false}
+        icon_class={"pc-field-icon__icon " <> (
+        case @user_state do
+          :active -> "text-success-600 dark:text-success-500"
+          :locked -> "text-danger-600 dark:text-danger-500"
+        end
+      )}
+        icon_mapping={@icon_mapping}
+      />
+      <.form_separator />
+      <.form_header title={gettext("Details")} />
+      <.field
         field={@form[:username]}
         autocomplete="username"
         placeholder={gettext("Unique user ID from your own system")}
@@ -23,20 +39,6 @@
         icon_mapping={@flag_mapping}
         required
         required_asterix={false}
-      />
-      <.field
-        field={@form[:state]}
-        type="select"
-        options={@states}
-        required
-        required_asterix={false}
-        icon_class={"pc-field-icon__icon " <> (
-        case @user_state do
-          :active -> "text-success-600 dark:text-success-500"
-          :locked -> "text-danger-600 dark:text-danger-500"
-        end
-      )}
-        icon_mapping={@icon_mapping}
       />
       <%= if @property_editor do %>
         <.field
