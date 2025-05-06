@@ -447,20 +447,20 @@ defmodule Passwordless do
 
     actor_query =
       case params do
-        %{"id" => id} when is_binary(id) ->
+        %{id: id} when is_binary(id) ->
           case Database.PrefixedUUID.slug_to_uuid(id) do
             {:ok, ^prefix, _uuid} -> dynamic([a], a.id == ^id)
             _ -> false
           end
 
-        %{"username" => username} when is_binary(username) ->
+        %{username: username} when is_binary(username) ->
           dynamic([a], a.username == ^username)
 
         _ ->
           false
       end
 
-    params = Map.put_new(params, "properties", %{})
+    params = Map.put_new(params, :properties, %{})
 
     actor_result =
       case Repo.one(from(a in Actor, where: ^actor_query), prefix: Tenant.to_prefix(app)) do
@@ -473,11 +473,11 @@ defmodule Passwordless do
          do: {:ok, actor}
   end
 
-  def resolve_actor_emails(%App{} = app, %Actor{} = actor, %{"emails" => [_ | _] = emails}) do
+  def resolve_actor_emails(%App{} = app, %Actor{} = actor, %{emails: [_ | _] = emails}) do
     opts = [prefix: Tenant.to_prefix(app)]
     old_emails = Repo.preload(actor, :emails).emails
     old_email_addresses = Map.new(old_emails, fn e -> {e.address, {:old, e}} end)
-    new_email_addresses = Map.new(emails, fn %{"address" => a} = e -> {a, {:new, e}} end)
+    new_email_addresses = Map.new(emails, fn %{address: a} = e -> {a, {:new, e}} end)
 
     diffs =
       Map.merge(old_email_addresses, new_email_addresses, fn _a, {:old, old}, {:new, new} ->
@@ -788,7 +788,7 @@ defmodule Passwordless do
   def get_action(%App{} = app, id) do
     Action
     |> Repo.get(id, prefix: Tenant.to_prefix(app))
-    |> Repo.preload(actor: [:email, :phone])
+    |> Repo.preload([:rule, {:actor, [:email, :phone]}, {:challenge, [:email_message]}, :events])
     |> case do
       %Action{} = action -> {:ok, action}
       nil -> {:error, :not_found}
@@ -884,9 +884,17 @@ defmodule Passwordless do
   end
 
   def create_rule(%App{} = app, attrs \\ %{}) do
-    %Rule{}
-    |> Rule.changeset(attrs)
-    |> Repo.insert(prefix: Tenant.to_prefix(app))
+    opts = [prefix: Tenant.to_prefix(app)]
+    changeset = Rule.changeset(%Rule{}, attrs)
+
+    with {:ok, rule} <- Ecto.Changeset.apply_action(changeset, :insert) do
+      Repo.transact(fn ->
+        case Repo.get_by(Rule, [hash: rule.hash], opts) do
+          %Rule{} = rule -> {:ok, rule}
+          nil -> Repo.insert(changeset, opts)
+        end
+      end)
+    end
   end
 
   # Email templates

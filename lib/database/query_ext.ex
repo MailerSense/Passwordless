@@ -97,7 +97,8 @@ defmodule Database.QueryExt do
 
     case result do
       %Postgrex.Result{columns: ["estimate"], rows: [[estimate]]} when is_number(estimate) ->
-        trunc(estimate)
+        t = trunc(estimate)
+        if t > 0, do: t, else: 0
 
       _ ->
         0

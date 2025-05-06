@@ -1,0 +1,131 @@
+<div>
+  <% origin = "right" %>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+    <.form
+      id="edit-actor-form"
+      for={@form}
+      phx-target={@myself}
+      phx-submit="save"
+      phx-change="validate"
+    >
+      <.field field={@form[:name]} autocomplete="name" />
+      <.field
+        field={@form[:state]}
+        type="select"
+        options={@states}
+        required
+        required_asterix={false}
+        icon_class={"pc-field-icon__icon " <> (
+        case @user_state do
+          :active -> "text-success-600 dark:text-success-500"
+          :locked -> "text-danger-600 dark:text-danger-500"
+        end
+      )}
+        icon_mapping={@icon_mapping}
+      />
+      <.form_separator />
+      <.form_header title={gettext("Details")} />
+      <.field
+        field={@form[:username]}
+        autocomplete="username"
+        placeholder={gettext("Unique user ID from your own system")}
+        copyable={true}
+      />
+      <.field
+        field={@form[:language]}
+        type="select"
+        options={@languages}
+        icon_class="pc-select-input__flag"
+        icon_mapping={@flag_mapping}
+        required
+        required_asterix={false}
+      />
+      <%= if @property_editor do %>
+        <.field
+          type="textarea"
+          field={@form[:properties_text]}
+          label={gettext("Properties")}
+          disabled={not @user_active}
+          class="font-mono"
+          rows={Util.count_json_lines(@user_properties)}
+        >
+          <:label_action>
+            <.a
+              label={gettext("Finish editing")}
+              class="text-blue-600 dark:text-blue-300 leading-tight text-sm font-medium"
+              phx-click="toggle_property_editor"
+              phx-target={@myself}
+            />
+          </:label_action>
+        </.field>
+      <% else %>
+        <.field
+          type="hidden"
+          field={@form[:properties_text]}
+          value={Jason.encode!(@user_properties)}
+        />
+        <.json_block
+          label={gettext("Properties")}
+          code={@user_properties}
+          disabled={not @user_active}
+        >
+          <:label_action>
+            <.a
+              label={gettext("Edit JSON")}
+              class="text-blue-600 dark:text-blue-300 leading-tight text-sm font-medium"
+              phx-click="toggle_property_editor"
+              phx-target={@myself}
+            />
+          </:label_action>
+        </.json_block>
+      <% end %>
+    </.form>
+
+    <.form_separator />
+    <.form_header title={gettext("Authenticators")} />
+
+    <.form_separator />
+    <.form_header title={gettext("Timeline")} />
+    <div
+      id="uptime-events"
+      role="list"
+      class="flex flex-col"
+      phx-target={@myself}
+      phx-update="stream"
+      phx-viewport-bottom={!@finished && "load_more"}
+    >
+      <.timeline_box :for={{id, action} <- @streams.actions} id={id}>
+        <% %{name: name, color: color, events: events} = verbalize_action(action) %>
+        <.p size="sm">
+          {format_relative(action.inserted_at)}
+        </.p>
+        <.alert color={color} with_icon>
+          {name}
+        </.alert>
+        <div class="p-2 rounded-lg border border-slate-200 dark:border-slate-700/40">
+          <.ul class="list-none text-sm text-slate-400 dark:text-slate-500">
+            <li :for={event <- events}>{event.name}</li>
+          </.ul>
+        </div>
+      </.timeline_box>
+    </div>
+
+    <:actions>
+      <.button
+        size="wide"
+        type="submit"
+        color="light-flat"
+        label={gettext("Cancel")}
+        phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+      />
+      <.button
+        id="edit-actor-form-submit"
+        size="wide"
+        type="submit"
+        form="edit-actor-form"
+        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
+        label={gettext("Save")}
+      />
+    </:actions>
+  </.slide_over>
+</div>

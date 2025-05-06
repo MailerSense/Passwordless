@@ -19,6 +19,21 @@ defmodule PasswordlessWeb.Auth.SignUpLive do
 
   @impl true
   def handle_params(params, _uri, socket) do
+    login_methods = [
+      %{
+        icon: "remix-mail-line",
+        label: gettext("Email code"),
+        value: "email_otp",
+        description: nil
+      },
+      %{
+        icon: "remix-lock-line",
+        label: gettext("Password"),
+        value: "password",
+        description: nil
+      }
+    ]
+
     socket =
       socket
       |> ensure_temporary_token(params)
@@ -28,7 +43,8 @@ defmodule PasswordlessWeb.Auth.SignUpLive do
         loading: false,
         code_errors: [],
         trigger_submit: false,
-        error_message: nil
+        error_message: nil,
+        login_methods: login_methods
       )
       |> assign_form(Accounts.change_user_internal_registration(%User{}))
       |> assign_token_form()

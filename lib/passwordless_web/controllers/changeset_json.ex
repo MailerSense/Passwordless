@@ -8,6 +8,10 @@ defmodule PasswordlessWeb.ChangesetJSON do
     %{error: Ecto.Changeset.traverse_errors(changeset, &translate_error/1)}
   end
 
+  def error(%{changeset: [_ | _] = list}) do
+    %{error: list}
+  end
+
   defp translate_error({msg, opts}) do
     # You can make use of gettext to translate error messages by
     # uncommenting and adjusting the following code:

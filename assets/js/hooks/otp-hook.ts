@@ -1,5 +1,5 @@
-import OTP from "../lib/otp";
 import { Hook, makeHook } from "./typed-hook";
+import OTP from "../lib/otp";
 
 class OTPHook extends Hook {
   private otp: OTP | null = null;

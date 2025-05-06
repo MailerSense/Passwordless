@@ -1,0 +1,69 @@
+<div class="flex flex-col p-6 gap-6">
+  <.box card>
+    <.form_header title={gettext("Rules engine")} no_margin />
+    <.p>
+      Passwordless comes with a powerful rules engine that allows you to control the flow of your authentication process. Leveraging conditional logic, trusted users enjoy good customers flows while bad actors are stopped. A rule is made of two parts:
+    </.p>
+    <.article_list items={[
+      "<strong>Rule conditions</strong> need to be satisfied, for example device location or user action within last 30 minutes.",
+      "<strong>Rule effects</strong> define what the rule actually does, like challenging the user via Email OTP."
+    ]} />
+    <.a
+      to={~p"/embed/api"}
+      label={gettext("Read Rules engine documentation")}
+      style="link"
+      link_type="live_redirect"
+    />
+  </.box>
+  <.box card>
+    <.form_header title={gettext("Default action")} no_margin />
+    <.p>
+      Rules are evaluated from top to bottom. The first rule that matches will be applied. If no rules match, the default action will be taken - you can set it below. We recomment blocking user actions by default as a baseline policy.
+    </.p>
+    <.form
+      id="app-update-form"
+      for={@form}
+      phx-submit="save"
+      phx-change="validate"
+      phx-target={@myself}
+    >
+      <.inputs_for :let={settings} field={@form[:settings]}>
+        <.field
+          field={settings[:default_action]}
+          type="select"
+          options={@actions}
+          icon_class={"pc-field-icon__icon " <> (
+        case @default_action do
+          :allow -> "text-success-600 dark:text-success-500"
+          :block -> "text-danger-600 dark:text-danger-500"
+        end
+      )}
+          icon_mapping={@icon_mapping}
+          required
+          required_asterix={false}
+        />
+      </.inputs_for>
+    </.form>
+  </.box>
+  <.box card>
+    <.form_header title={gettext("Examples to get started")} no_margin />
+    <.p>
+      Below are some examples of commonly applied rules. You can use these as a starting point for your own rules.
+    </.p>
+    <.live_component
+      id="rule-example"
+      module={PasswordlessWeb.Components.MultiCodeBlock}
+      codes={[
+        %{
+          tab: gettext("User Action"),
+          language: :typescript,
+          code: ~S"""
+          {
+            and: [true, false],
+          }
+          """
+        }
+      ]}
+    />
+  </.box>
+</div>

@@ -22,15 +22,21 @@ defmodule Passwordless.Rule do
     filterable: [:id], sortable: [:id]
   }
   schema "rules" do
+    field :hash, :binary
     field :condition, :map, default: %{}
-    field :effects, :map, default: %{}
+    field :effects, {:array, :map}, default: []
 
     has_many :actions, Action, preload_order: [asc: :inserted_at]
 
     timestamps()
   end
 
+  def hash(%__MODULE__{} = mod) do
+    :crypto.hash(:sha256, :erlang.term_to_binary({mod.condition, mod.effects}))
+  end
+
   @fields ~w(
+    hash
     condition
     effects
   )a

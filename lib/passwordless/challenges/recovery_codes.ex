@@ -5,6 +5,7 @@ defmodule Passwordless.Challenges.RecoveryCodes do
 
   @behaviour Passwordless.Challenge
 
+  alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.Actor
   alias Passwordless.App

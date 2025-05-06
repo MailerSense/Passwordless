@@ -23,6 +23,18 @@ defmodule PasswordlessWeb.Components.Icon do
     """
   end
 
+  def icon(%{name: "browser-" <> _} = assigns) do
+    ~H"""
+    <span class={[@name, "shrink-0", @class]} role="img" {@rest} />
+    """
+  end
+
+  def icon(%{name: "os-" <> _} = assigns) do
+    ~H"""
+    <span class={[@name, "shrink-0", @class]} role="img" {@rest} />
+    """
+  end
+
   def icon(%{name: "flag-" <> code} = assigns) do
     assigns = assign(assigns, data_url: Flags.data_url(code))
 

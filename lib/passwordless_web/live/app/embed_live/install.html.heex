@@ -38,9 +38,6 @@
         }
       ]}
     />
-    <.p>
-      From now on you can use the client anywhere in your application to create authentication challenges and perform passwordless flows.
-    </.p>
   </.box>
   <.simple_table items={@keys} count={Enum.count(@keys)} title={gettext("API keys")}>
     <:if_empty>{gettext("No %{models} defined yet", models: gettext("keys"))}</:if_empty>

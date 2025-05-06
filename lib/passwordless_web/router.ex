@@ -139,14 +139,7 @@ defmodule PasswordlessWeb.Router do
       live "/users", App.ActorLive.Index, :index
       live "/users/new", App.ActorLive.Index, :new
       live "/users/import", App.ActorLive.Index, :import
-      live "/users/:id/edit", App.ActorLive.Edit, :edit
-      live "/users/:id/edit/delete", App.ActorLive.Edit, :delete
-      live "/users/:id/edit/email/new", App.ActorLive.Edit, :new_email
-      live "/users/:id/edit/email/:email_id/edit", App.ActorLive.Edit, :edit_email
-      live "/users/:id/edit/email/:email_id/delete", App.ActorLive.Edit, :delete_email
-      live "/users/:id/edit/phone/new", App.ActorLive.Edit, :new_phone
-      live "/users/:id/edit/phone/:phone_id/edit", App.ActorLive.Edit, :edit_phone
-      live "/users/:id/edit/phone/:phone_id/delete", App.ActorLive.Edit, :delete_phone
+      live "/users/:id/edit", App.ActorLive.Index, :edit
       live "/users/:id/delete", App.ActorLive.Index, :delete
 
       # Authenticators
@@ -169,7 +162,7 @@ defmodule PasswordlessWeb.Router do
       live "/embed/install", App.EmbedLive.Index, :install
       live "/embed/api", App.EmbedLive.Index, :api
       live "/embed/ui", App.EmbedLive.Index, :ui
-      live "/embed/fingerprint", App.EmbedLive.Index, :fingerprint
+      live "/embed/rules-engine", App.EmbedLive.Index, :rules_engine
 
       # Team
       live "/team", App.TeamLive.Index, :index

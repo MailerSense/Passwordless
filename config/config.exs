@@ -3,6 +3,7 @@ import Config
 
 config :passwordless,
   app_name: "Passwordless",
+  app_logo: "https://cdn.passwordlesstools.com/logos/passwordless.png",
   business_name: "Passwordless",
   support_email: "hello@passwordless.tools",
   sales_email: "sales@passwordless.tools",

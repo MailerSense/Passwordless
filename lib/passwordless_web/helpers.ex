@@ -99,10 +99,10 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
-        name: :fingerprint,
+        name: :rules_engine,
         label: "Rules Engine",
         icon: "remix-toggle-line",
-        path: ~p"/embed/fingerprint",
+        path: ~p"/embed/rules-engine",
         link_type: "live_patch"
       },
       %{
@@ -175,10 +175,10 @@ defmodule PasswordlessWeb.Helpers do
 
     label =
       case action.state do
-        :allow -> gettext("%{action} confirmed with %{challenge}", action: name, challenge: challenge_name)
-        :timeout -> gettext("%{action} timed out with %{challenge}", action: name, challenge: challenge_name)
-        :block -> gettext("%{action} blocked with %{challenge}", action: name, challenge: challenge_name)
-        _ -> gettext("%{action} requested via %{challenge}", action: name, challenge: challenge_name)
+        :allow -> gettext("\"%{action}\" allowed", action: name, challenge: challenge_name)
+        :timeout -> gettext("\"%{action}\" timed out", action: name, challenge: challenge_name)
+        :block -> gettext("\"%{action}\" blocked", action: name, challenge: challenge_name)
+        _ -> gettext("\"%{action}\" challenged", action: name, challenge: challenge_name)
       end
 
     color =
@@ -193,11 +193,11 @@ defmodule PasswordlessWeb.Helpers do
       Enum.map(events, fn %ActionEvent{event: event, inserted_at: inserted_at} = event_struct ->
         name =
           case event do
-            "send_otp" -> gettext("User requested a %{challenge}", challenge: challenge_name)
-            "send_link" -> gettext("User requested a %{challenge}", challenge: challenge_name)
-            "verify_otp" -> gettext("User presented valid OTP")
-            "verify_link" -> gettext("User clicked the link")
-            "verify_password" -> gettext("User presented valid password")
+            "send_otp" -> gettext("Requested a %{challenge}", challenge: challenge_name)
+            "send_link" -> gettext("Requested a %{challenge}", challenge: challenge_name)
+            "verify_otp" -> gettext("Presented valid OTP")
+            "verify_link" -> gettext("Clicked the link")
+            "verify_password" -> gettext("Presented valid password")
             _ -> gettext("Unknown event")
           end
 

@@ -5,7 +5,7 @@
       <:col field={:search} searchable filterable={[:==]} />
       <:col :let={actor} field={:name}>
         <.a
-          to={~p"/users/#{actor}/edit?return_to=#{apply_filters(@filters, @meta, ~p"/users")}"}
+          to={apply_filters(@filters, @meta, ~p"/users/#{actor}/edit")}
           label={Actor.handle(actor)}
           style="link"
           link_type="live_redirect"
@@ -38,7 +38,7 @@
           link_type="live_patch"
         />
         <.icon_button
-          to={~p"/users/#{actor}/edit?return_to=#{apply_filters(@filters, @meta, ~p"/users")}"}
+          to={apply_filters(@filters, @meta, ~p"/users/#{actor}/edit")}
           size="sm"
           icon="custom-edit"
           color="light"
@@ -76,6 +76,19 @@
       subtitle={@page_subtitle}
       actor={%Actor{}}
       module={PasswordlessWeb.App.ActorLive.FormComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_app={@current_app}
+      current_user={@current_user}
+      return_to={apply_filters(@filters, @meta, ~p"/users")}
+    />
+  <% :edit -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      actor={@actor}
+      module={PasswordlessWeb.App.ActorLive.EditComponent}
       live_action={@live_action}
       current_org={@current_org}
       current_app={@current_app}

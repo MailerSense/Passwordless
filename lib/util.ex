@@ -214,7 +214,7 @@ defmodule Util do
       iex> Util.truncate("This is a very long string", 15)
       "This is a ve..."
   """
-  def truncate(text, count \\ 24) do
+  def truncate(text, count \\ 16) do
     Util.StringExt.truncate(text, length: count)
   end
 
@@ -256,31 +256,28 @@ defmodule Util do
     )
   end
 
-  def deep_struct_to_map(%{} = map), do: convert(map)
-
-  def deep_struct_to_map(nil), do: nil
-
-  defp convert(data) when is_struct(data) do
+  def convert(data) when is_struct(data) do
     data |> Map.from_struct() |> convert()
   end
 
-  defp convert(data) when is_map(data) do
+  def convert(data) when is_list(data) do
+    Enum.map(data, &convert/1)
+  end
+
+  def convert(data) when is_map(data) do
     for {key, value} <- data, reduce: %{} do
       acc ->
         case key do
           :__meta__ ->
             acc
 
-          other when is_atom(other) ->
-            Map.put(acc, Atom.to_string(other), convert(value))
-
-          other when is_binary(other) ->
+          other ->
             Map.put(acc, other, convert(value))
         end
     end
   end
 
-  defp convert(other), do: other
+  def convert(other), do: other
 
   @doc """
   Conditionally puts a key-value pair into a map, only if the value is not nil.

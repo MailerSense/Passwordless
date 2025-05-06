@@ -5,12 +5,12 @@
     </:logo>
 
     <:top_links>
-      {gettext("Welcome! Please enter your details below.")}
+      {gettext("Welcome back! Please enter your email.")}
     </:top_links>
 
     <.form id="sign-in-form" for={@form} phx-change="validate_email" phx-submit="submit_email">
       <.field
-        icon="remix-mail-fill"
+        icon="remix-mail-line"
         type="email"
         field={@form[:email]}
         label=""
@@ -44,10 +44,19 @@
 <% end %>
 
 <%= if @live_action == :otp_sent do %>
-  <.auth_layout_wide title={gettext("Email code sent")}>
+  <.auth_layout_wide title={gettext("Enter verification code")}>
     <:logo>
       <.logo class="h-6" />
     </:logo>
+
+    <:top_logo>
+      <img
+        src={~p"/images/hero_email_icon.svg"}
+        alt={Passwordless.config(:app_name)}
+        title={Passwordless.config(:app_name)}
+        class="h-16 w-16"
+      />
+    </:top_logo>
 
     <:top_links>
       {gettext("We've sent a 6 digit one-time code to %{email}. Enter it below to continue.",
@@ -97,7 +106,7 @@
     <:bottom_links>
       {gettext("Not working as expected?")}
       <.link class="text-blue-600 dark:text-blue-300 font-semibold" navigate={~p"/auth/sign-up"}>
-        {gettext("Sign up")}
+        {gettext("Chat with us")}
       </.link>
     </:bottom_links>
   </.auth_layout_wide>

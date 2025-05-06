@@ -6,7 +6,7 @@ defmodule PasswordlessWeb.App.EmbedLive.Index do
     install: PasswordlessWeb.App.EmbedLive.Install,
     api: PasswordlessWeb.App.EmbedLive.API,
     ui: PasswordlessWeb.App.EmbedLive.UI,
-    fingerprint: PasswordlessWeb.App.EmbedLive.Fingerprint
+    rules_engine: PasswordlessWeb.App.EmbedLive.RulesEngine
   ]
 
   @impl true

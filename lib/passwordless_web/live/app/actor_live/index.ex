@@ -118,7 +118,10 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   defp apply_action(socket, :edit, _) do
     assign(socket,
       page_title: gettext("Edit user"),
-      page_subtitle: gettext("Manage your users")
+      page_subtitle:
+        gettext(
+          "Edit this user. You can view their enrolled authenticators and entire history, just scroll down a little."
+        )
     )
   end
 
