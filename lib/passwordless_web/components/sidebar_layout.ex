@@ -14,6 +14,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
   import PasswordlessWeb.Components.ThemeSwitch
   import PasswordlessWeb.Components.UsageBox
   import PasswordlessWeb.Components.UserTopbarMenu
+  import PasswordlessWeb.DashboardComponents
 
   attr :nonce, :string, doc: "the nonce"
 
@@ -38,6 +39,8 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
     doc: "The current section. This will be used to highlight the current section in the side menu."
 
   attr :current_subpage, :atom, default: nil
+
+  attr :current_domain, :atom, values: [:app, :org, :global], default: :app
 
   attr :app_menu_items, :list,
     default: [],
@@ -127,6 +130,8 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
           <div :if={Util.present?(@dropdown)} class="px-6 hidden md:flex">
             {render_slot(@dropdown)}
           </div>
+
+          <.live_indicator :if={@current_domain == :app} to={~p"/reports"} />
 
           <.topbar_links links={[
             %{

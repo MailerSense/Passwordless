@@ -186,6 +186,7 @@ defmodule PasswordlessWeb.CoreComponents do
       current_page={@current_page}
       current_section={@current_section}
       current_subpage={@current_subpage}
+      current_domain={@dropdown_type}
       app_menu_items={@app_menu_items}
       user_menu_items={@user_menu_items}
       main_menu_items={@main_menu_items}
