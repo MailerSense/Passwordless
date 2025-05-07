@@ -139,8 +139,8 @@ defmodule Passwordless.EmailMessage do
   @doc """
   A message changeset.
   """
-  def changeset(%__MODULE__{} = message, attrs \\ %{}, opts \\ []) do
-    message
+  def changeset(%__MODULE__{} = email_message, attrs \\ %{}, opts \\ []) do
+    email_message
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> ChangesetExt.validate_email(:sender)

@@ -8,17 +8,12 @@ defmodule PasswordlessWeb.Components.Typography do
   attr(:class, :any, default: "", doc: "CSS class")
   attr(:label, :string, default: nil, doc: "label your heading")
   attr(:no_margin, :boolean, default: nil, doc: "removes margin from headings")
-  attr(:normal_tracking, :boolean, default: false, doc: "underlines a heading")
-  attr(:color_class, :string, default: nil, doc: "adds a color class")
   attr(:rest, :global)
   slot(:inner_block, required: false)
 
   def h1(assigns) do
     ~H"""
-    <h1
-      class={get_heading_classes("pc-h1", @class, @color_class, @normal_tracking, @no_margin)}
-      {@rest}
-    >
+    <h1 class={get_heading_classes("pc-h1", @class, @no_margin)} {@rest}>
       {render_slot(@inner_block) || @label}
     </h1>
     """
@@ -27,17 +22,12 @@ defmodule PasswordlessWeb.Components.Typography do
   attr(:class, :any, default: "", doc: "CSS class")
   attr(:label, :string, default: nil, doc: "label your heading")
   attr(:no_margin, :boolean, default: nil, doc: "removes margin from headings")
-  attr(:normal_tracking, :boolean, default: false, doc: "underlines a heading")
-  attr(:color_class, :string, default: nil, doc: "adds a color class")
   attr(:rest, :global)
   slot(:inner_block, required: false)
 
   def h2(assigns) do
     ~H"""
-    <h2
-      class={get_heading_classes("pc-h2", @class, @color_class, @normal_tracking, @no_margin)}
-      {@rest}
-    >
+    <h2 class={get_heading_classes("pc-h2", @class, @no_margin)} {@rest}>
       {render_slot(@inner_block) || @label}
     </h2>
     """
@@ -46,18 +36,12 @@ defmodule PasswordlessWeb.Components.Typography do
   attr(:class, :any, default: "", doc: "CSS class")
   attr(:label, :string, default: nil, doc: "label your heading")
   attr(:no_margin, :boolean, default: nil, doc: "removes margin from headings")
-  attr(:normal_tracking, :boolean, default: false, doc: "underlines a heading")
-  attr(:font_class, :string, default: nil, doc: "adds a color class")
-  attr(:color_class, :string, default: nil, doc: "adds a color class")
   attr(:rest, :global)
   slot(:inner_block, required: false)
 
   def h3(assigns) do
     ~H"""
-    <h3
-      class={get_heading_classes("pc-h3", @class, @color_class, @normal_tracking, @no_margin)}
-      {@rest}
-    >
+    <h3 class={get_heading_classes("pc-h3", @class, @no_margin)} {@rest}>
       {render_slot(@inner_block) || @label}
     </h3>
     """
@@ -66,17 +50,12 @@ defmodule PasswordlessWeb.Components.Typography do
   attr(:class, :any, default: "", doc: "CSS class")
   attr(:label, :string, default: nil, doc: "label your heading")
   attr(:no_margin, :boolean, default: nil, doc: "removes margin from headings")
-  attr(:normal_tracking, :boolean, default: false, doc: "underlines a heading")
-  attr(:color_class, :string, default: nil, doc: "adds a color class")
   attr(:rest, :global)
   slot(:inner_block, required: false)
 
   def h4(assigns) do
     ~H"""
-    <h4
-      class={get_heading_classes("pc-h4", @class, @color_class, @normal_tracking, @no_margin)}
-      {@rest}
-    >
+    <h4 class={get_heading_classes("pc-h4", @class, @no_margin)} {@rest}>
       {render_slot(@inner_block) || @label}
     </h4>
     """
@@ -85,28 +64,21 @@ defmodule PasswordlessWeb.Components.Typography do
   attr(:class, :any, default: "", doc: "CSS class")
   attr(:label, :string, default: nil, doc: "label your heading")
   attr(:no_margin, :boolean, default: nil, doc: "removes margin from headings")
-  attr(:normal_tracking, :boolean, default: false, doc: "underlines a heading")
-  attr(:color_class, :string, default: nil, doc: "adds a color class")
   attr(:rest, :global)
   slot(:inner_block, required: false)
 
   def h5(assigns) do
     ~H"""
-    <h5
-      class={get_heading_classes("pc-h5", @class, @color_class, @normal_tracking, @no_margin)}
-      {@rest}
-    >
+    <h5 class={get_heading_classes("pc-h5", @class, @no_margin)} {@rest}>
       {render_slot(@inner_block) || @label}
     </h5>
     """
   end
 
-  defp get_heading_classes(base_classes, custom_classes, color_class, normal_tracking, no_margin) do
+  defp get_heading_classes(base_classes, custom_classes, no_margin) do
     [
       base_classes,
       custom_classes,
-      color_class || "pc-heading--color",
-      if(normal_tracking, do: "tracking-normal", else: "tracking-tight"),
       !no_margin && "pc-heading--margin"
     ]
   end

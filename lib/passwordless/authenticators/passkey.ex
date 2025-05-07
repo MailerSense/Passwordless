@@ -64,8 +64,8 @@ defmodule Passwordless.Authenticators.Passkey do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, _opts \\ []) do
-    actor_email
+  def changeset(%__MODULE__{} = passkey, attrs \\ %{}, _opts \\ []) do
+    passkey
     |> cast(attrs, @fields)
     |> cast_embed(:expected_origins,
       with: &expected_origin_changeset/2,

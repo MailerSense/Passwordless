@@ -18,7 +18,7 @@ defmodule PasswordlessWeb.Components.AuthLayoutWide do
     <div class="fixed w-full h-full">
       <div class="grid grid-cols-1 lg:grid-cols-2 h-full">
         <div class="relative flex md:items-center md:justify-between overflow-x-auto bg-white dark:bg-slate-900">
-          <.link href="/" class="absolute hidden md:inline-flex left-0 top-0 right-0 lg:m-8">
+          <.link href="/" class="absolute hidden md:inline-flex left-0 top-0 right-0 md:m-8">
             {render_slot(@logo)}
           </.link>
 

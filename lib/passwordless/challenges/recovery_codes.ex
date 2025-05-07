@@ -7,25 +7,25 @@ defmodule Passwordless.Challenges.RecoveryCodes do
 
   alias Database.Tenant
   alias Passwordless.Action
-  alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Challenge
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
+  alias Passwordless.User
 
   @challenge :recovery_codes
 
   @impl true
   def handle(
         %App{} = app,
-        %Actor{} = actor,
+        %User{} = user,
         %Action{challenge: %Challenge{kind: @challenge, state: :started} = challenge} = action,
         event: "use_recovery_code",
         attrs: %{code: code}
       )
       when is_binary(code) do
-    case Repo.preload(actor, :recovery_codes) do
-      %Actor{recovery_codes: %RecoveryCodes{} = recovery_codes} ->
+    case Repo.preload(user, :recovery_codes) do
+      %User{recovery_codes: %RecoveryCodes{} = recovery_codes} ->
         case RecoveryCodes.validate_code(recovery_codes, code) do
           %Ecto.Changeset{} = changeset ->
             with {:ok, _codes} <- Repo.update(changeset),

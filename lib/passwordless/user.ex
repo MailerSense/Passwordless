@@ -1,6 +1,6 @@
-defmodule Passwordless.Actor do
+defmodule Passwordless.User do
   @moduledoc """
-  An actor.
+  A user.
   """
 
   use Passwordless.Schema, prefix: "user"
@@ -13,33 +13,31 @@ defmodule Passwordless.Actor do
   alias Passwordless.App
   alias Passwordless.Email
   alias Passwordless.Enrollment
+  alias Passwordless.Identifier
   alias Passwordless.Locale
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
   alias Passwordless.TOTP
 
-  @states ~w(active locked)a
   @languages ~w(en de fr)a
 
   @derive {
     Jason.Encoder,
     only: [
       :id,
-      :name,
-      :state,
-      :username,
       :language,
       :email,
       :phone,
-      :properties,
+      :identifier,
+      :data,
       :inserted_at,
       :updated_at
     ]
   }
   @derive {
     Flop.Schema,
-    filterable: [:id, :search, :state],
-    sortable: [:id, :name, :state, :email, :phone, :inserted_at],
+    filterable: [:id, :search],
+    sortable: [:id, :email, :phone, :identifier, :inserted_at],
     custom_fields: [
       search: [
         filter: {__MODULE__, :unified_search_filter, []},
@@ -48,6 +46,11 @@ defmodule Passwordless.Actor do
     ],
     adapter_opts: [
       join_fields: [
+        identifier: [
+          binding: :identifier,
+          field: :identifier,
+          ecto_type: :string
+        ],
         email: [
           binding: :email,
           field: :email,
@@ -61,18 +64,14 @@ defmodule Passwordless.Actor do
       ]
     ]
   }
-  schema "actors" do
-    field :name, :string
-    field :state, Ecto.Enum, values: @states, default: :active
-    field :username, :string
+  schema "users" do
     field :language, Ecto.Enum, values: Locale.language_codes(), default: :en
-    field :properties, Passwordless.EncryptedMap
-    field :properties_text, :string, virtual: true
-
-    field :active, :boolean, default: true, virtual: true
+    field :data, Passwordless.EncryptedMap
+    field :data_text, :string, virtual: true
 
     has_one :email, Email, where: [primary: true]
     has_one :phone, Phone, where: [primary: true]
+    has_one :identifier, Identifier, where: [primary: true]
 
     has_one :recovery_codes, RecoveryCodes
 
@@ -86,38 +85,40 @@ defmodule Passwordless.Actor do
     soft_delete_timestamp()
   end
 
-  def states, do: @states
-
   def languages, do: @languages
 
   @doc """
-  Get the handle of the actor.
+  Get the handle of the user.
   """
-  def handle(%__MODULE__{name: name}) when is_binary(name), do: Util.truncate(name)
   def handle(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
   def handle(%__MODULE__{phone: %Phone{canonical: canonical}}) when is_binary(canonical), do: canonical
-  def handle(%__MODULE__{username: username}) when is_binary(username), do: Util.truncate(username)
+  def handle(%__MODULE__{phone: %Identifier{value: value}}) when is_binary(value), do: value
   def handle(%__MODULE__{id: id}) when is_binary(id), do: id
   def handle(%__MODULE__{}), do: nil
 
   @doc """
-  Get the primary email of the actor.
+  Get the primary email of the user.
   """
   def email(%__MODULE__{email: %Email{address: address}}) when is_binary(address), do: address
   def email(%__MODULE__{}), do: nil
 
   @doc """
-  Get the primary phone of the actor.
+  Get the primary phone of the user.
   """
   def phone(%__MODULE__{phone: %Phone{} = phone}), do: Phone.format(phone)
   def phone(%__MODULE__{}), do: nil
 
   @doc """
-  Get the region of the primary phone of the actor.
+  Get the region of the primary phone of the user.
   """
   def phone_region(%__MODULE__{phone: %Phone{region: region}}) when is_binary(region), do: String.downcase(region)
-
   def phone_region(%__MODULE__{}), do: nil
+
+  @doc """
+  Get the primary email of the user.
+  """
+  def identifier(%__MODULE__{identifier: %Identifier{value: value}}) when is_binary(value), do: value
+  def identifier(%__MODULE__{}), do: nil
 
   @doc """
   Get none.
@@ -140,14 +141,10 @@ defmodule Passwordless.Actor do
     from q in query, preload: [:email, :phone]
   end
 
-  def put_active(%__MODULE__{state: state} = actor) do
-    %__MODULE__{actor | active: state == :active}
-  end
-
-  def put_text_properties(%__MODULE__{properties: properties} = actor) do
-    case Jason.encode(properties, pretty: true) do
-      {:ok, value} -> %__MODULE__{actor | properties_text: value}
-      _ -> actor
+  def put_text_data(%__MODULE__{data: data} = user) do
+    case Jason.encode(data, pretty: true) do
+      {:ok, value} -> %__MODULE__{user | data_text: value}
+      _ -> user
     end
   end
 
@@ -160,19 +157,25 @@ defmodule Passwordless.Actor do
     email =
       from e in Email,
         prefix: ^prefix,
-        where: e.actor_id == parent_as(:actor).id and e.primary,
+        where: e.user_id == parent_as(:user).id and e.primary,
         select: %{email: e.address}
 
     phone =
       from p in Phone,
         prefix: ^prefix,
-        where: p.actor_id == parent_as(:actor).id and p.primary,
+        where: p.user_id == parent_as(:user).id and p.primary,
         select: %{phone: p.canonical}
 
+    identifier =
+      from i in Identifier,
+        prefix: ^prefix,
+        where: i.user_id == parent_as(:user).id and i.primary,
+        select: %{identifier: i.value}
+
     query =
-      if has_named_binding?(query, :actor),
+      if has_named_binding?(query, :user),
         do: query,
-        else: from(q in query, as: :actor)
+        else: from(q in query, as: :user)
 
     from q in query,
       left_lateral_join: e in subquery(email),
@@ -180,52 +183,38 @@ defmodule Passwordless.Actor do
       as: :email,
       left_lateral_join: p in subquery(phone),
       on: true,
-      as: :phone
+      as: :phone,
+      left_lateral_join: i in subquery(identifier),
+      on: true,
+      as: :identifier
   end
 
-  @fields ~w(
-    name
-    state
-    language
-    username
-    properties
-    properties_text
-    active
-  )a
-  @required_fields ~w(
-    state
-    language
-    active
-  )a
+  @fields ~w(language data data_text)a
+  @required_fields ~w(language data)a
 
   @doc """
   A create changeset.
   """
-  def create_changeset(%__MODULE__{} = actor, attrs \\ %{}, opts \\ []) do
-    actor
+  def create_changeset(%__MODULE__{} = user, attrs \\ %{}) do
+    user
     |> cast(attrs, @fields)
-    |> validate_required(@required_fields ++ [:name, :username])
-    |> validate_name()
-    |> validate_active()
-    |> validate_username(opts)
-    |> validate_text_properties()
-    |> validate_properties()
+    |> validate_required(@required_fields)
+    |> validate_text_data()
+    |> validate_data()
     |> cast_assoc(:email)
     |> cast_assoc(:phone, with: &Phone.regional_changeset/2)
+    |> cast_assoc(:identifier)
   end
 
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor, attrs \\ %{}, opts \\ []) do
-    actor
+  def changeset(%__MODULE__{} = user, attrs \\ %{}) do
+    user
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> validate_name()
-    |> validate_active()
-    |> validate_username(opts)
-    |> validate_text_properties()
-    |> validate_properties()
+    |> validate_text_data()
+    |> validate_data()
   end
 
   @doc """
@@ -235,74 +224,52 @@ defmodule Passwordless.Actor do
     value = "%#{value}%"
 
     query =
-      if has_named_binding?(query, :actor),
+      if has_named_binding?(query, :user),
         do: query,
-        else: from(q in query, as: :actor)
+        else: from(q in query, as: :user)
 
     query =
       query
       |> join_assoc(:email)
       |> join_assoc(:phone)
+      |> join_assoc(:identifier)
 
     where(
       query,
-      [actor: a, email: e, phone: p],
-      ilike(a.name, ^value) or
-        ilike(a.username, ^value) or
-        ilike(e.email, ^value) or
-        ilike(p.phone, ^value)
+      [email: e, phone: p, identifier: i],
+      ilike(e.email, ^value) or
+        ilike(p.phone, ^value) or
+        ilike(i.identifier, ^value)
     )
   end
 
   # Private
 
-  defp validate_name(changeset) do
+  defp validate_data(changeset) do
     changeset
-    |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 255)
-  end
-
-  defp validate_active(changeset) do
-    case {get_field(changeset, :state), fetch_change(changeset, :active)} do
-      {:active, {:ok, false}} -> put_change(changeset, :state, :locked)
-      {:locked, {:ok, true}} -> put_change(changeset, :state, :active)
-      _ -> changeset
-    end
-  end
-
-  defp validate_username(changeset, opts) do
-    changeset
-    |> ChangesetExt.ensure_trimmed(:username)
-    |> validate_length(:username, max: 255)
-    |> unique_constraint(:username)
-    |> unsafe_validate_unique(:username, Passwordless.Repo, opts)
-  end
-
-  defp validate_properties(changeset) do
-    changeset
-    |> update_change(:properties, fn
-      properties when is_map(properties) ->
-        (changeset.data.properties || %{})
-        |> Map.merge(properties)
+    |> update_change(:data, fn
+      data when is_map(data) ->
+        (changeset.data.data || %{})
+        |> Map.merge(data)
         |> Util.cast_property_map()
 
-      properties ->
-        properties
+      data ->
+        data
     end)
-    |> ChangesetExt.validate_property_map(:properties)
+    |> ChangesetExt.validate_property_map(:data)
   end
 
-  defp validate_text_properties(changeset) do
-    case fetch_field(changeset, :properties_text) do
+  defp validate_text_data(changeset) do
+    case fetch_field(changeset, :data_text) do
       {_, value} when is_binary(value) ->
         case Jason.decode(value) do
-          {:ok, properties} ->
+          {:ok, data} ->
             changeset
-            |> put_change(:properties, properties)
-            |> put_change(:properties_text, Jason.encode!(properties, pretty: true))
+            |> put_change(:data, data)
+            |> put_change(:data_text, Jason.encode!(data, pretty: true))
 
           _ ->
-            add_error(changeset, :properties_text, "is invalid JSON")
+            add_error(changeset, :data_text, "is invalid JSON")
         end
 
       _ ->

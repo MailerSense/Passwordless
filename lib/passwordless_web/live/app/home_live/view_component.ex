@@ -11,7 +11,7 @@ defmodule PasswordlessWeb.App.HomeLive.ViewComponent do
       Repo.preload(action, [
         :events,
         {:challenge, [:email_message]},
-        actor: [:email, :phone]
+        user: [:email, :phone]
       ])
 
     {:ok, socket |> assign(assigns) |> assign(action: action)}

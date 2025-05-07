@@ -34,8 +34,8 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
   @doc """
   A mapping changeset.
   """
-  def changeset(%__MODULE__{} = message_mapping, attrs \\ %{}) do
-    message_mapping
+  def changeset(%__MODULE__{} = email_unsubscribe_link, attrs \\ %{}) do
+    email_unsubscribe_link
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> decode_email_id()
@@ -99,7 +99,7 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
 
   @hashed_fields [key_hash: :key]
 
-  def put_hash_fields(changeset) do
+  defp put_hash_fields(changeset) do
     Enum.reduce(@hashed_fields, changeset, fn {hashed_field, unhashed_field}, changeset ->
       if value = get_field(changeset, unhashed_field) do
         put_change(changeset, hashed_field, value)

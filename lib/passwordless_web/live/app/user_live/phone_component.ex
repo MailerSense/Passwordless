@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.ActorLive.PhoneComponent do
+defmodule PasswordlessWeb.App.UserLive.PhoneComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
@@ -7,7 +7,7 @@ defmodule PasswordlessWeb.App.ActorLive.PhoneComponent do
 
   @impl true
   def update(%{app: %App{} = app, phone: %Phone{} = phone} = assigns, socket) do
-    changeset = Passwordless.change_actor_phone(app, phone)
+    changeset = Passwordless.change_user_phone(app, phone)
 
     {:ok,
      socket
@@ -19,7 +19,7 @@ defmodule PasswordlessWeb.App.ActorLive.PhoneComponent do
   def handle_event("validate", %{"phone" => phone_params}, socket) do
     changeset =
       socket.assigns.app
-      |> Passwordless.change_actor_phone(socket.assigns.phone, phone_params)
+      |> Passwordless.change_user_phone(socket.assigns.phone, phone_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign_form(socket, changeset)}
@@ -36,7 +36,7 @@ defmodule PasswordlessWeb.App.ActorLive.PhoneComponent do
     app = socket.assigns.current_app
     phone = socket.assigns.phone
 
-    case Passwordless.update_actor_phone(app, phone, phone_params) do
+    case Passwordless.update_user_phone(app, phone, phone_params) do
       {:ok, _phone} ->
         {:noreply,
          socket
@@ -50,9 +50,9 @@ defmodule PasswordlessWeb.App.ActorLive.PhoneComponent do
 
   defp save_phone(socket, :new_phone, phone_params) do
     app = socket.assigns.current_app
-    actor = socket.assigns.actor
+    user = socket.assigns.user
 
-    case Passwordless.create_actor_phone(app, actor, phone_params) do
+    case Passwordless.create_user_phone(app, user, phone_params) do
       {:ok, _phone} ->
         {:noreply,
          socket

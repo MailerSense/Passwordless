@@ -1,11 +1,11 @@
-defmodule PasswordlessWeb.App.ActorLive.EditComponent do
+defmodule PasswordlessWeb.App.UserLive.EditComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
   alias Passwordless.Action
-  alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Locale
+  alias Passwordless.User
   alias PasswordlessWeb.Components.DataTable
 
   @data_table_opts [
@@ -19,10 +19,9 @@ defmodule PasswordlessWeb.App.ActorLive.EditComponent do
   ]
 
   @impl true
-  def update(%{current_app: %App{} = app, actor: %Actor{} = actor} = assigns, socket) do
-    states = Enum.map(Actor.states(), fn state -> {Phoenix.Naming.humanize(state), state} end)
-    changeset = Passwordless.change_actor(app, actor)
-    languages = Enum.map(Actor.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
+  def update(%{current_app: %App{} = app, user: %User{} = user} = assigns, socket) do
+    changeset = Passwordless.change_user(app, user)
+    languages = Enum.map(User.languages(), fn code -> {Keyword.fetch!(Locale.languages(), code), code} end)
 
     icon_mapping = fn
       nil -> "remix-checkbox-circle-fill"
@@ -43,14 +42,13 @@ defmodule PasswordlessWeb.App.ActorLive.EditComponent do
       socket
       |> assign(assigns)
       |> assign(
-        states: states,
         languages: languages,
         icon_mapping: icon_mapping,
         flag_mapping: flag_mapping,
         property_editor: false
       )
       |> assign_form(changeset)
-      |> assign_emails(actor)
+      |> assign_emails(user)
       |> assign_actions()
 
     {:ok, socket}
@@ -62,18 +60,18 @@ defmodule PasswordlessWeb.App.ActorLive.EditComponent do
   end
 
   @impl true
-  def handle_event("save", %{"actor" => actor_params}, socket) do
-    save_actor(socket, actor_params)
+  def handle_event("save", %{"user" => user_params}, socket) do
+    save_user(socket, user_params)
   end
 
   @impl true
-  def handle_event("validate", %{"actor" => actor_params}, socket) do
+  def handle_event("validate", %{"user" => user_params}, socket) do
     app = socket.assigns.current_app
-    actor = socket.assigns.actor
+    user = socket.assigns.user
 
     changeset =
       app
-      |> Passwordless.change_actor(actor, actor_params)
+      |> Passwordless.change_user(user, user_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign_form(socket, changeset)}
@@ -84,7 +82,7 @@ defmodule PasswordlessWeb.App.ActorLive.EditComponent do
     if socket.assigns[:finished] do
       {:noreply, socket}
     else
-      query = action_query(socket.assigns.current_app, socket.assigns.actor)
+      query = action_query(socket.assigns.current_app, socket.assigns.user)
       assigns = Map.take(socket.assigns, ~w(cursor)a)
 
       {:noreply,
@@ -117,19 +115,16 @@ defmodule PasswordlessWeb.App.ActorLive.EditComponent do
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     socket
     |> assign(form: to_form(changeset))
-    |> assign(user_name: Ecto.Changeset.get_field(changeset, :name))
-    |> assign(user_state: Ecto.Changeset.get_field(changeset, :state))
-    |> assign(user_active: Ecto.Changeset.get_field(changeset, :state) == :active)
-    |> assign(user_properties: Ecto.Changeset.get_field(changeset, :properties))
+    |> assign(user_data: Ecto.Changeset.get_field(changeset, :data))
   end
 
-  defp assign_emails(socket, %Actor{} = actor) do
-    assign(socket, emails: actor.emails)
+  defp assign_emails(socket, %User{} = user) do
+    assign(socket, emails: user.emails)
   end
 
-  defp action_query(%App{} = app, %Actor{} = actor) do
+  defp action_query(%App{} = app, %User{} = user) do
     app
-    |> Action.get_by_actor(actor)
+    |> Action.get_by_user(user)
     |> Action.preload_events()
   end
 
@@ -147,7 +142,7 @@ defmodule PasswordlessWeb.App.ActorLive.EditComponent do
   end
 
   defp assign_actions(socket) do
-    query = action_query(socket.assigns.current_app, socket.assigns.actor)
+    query = action_query(socket.assigns.current_app, socket.assigns.user)
     params = %{}
     {actions, meta} = DataTable.search(query, params, @data_table_opts)
 
@@ -166,12 +161,12 @@ defmodule PasswordlessWeb.App.ActorLive.EditComponent do
     |> stream(:actions, actions, reset: true)
   end
 
-  defp save_actor(socket, actor_params) do
+  defp save_user(socket, user_params) do
     app = socket.assigns.current_app
-    actor = socket.assigns.actor
+    user = socket.assigns.user
 
-    case Passwordless.update_actor(app, actor, actor_params) do
-      {:ok, _actor} ->
+    case Passwordless.update_user(app, user, user_params) do
+      {:ok, _user} ->
         {:noreply,
          socket
          |> put_toast(:info, "User saved.", title: gettext("Success"))

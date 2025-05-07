@@ -3,21 +3,37 @@
     <.box card>
       <.form_header title={gettext("Team")} no_margin />
       <.p>
-        Members of the team have access to specific areas, such as user management or authenticator configuration.
+        Members of the team have access to specific areas, such as user management or authenticator configuration. Assign roles to control their permissions and ensure they have the appropriate level of access for their responsibilities.
       </.p>
-      <.a
-        to={~p"/team/invite"}
-        label={gettext("Invite member")}
-        style="link"
-        link_type="live_redirect"
-      />
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3 flex-wrap">
+          <.a
+            to={~p"/app/new"}
+            label={gettext("Learn about roles")}
+            style="link"
+            link_type="live_redirect"
+          />
+        </div>
+        <.button
+          to={~p"/team/invite"}
+          icon="remix-mail-line"
+          label={gettext("Invite member")}
+          link_type="live_redirect"
+        />
+      </div>
     </.box>
-    <.data_table meta={@meta} items={@memberships} title={gettext("Members")}>
+    <.data_table
+      meta={@meta}
+      items={@memberships}
+      title={gettext("Members")}
+      search_placeholder={gettext("Search by Email or Name")}
+    >
       <:if_empty>{gettext("No %{models} found", models: gettext("members"))}</:if_empty>
-      <:col :let={membership} field={:name}>
+      <:col field={:search} searchable filterable={[:==]} />
+      <:col :let={membership} field={:name} sortable>
         {user_name(membership.user)}
       </:col>
-      <:col :let={membership} field={:email}>
+      <:col :let={membership} field={:email} sortable>
         {user_email(membership.user)}
       </:col>
       <:col :let={membership} field={:role}>
@@ -118,7 +134,7 @@
           field={@form[:email]}
           label={gettext("Email")}
           required
-          placeholder={gettext("eg. john@gmail.com")}
+          placeholder={gettext("eg. john.doe@company.com")}
           autocomplete="email"
         />
       </.form>

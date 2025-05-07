@@ -16,7 +16,7 @@ defmodule PasswordlessWeb.Menus do
   def public_mobile_menu_items(_), do: []
 
   def main_menu_items(:app, %User{} = current_user),
-    do: build_menu([:home, :users, :reports, :embed, :authenticators, :settings, :billing], current_user)
+    do: build_menu([:home, :users, :actions, :reports, :embed, :authenticators, :settings, :billing], current_user)
 
   def main_menu_items(:knowledge, %User{} = current_user), do: build_menu([:pricing, :use_cases, :support], current_user)
 
@@ -156,6 +156,16 @@ defmodule PasswordlessWeb.Menus do
       label: gettext("Users"),
       path: ~p"/users",
       icon: "remix-user-line",
+      link_type: "live_patch"
+    }
+  end
+
+  def get_link(:actions = name, _user) do
+    %{
+      name: name,
+      label: gettext("Actions"),
+      path: ~p"/actions",
+      icon: "remix-toggle-line",
       link_type: "live_patch"
     }
   end

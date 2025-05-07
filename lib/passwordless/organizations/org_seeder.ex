@@ -4,7 +4,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
   """
 
   alias Database.Tenant
-  alias Passwordless.Accounts.User
+  alias Passwordless.Accounts.User, as: AccountsUser
   alias Passwordless.Action
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
@@ -24,11 +24,11 @@ defmodule Passwordless.Organizations.OrgSeeder do
                  |> Stream.take(10_000)
                  |> Enum.to_list()
 
-  def root_org(%User{} = user, attrs \\ %{}) do
+  def root_org(%AccountsUser{} = user, attrs \\ %{}) do
     root_org_local(user, attrs)
   end
 
-  def root_org_local(%User{} = user, attrs \\ %{}) do
+  def root_org_local(%AccountsUser{} = user, attrs \\ %{}) do
     attrs =
       Map.merge(
         %{
@@ -117,19 +117,16 @@ defmodule Passwordless.Organizations.OrgSeeder do
     {:ok, _tenant} = Tenant.create(app)
 
     for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1_00) do
-      {:ok, actor} =
-        Passwordless.create_actor(app, %{
-          name: Faker.Person.name(),
-          state: Util.pick(active: 80, locked: 20),
-          username: Uniq.UUID.uuid7(),
-          properties: %{
+      {:ok, app_user} =
+        Passwordless.create_user(app, %{
+          data: %{
             "email" => email,
             "phone" => phone
           }
         })
 
       {:ok, _email} =
-        Passwordless.add_email(app, actor, %{
+        Passwordless.add_user_email(app, app_user, %{
           address: email,
           primary: true,
           verified: true,
@@ -137,14 +134,14 @@ defmodule Passwordless.Organizations.OrgSeeder do
         })
 
       {:ok, _phone} =
-        Passwordless.add_regional_phone(app, actor, %{
+        Passwordless.add_user_regional_phone(app, app_user, %{
           region: "US",
           number: phone,
           primary: true,
           verified: true
         })
 
-      {:ok, _recovery_codes} = Passwordless.create_actor_recovery_codes(app, actor)
+      {:ok, _recovery_codes} = Passwordless.create_user_recovery_codes(app, app_user)
 
       {:ok, mem_rule} =
         Passwordless.RuleEngine.parse(%{
@@ -165,7 +162,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
       for _ <- 1..10 do
         {:ok, action} =
-          Passwordless.create_action(app, actor, %{
+          Passwordless.create_action(app, app_user, %{
             name: Enum.random(~w(signIn withdraw placeOrder)),
             data: %{"some" => "body"},
             state: Enum.random(Action.states()),

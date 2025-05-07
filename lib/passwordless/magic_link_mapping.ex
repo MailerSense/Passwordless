@@ -39,8 +39,8 @@ defmodule Passwordless.MagicLinkMapping do
   @doc """
   A message mapping changeset.
   """
-  def changeset(%__MODULE__{} = message_mapping, attrs \\ %{}) do
-    message_mapping
+  def changeset(%__MODULE__{} = magic_link_mapping, attrs \\ %{}) do
+    magic_link_mapping
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_key()
@@ -71,7 +71,7 @@ defmodule Passwordless.MagicLinkMapping do
 
   @hashed_fields [key_hash: :key]
 
-  def put_hash_fields(changeset) do
+  defp put_hash_fields(changeset) do
     Enum.reduce(@hashed_fields, changeset, fn {hashed_field, unhashed_field}, changeset ->
       if value = get_field(changeset, unhashed_field) do
         put_change(changeset, hashed_field, value)

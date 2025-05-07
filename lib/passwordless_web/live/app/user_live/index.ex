@@ -1,12 +1,12 @@
-defmodule PasswordlessWeb.App.ActorLive.Index do
+defmodule PasswordlessWeb.App.UserLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
-  alias Passwordless.Actor
+  alias Passwordless.User
   alias PasswordlessWeb.Components.DataTable
 
   @data_table_opts [
-    for: Actor,
+    for: User,
     default_order: %{
       order_by: [:inserted_at],
       order_directions: [:desc]
@@ -20,19 +20,18 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    actor =
+    user =
       case Map.get(params, "id") do
-        id when is_binary(id) -> Passwordless.get_actor!(socket.assigns.current_app, id)
+        id when is_binary(id) -> Passwordless.get_user!(socket.assigns.current_app, id)
         _ -> nil
       end
 
     {:noreply,
      socket
-     |> assign(actor: actor)
+     |> assign(user: user)
      |> assign_filters(params)
-     |> assign_actors(params)
-     |> assign_stats()
-     |> apply_action(socket.assigns.live_action, actor)}
+     |> assign_users(params)
+     |> apply_action(socket.assigns.live_action, user)}
   end
 
   @impl true
@@ -75,12 +74,12 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
   end
 
   @impl true
-  def handle_event("delete_actor", %{"id" => id}, socket) do
+  def handle_event("delete_user", %{"id" => id}, socket) do
     app = socket.assigns.current_app
-    actor = Passwordless.get_actor!(app, id)
+    user = Passwordless.get_user!(app, id)
 
-    case Passwordless.delete_actor(app, actor) do
-      {:ok, _actor} ->
+    case Passwordless.delete_user(app, user) do
+      {:ok, _user} ->
         {:noreply,
          socket
          |> put_flash(:info, gettext("User deleted successfully."))
@@ -135,13 +134,13 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
     )
   end
 
-  defp apply_action(socket, :delete, %Actor{} = actor) do
+  defp apply_action(socket, :delete, %User{} = user) do
     assign(socket,
       page_title: gettext("Delete user"),
       page_subtitle:
         gettext(
           "Are you sure you want to delete user \"%{name}\"? This action is irreversible. User will lose access to their TOTPs and other authentication methods.",
-          name: Actor.handle(actor)
+          name: User.handle(user)
         )
     )
   end
@@ -157,23 +156,16 @@ defmodule PasswordlessWeb.App.ActorLive.Index do
     assign(socket, filters: Map.take(params, ~w(page filters order_by order_directions)))
   end
 
-  defp assign_actors(socket, params) when is_map(params) do
+  defp assign_users(socket, params) when is_map(params) do
     app = socket.assigns.current_app
 
     query =
       app
-      |> Actor.get_by_app()
-      |> Actor.join_details(prefix: Database.Tenant.to_prefix(app))
-      |> Actor.preload_details()
+      |> User.get_by_app()
+      |> User.join_details(prefix: Database.Tenant.to_prefix(app))
+      |> User.preload_details()
 
-    {actors, meta} = DataTable.search(query, params, @data_table_opts)
-    assign(socket, actors: actors, meta: meta)
-  end
-
-  defp assign_stats(socket) do
-    users = Passwordless.get_app_user_count_cached(socket.assigns.current_app)
-    mau = Passwordless.get_app_mau_count_cached(socket.assigns.current_app, Date.utc_today())
-
-    assign(socket, user_count: users, mau_count: mau)
+    {users, meta} = DataTable.search(query, params, @data_table_opts)
+    assign(socket, users: users, meta: meta)
   end
 end

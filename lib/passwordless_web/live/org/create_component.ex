@@ -2,9 +2,7 @@ defmodule PasswordlessWeb.Org.CreateComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
-  alias Passwordless.Accounts.User
   alias Passwordless.Organizations
-  alias Passwordless.Organizations.Org
 
   @impl true
   def update(%{org: org} = assigns, socket) do
@@ -49,10 +47,4 @@ defmodule PasswordlessWeb.Org.CreateComponent do
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     assign(socket, form: to_form(changeset, as: :new_org))
   end
-
-  defp assign_current_org(%User{current_org: %Org{id: id}} = user, %Org{id: id} = updated_org) do
-    %User{user | current_org: updated_org}
-  end
-
-  defp assign_current_org(user, _org), do: user
 end

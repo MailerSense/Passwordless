@@ -39,8 +39,8 @@ defmodule Passwordless.EmailMessageMapping do
   @doc """
   A message mapping changeset.
   """
-  def changeset(%__MODULE__{} = message_mapping, attrs \\ %{}) do
-    message_mapping
+  def changeset(%__MODULE__{} = email_message_mapping, attrs \\ %{}) do
+    email_message_mapping
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_external_id()

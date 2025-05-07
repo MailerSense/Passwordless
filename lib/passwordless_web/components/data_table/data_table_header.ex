@@ -40,9 +40,9 @@ defmodule PasswordlessWeb.Components.DataTable.Header do
           />
         </.a>
       <% else %>
-        <div class={if @column[:align_right], do: "text-right whitespace-nowrap"}>
+        <.div_wrapper class="text-right whitespace-nowrap" wrap={Util.present?(@column[:align_right])}>
           {get_label(@column)}
-        </div>
+        </.div_wrapper>
       <% end %>
     </.th>
     """
@@ -51,9 +51,9 @@ defmodule PasswordlessWeb.Components.DataTable.Header do
   def render_simple(assigns) do
     ~H"""
     <.th class={["align-top", @column[:class]]}>
-      <div class={if @column[:align_right], do: "text-right whitespace-nowrap"}>
+      <.div_wrapper class="text-right whitespace-nowrap" wrap={Util.present?(@column[:align_right])}>
         {get_label(@column)}
-      </div>
+      </.div_wrapper>
     </.th>
     """
   end
@@ -94,4 +94,20 @@ defmodule PasswordlessWeb.Components.DataTable.Header do
   defp order_direction(_, nil), do: nil
   defp order_direction(nil, _), do: :asc
   defp order_direction(directions, index), do: Enum.at(directions, index)
+
+  attr :wrap, :boolean, default: false
+  attr :class, :any, default: nil
+  slot :inner_block, required: true
+
+  defp div_wrapper(assigns) do
+    ~H"""
+    <%= if @wrap do %>
+      <div class={@class}>
+        {render_slot(@inner_block)}
+      </div>
+    <% else %>
+      {render_slot(@inner_block)}
+    <% end %>
+    """
+  end
 end

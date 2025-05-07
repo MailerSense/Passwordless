@@ -5,7 +5,7 @@ defmodule Passwordless.Email.Guardian do
 
   # import Ecto.Query
 
-  # alias Passwordless.Actor
+  # alias Passwordless.User
   # alias Passwordless.App
   # alias Passwordless.Domain
   # alias Passwordless.Email
@@ -34,9 +34,9 @@ defmodule Passwordless.Email.Guardian do
   # def check(
   #       %App{} = app,
   #       %EmailEvent{kind: :bounce, bounce_type: :permanent} = event,
-  #       %EmailMessage{email: %Email{actor: %Actor{} = actor}, domain: %Domain{} = domain} = message
+  #       %EmailMessage{email: %Email{user:  %User{} = user}, domain: %Domain{} = domain} = message
   #     ),
-  #     do: suppress_contact(app, actor, domain, :hard_bounce)
+  #     do: suppress_contact(app, user, domain, :hard_bounce)
 
   # def check(%Log{
   #       org_id: org_id,
@@ -74,9 +74,9 @@ defmodule Passwordless.Email.Guardian do
 
   # # Private
 
-  # defp suppress_contact(%App{} = app, %Actor{} = actor, %Domain{} = domain, reason) do
+  # defp suppress_contact(%App{} = app, %User{} = user, %Domain{} = domain, reason) do
   #   Repo.transact(fn ->
-  #     with {:ok, suppression} <- insert_actor_suppression(contact, identity, reason),
+  #     with {:ok, suppression} <- insert_user_suppression(contact, identity, reason),
   #          {:ok, _identity} <-
   #            maybe_place_domain_under_review(identity, compute_fault_rates(org_id)),
   #          do: {:ok, suppression}
@@ -90,7 +90,7 @@ defmodule Passwordless.Email.Guardian do
   #   end
   # end
 
-  # defp insert_actor_suppression(%App{} = app, %Actor{} = actor, reason) do
+  # defp insert_user_suppression(%App{} = app, %User{} = user, reason) do
   #   {:ok, nil}
   # end
 

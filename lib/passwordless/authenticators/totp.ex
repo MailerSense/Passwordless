@@ -43,8 +43,8 @@ defmodule Passwordless.Authenticators.TOTP do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, _opts \\ []) do
-    actor_email
+  def changeset(%__MODULE__{} = totp, attrs \\ %{}, _opts \\ []) do
+    totp
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> unique_constraint(:app_id)

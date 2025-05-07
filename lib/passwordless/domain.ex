@@ -187,8 +187,8 @@ defmodule Passwordless.Domain do
   @doc """
   A domain changeset.
   """
-  def changeset(%__MODULE__{} = identity, attrs \\ %{}) do
-    identity
+  def changeset(%__MODULE__{} = domain, attrs \\ %{}) do
+    domain
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_name()

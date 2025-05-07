@@ -1,6 +1,6 @@
 defmodule Passwordless.Action do
   @moduledoc """
-  An actor avent.
+  An action.
   """
 
   use Passwordless.Schema, prefix: "action"
@@ -10,10 +10,10 @@ defmodule Passwordless.Action do
   alias Database.ChangesetExt
   alias Database.Tenant
   alias Passwordless.ActionEvent
-  alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Challenge
   alias Passwordless.Rule
+  alias Passwordless.User
 
   @states ~w(allow timeout block pending)a
 
@@ -26,7 +26,7 @@ defmodule Passwordless.Action do
       :state,
       :challenge,
       :events,
-      :actor,
+      :user,
       :rule,
       :inserted_at,
       :updated_at
@@ -47,7 +47,7 @@ defmodule Passwordless.Action do
     has_many :challenges, Challenge, preload_order: [asc: :inserted_at]
 
     belongs_to :rule, Rule
-    belongs_to :actor, Actor
+    belongs_to :user, User
 
     timestamps()
   end
@@ -56,7 +56,7 @@ defmodule Passwordless.Action do
 
   def topic_for(%App{} = app), do: "#{prefix()}:#{app.id}"
 
-  def preloads, do: [:rule, {:actor, [:totps, :email, :emails, :phone, :phones]}, {:challenge, [:email_message]}, :events]
+  def preloads, do: [:rule, {:user, [:totps, :email, :emails, :phone, :phones]}, {:challenge, [:email_message]}, :events]
 
   def readable_name(%__MODULE__{name: name}), do: Recase.to_sentence(name)
 
@@ -78,17 +78,17 @@ defmodule Passwordless.Action do
   end
 
   @doc """
-  Get where actor is present.
+  Get where user is present.
   """
-  def where_actor_is_present(query \\ __MODULE__) do
-    from q in query, where: not is_nil(q.actor_id)
+  def where_user_is_present(query \\ __MODULE__) do
+    from q in query, where: not is_nil(q.user_id)
   end
 
   @doc """
-  Get by actor.
+  Get by user.
   """
-  def get_by_actor(query \\ __MODULE__, %App{} = app, %Actor{} = actor) do
-    from q in query, prefix: ^Tenant.to_prefix(app), where: q.actor_id == ^actor.id
+  def get_by_user(query \\ __MODULE__, %App{} = app, %User{} = user) do
+    from q in query, prefix: ^Tenant.to_prefix(app), where: q.user_id == ^user.id
   end
 
   @doc """
@@ -101,8 +101,8 @@ defmodule Passwordless.Action do
   @doc """
   Preload associations.
   """
-  def preload_actor(query \\ __MODULE__) do
-    from q in query, preload: [{:actor, [:email]}]
+  def preload_user(query \\ __MODULE__) do
+    from q in query, preload: [{:user, [:email]}]
   end
 
   @doc """
@@ -119,7 +119,7 @@ defmodule Passwordless.Action do
     from q in query,
       preload: [
         :rule,
-        {:actor, [:totps, :email, :emails, :phone, :phones]},
+        {:user, [:totps, :email, :emails, :phone, :phones]},
         {:challenge, [:email_message]},
         :events
       ]
@@ -130,7 +130,7 @@ defmodule Passwordless.Action do
     data
     state
     rule_id
-    actor_id
+    user_id
   )a
   @required_fields @fields -- [:data]
 
@@ -144,7 +144,7 @@ defmodule Passwordless.Action do
     |> validate_name()
     |> validate_data()
     |> validate_state()
-    |> assoc_constraint(:actor)
+    |> assoc_constraint(:user)
   end
 
   @doc """

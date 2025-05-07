@@ -10,6 +10,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   import PasswordlessWeb.Components.Form
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Link
+  import PasswordlessWeb.Components.PageComponents
   import PasswordlessWeb.Components.Progress
   import PasswordlessWeb.Components.Typography
 
@@ -52,22 +53,14 @@ defmodule PasswordlessWeb.DashboardComponents do
         </section>
       </.a>
     <% else %>
-      <section
-        class={[
-          "shadow-1 p-6 rounded-lg flex flex-col gap-4",
-          "border border-slate-200 dark:border-slate-700",
-          "bg-white dark:bg-slate-700/30",
-          @class
-        ]}
-        {@rest}
-      >
+      <.box class="p-6 flex flex-col gap-4">
         <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
           {@badge}
         </badge>
         <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
           {@content}
         </h4>
-      </section>
+      </.box>
     <% end %>
     """
   end
@@ -597,6 +590,35 @@ defmodule PasswordlessWeb.DashboardComponents do
         <.p>{Phoenix.HTML.raw(item)}</.p>
       </div>
     </div>
+    """
+  end
+
+  attr :id, :string
+  attr :to, :string, required: true
+  attr :link_type, :string, default: "live_redirect"
+
+  def live_indicator(assigns) do
+    assigns = assign_new(assigns, :id, fn -> Util.id("live-indicator") end)
+
+    ~H"""
+    <.a
+      id={@id}
+      to={@to}
+      class={[
+        "flex items-center text-sm font-medium text-gray-900 dark:text-white gap-1.5"
+      ]}
+      link_type={@link_type}
+      phx-hook="TippyHook"
+      data-tippy-content={gettext("Users who performed an action in last 6 hours")}
+      data-tippy-placement="bottom"
+    >
+      <span class="relative flex size-2.5">
+        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success-400 opacity-75">
+        </span>
+        <span class="relative inline-flex size-2.5 rounded-full bg-success-500"></span>
+      </span>
+      207 users online
+    </.a>
     """
   end
 

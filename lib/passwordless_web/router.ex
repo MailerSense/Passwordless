@@ -114,7 +114,7 @@ defmodule PasswordlessWeb.Router do
     get "/actor-import/excel/download", ActorImportController, :download_excel
 
     # Recovery codes
-    get "/recovery-codes/download/:actor_id", RecoveryCodeController, :download
+    get "/recovery-codes/download/:user_id", RecoveryCodeController, :download
 
     live_session :app_onboarding_session,
       on_mount: [
@@ -136,11 +136,14 @@ defmodule PasswordlessWeb.Router do
       live "/home", App.HomeLive.Index, :index
 
       # Users
-      live "/users", App.ActorLive.Index, :index
-      live "/users/new", App.ActorLive.Index, :new
-      live "/users/import", App.ActorLive.Index, :import
-      live "/users/:id/edit", App.ActorLive.Index, :edit
-      live "/users/:id/delete", App.ActorLive.Index, :delete
+      live "/users", App.UserLive.Index, :index
+      live "/users/new", App.UserLive.Index, :new
+      live "/users/import", App.UserLive.Index, :import
+      live "/users/:id/edit", App.UserLive.Index, :edit
+      live "/users/:id/delete", App.UserLive.Index, :delete
+
+      # Actions
+      live "/actions", App.ActionLive.Index, :index
 
       # Authenticators
       live "/authenticators/email-otp", App.AuthenticatorLive.Index, :email_otp

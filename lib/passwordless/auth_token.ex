@@ -62,7 +62,7 @@ defmodule Passwordless.AuthToken do
        from(a in App,
          join: at in assoc(a, :auth_token),
          where: at.key_hash == ^key,
-         select: {struct(a, [:id]), at}
+         select: {a, at}
        )}
     end
   end
@@ -74,7 +74,12 @@ defmodule Passwordless.AuthToken do
   """
   def get_app_by_token(@prefix <> auth_token) when is_binary(auth_token) do
     with {:ok, key} <- Base58.decode58(auth_token) do
-      {:ok, from(a in App, join: at in assoc(a, :auth_token), where: at.key_hash == ^key, select: a)}
+      {:ok,
+       from(a in App,
+         join: at in assoc(a, :auth_token),
+         where: at.key_hash == ^key,
+         select: a
+       )}
     end
   end
 
@@ -152,7 +157,7 @@ defmodule Passwordless.AuthToken do
 
   @hashed_fields [key_hash: :key]
 
-  def put_hash_fields(changeset) do
+  defp put_hash_fields(changeset) do
     Enum.reduce(@hashed_fields, changeset, fn {hashed_field, unhashed_field}, changeset ->
       if value = get_field(changeset, unhashed_field) do
         put_change(changeset, hashed_field, value)

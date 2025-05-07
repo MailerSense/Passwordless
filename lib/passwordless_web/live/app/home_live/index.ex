@@ -5,8 +5,8 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   alias Database.QueryExt
   alias Passwordless.Action
   alias Passwordless.ActionEvent
-  alias Passwordless.Actor
   alias Passwordless.App
+  alias Passwordless.User
   alias PasswordlessWeb.Components.DataTable
   alias PasswordlessWeb.Endpoint
 
@@ -90,7 +90,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     if socket.assigns[:finished] do
       {:noreply, socket}
     else
-      query = actor_query(socket.assigns.current_app)
+      query = user_query(socket.assigns.current_app)
       assigns = Map.take(socket.assigns, ~w(cursor)a)
 
       {:noreply,
@@ -148,7 +148,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   end
 
   defp assign_actions(socket, params) do
-    query = actor_query(socket.assigns.current_app)
+    query = user_query(socket.assigns.current_app)
     params = Map.take(params, ~w(filters order_by order_directions))
     {actions, meta} = DataTable.search(query, params, @data_table_opts)
 
@@ -183,10 +183,10 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     end
   end
 
-  defp actor_query(%App{} = app) do
+  defp user_query(%App{} = app) do
     app
     |> Action.get_by_app()
-    |> Action.preload_actor()
+    |> Action.preload_user()
     |> Action.preload_events()
   end
 

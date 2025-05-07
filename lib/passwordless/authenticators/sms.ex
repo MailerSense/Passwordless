@@ -36,8 +36,8 @@ defmodule Passwordless.Authenticators.SMS do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
-    actor_email
+  def changeset(%__MODULE__{} = sms, attrs \\ %{}, opts \\ []) do
+    sms
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_number(:expires, greater_than: 0, less_than_or_equal_to: 60)

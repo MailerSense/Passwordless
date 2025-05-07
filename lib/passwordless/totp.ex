@@ -5,14 +5,14 @@ defmodule Passwordless.TOTP do
 
   use Passwordless.Schema, prefix: "totp"
 
-  alias Passwordless.Actor
+  alias Passwordless.User
 
   schema "totps" do
     field :name, :string
     field :secret, Passwordless.EncryptedBinary, redact: true
     field :code, :string, virtual: true
 
-    belongs_to :actor, Actor
+    belongs_to :user, User
 
     timestamps()
   end
@@ -20,7 +20,7 @@ defmodule Passwordless.TOTP do
   @fields ~w(
     name
     secret
-    actor_id
+    user_id
   )a
   @required_fields @fields
 
@@ -33,7 +33,7 @@ defmodule Passwordless.TOTP do
       |> cast(params, @fields)
       |> validate_required(@required_fields)
       |> validate_format(:code, ~r/^\d{6}$/, message: "should be a 6 digit number")
-      |> assoc_constraint(:actor)
+      |> assoc_constraint(:user)
 
     validate_change(changeset, :code, fn :code, code ->
       with {_, secret} when is_binary(secret) <- fetch_field(changeset, :secret),

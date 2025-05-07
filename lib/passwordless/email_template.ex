@@ -47,8 +47,8 @@ defmodule Passwordless.EmailTemplate do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = template, attrs \\ %{}) do
-    template
+  def changeset(%__MODULE__{} = email_template, attrs \\ %{}) do
+    email_template
     |> cast(attrs, @fields)
     |> cast_assoc(:locales)
     |> validate_tags()

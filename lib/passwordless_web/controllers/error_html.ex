@@ -39,7 +39,7 @@ defmodule PasswordlessWeb.ErrorHTML do
       <:bottom_links>
         Found a bug?
         <button
-          class="text-blue-600 dark:text-blue-400"
+          class="text-blue-600 dark:text-blue-300 font-semibold"
           x-data="sentryCrashPopup"
           x-on:click="toggleShow"
         >
@@ -85,7 +85,7 @@ defmodule PasswordlessWeb.ErrorHTML do
       <:bottom_links>
         Found a bug?
         <button
-          class="text-blue-600 dark:text-blue-400"
+          class="text-blue-600 dark:text-blue-300 font-semibold"
           x-data="sentryCrashPopup"
           x-on:click="toggleShow"
         >

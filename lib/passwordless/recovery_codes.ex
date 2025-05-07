@@ -3,7 +3,7 @@ defmodule Passwordless.RecoveryCodes do
 
   use Passwordless.Schema, prefix: "reccodes"
 
-  alias Passwordless.Actor
+  alias Passwordless.User
 
   @derive {
     Jason.Encoder,
@@ -25,7 +25,7 @@ defmodule Passwordless.RecoveryCodes do
       field :used_at, :utc_datetime_usec
     end
 
-    belongs_to :actor, Actor
+    belongs_to :user, User
 
     timestamps()
     soft_delete_timestamp()
@@ -64,9 +64,9 @@ defmodule Passwordless.RecoveryCodes do
     recovery_codes
     |> change()
     |> ensure_codes()
-    |> assoc_constraint(:actor)
-    |> unique_constraint(:actor_id)
-    |> unsafe_validate_unique(:actor_id, Passwordless.Repo, opts)
+    |> assoc_constraint(:user)
+    |> unique_constraint(:user_id)
+    |> unsafe_validate_unique(:user_id, Passwordless.Repo, opts)
   end
 
   def ensure_codes(changeset) do

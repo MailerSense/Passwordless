@@ -8,6 +8,7 @@ defmodule Passwordless.App do
   import Ecto.Query
 
   alias Database.ChangesetExt
+  alias Passwordless.ActionTemplate
   alias Passwordless.AppSettings
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
@@ -54,6 +55,7 @@ defmodule Passwordless.App do
 
     has_many :media, Media, preload_order: [asc: :inserted_at]
     has_many :domains, Domain, preload_order: [asc: :inserted_at]
+    has_many :action_templates, ActionTemplate, preload_order: [asc: :inserted_at]
     has_many :email_templates, EmailTemplate, preload_order: [asc: :inserted_at]
     has_many :email_message_mappings, EmailMessageMapping, preload_order: [asc: :inserted_at]
     has_many :magic_link_mappings, MagicLinkMapping, preload_order: [asc: :inserted_at]

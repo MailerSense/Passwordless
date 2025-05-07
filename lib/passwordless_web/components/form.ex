@@ -773,6 +773,7 @@ defmodule PasswordlessWeb.Components.Form do
     """
   end
 
+  attr(:size, :string, values: ["sm", "md", "lg"], default: "md", doc: "extra classes for the help text")
   attr(:class, :any, default: "", doc: "extra classes for the help text")
   attr(:title, :string, default: nil, doc: "context/help for your field")
   attr(:count, :integer, default: nil, doc: "context/help for your field")

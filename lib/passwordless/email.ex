@@ -8,8 +8,8 @@ defmodule Passwordless.Email do
   import Ecto.Query
 
   alias Database.ChangesetExt
-  alias Passwordless.Actor
   alias Passwordless.EmailMessage
+  alias Passwordless.User
 
   @authenticators ~w(email_otp magic_link)a
 
@@ -40,7 +40,7 @@ defmodule Passwordless.Email do
 
     has_many :email_messages, EmailMessage, preload_order: [asc: :inserted_at]
 
-    belongs_to :actor, Actor
+    belongs_to :user, User
 
     timestamps()
     soft_delete_timestamp()
@@ -65,31 +65,28 @@ defmodule Passwordless.Email do
     verified
     opted_out_at
     authenticators
-    actor_id
+    user_id
   )a
   @required_fields @fields -- [:opted_out_at]
 
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
-    actor_email
+  def changeset(%__MODULE__{} = email, attrs \\ %{}, opts \\ []) do
+    email
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_email()
     |> validate_authenticators()
-    |> unique_constraint([:actor_id, :primary], error_key: :primary)
-    |> unique_constraint([:actor_id, :address], error_key: :address)
-    |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo,
+    |> unique_constraint(:address)
+    |> unique_constraint([:user_id, :primary], error_key: :primary)
+    |> unsafe_validate_unique(:address, Passwordless.Repo, opts)
+    |> unsafe_validate_unique([:user_id, :primary], Passwordless.Repo,
       query: from(e in __MODULE__, where: e.primary),
       prefix: Keyword.get(opts, :prefix),
       error_key: :primary
     )
-    |> unsafe_validate_unique([:actor_id, :address], Passwordless.Repo,
-      prefix: Keyword.get(opts, :prefix),
-      error_key: :address
-    )
-    |> assoc_constraint(:actor)
+    |> assoc_constraint(:user)
   end
 
   # Private

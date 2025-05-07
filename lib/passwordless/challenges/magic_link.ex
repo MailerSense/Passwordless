@@ -4,19 +4,19 @@ defmodule Passwordless.Challenges.MagicLink do
   @behaviour Passwordless.Challenge
 
   alias Passwordless.Action
-  alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Authenticators
   alias Passwordless.Cache
   alias Passwordless.Challenge
   alias Passwordless.Email
+  alias Passwordless.User
 
   @challenge :magic_link
 
   @impl true
   def handle(
         %App{} = app,
-        %Actor{} = actor,
+        %User{} = user,
         %Action{challenge: %Challenge{kind: @challenge, state: state} = challenge} = action,
         event: :send_magic_link,
         attrs: %{email: %Email{} = email, authenticator: %Authenticators.MagicLink{} = authenticator}

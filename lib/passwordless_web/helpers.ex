@@ -10,7 +10,6 @@ defmodule PasswordlessWeb.Helpers do
   alias Passwordless.Action
   alias Passwordless.ActionEvent
   alias Passwordless.Activity.Log
-  alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
@@ -18,17 +17,6 @@ defmodule PasswordlessWeb.Helpers do
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
-
-  def actor_name(%Actor{} = actor), do: actor.name
-  def actor_name(_actor), do: nil
-
-  def actor_state_badge(%Actor{} = actor),
-    do:
-      {Phoenix.Naming.humanize(actor.state),
-       case actor.state do
-         :active -> "success"
-         :locked -> "danger"
-       end}
 
   def action_state_info(%Action{} = action),
     do:
@@ -45,7 +33,7 @@ defmodule PasswordlessWeb.Helpers do
          _ -> "info"
        end}
 
-  def action_state_info(_actor), do: {nil, "info"}
+  def action_state_info(_user), do: {nil, "info"}
 
   def action_state_badge(%Action{} = action),
     do:
@@ -62,25 +50,7 @@ defmodule PasswordlessWeb.Helpers do
          _ -> "info"
        end}
 
-  def action_state_badge(_actor), do: {nil, "info"}
-
-  def action_icon(%Action{} = action),
-    do:
-      {Phoenix.Naming.humanize(action.state),
-       case action.state do
-         :allow -> "remix-checkbox-circle-fill"
-         :timeout -> "remix-error-warning-fill"
-         :block -> "remix-close-circle-fill"
-         _ -> "remix-question-fill"
-       end,
-       case action.state do
-         :allow -> "text-success-500"
-         :timeout -> "text-warning-500"
-         :block -> "text-danger-500"
-         _ -> "text-slate-500"
-       end}
-
-  def action_icon(_actor), do: {nil, "text-slate-500"}
+  def action_state_badge(_user), do: {nil, "info"}
 
   def embed_menu_items do
     [
@@ -331,9 +301,6 @@ defmodule PasswordlessWeb.Helpers do
   def user_name(nil), do: nil
   def user_name(%User{} = user), do: user.name
 
-  def user_first_name(nil), do: nil
-  def user_first_name(%User{} = user), do: user.name |> String.split(" ") |> hd()
-
   def user_email(nil), do: nil
   def user_email(%User{} = user), do: user.email
 
@@ -341,11 +308,9 @@ defmodule PasswordlessWeb.Helpers do
   def user_state(%User{} = user), do: user.state
 
   def user_org_name(%User{current_org: %Org{name: name}}) when is_binary(name), do: Util.truncate(name)
-
   def user_org_name(_), do: nil
 
   def user_app_name(%User{current_app: %App{name: name}}) when is_binary(name), do: Util.truncate(name)
-
   def user_app_name(_), do: nil
 
   def user_impersonated?(%User{current_impersonator: %User{}}), do: true
@@ -461,16 +426,6 @@ defmodule PasswordlessWeb.Helpers do
     "identity" => "purple",
     "message" => "purple"
   }
-
-  def action_icon(action) do
-    case String.split(action, ".", parts: 2) do
-      [domain, action] ->
-        Map.get(@icon_mapping, action, Map.get(@icon_fallback_mapping, domain, "👋"))
-
-      _ ->
-        "👋"
-    end
-  end
 
   def action_color(action) do
     case String.split(action, ".", parts: 2) do

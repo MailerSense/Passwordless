@@ -59,8 +59,8 @@ defmodule Passwordless.ActionEvent do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = action, attrs \\ %{}) do
-    action
+  def changeset(%__MODULE__{} = action_event, attrs \\ %{}) do
+    action_event
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_ip_address()

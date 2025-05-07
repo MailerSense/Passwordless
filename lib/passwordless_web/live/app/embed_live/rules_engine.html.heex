@@ -8,6 +8,27 @@
       "<strong>Rule conditions</strong> need to be satisfied, for example device location or user action within last 30 minutes.",
       "<strong>Rule effects</strong> define what the rule actually does, like challenging the user via Email OTP."
     ]} />
+  </.box>
+  <.box card>
+    <.form_header title={gettext("Examples to get started")} no_margin />
+    <.p>
+      Below are some examples of commonly applied rules. You can use these as a starting point for your own rules.
+    </.p>
+    <.live_component
+      id="rule-example"
+      module={PasswordlessWeb.Components.MultiCodeBlock}
+      codes={[
+        %{
+          tab: gettext("User Action"),
+          language: :typescript,
+          code: ~S"""
+          {
+            and: [true, false],
+          }
+          """
+        }
+      ]}
+    />
     <.a
       to={~p"/embed/api"}
       label={gettext("Read Rules engine documentation")}
@@ -44,26 +65,5 @@
         />
       </.inputs_for>
     </.form>
-  </.box>
-  <.box card>
-    <.form_header title={gettext("Examples to get started")} no_margin />
-    <.p>
-      Below are some examples of commonly applied rules. You can use these as a starting point for your own rules.
-    </.p>
-    <.live_component
-      id="rule-example"
-      module={PasswordlessWeb.Components.MultiCodeBlock}
-      codes={[
-        %{
-          tab: gettext("User Action"),
-          language: :typescript,
-          code: ~S"""
-          {
-            and: [true, false],
-          }
-          """
-        }
-      ]}
-    />
   </.box>
 </div>

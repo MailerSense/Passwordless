@@ -45,8 +45,8 @@ defmodule Passwordless.Rule do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = action, attrs \\ %{}) do
-    action
+  def changeset(%__MODULE__{} = rule, attrs \\ %{}) do
+    rule
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
   end

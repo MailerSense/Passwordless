@@ -26,13 +26,7 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
 
   def user_topbar_menu(assigns) do
     ~H"""
-    <div
-      {@rest}
-      class={[
-        "flex items-center gap-3 h-full ml-auto border-l border-slate-200 dark:border-slate-700",
-        @class
-      ]}
-    >
+    <div {@rest} class={["pc-topbar", @class]}>
       <.dropdown placement="center">
         <:trigger_element>
           <div class="p-6 items-center gap-6 2xl:gap-16 inline-flex h-full">

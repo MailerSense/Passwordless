@@ -5,8 +5,8 @@ defmodule Passwordless.SecurityKey do
 
   use Passwordless.Schema, prefix: "seckey"
 
-  alias Passwordless.Actor
   alias Passwordless.App
+  alias Passwordless.User
 
   @derive {
     Flop.Schema,
@@ -16,7 +16,7 @@ defmodule Passwordless.SecurityKey do
     field :handle, :string
 
     belongs_to :app, App
-    belongs_to :actor, Actor
+    belongs_to :user, User
 
     timestamps()
     soft_delete_timestamp()
@@ -25,18 +25,18 @@ defmodule Passwordless.SecurityKey do
   @fields ~w(
     handle
     app_id
-    actor_id
+    user_id
   )a
   @required_fields @fields
 
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}) do
-    actor_email
+  def changeset(%__MODULE__{} = security_key, attrs \\ %{}) do
+    security_key
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> assoc_constraint(:app)
-    |> assoc_constraint(:actor)
+    |> assoc_constraint(:user)
   end
 end
