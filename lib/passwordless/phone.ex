@@ -8,7 +8,7 @@ defmodule Passwordless.Phone do
   import Ecto.Query
 
   alias Database.ChangesetExt
-  alias Passwordless.Actor
+  alias Passwordless.User
 
   @authenticators ~w(sms whatsapp)a
 
@@ -41,7 +41,7 @@ defmodule Passwordless.Phone do
     field :opted_out, :boolean, virtual: true
     field :opted_out_at, :utc_datetime_usec
 
-    belongs_to :actor, Actor
+    belongs_to :user, User
 
     timestamps()
     soft_delete_timestamp()
@@ -75,17 +75,17 @@ defmodule Passwordless.Phone do
     verified
     authenticators
     opted_out_at
-    actor_id
+    user_id
   )a
   @required_fields @fields -- [:opted_out_at]
 
   @doc """
   A regional changeset.
   """
-  def regional_changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
+  def regional_changeset(%__MODULE__{} = user_email, attrs \\ %{}, opts \\ []) do
     excluded = [:canonical]
 
-    actor_email
+    user_email
     |> cast(attrs, @fields -- excluded)
     |> validate_required(@required_fields -- excluded)
     |> validate_regional_phone_number()
@@ -95,10 +95,10 @@ defmodule Passwordless.Phone do
   @doc """
   A canonical changeset.
   """
-  def canonical_changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
+  def canonical_changeset(%__MODULE__{} = user_email, attrs \\ %{}, opts \\ []) do
     excluded = [:number, :region]
 
-    actor_email
+    user_email
     |> cast(attrs, @fields -- excluded)
     |> validate_required(@required_fields -- excluded)
     |> validate_canonical_phone_number()
@@ -150,18 +150,15 @@ defmodule Passwordless.Phone do
   defp base_changeset(changeset, opts) do
     changeset
     |> validate_authenticators()
-    |> unique_constraint([:actor_id, :primary], error_key: :primary)
-    |> unique_constraint([:actor_id, :canonical], error_key: :canonical)
-    |> unsafe_validate_unique([:actor_id, :primary], Passwordless.Repo,
-      prefix: Keyword.get(opts, :prefix),
+    |> unique_constraint(:canonical)
+    |> unique_constraint([:user_id, :primary], error_key: :primary)
+    |> unsafe_validate_unique(:canonical, Passwordless.Repo, opts)
+    |> unsafe_validate_unique([:user_id, :primary], Passwordless.Repo,
       query: from(p in __MODULE__, where: p.primary),
+      prefix: Keyword.get(opts, :prefix),
       error_key: :primary
     )
-    |> unsafe_validate_unique([:actor_id, :canonical], Passwordless.Repo,
-      prefix: Keyword.get(opts, :prefix),
-      error_key: :canonical
-    )
-    |> assoc_constraint(:actor)
+    |> assoc_constraint(:user)
   end
 
   defp validate_authenticators(changeset) do

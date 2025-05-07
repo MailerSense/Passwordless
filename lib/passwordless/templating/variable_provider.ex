@@ -46,11 +46,11 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.App do
   end
 end
 
-defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Actor do
-  alias Passwordless.Actor
+defimpl Passwordless.Templating.VariableProvider, for: Passwordless.User do
   alias Passwordless.Email
   alias Passwordless.Phone
   alias Passwordless.Repo
+  alias Passwordless.User
 
   @keys ~w(
     name
@@ -63,15 +63,15 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Actor do
   @doc """
   Provide the actor variables.
   """
-  def variables(%Actor{} = actor) do
-    actor = Repo.preload(actor, [:email, :phone])
+  def variables(%User{} = user) do
+    user = Repo.preload(user, [:email, :phone])
 
     variables =
-      Enum.reduce([&add_email/1, &add_phone/1, &add_properties/1], %{}, fn func, acc ->
-        Map.merge(acc, func.(actor))
+      Enum.reduce([&add_user_email/1, &add_phone/1, &add_data/1], %{}, fn func, acc ->
+        Map.merge(acc, func.(user))
       end)
 
-    actor
+    user
     |> Map.from_struct()
     |> Map.take(@keys)
     |> Map.merge(variables)
@@ -79,23 +79,23 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Actor do
 
   # Private
 
-  defp add_email(%Actor{email: %Email{} = email}) do
+  defp add_user_email(%User{email: %Email{} = email}) do
     %{"email" => email.address}
   end
 
-  defp add_email(%Actor{}), do: %{}
+  defp add_user_email(%User{}), do: %{}
 
-  defp add_phone(%Actor{phone: %Phone{} = phone}) do
+  defp add_phone(%User{phone: %Phone{} = phone}) do
     %{"phone" => phone.canonical}
   end
 
-  defp add_phone(%Actor{}), do: %{}
+  defp add_phone(%User{}), do: %{}
 
-  defp add_properties(%Actor{properties: properties}) when is_map(properties) do
-    %{"properties" => properties}
+  defp add_data(%User{data: data}) when is_map(data) do
+    %{"data" => data}
   end
 
-  defp add_properties(%Actor{}), do: %{properties: %{}}
+  defp add_data(%User{}), do: %{"data" => %{}}
 end
 
 defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Action do

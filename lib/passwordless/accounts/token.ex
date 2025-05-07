@@ -77,8 +77,8 @@ defmodule Passwordless.Accounts.Token do
   @doc """
   A user key changeset.
   """
-  def changeset(%__MODULE__{} = key, attrs \\ %{}) do
-    key
+  def changeset(%__MODULE__{} = token, attrs \\ %{}) do
+    token
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_key()

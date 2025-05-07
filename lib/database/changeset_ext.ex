@@ -48,9 +48,6 @@ defmodule Database.ChangesetExt do
     update_change(changeset, field, &downcase/1)
   end
 
-  @doc """
-  Ensures the value is lowercase.
-  """
   def ensure_lowercase(%Ecto.Changeset{} = changeset, fields) when is_list(fields) do
     Enum.reduce(fields, changeset, fn field, cs ->
       update_change(cs, field, &downcase/1)

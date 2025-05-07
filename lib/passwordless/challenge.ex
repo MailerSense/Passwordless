@@ -36,7 +36,7 @@ defmodule Passwordless.Challenge do
   """
   @callback handle(
               app :: Passwordless.App.t(),
-              actor :: Passwordless.Actor.t(),
+              user :: Passwordless.User.t(),
               action :: Passwordless.Action.t(),
               event: binary(),
               attrs: handle_attrs()

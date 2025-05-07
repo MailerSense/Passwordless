@@ -22,12 +22,18 @@
         />
       </div>
     </.box>
-    <.data_table meta={@meta} items={@memberships} title={gettext("Members")}>
+    <.data_table
+      meta={@meta}
+      items={@memberships}
+      title={gettext("Members")}
+      search_placeholder={gettext("Search by Email or Name")}
+    >
       <:if_empty>{gettext("No %{models} found", models: gettext("members"))}</:if_empty>
-      <:col :let={membership} field={:name}>
+      <:col field={:search} searchable filterable={[:==]} />
+      <:col :let={membership} field={:name} sortable>
         {user_name(membership.user)}
       </:col>
-      <:col :let={membership} field={:email}>
+      <:col :let={membership} field={:email} sortable>
         {user_email(membership.user)}
       </:col>
       <:col :let={membership} field={:role}>
@@ -128,7 +134,7 @@
           field={@form[:email]}
           label={gettext("Email")}
           required
-          placeholder={gettext("eg. john@gmail.com")}
+          placeholder={gettext("eg. john.doe@company.com")}
           autocomplete="email"
         />
       </.form>

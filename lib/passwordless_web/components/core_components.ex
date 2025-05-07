@@ -160,7 +160,7 @@ defmodule PasswordlessWeb.CoreComponents do
 
     dropdown_type =
       cond do
-        assigns[:current_page] in [:home, :users, :reports, :embed, :authenticators] ->
+        assigns[:current_page] in [:home, :actions, :users, :reports, :embed, :authenticators] ->
           :app
 
         assigns[:current_page] in [:billing] ->

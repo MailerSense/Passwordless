@@ -43,8 +43,8 @@ defmodule Passwordless.Authenticators.RecoveryCodes do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
-    actor_email
+  def changeset(%__MODULE__{} = recovery_codes, attrs \\ %{}, opts \\ []) do
+    recovery_codes
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> unique_constraint(:app_id)

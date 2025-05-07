@@ -225,8 +225,8 @@ defmodule Passwordless.EmailEvent do
   @doc """
   A changeset to create a new email event.
   """
-  def changeset(%__MODULE__{} = event, attrs \\ %{}) do
-    event
+  def changeset(%__MODULE__{} = email_event, attrs \\ %{}) do
+    email_event
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> cast_embed(:bounced_recipients, with: &bouced_recipient_changeset/2)

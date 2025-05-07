@@ -8,26 +8,16 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     execute ~SQL"CREATE extension IF NOT EXISTS citext", ""
     execute ~SQL"CREATE extension IF NOT EXISTS pg_trgm", ""
 
-    ## Actors
+    ## Users
 
-    create table(:actors, primary_key: false) do
+    create table(:users, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :name, :string
-      add :state, :string, null: false
-      add :username, :string
+      add :data, :binary, null: false
       add :language, :char, size: 2, null: false
-      add :properties, :binary, null: false
 
       timestamps()
       soft_delete_column()
     end
-
-    create index(:actors, [:state], where: "deleted_at is null")
-    create unique_index(:actors, [:username], where: "deleted_at is null")
-
-    execute "create index actors_name_gin_trgm_idx on #{prefix()}.actors using gin (name gin_trgm_ops) where deleted_at is null;"
-
-    execute "create index actors_username_gin_trgm_idx on #{prefix()}.actors using gin (username gin_trgm_ops) where deleted_at is null;"
 
     ## Action rules
 
@@ -52,14 +42,14 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :completed_at, :utc_datetime_usec
 
       add :rule_id, references(:rules, type: :uuid, on_delete: :delete_all), null: false
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
     end
 
     create index(:actions, [:name])
     create index(:actions, [:rule_id])
-    create index(:actions, [:actor_id])
+    create index(:actions, [:user_id])
 
     ## Challenge
 
@@ -77,6 +67,24 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create unique_index(:challenges, [:action_id], where: "\"current\"")
 
+    ## Identifiers
+
+    create table(:identifiers, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :value, :citext, null: false
+      add :primary, :boolean, null: false, default: false
+
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create index(:identifiers, [:user_id], where: "deleted_at is null")
+    create unique_index(:identifiers, [:value], where: "deleted_at is null")
+
+    execute "create index identifiers_value_gin_trgm_idx on #{prefix()}.identifiers using gin (value gin_trgm_ops);"
+
     ## Emails
 
     create table(:emails, primary_key: false) do
@@ -87,15 +95,15 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :opted_out_at, :utc_datetime_usec
       add :authenticators, {:array, :string}, null: false, default: []
 
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
       soft_delete_column()
     end
 
-    create index(:emails, [:actor_id], where: "deleted_at is null")
-    create unique_index(:emails, [:actor_id, :primary], where: "\"primary\"")
-    create unique_index(:emails, [:actor_id, :address], where: "deleted_at is null")
+    create index(:emails, [:user_id], where: "deleted_at is null")
+    create unique_index(:emails, [:address], where: "deleted_at is null")
+    create unique_index(:emails, [:user_id, :primary], where: "\"primary\"")
 
     execute "create index emails_address_gin_trgm_idx on #{prefix()}.emails using gin (address gin_trgm_ops);"
 
@@ -228,15 +236,15 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :opted_out_at, :utc_datetime_usec
       add :authenticators, {:array, :string}, null: false, default: []
 
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
       soft_delete_column()
     end
 
-    create index(:phones, [:actor_id], where: "deleted_at is null")
-    create unique_index(:phones, [:actor_id, :primary], where: "\"primary\"")
-    create unique_index(:phones, [:actor_id, :canonical], where: "deleted_at is null")
+    create index(:phones, [:user_id], where: "deleted_at is null")
+    create unique_index(:phones, [:canonical], where: "deleted_at is null")
+    create unique_index(:phones, [:user_id, :primary], where: "\"primary\"")
 
     execute "create index phones_canonical_gin_trgm_idx on #{prefix()}.phones using gin (canonical gin_trgm_ops);"
 
@@ -264,13 +272,13 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :name, :string, null: false
       add :secret, :binary, null: false
 
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
       soft_delete_column()
     end
 
-    create index(:totps, [:actor_id], where: "deleted_at is null")
+    create index(:totps, [:user_id], where: "deleted_at is null")
 
     ## Recovery codes
 
@@ -278,13 +286,13 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :codes, :map, null: false, default: %{}
 
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
       soft_delete_column()
     end
 
-    create unique_index(:recovery_codes, [:actor_id], where: "deleted_at is null")
+    create unique_index(:recovery_codes, [:user_id], where: "deleted_at is null")
 
     ## Security Key Holders
 
@@ -292,22 +300,22 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :handle, :string, null: false
 
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
       soft_delete_column()
     end
 
-    create index(:security_key_holders, [:actor_id], where: "deleted_at is null")
+    create index(:security_key_holders, [:user_id], where: "deleted_at is null")
     create unique_index(:security_key_holders, [:handle], where: "deleted_at is null")
-    create unique_index(:security_key_holders, [:actor_id, :handle], where: "deleted_at is null")
+    create unique_index(:security_key_holders, [:user_id, :handle], where: "deleted_at is null")
 
     ## Security Keys
 
     create table(:security_keys, primary_key: false) do
       add :id, :uuid, primary_key: true
 
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
       add :security_key_holder_id,
           references(:security_key_holders, type: :uuid, on_delete: :delete_all),
@@ -324,7 +332,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :state, :string, null: false
 
       add :totp_id, references(:totps, type: :uuid, on_delete: :nilify_all)
-      add :actor_id, references(:actors, type: :uuid, on_delete: :delete_all), null: false
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
       timestamps()
     end

@@ -66,8 +66,8 @@ defmodule Passwordless.Authenticators.EmailOTP do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
-    actor_email
+  def changeset(%__MODULE__{} = email_otp, attrs \\ %{}, opts \\ []) do
+    email_otp
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_sender(opts)

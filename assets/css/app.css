@@ -511,7 +511,7 @@
     @apply mb-3;
   }
   .pc-text {
-    @apply text-slate-600 dark:text-slate-300;
+    @apply text-slate-600 dark:text-slate-400;
   }
   .pc-text--sm {
     @apply text-sm;
@@ -1341,7 +1341,7 @@
   }
 
   .pc-page-header--text {
-    @apply text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight;
+    @apply text-2xl sm:text-3xl font-semibold text-slate-900 dark:text-white;
   }
 
   /* Separator */
@@ -1418,6 +1418,9 @@
   }
   .pc-sidebar__menu-item-icon--inactive {
     @apply text-slate-600 group-hover:text-primary-700 dark:text-slate-400 dark:group-hover:text-white;
+  }
+  .pc-topbar {
+    @apply flex items-center gap-3 h-full ml-auto border-l border-slate-200 dark:border-slate-700;
   }
 
   /* Loading */
@@ -1947,7 +1950,7 @@
     @apply hover:bg-slate-50 dark:hover:bg-slate-800;
   }
   .pc-table__td {
-    @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-4 text-sm font-normal text-slate-600 dark:text-white whitespace-nowrap;
+    @apply first:pl-6 first:pr-4 last:pr-6 last:pl-4 px-4 py-4 text-sm font-normal text-slate-600 dark:text-slate-300 whitespace-nowrap;
     /*  @apply [&:not(:last-child)]:border-r border-slate-200 dark:border-slate-700; */
   }
   .pc-table__td--only {

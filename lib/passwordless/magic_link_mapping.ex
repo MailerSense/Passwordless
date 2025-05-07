@@ -39,8 +39,8 @@ defmodule Passwordless.MagicLinkMapping do
   @doc """
   A message mapping changeset.
   """
-  def changeset(%__MODULE__{} = message_mapping, attrs \\ %{}) do
-    message_mapping
+  def changeset(%__MODULE__{} = magic_link_mapping, attrs \\ %{}) do
+    magic_link_mapping
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_key()

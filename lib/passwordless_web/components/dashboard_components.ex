@@ -10,6 +10,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   import PasswordlessWeb.Components.Form
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Link
+  import PasswordlessWeb.Components.PageComponents
   import PasswordlessWeb.Components.Progress
   import PasswordlessWeb.Components.Typography
 
@@ -52,22 +53,14 @@ defmodule PasswordlessWeb.DashboardComponents do
         </section>
       </.a>
     <% else %>
-      <section
-        class={[
-          "shadow-1 p-6 rounded-lg flex flex-col gap-4",
-          "border border-slate-200 dark:border-slate-700",
-          "bg-white dark:bg-slate-700/30",
-          @class
-        ]}
-        {@rest}
-      >
+      <.box class="p-6 flex flex-col gap-4">
         <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
           {@badge}
         </badge>
         <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
           {@content}
         </h4>
-      </section>
+      </.box>
     <% end %>
     """
   end

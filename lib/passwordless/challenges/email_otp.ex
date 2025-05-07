@@ -9,7 +9,6 @@ defmodule Passwordless.Challenges.EmailOTP do
 
   alias Database.Tenant
   alias Passwordless.Action
-  alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Authenticators
   alias Passwordless.Cache
@@ -24,13 +23,14 @@ defmodule Passwordless.Challenges.EmailOTP do
   alias Passwordless.MailerExecutor
   alias Passwordless.OTP
   alias Passwordless.Repo
+  alias Passwordless.User
 
   @challenge :email_otp
 
   @impl true
   def handle(
         %App{} = app,
-        %Actor{} = actor,
+        %User{} = user,
         %Action{challenge: %Challenge{kind: @challenge, state: state} = challenge} = action,
         event: "send_otp",
         attrs: %{email: %Email{} = email}
@@ -44,12 +44,12 @@ defmodule Passwordless.Challenges.EmailOTP do
          {:ok, domain} <- Passwordless.get_fallback_domain(app, :email),
          {:ok, authenticator} <- Passwordless.fetch_authenticator(app, :email_otp),
          {:ok, email_template} <- get_email_template(authenticator),
-         {:ok, email_template_locale} <- get_email_template_locale(actor, email_template),
+         {:ok, email_template_locale} <- get_email_template_locale(user, email_template),
          :ok <- update_existing_messages(app, action),
          {:ok, email_message} <-
            create_email_message(
              app,
-             actor,
+             user,
              action,
              domain,
              email,
@@ -67,7 +67,7 @@ defmodule Passwordless.Challenges.EmailOTP do
   @impl true
   def handle(
         %App{} = app,
-        %Actor{} = _actor,
+        %User{} = _actor,
         %Action{challenge: %Challenge{kind: @challenge, state: state} = challenge} = action,
         event: "validate_otp",
         attrs: %{code: code}
@@ -107,10 +107,10 @@ defmodule Passwordless.Challenges.EmailOTP do
     end
   end
 
-  defp get_email_template_locale(%Actor{} = actor, %EmailTemplate{} = template) do
+  defp get_email_template_locale(%User{} = user, %EmailTemplate{} = template) do
     case template
          |> Ecto.assoc(:locales)
-         |> Repo.get_by(language: actor.language) do
+         |> Repo.get_by(language: user.language) do
       %EmailTemplateLocale{} = locale ->
         {:ok, locale}
 
@@ -126,7 +126,7 @@ defmodule Passwordless.Challenges.EmailOTP do
 
   defp create_email_message(
          %App{} = app,
-         %Actor{} = actor,
+         %User{} = user,
          %Action{challenge: %Challenge{} = challenge} = action,
          %Domain{} = domain,
          %Email{} = email,
@@ -134,7 +134,7 @@ defmodule Passwordless.Challenges.EmailOTP do
          %Authenticators.EmailOTP{} = authenticator,
          otp_code
        ) do
-    opts = [app: app, actor: actor, action: action]
+    opts = [app: app, user: user, action: action]
 
     link = Passwordless.create_email_unsubscribe_link!(app, email)
 
@@ -162,7 +162,6 @@ defmodule Passwordless.Challenges.EmailOTP do
       }
     }
 
-    attrs = if Util.present?(actor.name), do: Map.put(attrs, :recipient_name, actor.name), else: attrs
     render_attrs = %{unsubscribe_url: unsubscribe_page_url(link), otp_code: otp_code}
 
     with {:ok, message_attrs} <- Renderer.render(locale, render_attrs, opts) do

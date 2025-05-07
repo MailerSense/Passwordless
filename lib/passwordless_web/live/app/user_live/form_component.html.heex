@@ -2,19 +2,12 @@
   <% origin = "right" %>
   <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
     <.form
-      id="manage-actor-form"
+      id="manage-user-form"
       for={@form}
       phx-target={@myself}
       phx-submit="save"
       phx-change="validate"
     >
-      <.field field={@form[:name]} autocomplete="name" required />
-      <.field
-        field={@form[:username]}
-        autocomplete="username"
-        placeholder={gettext("Unique user ID from your own system")}
-        required
-      />
       <.field
         field={@form[:language]}
         type="select"
@@ -24,7 +17,7 @@
         required
         required_asterix={false}
       />
-      <.field field={@form[:properties_text]} type="hidden" value="{}" />
+      <.field field={@form[:data_text]} type="hidden" value="{}" />
     </.form>
 
     <:actions>
@@ -36,10 +29,10 @@
         phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
       />
       <.button
-        id="manage-actor-form-submit"
+        id="manage-user-form-submit"
         size="wide"
         type="submit"
-        form="manage-actor-form"
+        form="manage-user-form"
         disabled={not @form.source.valid?}
         label={
           if @live_action == :new,

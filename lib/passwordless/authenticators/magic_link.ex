@@ -83,8 +83,8 @@ defmodule Passwordless.Authenticators.MagicLink do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
-    actor_email
+  def changeset(%__MODULE__{} = magic_link, attrs \\ %{}, opts \\ []) do
+    magic_link
     |> cast(attrs, @fields)
     |> cast_embed(:redirect_urls,
       with: &redirect_url_changeset/2,

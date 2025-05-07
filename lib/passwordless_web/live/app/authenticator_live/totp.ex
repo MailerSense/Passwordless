@@ -6,6 +6,8 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.TOTP do
   alias Passwordless.App
   alias Passwordless.Repo
 
+  @qrcode_size 170
+
   @impl true
   def update(%{app: %App{} = app} = assigns, socket) do
     totp = Repo.preload(app, :totp).totp

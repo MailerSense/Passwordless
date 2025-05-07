@@ -47,7 +47,7 @@ defmodule PasswordlessApi.Routes do
         end
 
         scope "/actors" do
-          get "/:id", ActorController, :get
+          get "/:id", UserController, :get
         end
 
         scope "/actions" do

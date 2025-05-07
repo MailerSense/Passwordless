@@ -5,8 +5,8 @@ defmodule Passwordless.Enrollment do
 
   use Passwordless.Schema, prefix: "enrlmnt"
 
-  alias Passwordless.Actor
   alias Passwordless.TOTP
+  alias Passwordless.User
 
   @states ~w(started)a
 
@@ -15,7 +15,7 @@ defmodule Passwordless.Enrollment do
     only: [
       :id,
       :totp,
-      :actor,
+      :user,
       :inserted_at,
       :updated_at
     ]
@@ -28,7 +28,7 @@ defmodule Passwordless.Enrollment do
     field :state, Ecto.Enum, values: @states
 
     belongs_to :totp, TOTP
-    belongs_to :actor, Actor
+    belongs_to :user, User
 
     timestamps()
   end
@@ -36,18 +36,18 @@ defmodule Passwordless.Enrollment do
   @fields ~w(
     state
     totp_id
-    actor_id
+    user_id
   )a
   @required_fields @fields -- [:totp_id]
 
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, opts \\ []) do
-    actor_email
+  def changeset(%__MODULE__{} = enrollment, attrs \\ %{}, opts \\ []) do
+    enrollment
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> assoc_constraint(:totp)
-    |> assoc_constraint(:actor)
+    |> assoc_constraint(:user)
   end
 end

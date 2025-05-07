@@ -63,7 +63,7 @@ defmodule PasswordlessWeb.UserSessionController do
         UserAuth.log_in(conn, user, via: :passwordless)
 
       _ ->
-        redirect(conn, to: ~p"/auth/sign-in/passwordless")
+        redirect(conn, to: ~p"/auth/sign-in")
     end
   end
 end

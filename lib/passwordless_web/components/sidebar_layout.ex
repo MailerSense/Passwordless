@@ -151,11 +151,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
             }
           ]} />
 
-          <.user_topbar_menu
-            class="flex items-center gap-3 h-full ml-auto border-l border-slate-200 dark:border-slate-700"
-            current_user={@current_user}
-            user_menu_items={@user_menu_items}
-          />
+          <.user_topbar_menu current_user={@current_user} user_menu_items={@user_menu_items} />
         </header>
 
         {render_slot(@inner_block)}

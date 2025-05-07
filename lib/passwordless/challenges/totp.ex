@@ -7,25 +7,25 @@ defmodule Passwordless.Challenges.TOTP do
 
   alias Database.Tenant
   alias Passwordless.Action
-  alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Challenge
   alias Passwordless.Repo
   alias Passwordless.TOTP
+  alias Passwordless.User
 
   @challenge :totp
 
   @impl true
   def handle(
         %App{} = app,
-        %Actor{} = actor,
+        %User{} = user,
         %Action{challenge: %Challenge{kind: @challenge, state: :started} = challenge} = action,
         event: "validate_totp",
         attrs: %{code: code}
       )
       when is_binary(code) do
-    case Repo.preload(actor, :totps) do
-      %Actor{totps: [_ | _] = totps} ->
+    case Repo.preload(user, :totps) do
+      %User{totps: [_ | _] = totps} ->
         case Enum.find(totps, &TOTP.valid_totp?(&1, code)) do
           %TOTP{} = _totp ->
             with {:ok, _challenge} <- update_challenge_state(app, challenge, :totp_validated),

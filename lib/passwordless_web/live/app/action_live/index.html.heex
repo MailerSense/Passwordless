@@ -1,0 +1,52 @@
+<.layout current_user={@current_user} current_page={:actions} current_section={:app}>
+  <div class="flex flex-col gap-6 p-6">
+    <.data_table
+      meta={@meta}
+      items={@actions}
+      title={gettext("All actions")}
+      search_placeholder={gettext("Search by Name or Alias")}
+    >
+      <:if_empty>{gettext("No %{models} found", models: gettext("actions"))}</:if_empty>
+      <:col field={:search} searchable filterable={[:==]} />
+      <:col field={:name} />
+      <:col :let={action} field={:alias}>
+        <code>{action.alias}</code>
+      </:col>
+      <:col field={:attempts} />
+      <:col field={:completion_rate} label={gettext("Completion Rate")} />
+      <:col :let={action} label={gettext("Added")} field={:inserted_at} sortable>
+        {format_date(action.inserted_at)}
+      </:col>
+      <:col actions></:col>
+      <:actions :let={user}>
+        <.icon_button
+          to={apply_filters(@filters, @meta, ~p"/users/#{user}/delete")}
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          link_type="live_patch"
+        />
+        <.icon_button
+          to={apply_filters(@filters, @meta, ~p"/users/#{user}/edit")}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+      <:header_actions>
+        <div class="flex gap-3">
+          <.button
+            to={apply_filters(@filters, @meta, ~p"/users/new")}
+            color="primary"
+            label={gettext("Create")}
+            icon="remix-add-circle-line"
+            link_type="live_patch"
+          />
+        </div>
+      </:header_actions>
+    </.data_table>
+  </div>
+</.layout>

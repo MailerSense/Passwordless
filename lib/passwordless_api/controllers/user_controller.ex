@@ -1,4 +1,4 @@
-defmodule PasswordlessApi.ActorController do
+defmodule PasswordlessApi.UserController do
   @moduledoc """
   A controller for inspecting the API key.
   """
@@ -13,16 +13,16 @@ defmodule PasswordlessApi.ActorController do
   action_fallback PasswordlessWeb.FallbackController
 
   operation :show,
-    summary: "Get an actor",
-    description: "Get an actor",
+    summary: "Get a user",
+    description: "Get a user",
     responses: [
-      ok: {"Action", "application/json", Schemas.Actor},
+      ok: {"User", "application/json", Schemas.User},
       unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}
     ]
 
   def get(%Plug.Conn{} = conn, %{"id" => id}, %App{} = app) do
-    with {:ok, actor} <- Passwordless.lookup_actor(app, id) do
-      render(conn, :get, actor: actor)
+    with {:ok, user} <- Passwordless.lookup_user(app, id) do
+      render(conn, :get, user: user)
     end
   end
 end

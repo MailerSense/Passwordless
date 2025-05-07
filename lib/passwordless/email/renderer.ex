@@ -4,30 +4,32 @@ defmodule Passwordless.Email.Renderer do
   """
 
   alias Passwordless.Action
-  alias Passwordless.Actor
   alias Passwordless.Email
   alias Passwordless.EmailTemplateLocale
+  alias Passwordless.Identifier
   alias Passwordless.OTP
   alias Passwordless.Phone
   alias Passwordless.Templating.Liquid
   alias Passwordless.Templating.MJML
   alias Passwordless.Templating.Scrubber
   alias Passwordless.Templating.VariableProvider
+  alias Passwordless.User
 
   @example_providers [
-    actor: %Actor{
-      name: "John Doe",
-      username: "1234567890",
+    user: %User{
       language: :en,
-      properties: %{
+      data: %{
         "key1" => "value1",
         "key2" => "value2"
       },
       email: %Email{
-        address: "john.doe@megacorp.com"
+        address: "john.doe@company.com"
       },
       phone: %Phone{
         canonical: "+491234567890"
+      },
+      identifier: %Identifier{
+        value: "473242b7-dc21-45fb-8751-ae0bc86c05b3"
       }
     },
     action: %Action{
@@ -45,7 +47,7 @@ defmodule Passwordless.Email.Renderer do
   @variable_providers [
     :otp,
     :app,
-    :actor,
+    :user,
     :action
   ]
 

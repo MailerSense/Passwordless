@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.ActorLive.EmailComponent do
+defmodule PasswordlessWeb.App.UserLive.EmailComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
@@ -7,7 +7,7 @@ defmodule PasswordlessWeb.App.ActorLive.EmailComponent do
 
   @impl true
   def update(%{app: %App{} = app, email: %Email{} = email} = assigns, socket) do
-    changeset = Passwordless.change_actor_email(app, email)
+    changeset = Passwordless.change_user_email(app, email)
     opted_out = match?({:error, _}, Passwordless.email_opted_out?(app, email))
     opt_out_reason = app |> Passwordless.get_email_opt_out_reason(email) |> Phoenix.Naming.humanize()
 
@@ -22,7 +22,7 @@ defmodule PasswordlessWeb.App.ActorLive.EmailComponent do
   def handle_event("validate", %{"email" => email_params}, socket) do
     changeset =
       socket.assigns.app
-      |> Passwordless.change_actor_email(socket.assigns.email, email_params)
+      |> Passwordless.change_user_email(socket.assigns.email, email_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign_form(socket, changeset)}
@@ -39,7 +39,7 @@ defmodule PasswordlessWeb.App.ActorLive.EmailComponent do
     app = socket.assigns.current_app
     email = socket.assigns.email
 
-    case Passwordless.update_actor_email(app, email, email_params) do
+    case Passwordless.update_user_email(app, email, email_params) do
       {:ok, _email} ->
         {:noreply,
          socket
@@ -53,9 +53,9 @@ defmodule PasswordlessWeb.App.ActorLive.EmailComponent do
 
   defp save_email(socket, :new_email, email_params) do
     app = socket.assigns.current_app
-    actor = socket.assigns.actor
+    user = socket.assigns.user
 
-    case Passwordless.create_actor_email(app, actor, email_params) do
+    case Passwordless.create_user_email(app, user, email_params) do
       {:ok, _email} ->
         {:noreply,
          socket

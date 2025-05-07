@@ -98,9 +98,9 @@
 
       <:col :let={action} label={gettext("User")} field={:user}>
         <.a
-          :if={Util.present?(action.actor)}
-          to={~p"/users/#{action.actor}/edit"}
-          label={Actor.handle(action.actor)}
+          :if={Util.present?(action.user)}
+          to={~p"/users/#{action.user}/edit"}
+          label={User.handle(action.user)}
           style="link"
           link_type="live_redirect"
         />

@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.ActorLive.ImportComponent do
+defmodule PasswordlessWeb.App.UserLive.ImportComponent do
   @moduledoc false
   use PasswordlessWeb, :live_component
 
@@ -16,7 +16,7 @@ defmodule PasswordlessWeb.App.ActorLive.ImportComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> allow_upload(:actors, upload_opts)}
+     |> allow_upload(:users, upload_opts)}
   end
 
   @impl true

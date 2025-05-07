@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.ActorImportController do
+defmodule PasswordlessWeb.UserImportController do
   use PasswordlessWeb, :authenticated_controller
 
   alias Elixlsx.Sheet
@@ -6,7 +6,7 @@ defmodule PasswordlessWeb.ActorImportController do
   alias Passwordless.Accounts.User
   alias Passwordless.App
 
-  NimbleCSV.define(ActorTemplateDumper, separator: ",", escape: "\"")
+  NimbleCSV.define(UserTemplateDumper, separator: ",", escape: "\"")
 
   def download_csv(conn, _params, %User{current_app: %App{} = app}) do
     header = [
@@ -28,7 +28,7 @@ defmodule PasswordlessWeb.ActorImportController do
         "active",
         "en",
         "property1=value1;property2=value2",
-        "john.doe@gmail.com",
+        "john.doe@company.com",
         "second-email@protonmain.com",
         "+491234567890",
         "+491234567891"
@@ -37,7 +37,7 @@ defmodule PasswordlessWeb.ActorImportController do
 
     data =
       [header | rows]
-      |> ActorTemplateDumper.dump_to_iodata()
+      |> UserTemplateDumper.dump_to_iodata()
       |> IO.iodata_to_binary()
 
     send_download(conn, {:binary, data},
@@ -66,7 +66,7 @@ defmodule PasswordlessWeb.ActorImportController do
         "active",
         "en",
         "property1=value1;property2=value2",
-        "john.doe@gmail.com",
+        "john.doe@company.com",
         "second-email@protonmain.com",
         "+491234567890",
         "+491234567891"

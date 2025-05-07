@@ -34,8 +34,8 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
   @doc """
   A mapping changeset.
   """
-  def changeset(%__MODULE__{} = message_mapping, attrs \\ %{}) do
-    message_mapping
+  def changeset(%__MODULE__{} = email_unsubscribe_link, attrs \\ %{}) do
+    email_unsubscribe_link
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> decode_email_id()

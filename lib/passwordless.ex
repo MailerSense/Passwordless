@@ -10,7 +10,6 @@ defmodule Passwordless do
   alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.ActionEvent
-  alias Passwordless.Actor
   alias Passwordless.App
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
@@ -33,6 +32,7 @@ defmodule Passwordless do
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
   alias Passwordless.Rule
+  alias Passwordless.User
 
   @authenticators [
     email_otp: Authenticators.EmailOTP,
@@ -432,20 +432,19 @@ defmodule Passwordless do
   crud(:totp, :totp, Passwordless.Authenticators.TOTP)
   crud(:recovery_codes, :recovery_codes, Passwordless.Authenticators.RecoveryCodes)
 
-  # Actor
+  # User
 
-  def get_actor!(%App{} = app, id) when is_binary(id) do
-    Actor
+  def get_user!(%App{} = app, id) when is_binary(id) do
+    User
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
     |> Repo.preload([:email, :phone])
-    |> Actor.put_active()
-    |> Actor.put_text_properties()
+    |> User.put_text_data()
   end
 
-  def resolve_actor(%App{} = app, params) when is_map(params) do
-    prefix = Actor.prefix()
+  def resolve_user(%App{} = app, params) when is_map(params) do
+    prefix = User.prefix()
 
-    actor_query =
+    user_query =
       case params do
         %{id: id} when is_binary(id) ->
           case Database.PrefixedUUID.slug_to_uuid(id) do
@@ -462,20 +461,20 @@ defmodule Passwordless do
 
     params = Map.put_new(params, :properties, %{})
 
-    actor_result =
-      case Repo.one(from(a in Actor, where: ^actor_query), prefix: Tenant.to_prefix(app)) do
-        %Actor{} = actor -> update_actor(app, actor, params)
-        nil -> create_actor(app, params)
+    user_result =
+      case Repo.one(from(u in User, where: ^user_query), prefix: Tenant.to_prefix(app)) do
+        %User{} = user -> update_user(app, user, params)
+        nil -> create_user(app, params)
       end
 
-    with {:ok, %Actor{} = actor} <- actor_result,
-         {:ok, %Actor{} = actor} <- resolve_actor_emails(app, actor, params),
-         do: {:ok, actor}
+    with {:ok, %User{} = user} <- user_result,
+         {:ok, %User{} = user} <- resolve_user_emails(app, user, params),
+         do: {:ok, user}
   end
 
-  def resolve_actor_emails(%App{} = app, %Actor{} = actor, %{emails: [_ | _] = emails}) do
+  def resolve_user_emails(%App{} = app, %User{} = user, %{emails: [_ | _] = emails}) do
     opts = [prefix: Tenant.to_prefix(app)]
-    old_emails = Repo.preload(actor, :emails).emails
+    old_emails = Repo.preload(user, :emails).emails
     old_email_addresses = Map.new(old_emails, fn e -> {e.address, {:old, e}} end)
     new_email_addresses = Map.new(emails, fn %{address: a} = e -> {a, {:new, e}} end)
 
@@ -488,7 +487,7 @@ defmodule Passwordless do
     |> Map.values()
     |> Enum.reduce_while([], fn
       {:new, attrs}, acc ->
-        case actor
+        case user
              |> Ecto.build_assoc(:emails)
              |> Email.changeset(attrs, opts)
              |> Repo.insert(opts) do
@@ -508,17 +507,17 @@ defmodule Passwordless do
         {:cont, [email | acc]}
     end)
     |> case do
-      emails when is_list(emails) -> {:ok, Repo.preload(%Actor{actor | emails: emails}, :email)}
+      emails when is_list(emails) -> {:ok, Repo.preload(%User{user | emails: emails}, :email)}
       %Ecto.Changeset{} = changeset -> {:error, changeset}
     end
   end
 
-  def resolve_actor_emails(%Actor{} = actor, _params) do
-    {:ok, Repo.preload(actor, :emails)}
+  def resolve_user_emails(%User{} = user, _params) do
+    {:ok, Repo.preload(user, :emails)}
   end
 
-  def lookup_actor(%App{} = app, id) when is_binary(id) do
-    prefix = Actor.prefix()
+  def lookup_user(%App{} = app, id) when is_binary(id) do
+    prefix = User.prefix()
 
     query =
       case Database.PrefixedUUID.slug_to_uuid(id) do
@@ -526,90 +525,81 @@ defmodule Passwordless do
         _ -> [username: id]
       end
 
-    case Actor |> Repo.get_by(query, prefix: Tenant.to_prefix(app)) |> Repo.preload([:emails, :phones, :totps]) do
-      %Actor{} = actor -> {:ok, actor}
+    case User |> Repo.get_by(query, prefix: Tenant.to_prefix(app)) |> Repo.preload([:emails, :phones, :totps]) do
+      %User{} = user -> {:ok, user}
       nil -> {:error, :not_found}
     end
   end
 
-  def create_actor(%App{} = app, attrs \\ %{}) do
+  def create_user(%App{} = app, attrs \\ %{}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
-    %Actor{}
-    |> Actor.changeset(attrs, opts)
+    %User{}
+    |> User.changeset(attrs)
     |> Repo.insert(opts)
   end
 
-  def change_actor(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
-    opts = [prefix: Tenant.to_prefix(app)]
-
-    if Ecto.get_meta(actor, :state) == :loaded do
-      Actor.changeset(actor, attrs, opts)
+  def change_user(%App{} = app, %User{} = user, attrs \\ %{}) do
+    if Ecto.get_meta(user, :state) == :loaded do
+      User.changeset(user, attrs)
     else
-      Actor.create_changeset(actor, attrs, opts)
+      User.create_changeset(user, attrs)
     end
   end
 
-  def update_actor(%App{} = app, %Actor{} = actor, attrs) do
+  def update_user(%App{} = app, %User{} = user, attrs) do
     opts = [prefix: Tenant.to_prefix(app)]
 
-    actor
-    |> Actor.changeset(attrs, opts)
+    user
+    |> User.changeset(attrs)
     |> Repo.update(opts)
   end
 
-  def delete_actor(%App{} = app, %Actor{} = actor) do
-    Repo.soft_delete(actor, prefix: Tenant.to_prefix(app))
+  def delete_user(%App{} = app, %User{} = user) do
+    Repo.soft_delete(user, prefix: Tenant.to_prefix(app))
   end
 
-  def add_email(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+  def add_user_email(%App{} = app, %User{} = user, attrs \\ %{}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
-    actor
+    user
     |> Ecto.build_assoc(:emails)
     |> Email.changeset(attrs, opts)
     |> Repo.insert(opts)
   end
 
-  def add_regional_phone(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+  def add_user_regional_phone(%App{} = app, %User{} = user, attrs \\ %{}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
-    actor
+    user
     |> Ecto.build_assoc(:phones)
     |> Phone.regional_changeset(attrs, opts)
     |> Repo.insert(opts)
   end
 
-  def add_canonical_phone(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+  def add_user_canonical_phone(%App{} = app, %User{} = user, attrs \\ %{}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
-    actor
+    user
     |> Ecto.build_assoc(:phones)
     |> Phone.canonical_changeset(attrs, opts)
     |> Repo.insert(opts)
   end
 
-  def get_email!(%App{} = app, %Actor{} = actor, id) do
-    actor
-    |> Ecto.assoc(:emails)
-    |> Repo.get!(id, prefix: Tenant.to_prefix(app))
-    |> Email.put_virtuals()
-  end
-
-  def change_actor_email(%App{} = app, %Email{} = email, attrs \\ %{}) do
+  def change_user_email(%App{} = app, %Email{} = email, attrs \\ %{}) do
     Email.changeset(email, attrs, prefix: Tenant.to_prefix(app))
   end
 
-  def create_actor_email(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+  def create_user_email(%App{} = app, %User{} = user, attrs \\ %{}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
-    actor
+    user
     |> Ecto.build_assoc(:emails)
     |> Email.changeset(attrs, opts)
     |> Repo.insert(opts)
   end
 
-  def update_actor_email(%App{} = app, %Email{} = email, attrs) do
+  def update_user_email(%App{} = app, %Email{} = email, attrs) do
     opts = [prefix: Tenant.to_prefix(app)]
 
     email
@@ -617,8 +607,8 @@ defmodule Passwordless do
     |> Repo.update(opts)
   end
 
-  def list_emails(%App{} = app, %Actor{} = actor) do
-    actor
+  def list_user_emails(%App{} = app, %User{} = user) do
+    user
     |> Ecto.assoc(:emails)
     |> Repo.all(prefix: Tenant.to_prefix(app))
   end
@@ -728,27 +718,27 @@ defmodule Passwordless do
     Repo.insert(changeset, upsert_clause)
   end
 
-  def get_phone!(%App{} = app, %Actor{} = actor, id) do
-    actor
+  def get_phone!(%App{} = app, %User{} = user, id) do
+    user
     |> Ecto.assoc(:phones)
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
     |> Phone.put_virtuals()
   end
 
-  def change_actor_phone(%App{} = app, %Phone{} = phone, attrs \\ %{}) do
+  def change_user_phone(%App{} = app, %Phone{} = phone, attrs \\ %{}) do
     Phone.canonical_changeset(phone, attrs, prefix: Tenant.to_prefix(app))
   end
 
-  def create_actor_phone(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
+  def create_user_phone(%App{} = app, %User{} = user, attrs \\ %{}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
-    actor
+    user
     |> Ecto.build_assoc(:phones)
     |> Phone.canonical_changeset(attrs, opts)
     |> Repo.insert(opts)
   end
 
-  def update_actor_phone(%App{} = app, %Phone{} = phone, attrs) do
+  def update_user_phone(%App{} = app, %Phone{} = phone, attrs) do
     opts = [prefix: Tenant.to_prefix(app)]
 
     phone
@@ -756,22 +746,22 @@ defmodule Passwordless do
     |> Repo.update(opts)
   end
 
-  def list_phones(%App{} = app, %Actor{} = actor) do
-    actor
+  def list_phones(%App{} = app, %User{} = user) do
+    user
     |> Ecto.assoc(:phones)
     |> Repo.all(prefix: Tenant.to_prefix(app))
   end
 
-  def get_actor_recovery_codes!(%App{} = app, %Actor{} = actor) do
-    actor
+  def get_user_recovery_codes!(%App{} = app, %User{} = user) do
+    user
     |> Ecto.assoc(:recovery_codes)
     |> Repo.one!(prefix: Tenant.to_prefix(app))
   end
 
-  def create_actor_recovery_codes(%App{} = app, %Actor{} = actor) do
+  def create_user_recovery_codes(%App{} = app, %User{} = user) do
     opts = [prefix: Tenant.to_prefix(app)]
 
-    actor
+    user
     |> Ecto.build_assoc(:recovery_codes)
     |> RecoveryCodes.changeset(opts)
     |> Repo.insert(opts)
@@ -782,21 +772,21 @@ defmodule Passwordless do
   def get_action!(%App{} = app, id) do
     Action
     |> Repo.get!(id, prefix: Tenant.to_prefix(app))
-    |> Repo.preload(actor: [:email, :phone])
+    |> Repo.preload(user: [:email, :phone])
   end
 
   def get_action(%App{} = app, id) do
     Action
     |> Repo.get(id, prefix: Tenant.to_prefix(app))
-    |> Repo.preload([:rule, {:actor, [:email, :phone]}, {:challenge, [:email_message]}, :events])
+    |> Repo.preload([:rule, {:user, [:email, :phone]}, {:challenge, [:email_message]}, :events])
     |> case do
       %Action{} = action -> {:ok, action}
       nil -> {:error, :not_found}
     end
   end
 
-  def create_action(%App{} = app, %Actor{} = actor, attrs \\ %{}) do
-    actor
+  def create_action(%App{} = app, %User{} = user, attrs \\ %{}) do
+    user
     |> Ecto.build_assoc(:actions)
     |> Action.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
@@ -857,7 +847,7 @@ defmodule Passwordless do
 
   def handle_challenge(
         %App{} = app,
-        %Actor{} = actor,
+        %User{} = user,
         %Action{} = action,
         %Challenge{kind: kind} = challenge,
         event,
@@ -865,7 +855,7 @@ defmodule Passwordless do
       ) do
     action = %Action{action | challenge: challenge}
     mod = Keyword.fetch!(@challenges, kind)
-    mod.handle(app, actor, action, event: event, attrs: attrs)
+    mod.handle(app, user, action, event: event, attrs: attrs)
   end
 
   # Event
@@ -1059,10 +1049,7 @@ defmodule Passwordless do
 
   def get_app_user_count(%App{} = app) do
     Repo.aggregate(
-      from(a in Actor,
-        prefix: ^Tenant.to_prefix(app),
-        select: count(a.id)
-      ),
+      from(u in User, prefix: ^Tenant.to_prefix(app), select: count(u.id)),
       :count,
       :id
     )
@@ -1078,17 +1065,17 @@ defmodule Passwordless do
 
   def get_app_mau_count(%App{} = app, %Date{year: year, month: month}) do
     Repo.aggregate(
-      from(a in Actor,
-        as: :actor,
+      from(u in User,
+        as: :user,
         prefix: ^Tenant.to_prefix(app),
-        select: count(a.id),
+        select: count(u.id),
         where:
           exists(
             from(
               c in Action,
               prefix: ^Tenant.to_prefix(app),
               where:
-                c.actor_id == parent_as(:actor).id and
+                c.user_id == parent_as(:user).id and
                   fragment("date_part('year', ?)", c.inserted_at) == ^year and
                   fragment("date_part('month', ?)", c.inserted_at) == ^month
             )

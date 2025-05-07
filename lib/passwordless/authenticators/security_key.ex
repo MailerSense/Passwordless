@@ -48,8 +48,8 @@ defmodule Passwordless.Authenticators.SecurityKey do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = actor_email, attrs \\ %{}, _opts \\ []) do
-    actor_email
+  def changeset(%__MODULE__{} = security_key, attrs \\ %{}, _opts \\ []) do
+    security_key
     |> cast(attrs, @fields)
     |> cast_embed(:expected_origins,
       with: &expected_origin_changeset/2,

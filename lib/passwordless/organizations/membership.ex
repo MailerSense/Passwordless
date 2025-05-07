@@ -15,7 +15,13 @@ defmodule Passwordless.Organizations.Membership do
   @derive {
     Flop.Schema,
     sortable: [:id, :name, :email, :role, :inserted_at],
-    filterable: [:id, :name, :email],
+    filterable: [:id, :search],
+    custom_fields: [
+      search: [
+        filter: {__MODULE__, :unified_search_filter, []},
+        ecto_type: :string
+      ]
+    ],
     adapter_opts: [
       join_fields: [
         name: [
@@ -76,6 +82,25 @@ defmodule Passwordless.Organizations.Membership do
   """
   def get_by_user_and_org_id(%User{} = user, org_id) do
     from ms in __MODULE__, where: [org_id: ^org_id, user_id: ^user.id]
+  end
+
+  @doc """
+  A unified search filter.
+  """
+  def unified_search_filter(query, %Flop.Filter{value: value} = _flop_filter, _) do
+    value = "%#{value}%"
+
+    query =
+      if has_named_binding?(query, :user),
+        do: query,
+        else: from(q in query, as: :user)
+
+    where(
+      query,
+      [user: u],
+      ilike(u.email, ^value) or
+        ilike(u.name, ^value)
+    )
   end
 
   @fields ~w(

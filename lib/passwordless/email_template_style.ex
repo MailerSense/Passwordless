@@ -49,8 +49,8 @@ defmodule Passwordless.EmailTemplateStyle do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = template, attrs \\ %{}) do
-    template
+  def changeset(%__MODULE__{} = email_template_style, attrs \\ %{}) do
+    email_template_style
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_body()

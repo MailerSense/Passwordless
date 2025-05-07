@@ -23,7 +23,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   attr :title, :string, default: nil
   attr :title_func, {:fun, 1}, default: nil
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
-  attr :nonce, :string, doc: "the nonce"
+  attr :search_placeholder, :string, default: "Search"
 
   attr :wrapper_class, :any,
     default: "pc-table__wrapper pc-data-table__wrapper",
@@ -93,16 +93,19 @@ defmodule PasswordlessWeb.Components.DataTable do
       phx-submit="update_filters"
       {form_assigns(@form_target)}
     >
-      <div :if={@search_field} class="flex items-center justify-between gap-3 mb-6">
-        <.table_search_bar
-          meta={@meta}
-          nonce={@nonce}
-          form={filter_form}
-          search_field={@search_field}
-        />
-        {render_slot(@header_actions)}
-      </div>
       <section class={[@wrapper_class, @class]}>
+        <div
+          :if={@search_field}
+          class="flex items-center justify-between gap-3 p-6 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700/30"
+        >
+          <.table_search_bar
+            meta={@meta}
+            form={filter_form}
+            search_field={@search_field}
+            search_placeholder={@search_placeholder}
+          />
+          {render_slot(@header_actions)}
+        </div>
         <.table_header :if={Util.present?(@title)} meta={@meta} title={@title} />
         <div class="pc-data-table">
           <.table>
@@ -431,8 +434,9 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   attr :form, :map, default: nil
   attr :meta, Flop.Meta, required: true
-  attr :nonce, :string, doc: "the nonce"
+
   attr :search_field, :atom, default: nil
+  attr :search_placeholder, :string, default: "Search"
 
   defp table_search_bar(assigns) do
     ~H"""
@@ -444,13 +448,12 @@ defmodule PasswordlessWeb.Components.DataTable do
             <.field
               icon="custom-search"
               type="search"
-              nonce={@nonce}
               field={f2[:value]}
-              class="md:max-w-[300px] lg:min-w-[500px] h-12"
+              class="xl:min-w-[400px] h-12"
               label=""
               clearable={true}
               wrapper_class="mb-0!"
-              placeholder="Search"
+              placeholder={@search_placeholder}
             />
           </div>
         <% end %>

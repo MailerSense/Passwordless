@@ -1,36 +1,47 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
-  <div class="p-6">
-    <.data_table meta={@meta} nonce={get_csp_nonce()} items={@actors} title={gettext("All users")}>
+  <div class="flex flex-col gap-6 p-6">
+    <.data_table
+      meta={@meta}
+      items={@users}
+      title={gettext("All users")}
+      search_placeholder={gettext("Search by Email or User ID")}
+    >
       <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
       <:col field={:search} searchable filterable={[:==]} />
-      <:col :let={actor} field={:name}>
+      <:col :let={user} field={:email} sortable>
         <.a
-          to={apply_filters(@filters, @meta, ~p"/users/#{actor}/edit")}
-          label={Actor.handle(actor)}
+          to={apply_filters(@filters, @meta, ~p"/users/#{user}/edit")}
+          label={User.email(user)}
           style="link"
           link_type="live_redirect"
         />
       </:col>
-      <:col :let={actor} field={:email} sortable>
-        {Actor.email(actor)}
-      </:col>
-      <:col :let={actor} field={:phone} sortable>
-        <% phone = Actor.phone(actor) %>
-        <div :if={Util.present?(phone)} class="flex items-center gap-2">
-          <.icon name={"flag-#{Actor.phone_region(actor)}"} class="pc-flag-icon" /> {phone}
+      <:col :let={user} field={:last_action} label={gettext("Last Action")}>
+        <div class="flex flex-col">
+          <span class="text-slate-900 dark:text-white">Test action</span>
+          <span class="text-slate-600 dark:text-slate-300">
+            {format_date(user.inserted_at)}
+          </span>
         </div>
       </:col>
-      <:col :let={actor} field={:state} sortable>
-        <% {badge_label, badge_color} = actor_state_badge(actor) %>
-        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+      <:col :let={user} field={:result}>
+        <.badge with_dot size="sm" label={gettext("Allow")} color="success" />
       </:col>
-      <:col :let={actor} label={gettext("Added")} field={:inserted_at} sortable>
-        {format_date(actor.inserted_at)}
+
+      <:col :let={user} field={:success_rate} label={gettext("Allow Rate")}>
+        <.progress
+          label
+          color="primary"
+          value={(0.3 || 0.0) * 100.0}
+          max={100}
+          class="flex-grow min-w-16"
+        />
       </:col>
+
       <:col actions></:col>
-      <:actions :let={actor}>
+      <:actions :let={user}>
         <.icon_button
-          to={apply_filters(@filters, @meta, ~p"/users/#{actor}/delete")}
+          to={apply_filters(@filters, @meta, ~p"/users/#{user}/delete")}
           size="sm"
           icon="custom-trash"
           color="light"
@@ -38,7 +49,7 @@
           link_type="live_patch"
         />
         <.icon_button
-          to={apply_filters(@filters, @meta, ~p"/users/#{actor}/edit")}
+          to={apply_filters(@filters, @meta, ~p"/users/#{user}/edit")}
           size="sm"
           icon="custom-edit"
           color="light"
@@ -74,8 +85,8 @@
       id={@live_action}
       title={@page_title}
       subtitle={@page_subtitle}
-      actor={%Actor{}}
-      module={PasswordlessWeb.App.ActorLive.FormComponent}
+      user={%User{}}
+      module={PasswordlessWeb.App.UserLive.FormComponent}
       live_action={@live_action}
       current_org={@current_org}
       current_app={@current_app}
@@ -87,8 +98,8 @@
       id={@live_action}
       title={@page_title}
       subtitle={@page_subtitle}
-      actor={@actor}
-      module={PasswordlessWeb.App.ActorLive.EditComponent}
+      user={@user}
+      module={PasswordlessWeb.App.UserLive.EditComponent}
       live_action={@live_action}
       current_org={@current_org}
       current_app={@current_app}
@@ -113,10 +124,10 @@
         <.button
           icon="remix-delete-bin-line"
           size="md"
-          label={gettext("Yes, Delete \"%{actor}\"", actor: Util.truncate(Actor.handle(@actor)))}
+          label={gettext("Yes, Delete \"%{user}\"", user: Util.truncate(User.handle(@user)))}
           color="danger"
-          phx-click="delete_actor"
-          phx-value-id={@actor.id}
+          phx-click="delete_user"
+          phx-value-id={@user.id}
         />
       </div>
     </.modal>
@@ -125,7 +136,7 @@
       id={@live_action}
       title={@page_title}
       subtitle={@page_subtitle}
-      module={PasswordlessWeb.App.ActorLive.ImportComponent}
+      module={PasswordlessWeb.App.UserLive.ImportComponent}
       live_action={@live_action}
       current_org={@current_org}
       current_user={@current_user}

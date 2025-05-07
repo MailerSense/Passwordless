@@ -69,8 +69,8 @@ defmodule Passwordless.EmailTemplateLocale do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = template, attrs \\ %{}, opts \\ []) do
-    template
+  def changeset(%__MODULE__{} = email_template, attrs \\ %{}, opts \\ []) do
+    email_template
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_subject()
