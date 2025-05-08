@@ -10,7 +10,7 @@
     <.box padded>
       <.form_header title={gettext("Passkey")} />
       <.p class="mb-6">
-        A passkey is a digital credential that replaces passwords for signing into websites and apps.
+        A passkey is a digital credential that replaces passwords for signing into websites and apps. It is a more secure and user-friendly alternative to traditional passwords, as it uses public key cryptography to authenticate users without the need for a shared secret.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
       <.field
@@ -41,7 +41,7 @@
         The expected origins are the domains that the passkey can be used on. The passkey will only be valid for the specified domains.
       </.p>
       <div class="pc-form-field-wrapper">
-        <.field_label required>{gettext("Expected origins")}</.field_label>
+        <.field_label>{gettext("Expected origins")}</.field_label>
         <div class="flex flex-col gap-y-2">
           <.inputs_for :let={expected_origin} field={@form[:expected_origins]}>
             <input
@@ -77,7 +77,7 @@
         </div>
         <div class="flex mt-3">
           <.button
-            size="xs"
+            size="sm"
             type="button"
             color="light"
             icon="remix-add-circle-line"

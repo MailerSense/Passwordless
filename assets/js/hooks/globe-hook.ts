@@ -32,6 +32,10 @@ class GlobeHook extends Hook {
       .width(windowWidth)
       .height(windowHeight - 50);
 
+    const controls = this.globe.controls();
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.2;
+
     window.addEventListener("resize", () => {
       if (!self.globe) return;
       const windowWidth = window.innerWidth;

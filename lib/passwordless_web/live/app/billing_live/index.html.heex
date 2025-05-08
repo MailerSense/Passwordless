@@ -1,5 +1,17 @@
 <.layout current_user={@current_user} current_page={:billing} current_section={:app}>
   <div class="flex flex-col gap-6 px-8 py-6">
+    <div class="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+      <.simple_card badge={gettext("Plan")} content={gettext("Essential")} />
+      <.simple_card
+        badge={gettext("Events")}
+        content={NumberLocale.to_string!(152_000, format: :short)}
+      />
+      <.simple_card
+        badge={gettext("Users")}
+        content={NumberLocale.to_string!(15_000, format: :short)}
+      />
+    </div>
+
     <.box card>
       <.form_header title={gettext("Billing")} no_margin />
       <.p>
@@ -27,6 +39,7 @@
         />
       </div>
     </.box>
+
     <.simple_table
       items={[
         %{

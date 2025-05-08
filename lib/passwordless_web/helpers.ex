@@ -9,6 +9,7 @@ defmodule PasswordlessWeb.Helpers do
   alias Passwordless.Accounts.User
   alias Passwordless.Action
   alias Passwordless.ActionEvent
+  alias Passwordless.ActionTemplate
   alias Passwordless.Activity.Log
   alias Passwordless.App
   alias Passwordless.AuthToken
@@ -80,6 +81,32 @@ defmodule PasswordlessWeb.Helpers do
         label: "Web Components",
         icon: "remix-reactjs-line",
         path: ~p"/embed/ui",
+        link_type: "live_patch"
+      }
+    ]
+  end
+
+  def action_menu_items(%ActionTemplate{} = action_template) do
+    [
+      %{
+        name: :edit,
+        label: "Rules",
+        icon: "remix-checkbox-line",
+        path: ~p"/actions/#{action_template}/edit",
+        link_type: "live_patch"
+      },
+      %{
+        name: :branding,
+        label: "Branding",
+        icon: "remix-sip-line",
+        path: ~p"/actions/#{action_template}/branding",
+        link_type: "live_patch"
+      },
+      %{
+        name: :api,
+        label: "API",
+        icon: "remix-terminal-box-line",
+        path: ~p"/actions/#{action_template}/api",
         link_type: "live_patch"
       }
     ]

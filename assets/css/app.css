@@ -1776,7 +1776,7 @@
     @apply inline-flex p-1 rounded-sm items-center bg-white dark:bg-slate-800 shadow-0 dark:bg-slate-700/50;
   }
   .pc-tabs--native {
-    @apply flex p-1 rounded-sm items-center bg-slate-100 dark:bg-slate-900;
+    @apply flex p-1 rounded-sm items-center bg-slate-100 dark:bg-slate-950;
   }
   .pc-tabs--contrast {
     @apply inline-flex items-center gap-2;

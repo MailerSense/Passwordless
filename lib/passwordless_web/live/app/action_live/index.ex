@@ -3,6 +3,7 @@ defmodule PasswordlessWeb.App.ActionLive.Index do
   use PasswordlessWeb, :live_view
 
   alias Passwordless.ActionTemplate
+  alias Passwordless.App
   alias PasswordlessWeb.Components.DataTable
 
   @data_table_opts [
@@ -19,9 +20,16 @@ defmodule PasswordlessWeb.App.ActionLive.Index do
   end
 
   @impl true
-  def handle_params(params, _url, socket) do
+  def handle_params(params, _url, %{assigns: %{current_app: %App{} = current_app}} = socket) do
+    action_template =
+      case params do
+        %{"id" => id} -> Passwordless.get_action_template!(current_app, id)
+        _ -> nil
+      end
+
     {:noreply,
      socket
+     |> assign(action_template: action_template)
      |> assign_filters(params)
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}
@@ -77,6 +85,16 @@ defmodule PasswordlessWeb.App.ActionLive.Index do
     assign(socket,
       page_title: gettext("Rules"),
       page_subtitle: gettext("Manage your rules")
+    )
+  end
+
+  defp apply_action(socket, :delete) do
+    assign(socket,
+      page_title: gettext("Delete action"),
+      page_subtitle:
+        gettext(
+          "Are you sure you want to delete this action? This action will be permanently deleted, and all widgets or API integrations using this action will stop working."
+        )
     )
   end
 

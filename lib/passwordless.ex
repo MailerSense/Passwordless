@@ -800,6 +800,20 @@ defmodule Passwordless do
     |> Repo.insert()
   end
 
+  def get_action_template!(%App{} = app, id) do
+    app
+    |> Ecto.assoc(:action_templates)
+    |> Repo.get!(id)
+  end
+
+  def change_action_template(%ActionTemplate{} = action_template, attrs \\ %{}) do
+    if Ecto.get_meta(action_template, :state) == :loaded do
+      ActionTemplate.changeset(action_template, attrs)
+    else
+      ActionTemplate.changeset(action_template, attrs)
+    end
+  end
+
   def update_action_in_flow(%App{} = app, %Action{} = action, attrs \\ %{}) do
     action
     |> Action.changeset(attrs)
