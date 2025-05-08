@@ -1,4 +1,5 @@
 import Globe, { GlobeInstance } from "globe.gl";
+
 import { Hook, makeHook } from "./typed-hook";
 
 class GlobeHook extends Hook {
@@ -33,7 +34,6 @@ class GlobeHook extends Hook {
 
     window.addEventListener("resize", () => {
       if (!self.globe) return;
-      console.log("resize");
       const windowWidth = window.innerWidth;
       self.globe
         .globeOffset([
