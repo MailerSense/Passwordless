@@ -1,6 +1,13 @@
 <.layout current_user={@current_user} current_page={:reports} current_section={:app}>
-  <div class="flex flex-col gap-6 px-8 py-6">
-    <.bar_stats />
-    <.box card></.box>
+  <div class="relative overflow-hidden">
+    <div id="globe" phx-hook="GlobeHook"></div>
+    <div class="absolute left-0 top-0 mx-8 my-6">
+      <.box padded class="flex flex-col gap-4">
+        <.live_indicator to={~p"/reports"} />
+        <span class="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white">
+          9,097
+        </span>
+      </.box>
+    </div>
   </div>
 </.layout>

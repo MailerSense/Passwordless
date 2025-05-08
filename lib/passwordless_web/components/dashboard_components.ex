@@ -613,10 +613,10 @@ defmodule PasswordlessWeb.DashboardComponents do
       data-tippy-content={gettext("Users who performed an action in last 6 hours")}
       data-tippy-placement="bottom"
     >
-      <span class="relative flex size-2.5">
+      <span class="relative flex size-3">
         <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success-400 opacity-75">
         </span>
-        <span class="relative inline-flex size-2.5 rounded-full bg-success-500"></span>
+        <span class="relative inline-flex size-3 rounded-full bg-success-500"></span>
       </span>
       207 users online
     </.a>

@@ -193,9 +193,9 @@ defmodule PasswordlessWeb.Menus do
   def get_link(:reports = name, _user) do
     %{
       name: name,
-      label: gettext("Reports"),
+      label: gettext("Realtime"),
       path: ~p"/reports",
-      icon: "remix-pie-chart-line",
+      icon: "remix-earth-line",
       link_type: "live_patch"
     }
   end

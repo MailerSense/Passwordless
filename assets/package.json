@@ -20,6 +20,7 @@
     "@lezer/highlight": "^1.2.1",
     "@sentry/browser": "^9.15.0",
     "codemirror": "^6.0.1",
+    "globe.gl": "^2.41.4",
     "highlight.js": "^11.11.1",
     "motion": "^12.6.5",
     "tippy.js": "^6.3.7",
