@@ -9,12 +9,15 @@
       <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
       <:col field={:search} searchable filterable={[:==]} />
       <:col :let={user} field={:email} sortable>
-        <.a
-          to={apply_filters(@filters, @meta, ~p"/users/#{user}/edit")}
-          label={User.email(user)}
-          style="link"
-          link_type="live_redirect"
-        />
+        <div class="flex items-center gap-3">
+          <.avatar name={user.email.address} color="blue" />
+          <.a
+            to={apply_filters(@filters, @meta, ~p"/users/#{user}/edit")}
+            label={User.email(user)}
+            class="pc-avatar--avatar-entry__title-md"
+            link_type="live_redirect"
+          />
+        </div>
       </:col>
       <:col :let={user} field={:last_action} label={gettext("Last Action")}>
         <div class="flex flex-col">

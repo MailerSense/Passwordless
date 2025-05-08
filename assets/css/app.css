@@ -1561,13 +1561,13 @@
     @apply bg-primary-50 dark:bg-primary-800;
   }
   .pc-avatar--primary-text {
-    @apply text-primary-600 dark:text-primary-50;
+    @apply text-primary-500 dark:text-primary-50;
   }
   .pc-avatar--blue-bg {
     @apply bg-blue-50 dark:bg-blue-700/50;
   }
   .pc-avatar--blue-text {
-    @apply text-blue-700 dark:text-blue-100;
+    @apply text-blue-500 dark:text-blue-100;
   }
   .pc-avatar--indigo-bg {
     @apply bg-indigo-50 dark:bg-indigo-800;

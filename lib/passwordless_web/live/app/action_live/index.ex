@@ -93,9 +93,7 @@ defmodule PasswordlessWeb.App.ActionLive.Index do
 
   defp assign_actions(socket, params) when is_map(params) do
     app = socket.assigns.current_app
-
-    query =
-      ActionTemplate.get_by_app(app)
+    query = ActionTemplate.get_by_app(app)
 
     {actions, meta} = DataTable.search(query, params, @data_table_opts)
     assign(socket, actions: actions, meta: meta)
