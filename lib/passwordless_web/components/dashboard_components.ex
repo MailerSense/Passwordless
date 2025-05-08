@@ -15,6 +15,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   import PasswordlessWeb.Components.Typography
 
   alias Passwordless.Accounts.User
+  alias Passwordless.Locale.Number, as: NumberLocale
 
   attr :badge, :string, required: true
   attr :content, :string, required: true
@@ -255,7 +256,7 @@ defmodule PasswordlessWeb.DashboardComponents do
 
     ~H"""
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
-      <.field_label required>{gettext("Email template")}</.field_label>
+      <.field_label>{gettext("Email template")}</.field_label>
       <.a
         to={@to}
         title={@name}
@@ -377,7 +378,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   def totp_preview(assigns) do
     ~H"""
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
-      <.field_label required>{gettext("Preview")}</.field_label>
+      <.field_label>{gettext("Preview")}</.field_label>
       <div class="flex justify-center items-center bg-slate-100 rounded-lg dark:bg-slate-700/50 shadow-m2 p-6 gap-6">
         <div class="inline-block">
           {generate_qrcode(@code)}
@@ -619,6 +620,78 @@ defmodule PasswordlessWeb.DashboardComponents do
       </span>
       207 users online
     </.a>
+    """
+  end
+
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :label, :string, required: true, doc: "labels your dropdown option"
+  attr :legend_color_class, :string, required: true, doc: "labels your dropdown option"
+  attr :circle_color_class, :string, required: true, doc: "labels your dropdown option"
+  attr :value, :integer, required: true, doc: "labels your dropdown option"
+  attr :value_max, :integer, required: true, doc: "labels your dropdown option"
+
+  def circle_stat(assigns) do
+    ~H"""
+    <.box class="flex gap-6" padded>
+      <div class="flex flex-col justify-between gap-4">
+        <badge class="flex gap-2 items-center">
+          <div class={["w-4 h-2 rounded-full", @legend_color_class]}></div>
+          <p class="text-gray-600 dark:text-gray-300 text-xs font-semibold">{@label}</p>
+        </badge>
+
+        <h3 class="text-gray-900 dark:text-white text-2xl font-bold">
+          {NumberLocale.to_string!(@value)}
+        </h3>
+      </div>
+      <div class="ml-auto relative size-24 2xl:size-32">
+        <svg class="size-full -rotate-90" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+          <circle
+            cx="18"
+            cy="18"
+            r="16"
+            fill="none"
+            class="stroke-current text-gray-100 dark:text-gray-700"
+            stroke-width="3.5"
+          >
+          </circle>
+          <circle
+            cx="18"
+            cy="18"
+            r="16"
+            fill="none"
+            class={["stroke-current", @circle_color_class]}
+            stroke-width="3.5"
+            stroke-dasharray="100"
+            stroke-dashoffset={100 - trunc(Float.round(@value / @value_max * 100))}
+            stroke-linecap="round"
+          >
+          </circle>
+        </svg>
+        <div class="absolute top-1/2 start-1/2 transform -translate-y-1/2 -translate-x-1/2">
+          <span class={["text-center text-xl xl:text-2xl font-semibold", @circle_color_class]}>
+            {trunc(Float.round(@value / @value_max * 100))}%
+          </span>
+        </div>
+      </div>
+    </.box>
+    """
+  end
+
+  def bar_stats(assigns) do
+    ~H"""
+    <.box class="flex items-center gap-2 divide-x divide-slate-200 dark:divide-slate-700/40">
+      <div :for={i <- 1..6} class="flex flex-col grow p-6">
+        <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Value {i}</span>
+        <div class="flex gap-2 items-center justify-between">
+          <span class="text-xl xl:text-2xl font-semibold text-slate-900 dark:text-white">
+            9.6K
+          </span>
+          <span class="text-xs font-bold flex gap-1 items-center text-success-600 dark:text-success-400">
+            <.icon name="remix-arrow-up-fill" class="w-4 h-4" /><span>60.1%</span>
+          </span>
+        </div>
+      </div>
+    </.box>
     """
   end
 

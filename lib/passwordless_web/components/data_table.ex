@@ -96,7 +96,7 @@ defmodule PasswordlessWeb.Components.DataTable do
       <section class={[@wrapper_class, @class]}>
         <div
           :if={@search_field}
-          class="flex items-center justify-between gap-3 p-6 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700/30"
+          class="flex items-center justify-between gap-3 p-6 bg-slate-50 dark:bg-transparent border-b border-slate-200 dark:border-slate-700/30"
         >
           <.table_search_bar
             meta={@meta}

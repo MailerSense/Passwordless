@@ -10,6 +10,7 @@ defmodule Passwordless do
   alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.ActionEvent
+  alias Passwordless.ActionTemplate
   alias Passwordless.App
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
@@ -790,6 +791,13 @@ defmodule Passwordless do
     |> Ecto.build_assoc(:actions)
     |> Action.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
+  end
+
+  def create_action_template(%App{} = app, attrs \\ %{}) do
+    app
+    |> Ecto.build_assoc(:action_templates)
+    |> ActionTemplate.changeset(attrs)
+    |> Repo.insert()
   end
 
   def update_action_in_flow(%App{} = app, %Action{} = action, attrs \\ %{}) do

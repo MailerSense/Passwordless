@@ -213,7 +213,7 @@ msgstr ""
 #: lib/petal_pro_web/live/orgs/org/team_live/org_team_invite_form_component.ex:24
 #: lib/petal_pro_web/live/user_settings/edit_email_live.ex:25
 #, elixir-autogen, elixir-format
-msgid "eg. john.doe@company.com"
+msgid "john.doe@company.com"
 msgstr ""
 
 #: lib/petal_pro_web/live/orgs/org/org_settings_layout_component.ex:29

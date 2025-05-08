@@ -737,7 +737,7 @@
   }
 
   .pc-link--styled {
-    @apply flex items-center gap-1 text-info-600 dark:text-info-300 underline underline-offset-2;
+    @apply flex items-center gap-1 text-info-600 dark:text-info-300 underline underline-offset-4;
   }
 
   .pc-link--styled__disabled {
@@ -745,11 +745,11 @@
   }
 
   .pc-link--delete {
-    @apply flex items-center gap-1 text-danger-600 dark:text-danger-300 underline underline-offset-2;
+    @apply flex items-center gap-1 text-danger-600 dark:text-danger-300 underline underline-offset-4;
   }
 
   .pc-link--sensitive {
-    @apply flex items-center gap-1 text-warning-600 dark:text-warning-300 underline underline-offset-2;
+    @apply flex items-center gap-1 text-warning-600 dark:text-warning-300 underline underline-offset-4;
   }
 
   .pc-link--alternative {
@@ -1391,14 +1391,14 @@
   }
   .pc-sidebar__aside {
     @apply z-40 flex flex-col shrink-0 h-screen border-r border-slate-200 dark:border-slate-700 overflow-y-auto no-scrollbar;
-    @apply bg-slate-900 w-64 xl:w-72;
+    @apply bg-slate-900 w-64 xl:w-64;
     @apply relative;
   }
   .pc-sidebar__tabs {
     @apply flex h-screen overflow-y-hidden bg-white dark:bg-transparent;
   }
   .pc-sidebar__nav {
-    @apply p-3 pt-6 w-64 xl:w-72 flex flex-col select-none shrink-0 border-r border-slate-200 dark:border-slate-700;
+    @apply p-3 pt-6 w-64 xl:w-64 flex flex-col select-none shrink-0 border-r border-slate-200 dark:border-slate-700;
   }
   .pc-sidebar__content {
     @apply w-full grow overflow-y-auto bg-slate-100 dark:bg-transparent;

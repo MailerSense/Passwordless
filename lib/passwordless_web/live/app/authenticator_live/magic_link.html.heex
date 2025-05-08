@@ -19,6 +19,7 @@
           label={gettext("Name")}
           disabled={not @enabled}
           required
+          required_asterix={false}
           wrapper_class="mb-0!"
         />
         <.field
@@ -28,6 +29,7 @@
           readonly={Domain.system?(@domain)}
           disabled={not @enabled}
           required
+          required_asterix={false}
           wrapper_class="mb-0!"
         />
       </div>
@@ -54,83 +56,38 @@
         link_type="live_redirect"
       />
       <.form_separator />
-      <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2 mb-6">
-        <.field
-          field={@form[:expires]}
-          type="number"
-          min="1"
-          max="30"
-          prefix={gettext("After")}
-          suffix={gettext("minutes")}
-          disabled={not @enabled}
-          required
-          wrapper_class="mb-0!"
-        />
-        <.field
-          field={@form[:resend]}
-          type="number"
-          min="30"
-          max="300"
-          prefix={gettext("Possible after")}
-          suffix={gettext("seconds")}
-          disabled={not @enabled}
-          required
-          wrapper_class="mb-0!"
-        />
-      </div>
+
+      <.field
+        field={@form[:expires]}
+        type="number"
+        min="1"
+        max="30"
+        prefix={gettext("After")}
+        suffix={gettext("minutes")}
+        disabled={not @enabled}
+        required
+        required_asterix={false}
+      />
+      <.field
+        field={@form[:resend]}
+        type="number"
+        min="30"
+        max="300"
+        prefix={gettext("Possible after")}
+        suffix={gettext("seconds")}
+        disabled={not @enabled}
+        required
+        required_asterix={false}
+      />
+
       <.field
         field={@form[:behavior]}
         prefix={gettext("When link is clicked")}
         type="select"
         options={@behaviors}
         required
+        required_asterix={false}
       />
-      <div class="pc-form-field-wrapper">
-        <.field_label required>{gettext("Redirect URLs")}</.field_label>
-        <div class="flex flex-col gap-y-2">
-          <.inputs_for :let={f} field={@form[:redirect_urls]}>
-            <input type="hidden" name="magic_link[redirect_urls_sort][]" value={f.index} />
-            <div class="flex items-center grow gap-2">
-              <.field
-                type="url"
-                label=""
-                field={f[:url]}
-                required
-                disabled={not @enabled}
-                wrapper_class="mb-0! w-full grow"
-              >
-                <:action>
-                  <.icon_form_button
-                    size="sm"
-                    name="magic_link[redirect_urls_drop][]"
-                    type="button"
-                    icon="custom-trash"
-                    color="light"
-                    title={gettext("Remove")}
-                    value={f.index}
-                    event={JS.dispatch("change")}
-                    disabled={not @enabled or f.index == 0}
-                  />
-                </:action>
-              </.field>
-            </div>
-          </.inputs_for>
-        </div>
-        <div class="flex mt-3">
-          <.button
-            size="xs"
-            type="button"
-            color="light"
-            icon="remix-add-circle-line"
-            label={gettext("Add URL")}
-            name="magic_link[redirect_urls_sort][]"
-            value="new"
-            disabled={not @enabled}
-            phx-click={JS.dispatch("change")}
-          />
-        </div>
-        <input type="hidden" name="magic_link[redirect_urls_drop][]" />
-      </div>
     </.box>
   </.form>
 

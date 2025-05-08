@@ -1,11 +1,6 @@
 <.layout current_user={@current_user} current_page={:reports} current_section={:app}>
-  <div class="flex flex-col gap-6 p-6">
-    <.box card>
-      <.form_header title={gettext("Reports")} no_margin />
-      <.p>
-        {gettext("We are working on statistical data analysis. Stay tuned!")}
-      </.p>
-      <.a label={gettext("Go Home")} to={~p"/home"} style="link" link_type="live_redirect" />
-    </.box>
+  <div class="flex flex-col gap-6 px-8 py-6">
+    <.bar_stats />
+    <.box card></.box>
   </div>
 </.layout>

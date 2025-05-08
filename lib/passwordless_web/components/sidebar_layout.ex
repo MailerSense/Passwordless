@@ -127,7 +127,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
 
       <div class="pc-sidebar__header-container">
         <header class="pc-sidebar__header">
-          <div :if={Util.present?(@dropdown)} class="px-6 hidden md:flex">
+          <div :if={Util.present?(@dropdown)} class="px-8 hidden md:flex">
             {render_slot(@dropdown)}
           </div>
 
