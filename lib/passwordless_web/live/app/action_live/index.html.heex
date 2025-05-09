@@ -52,6 +52,13 @@
       <:header_actions>
         <div class="flex gap-3">
           <.button
+            to={apply_filters(@filters, @meta, ~p"/actions/import")}
+            color="light"
+            label={gettext("Learn More")}
+            icon="remix-graduation-cap-line"
+            link_type="live_patch"
+          />
+          <.button
             to={apply_filters(@filters, @meta, ~p"/actions/new")}
             color="primary"
             label={gettext("Create")}

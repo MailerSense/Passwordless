@@ -34,24 +34,34 @@
             disabled={not @action_form.source.valid? or Enum.empty?(@action_form.source.changes)}
           />
         </div>
+
+        <:badge>
+          <.code_line>{@action_template.alias}</.code_line>
+        </:badge>
       </.subpage_header>
       <.tab_menu
         menu_items={action_menu_items(@action_template)}
         current_tab={@live_action}
         class="mb-6"
       />
-      <div class="flex flex-col xl:flex-row gap-4">
-        <.box
-          card
-          class={[
-            "grow xl:flex-none",
-            "xl:w-1/3 xl:max-w-[500px] xl:min-w-[400px]"
-          ]}
-        >
-          <.form_header title={gettext("Details")} />
-        </.box>
-        <.box card class="grow"><.form_header title={gettext("Rules")} /></.box>
-      </div>
+      <.area padded class="flex flex-col gap-6">
+        <div class="flex items-center justify-between gap-3">
+          <.area_header title={gettext("Rules")} />
+
+          <.button
+            size="sm"
+            type="button"
+            color="light"
+            icon="remix-add-circle-line"
+            label={gettext("Create rule")}
+          />
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <.rule_card />
+          <.rule_card />
+        </div>
+      </.area>
     </.form>
   </div>
 </.layout>

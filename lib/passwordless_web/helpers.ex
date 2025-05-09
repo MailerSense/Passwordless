@@ -63,24 +63,17 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
+        name: :ui,
+        label: "Components",
+        icon: "remix-cursor-line",
+        path: ~p"/embed/ui",
+        link_type: "live_patch"
+      },
+      %{
         name: :api,
         label: "Backend API",
-        icon: "remix-server-line",
+        icon: "remix-code-s-slash-line",
         path: ~p"/embed/api",
-        link_type: "live_patch"
-      },
-      %{
-        name: :rules_engine,
-        label: "Rules Engine",
-        icon: "remix-toggle-line",
-        path: ~p"/embed/rules-engine",
-        link_type: "live_patch"
-      },
-      %{
-        name: :ui,
-        label: "Web Components",
-        icon: "remix-reactjs-line",
-        path: ~p"/embed/ui",
         link_type: "live_patch"
       }
     ]
@@ -97,16 +90,16 @@ defmodule PasswordlessWeb.Helpers do
       },
       %{
         name: :branding,
-        label: "Branding",
-        icon: "remix-sip-line",
+        label: "Embed",
+        icon: "remix-code-s-slash-line",
         path: ~p"/actions/#{action_template}/branding",
         link_type: "live_patch"
       },
       %{
-        name: :api,
-        label: "API",
-        icon: "remix-terminal-box-line",
-        path: ~p"/actions/#{action_template}/api",
+        name: :activity,
+        label: "Activity",
+        icon: "remix-line-chart-line",
+        path: ~p"/actions/#{action_template}/activity",
         link_type: "live_patch"
       }
     ]

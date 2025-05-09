@@ -327,7 +327,11 @@ defmodule PasswordlessWeb.Components.Field do
     ~H"""
     <label class={["pc-switch-label", @label_class]}>
       <input type="hidden" name={@name} value="false" />
-      <label class={["pc-switch", @disabled && "pc-switch--disabled"]}>
+      <label class={[
+        "pc-switch",
+        Util.present?(@label) && "pc-switch__label",
+        @disabled && "pc-switch--disabled"
+      ]}>
         <input
           id={@id}
           type="checkbox"
@@ -343,7 +347,12 @@ defmodule PasswordlessWeb.Components.Field do
         <span class="pc-switch__fake-input"></span>
         <span class="pc-switch__fake-input-bg"></span>
       </label>
-      <div class={[@required && @required_asterix && "pc-label--required"]}>{@label}</div>
+      <div
+        :if={Util.present?(@label)}
+        class={[@required && @required_asterix && "pc-label--required"]}
+      >
+        {@label}
+      </div>
     </label>
     """
   end
@@ -796,6 +805,9 @@ defmodule PasswordlessWeb.Components.Field do
   def field(%{type: "editor"} = assigns) do
     ~H"""
     <.field_wrapper errors={@errors} name={@name} class={@wrapper_class} no_margin={true}>
+      <span :if={Util.present?(@prefix)} class="pc-field-prefix">
+        {@prefix}
+      </span>
       <input
         id={@id}
         type={@type}

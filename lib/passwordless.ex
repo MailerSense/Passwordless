@@ -833,16 +833,13 @@ defmodule Passwordless do
   end
 
   def locate_action_event(%App{} = app, %ActionEvent{ip_address: ip_address} = event) when is_binary(ip_address) do
-    key = "ip_loc_" <> ip_address
-
-    case Passwordless.Cache.get(key) do
-      %{"city" => city, "country" => country} when is_binary(city) and is_binary(country) ->
+    case Passwordless.GeoIP.lookup(ip_address) do
+      {:ok, %{"country" => %{"iso_code" => country}, "city" => %{"names" => %{"en" => city}}}}
+      when is_binary(city) and is_binary(country) ->
         Passwordless.update_action_event(app, event, %{city: city, country: country})
 
-      _ ->
-        %{app_id: app.id, action_event_id: event.id}
-        |> Passwordless.ActionLocator.new()
-        |> Oban.insert()
+      {:error, _} ->
+        {:ok, event}
     end
   end
 

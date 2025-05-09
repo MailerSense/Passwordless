@@ -41,7 +41,7 @@
         The expected origins are the domains that the passkey can be used on. The passkey will only be valid for the specified domains.
       </.p>
       <div class="pc-form-field-wrapper">
-        <.field_label>{gettext("Expected origins")}</.field_label>
+        <.field_label>{gettext("Allowed origins")}</.field_label>
         <div class="flex flex-col gap-y-2">
           <.inputs_for :let={expected_origin} field={@form[:expected_origins]}>
             <input

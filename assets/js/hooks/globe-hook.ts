@@ -26,7 +26,7 @@ class GlobeHook extends Hook {
         });
       })
       .globeOffset([
-        windowWidth && windowWidth > 768 ? -100 : 0,
+        windowWidth && windowWidth > 768 ? -200 : 0,
         windowWidth && windowWidth > 768 ? 0 : 100,
       ])
       .width(windowWidth)
@@ -41,7 +41,7 @@ class GlobeHook extends Hook {
       const windowWidth = window.innerWidth;
       self.globe
         .globeOffset([
-          windowWidth && windowWidth > 768 ? -100 : 0,
+          windowWidth && windowWidth > 768 ? -200 : 0,
           windowWidth && windowWidth > 768 ? 0 : 100,
         ])
         .width(windowWidth)

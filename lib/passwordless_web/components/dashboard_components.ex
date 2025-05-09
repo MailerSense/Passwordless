@@ -695,6 +695,156 @@ defmodule PasswordlessWeb.DashboardComponents do
     """
   end
 
+  attr :class, :string, default: nil
+  attr :rest, :global
+  slot :inner_block
+
+  def rule_card(assigns) do
+    ~H"""
+    <section {@rest} class={["pc-rule-card", @class]}>
+      <div class="flex items-stretch divide-x divide-slate-200 dark:divide-slate-700/40">
+        <div class="flex flex-col items-center justify-center">
+          <.icon name="custom-drag" class="w-[18px] h-[18px] text-slate-900 dark:text-white" />
+        </div>
+        <div class="grow flex flex-col divide-y divide-slate-200 dark:divide-slate-700/40">
+          <div class="p-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 p-2.5 bg-white rounded-[100px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.06)] shadow-[0px_1px_3px_0px_rgba(16,24,40,0.10)] outline outline-1 outline-offset-[-1px] outline-[#e4e7ec] inline-flex flex-col justify-center items-center gap-2.5">
+                <div class="justify-start text-[#243837] text-sm font-semibold font-['Inter'] leading-tight">
+                  1
+                </div>
+              </div>
+              <h4 class="text-sm font-semibold text-slate-900 dark:text-white leading-tight">
+                {gettext("Rule name")}
+              </h4>
+            </div>
+            <.field type="switch" label="" name="test" value={true} label_class="!mb-0" />
+          </div>
+          <div class="p-3 flex justify-between items-center">
+            test
+          </div>
+        </div>
+      </div>
+      {render_slot(@inner_block)}
+    </section>
+    """
+  end
+
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :title, :string, required: true, doc: "labels your dropdown option"
+  attr :subtitle, :string, default: nil, doc: "labels your dropdown option"
+  attr :values, :list, default: [], doc: "labels your dropdown option"
+
+  def uptime_chart(assigns) do
+    assigns =
+      assign(assigns, :legend, [
+        %{color: "bg-streetlight-100", label: gettext("Allow")},
+        %{color: "bg-streetlight-200", label: gettext("Timeout")},
+        %{color: "bg-streetlight-300", label: gettext("Block")}
+      ])
+
+    ~H"""
+    <.box class={[
+      @class
+    ]}>
+      <div class={[
+        "px-6 py-4 flex items-center justify-between",
+        "border-b border-gray-200 dark:border-gray-700"
+      ]}>
+        <div class="flex items-center gap-4">
+          <.icon
+            name="remix-checkbox-circle-fill"
+            class={["w-6 h-6", "text-success-500 dark:text-success-400"]}
+          />
+          <h3 class={["text-base font-semibold", "text-gray-900 dark:text-white"]}>
+            {@title}
+          </h3>
+        </div>
+        <div :if={@subtitle} class="text-gray-500 dark:text-gray-400 font-medium">
+          {@subtitle}
+        </div>
+      </div>
+
+      <div class={[
+        "p-6 gap-6 flex flex-col"
+      ]}>
+        <div class="flex justify-between gap-1">
+          <div
+            :for={item <- @values}
+            class={[
+              "flex flex-col w-full min-h-20 overflow-hidden",
+              "hover:opacity-40 active:opacity-30 focus:opacity-30 cursor-pointer"
+            ]}
+            id={"uptime-event-#{:rand.uniform(10_000_000) + 1}"}
+            phx-hook="TippyHook"
+            data-tippy-arrow="false"
+            data-tippy-placement="top"
+            data-template-selector="div.tippy-template"
+          >
+            <div
+              :for={{color, ratio} <- item}
+              class={[
+                "rounded",
+                "relative bg-gradient-to-b",
+                "from-streetlight-#{color + 20}",
+                "to-streetlight-#{color + 10}"
+              ]}
+              style={"height: #{trunc(Float.round(ratio * 100, 0))}%;"}
+            >
+            </div>
+
+            <div class="hidden tippy-template shadow-4 rounded-lg">
+              <div class="flex flex-col px-4 py-2 gap-3">
+                <div class="flex flex-col">
+                  <p class="text-gray-600 dark:text-gray-300 text-xs">
+                    25 May 2024
+                  </p>
+                  <p class="text-gray-900 dark:text-white text-sm font-semibold leading-tight">
+                    No events captured
+                  </p>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-1">
+                    <.icon
+                      name="remix-close-circle-fill"
+                      class={["w-4 h-4", "text-danger-500 dark:text-danger-400"]}
+                    />
+                    <h3 class={[
+                      "text-xs",
+                      "text-gray-900 dark:text-white"
+                    ]}>
+                      {gettext("https://example.com/mustard")}
+                    </h3>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <.icon
+                      name="remix-close-circle-fill"
+                      class={["w-4 h-4", "text-warning-500 dark:text-warning-400"]}
+                    />
+                    <h3 class={[
+                      "text-xs",
+                      "text-gray-900 dark:text-white"
+                    ]}>
+                      {gettext("https://example.com/mustard")}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-6 items-center">
+          <div :for={item <- @legend} class="flex gap-2 items-center">
+            <div class={["w-4 h-2 rounded-full", item.color]}></div>
+            <p class="text-gray-600 dark:text-gray-300 text-xs font-semibold">{item.label}</p>
+          </div>
+        </div>
+      </div>
+    </.box>
+    """
+  end
+
   # Private
 
   defp generate_qrcode(uri, opts \\ []) do

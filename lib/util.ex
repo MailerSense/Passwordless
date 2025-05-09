@@ -44,11 +44,13 @@ defmodule Util do
   @doc """
   Convert a number to a string with locale formatting.
   """
-  def number!(value) when is_number(value) do
-    Passwordless.Locale.Number.to_string!(value)
+  def number!(value, opts \\ [])
+
+  def number!(value, opts) when is_number(value) do
+    Passwordless.Locale.Number.to_string!(value, opts)
   end
 
-  def number!(value), do: value
+  def number!(value, _opts), do: value
 
   @doc """
   Generate a truncated JSON string from a map or other object.
