@@ -95,7 +95,7 @@
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
 
-      <:col :let={action} label={gettext("Action")} field={:name}>
+      <:col :let={action} label={gettext("Event")} field={:name}>
         {action.template.name}
       </:col>
 
@@ -133,7 +133,9 @@
         <%= case Action.first_event(action) do %>
           <% %Event{device_type: device_type} -> %>
             <div class="flex items-center gap-2">
-              <.icon name={device_type_to_icon(device_type)} class="w-5 h-5" /> {device_type}
+              <.icon name={device_type_to_icon(device_type)} class="w-5 h-5" /> {Recase.to_sentence(
+                device_type
+              )}
             </div>
           <% _ -> %>
         <% end %>
