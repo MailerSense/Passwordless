@@ -711,8 +711,8 @@ defmodule PasswordlessWeb.DashboardComponents do
         <div class="grow flex flex-col divide-y divide-slate-200 dark:divide-slate-700/40">
           <div class="p-3 flex justify-between items-center">
             <div class="flex items-center gap-3">
-              <div class="w-8 h-8 p-2.5 bg-white rounded-[100px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.06)] shadow-[0px_1px_3px_0px_rgba(16,24,40,0.10)] outline outline-1 outline-offset-[-1px] outline-[#e4e7ec] inline-flex flex-col justify-center items-center gap-2.5">
-                <div class="justify-start text-[#243837] text-sm font-semibold font-['Inter'] leading-tight">
+              <div class="w-8 h-8 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-full shadow-0 outline outline-1 outline-offset-[-1px] outline-slate-300 dark:outline-slate-600 inline-flex flex-col justify-center items-center gap-2.5">
+                <div class=" text-sm font-semibold leading-tight">
                   {@index}
                 </div>
               </div>
