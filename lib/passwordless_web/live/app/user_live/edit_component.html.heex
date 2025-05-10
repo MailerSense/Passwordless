@@ -39,7 +39,7 @@
         <.json_block label={gettext("Data")} code={@user_data}>
           <:label_action>
             <.a
-              label={gettext("Edit")}
+              label={gettext("Edit JSON")}
               class="text-blue-600 dark:text-blue-300 leading-tight text-sm font-medium"
               phx-click="toggle_property_editor"
               phx-target={@myself}
@@ -48,9 +48,6 @@
         </.json_block>
       <% end %>
     </.form>
-
-    <.form_separator />
-    <.form_header title={gettext("Authenticators")} />
 
     <.form_separator />
     <.form_header title={gettext("Timeline")} />

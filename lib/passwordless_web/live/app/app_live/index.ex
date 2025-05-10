@@ -28,7 +28,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
     upload_opts =
       FileUploads.prepare(
-        accept: ~w(.jpg .jpeg .png .svg .webp),
+        accept: ~w(.jpg .jpeg .png .webp),
         max_entries: 1,
         max_file_size: 5_242_880 * 2
       )

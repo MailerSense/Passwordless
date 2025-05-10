@@ -1,0 +1,95 @@
+<.layout current_user={@current_user} current_page={:actions} current_section={:app}>
+  <div class="flex flex-col gap-6 px-8 py-6">
+    <.form
+      id="edit-action-template-form"
+      for={@action_form}
+      phx-change="validate_template"
+      phx-submit="save_template"
+    >
+      <.subpage_header field={@action_form[:name]} class="mb-6">
+        <div class="flex gap-3">
+          <.button
+            size="md"
+            type="button"
+            color="light"
+            label={gettext("Cancel")}
+            to={~p"/actions"}
+            link_type="live_patch"
+          />
+          <.button
+            to={~p"/actions/#{@action_template}/edit/delete"}
+            type="button"
+            label={gettext("Delete")}
+            icon="remix-delete-bin-line"
+            color="danger"
+            variant="outline"
+            link_type="live_patch"
+          />
+          <.button
+            size="md"
+            type="submit"
+            form="edit-template-locale"
+            icon="remix-save-line"
+            label={gettext("Save")}
+            disabled={not @action_form.source.valid? or Enum.empty?(@action_form.source.changes)}
+          />
+        </div>
+
+        <:badge>
+          <.code_line>{@action_template.alias}</.code_line>
+        </:badge>
+      </.subpage_header>
+      <.tab_menu
+        menu_items={action_menu_items(@action_template)}
+        current_tab={@live_action}
+        class="mb-6"
+      />
+      <.area padded class="flex flex-col gap-6">
+        <div class="flex items-center justify-between gap-3">
+          <.area_header title={gettext("Rules")} />
+
+          <.button
+            size="sm"
+            type="button"
+            color="light"
+            icon="remix-add-circle-line"
+            label={gettext("Create rule")}
+          />
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <.rule_card />
+          <.rule_card />
+        </div>
+      </.area>
+    </.form>
+  </div>
+</.layout>
+
+<%= cond do %>
+  <% @delete? -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Reset \"%{name}\"", name: @action_template.name)}
+          color="danger"
+          phx-click="delete_template"
+        />
+      </div>
+    </.modal>
+  <% true -> %>
+<% end %>

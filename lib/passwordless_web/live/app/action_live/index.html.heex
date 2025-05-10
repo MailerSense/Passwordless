@@ -1,26 +1,39 @@
 <.layout current_user={@current_user} current_page={:actions} current_section={:app}>
-  <div class="flex flex-col gap-6 p-6">
+  <div class="flex flex-col gap-6 px-8 py-6">
     <.data_table
       meta={@meta}
       items={@actions}
       title={gettext("All actions")}
-      search_placeholder={gettext("Search by Name or Alias")}
+      search_placeholder={gettext("Search by name or alias")}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("actions"))}</:if_empty>
       <:col field={:search} searchable filterable={[:==]} />
       <:col field={:name} />
       <:col :let={action} field={:alias}>
-        <code>{action.alias}</code>
+        <.code_line>{action.alias}</.code_line>
       </:col>
-      <:col field={:attempts} />
-      <:col field={:completion_rate} label={gettext("Completion Rate")} />
+      <:col :let={action} field={:attempts} sortable>
+        1
+      </:col>
       <:col :let={action} label={gettext("Added")} field={:inserted_at} sortable>
         {format_date(action.inserted_at)}
       </:col>
+      <:col :let={action} field={:completion_rate} label={gettext("Completion Rate")}>
+        <.multi_progress
+          max={100}
+          label={true}
+          items={[
+            %{key: :allow, value: 80, color: "success"},
+            %{key: :timeout, value: 10, color: "warning"},
+            %{key: :block, value: 10, color: "danger"}
+          ]}
+        />
+      </:col>
+
       <:col actions></:col>
-      <:actions :let={user}>
+      <:actions :let={action}>
         <.icon_button
-          to={apply_filters(@filters, @meta, ~p"/users/#{user}/delete")}
+          to={apply_filters(@filters, @meta, ~p"/actions/#{action}/delete")}
           size="sm"
           icon="custom-trash"
           color="light"
@@ -28,7 +41,7 @@
           link_type="live_patch"
         />
         <.icon_button
-          to={apply_filters(@filters, @meta, ~p"/users/#{user}/edit")}
+          to={apply_filters(@filters, @meta, ~p"/actions/#{action}/edit")}
           size="sm"
           icon="custom-edit"
           color="light"
@@ -39,7 +52,14 @@
       <:header_actions>
         <div class="flex gap-3">
           <.button
-            to={apply_filters(@filters, @meta, ~p"/users/new")}
+            to={apply_filters(@filters, @meta, ~p"/actions/import")}
+            color="light"
+            label={gettext("Learn More")}
+            icon="remix-graduation-cap-line"
+            link_type="live_patch"
+          />
+          <.button
+            to={apply_filters(@filters, @meta, ~p"/actions/new")}
             color="primary"
             label={gettext("Create")}
             icon="remix-add-circle-line"
@@ -50,3 +70,34 @@
     </.data_table>
   </div>
 </.layout>
+
+<%= case @live_action do %>
+  <% :delete -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={
+            gettext("Yes, Delete \"%{template}\"", template: Util.truncate(@action_template.name))
+          }
+          color="danger"
+          phx-click="delete_action_template"
+          phx-value-id={@action_template.id}
+        />
+      </div>
+    </.modal>
+  <% _ -> %>
+<% end %>

@@ -13,7 +13,13 @@
         Time-based OTP (TOTP) is a method that uses a time-based one-time password to sign in. The user scans a QR code with an authenticator app, such as Authy, and then enters the code displayed in the app to sign in.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
-      <.field field={@form[:issuer_name]} disabled={not @enabled} required />
+      <.field
+        field={@form[:issuer_name]}
+        label={gettext("Issuer")}
+        disabled={not @enabled}
+        required
+        required_asterix={false}
+      />
       <.totp_preview code={NimbleTOTP.secret()} />
     </.box>
     <.box padded>

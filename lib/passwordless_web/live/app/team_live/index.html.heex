@@ -26,7 +26,7 @@
       meta={@meta}
       items={@memberships}
       title={gettext("Members")}
-      search_placeholder={gettext("Search by Email or Name")}
+      search_placeholder={gettext("Search by email or name")}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("members"))}</:if_empty>
       <:col field={:search} searchable filterable={[:==]} />
@@ -134,7 +134,7 @@
           field={@form[:email]}
           label={gettext("Email")}
           required
-          placeholder={gettext("eg. john.doe@company.com")}
+          placeholder={gettext("john.doe@company.com")}
           autocomplete="email"
         />
       </.form>

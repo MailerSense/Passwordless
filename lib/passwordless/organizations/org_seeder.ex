@@ -24,6 +24,12 @@ defmodule Passwordless.Organizations.OrgSeeder do
                  |> Stream.take(10_000)
                  |> Enum.to_list()
 
+  @random_actions fn -> Enum.random(["Sign In", "Withdraw Money", "Place Order", "See Data"]) end
+                  |> Stream.repeatedly()
+                  |> Stream.take(10)
+                  |> Stream.uniq()
+                  |> Enum.to_list()
+
   def root_org(%AccountsUser{} = user, attrs \\ %{}) do
     root_org_local(user, attrs)
   end
@@ -70,13 +76,17 @@ defmodule Passwordless.Organizations.OrgSeeder do
         verified: true
       })
 
-    {:ok, tracking_domain} =
+    {:ok, _tracking_domain} =
       Passwordless.create_tracking_domain(app, %{
         name: "click.eu.passwordlesstools.com",
         kind: :sub_domain,
         tags: [:system, :default],
         purpose: :tracking
       })
+
+    for name <- @random_actions do
+      {:ok, _} = Passwordless.create_action_template(app, %{name: name})
+    end
 
     {:ok, magic_link_template} =
       Passwordless.seed_email_template(app, :magic_link, :en, :magic_link_clean, %{tags: [:magic_link]})

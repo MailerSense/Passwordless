@@ -110,8 +110,8 @@ defmodule PasswordlessWeb.Router do
     get "/domain/:id/dns/download", DNSController, :download
 
     # Import
-    get "/actor-import/csv/download", ActorImportController, :download_csv
-    get "/actor-import/excel/download", ActorImportController, :download_excel
+    get "/actor-import/csv/download", UserImportController, :download_csv
+    get "/actor-import/excel/download", UserImportController, :download_excel
 
     # Recovery codes
     get "/recovery-codes/download/:user_id", RecoveryCodeController, :download
@@ -144,6 +144,13 @@ defmodule PasswordlessWeb.Router do
 
       # Actions
       live "/actions", App.ActionLive.Index, :index
+      live "/actions/:id/delete", App.ActionLive.Index, :delete
+      live "/actions/:id/edit", App.ActionLive.Edit, :edit
+      live "/actions/:id/edit/delete", App.ActionLive.Edit, :delete
+      live "/actions/:id/branding", App.ActionLive.Edit, :branding
+      live "/actions/:id/branding/delete", App.ActionLive.Edit, :delete
+      live "/actions/:id/api", App.ActionLive.Edit, :api
+      live "/actions/:id/api/delete", App.ActionLive.Edit, :delete
 
       # Authenticators
       live "/authenticators/email-otp", App.AuthenticatorLive.Index, :email_otp

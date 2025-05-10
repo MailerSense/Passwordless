@@ -1,5 +1,5 @@
 <.layout current_user={@current_user} current_page={:home} current_section={:app}>
-  <div class="flex flex-col gap-6 p-6">
+  <div class="flex flex-col gap-6 px-8 py-6">
     <.box card>
       <.form_header title={gettext("Top actions")} no_margin />
       <.p>
@@ -89,25 +89,14 @@
     <.stream_table
       id="actions"
       meta={@meta}
-      count={@count}
-      title={gettext("Recent actions")}
+      title={gettext("Recent events")}
       items={@streams.actions}
       finished={@finished}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
 
-      <:col :let={action} label={gettext("User")} field={:user}>
-        <.a
-          :if={Util.present?(action.user)}
-          to={~p"/users/#{action.user}/edit"}
-          label={User.handle(action.user)}
-          style="link"
-          link_type="live_redirect"
-        />
-      </:col>
-
       <:col :let={action} label={gettext("Action")} field={:name}>
-        {Phoenix.Naming.humanize(Macro.underscore(action.name))}
+        {Recase.to_sentence(action.name)}
       </:col>
 
       <:col :let={action} label={gettext("Country")} field={:country}>
@@ -132,7 +121,13 @@
         </div>
       </:col>
 
-      <:col :let={action} label={gettext("State")} field={:state}>
+      <:col :let={action} label={gettext("Authenticator")} field={:authenticator}>
+        <div class="flex items-center gap-2">
+          <.icon name="remix-mail-open-line" class="w-5 h-5" /> Email OTP
+        </div>
+      </:col>
+
+      <:col :let={action} label={gettext("Result")} field={:result}>
         <% {badge_label, badge_color} = action_state_badge(action) %>
         <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>

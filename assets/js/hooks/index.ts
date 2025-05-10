@@ -3,6 +3,7 @@ import BadgeSelectHook from "./badge-select-hook";
 import ClipboardHook from "./clipboard-hook";
 import ColorSchemeHook from "./color-scheme-hook";
 import EditorHook from "./editor-hook";
+import GlobeHook from "./globe-hook";
 import HighlightHook from "./highlight-hook";
 import HTMLPreviewHook from "./html-preview-hook";
 import JSONHook from "./json-hook";
@@ -27,5 +28,6 @@ export default {
   JSONHook,
   OTPHook,
   SetSentryUserHook,
+  GlobeHook,
   LiveToast: createLiveToastHook(),
 };

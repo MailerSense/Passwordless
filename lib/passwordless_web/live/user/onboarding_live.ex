@@ -188,7 +188,7 @@ defmodule PasswordlessWeb.User.OnboardingLive do
             {:yes, {:app, org}} ->
               upload_opts =
                 FileUploads.prepare(
-                  accept: ~w(.jpg .jpeg .png .svg .webp),
+                  accept: ~w(.jpg .jpeg .png .webp),
                   max_entries: 1,
                   max_file_size: 5_242_880 * 2
                 )
@@ -198,7 +198,7 @@ defmodule PasswordlessWeb.User.OnboardingLive do
                 step: :app,
                 org: org,
                 page_title: gettext("Create an app"),
-                title: gettext("Let’s build securely 🚀"),
+                title: gettext("Let’s build together 🚀"),
                 subtitle:
                   gettext("You can now use Passwordless to secure your app. Enter the basics and we'll get you started."),
                 uploaded_files: []

@@ -1,31 +1,26 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
-  <div class="flex flex-col gap-6 p-6">
+  <div class="flex flex-col gap-6 px-8 py-6">
     <.data_table
       meta={@meta}
       items={@users}
       title={gettext("All users")}
-      search_placeholder={gettext("Search by Email or User ID")}
+      search_placeholder={gettext("Search by email or user ID")}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
       <:col field={:search} searchable filterable={[:==]} />
       <:col :let={user} field={:email} sortable>
-        <.a
-          to={apply_filters(@filters, @meta, ~p"/users/#{user}/edit")}
-          label={User.email(user)}
-          style="link"
-          link_type="live_redirect"
-        />
-      </:col>
-      <:col :let={user} field={:last_action} label={gettext("Last Action")}>
-        <div class="flex flex-col">
-          <span class="text-slate-900 dark:text-white">Test action</span>
-          <span class="text-slate-600 dark:text-slate-300">
-            {format_date(user.inserted_at)}
-          </span>
+        <div class="flex items-center gap-3">
+          <.avatar name={user.email.address} color="blue" />
+          {User.email(user)}
         </div>
       </:col>
-      <:col :let={user} field={:result}>
+
+      <:col :let={user} field={:last_result} label={gettext("Last Result")}>
         <.badge with_dot size="sm" label={gettext("Allow")} color="success" />
+      </:col>
+
+      <:col :let={actor} label={gettext("Added")} field={:inserted_at} sortable>
+        {format_date(actor.inserted_at)}
       </:col>
 
       <:col :let={user} field={:success_rate} label={gettext("Allow Rate")}>

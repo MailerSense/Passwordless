@@ -221,8 +221,6 @@ defmodule Passwordless.User do
   A unified search filter.
   """
   def unified_search_filter(query, %Flop.Filter{value: value} = _flop_filter, _) do
-    value = "%#{value}%"
-
     query =
       if has_named_binding?(query, :user),
         do: query,
@@ -234,13 +232,26 @@ defmodule Passwordless.User do
       |> join_assoc(:phone)
       |> join_assoc(:identifier)
 
-    where(
-      query,
-      [email: e, phone: p, identifier: i],
-      ilike(e.email, ^value) or
-        ilike(p.phone, ^value) or
-        ilike(i.identifier, ^value)
-    )
+    pref = prefix()
+
+    id_query =
+      case Database.PrefixedUUID.slug_to_uuid(value) do
+        {:ok, ^pref, _uuid} -> dynamic([user: u], u.id == ^value)
+        _ -> false
+      end
+
+    value = "%#{value}%"
+
+    clause =
+      [
+        dynamic([email: e], ilike(e.email, ^value)),
+        dynamic([phone: p], ilike(p.phone, ^value)),
+        dynamic([identifier: i], ilike(i.identifier, ^value))
+      ]
+      |> append_if(id_query, id_query != false)
+      |> Enum.reduce(dynamic(false), &dynamic(^&2 or ^&1))
+
+    where(query, ^clause)
   end
 
   # Private
@@ -282,4 +293,7 @@ defmodule Passwordless.User do
       do: query,
       else: join(query, :left, [l], assoc(l, ^binding), as: ^binding)
   end
+
+  defp append_if(list, _value, false), do: list
+  defp append_if(list, value, true), do: list ++ List.wrap(value)
 end

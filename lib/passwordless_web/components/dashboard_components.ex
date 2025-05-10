@@ -15,6 +15,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   import PasswordlessWeb.Components.Typography
 
   alias Passwordless.Accounts.User
+  alias Passwordless.Locale.Number, as: NumberLocale
 
   attr :badge, :string, required: true
   attr :content, :string, required: true
@@ -255,7 +256,7 @@ defmodule PasswordlessWeb.DashboardComponents do
 
     ~H"""
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
-      <.field_label required>{gettext("Email template")}</.field_label>
+      <.field_label>{gettext("Email template")}</.field_label>
       <.a
         to={@to}
         title={@name}
@@ -377,7 +378,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   def totp_preview(assigns) do
     ~H"""
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
-      <.field_label required>{gettext("Preview")}</.field_label>
+      <.field_label>{gettext("Preview")}</.field_label>
       <div class="flex justify-center items-center bg-slate-100 rounded-lg dark:bg-slate-700/50 shadow-m2 p-6 gap-6">
         <div class="inline-block">
           {generate_qrcode(@code)}
@@ -612,13 +613,235 @@ defmodule PasswordlessWeb.DashboardComponents do
       data-tippy-content={gettext("Users who performed an action in last 6 hours")}
       data-tippy-placement="bottom"
     >
-      <span class="relative flex size-2.5">
+      <span class="relative flex size-3">
         <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success-400 opacity-75">
         </span>
-        <span class="relative inline-flex size-2.5 rounded-full bg-success-500"></span>
+        <span class="relative inline-flex size-3 rounded-full bg-success-500"></span>
       </span>
       207 users online
     </.a>
+    """
+  end
+
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :label, :string, required: true, doc: "labels your dropdown option"
+  attr :legend_color_class, :string, required: true, doc: "labels your dropdown option"
+  attr :circle_color_class, :string, required: true, doc: "labels your dropdown option"
+  attr :value, :integer, required: true, doc: "labels your dropdown option"
+  attr :value_max, :integer, required: true, doc: "labels your dropdown option"
+
+  def circle_stat(assigns) do
+    ~H"""
+    <.box class="flex gap-6" padded>
+      <div class="flex flex-col justify-between gap-4">
+        <badge class="flex gap-2 items-center">
+          <div class={["w-4 h-2 rounded-full", @legend_color_class]}></div>
+          <p class="text-gray-600 dark:text-gray-300 text-xs font-semibold">{@label}</p>
+        </badge>
+
+        <h3 class="text-gray-900 dark:text-white text-2xl font-bold">
+          {NumberLocale.to_string!(@value)}
+        </h3>
+      </div>
+      <div class="ml-auto relative size-24 2xl:size-32">
+        <svg class="size-full -rotate-90" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+          <circle
+            cx="18"
+            cy="18"
+            r="16"
+            fill="none"
+            class="stroke-current text-gray-100 dark:text-gray-700"
+            stroke-width="3.5"
+          >
+          </circle>
+          <circle
+            cx="18"
+            cy="18"
+            r="16"
+            fill="none"
+            class={["stroke-current", @circle_color_class]}
+            stroke-width="3.5"
+            stroke-dasharray="100"
+            stroke-dashoffset={100 - trunc(Float.round(@value / @value_max * 100))}
+            stroke-linecap="round"
+          >
+          </circle>
+        </svg>
+        <div class="absolute top-1/2 start-1/2 transform -translate-y-1/2 -translate-x-1/2">
+          <span class={["text-center text-xl xl:text-2xl font-semibold", @circle_color_class]}>
+            {trunc(Float.round(@value / @value_max * 100))}%
+          </span>
+        </div>
+      </div>
+    </.box>
+    """
+  end
+
+  def bar_stats(assigns) do
+    ~H"""
+    <.box class="flex items-center gap-2 divide-x divide-slate-200 dark:divide-slate-700/40">
+      <div :for={i <- 1..6} class="flex flex-col grow p-6">
+        <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Value {i}</span>
+        <div class="flex gap-2 items-center justify-between">
+          <span class="text-xl xl:text-2xl font-semibold text-slate-900 dark:text-white">
+            9.6K
+          </span>
+          <span class="text-xs font-bold flex gap-1 items-center text-success-600 dark:text-success-400">
+            <.icon name="remix-arrow-up-fill" class="w-4 h-4" /><span>60.1%</span>
+          </span>
+        </div>
+      </div>
+    </.box>
+    """
+  end
+
+  attr :class, :string, default: nil
+  attr :rest, :global
+  slot :inner_block
+
+  def rule_card(assigns) do
+    ~H"""
+    <section {@rest} class={["pc-rule-card", @class]}>
+      <div class="flex items-stretch divide-x divide-slate-200 dark:divide-slate-700/40">
+        <div class="flex flex-col items-center justify-center">
+          <.icon name="custom-drag" class="w-[18px] h-[18px] text-slate-900 dark:text-white" />
+        </div>
+        <div class="grow flex flex-col divide-y divide-slate-200 dark:divide-slate-700/40">
+          <div class="p-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 p-2.5 bg-white rounded-[100px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.06)] shadow-[0px_1px_3px_0px_rgba(16,24,40,0.10)] outline outline-1 outline-offset-[-1px] outline-[#e4e7ec] inline-flex flex-col justify-center items-center gap-2.5">
+                <div class="justify-start text-[#243837] text-sm font-semibold font-['Inter'] leading-tight">
+                  1
+                </div>
+              </div>
+              <h4 class="text-sm font-semibold text-slate-900 dark:text-white leading-tight">
+                {gettext("Rule name")}
+              </h4>
+            </div>
+            <.field type="switch" label="" name="test" value={true} label_class="!mb-0" />
+          </div>
+          <div class="p-3 flex justify-between items-center">
+            test
+          </div>
+        </div>
+      </div>
+      {render_slot(@inner_block)}
+    </section>
+    """
+  end
+
+  attr :class, :string, default: "", doc: "any extra CSS class for the parent container"
+  attr :title, :string, required: true, doc: "labels your dropdown option"
+  attr :subtitle, :string, default: nil, doc: "labels your dropdown option"
+  attr :values, :list, default: [], doc: "labels your dropdown option"
+
+  def uptime_chart(assigns) do
+    assigns =
+      assign(assigns, :legend, [
+        %{color: "bg-streetlight-100", label: gettext("Allow")},
+        %{color: "bg-streetlight-200", label: gettext("Timeout")},
+        %{color: "bg-streetlight-300", label: gettext("Block")}
+      ])
+
+    ~H"""
+    <.box class={[
+      @class
+    ]}>
+      <div class={[
+        "px-6 py-4 flex items-center justify-between",
+        "border-b border-gray-200 dark:border-gray-700"
+      ]}>
+        <div class="flex items-center gap-4">
+          <.icon
+            name="remix-checkbox-circle-fill"
+            class={["w-6 h-6", "text-success-500 dark:text-success-400"]}
+          />
+          <h3 class={["text-base font-semibold", "text-gray-900 dark:text-white"]}>
+            {@title}
+          </h3>
+        </div>
+        <div :if={@subtitle} class="text-gray-500 dark:text-gray-400 font-medium">
+          {@subtitle}
+        </div>
+      </div>
+
+      <div class={[
+        "p-6 gap-6 flex flex-col"
+      ]}>
+        <div class="flex justify-between gap-1">
+          <div
+            :for={item <- @values}
+            class={[
+              "flex flex-col w-full min-h-20 overflow-hidden",
+              "hover:opacity-40 active:opacity-30 focus:opacity-30 cursor-pointer"
+            ]}
+            id={"uptime-event-#{:rand.uniform(10_000_000) + 1}"}
+            phx-hook="TippyHook"
+            data-tippy-arrow="false"
+            data-tippy-placement="top"
+            data-template-selector="div.tippy-template"
+          >
+            <div
+              :for={{color, ratio} <- item}
+              class={[
+                "rounded",
+                "relative bg-gradient-to-b",
+                "from-streetlight-#{color + 20}",
+                "to-streetlight-#{color + 10}"
+              ]}
+              style={"height: #{trunc(Float.round(ratio * 100, 0))}%;"}
+            >
+            </div>
+
+            <div class="hidden tippy-template shadow-4 rounded-lg">
+              <div class="flex flex-col px-4 py-2 gap-3">
+                <div class="flex flex-col">
+                  <p class="text-gray-600 dark:text-gray-300 text-xs">
+                    25 May 2024
+                  </p>
+                  <p class="text-gray-900 dark:text-white text-sm font-semibold leading-tight">
+                    No events captured
+                  </p>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-1">
+                    <.icon
+                      name="remix-close-circle-fill"
+                      class={["w-4 h-4", "text-danger-500 dark:text-danger-400"]}
+                    />
+                    <h3 class={[
+                      "text-xs",
+                      "text-gray-900 dark:text-white"
+                    ]}>
+                      {gettext("https://example.com/mustard")}
+                    </h3>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <.icon
+                      name="remix-close-circle-fill"
+                      class={["w-4 h-4", "text-warning-500 dark:text-warning-400"]}
+                    />
+                    <h3 class={[
+                      "text-xs",
+                      "text-gray-900 dark:text-white"
+                    ]}>
+                      {gettext("https://example.com/mustard")}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-6 items-center">
+          <div :for={item <- @legend} class="flex gap-2 items-center">
+            <div class={["w-4 h-2 rounded-full", item.color]}></div>
+            <p class="text-gray-600 dark:text-gray-300 text-xs font-semibold">{item.label}</p>
+          </div>
+        </div>
+      </div>
+    </.box>
     """
   end
 

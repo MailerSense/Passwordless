@@ -139,7 +139,8 @@ config :passwordless, :content_security_policy,
   default_src: append_if(["'self'"], "https://#{System.get_env("CDN_HOST")}", config_env() == :prod),
   connect_src:
     [
-      "*.amazonaws.com"
+      "*.amazonaws.com",
+      "cdn.jsdelivr.net"
     ]
     |> append_if(
       ["wss://#{System.get_env("PHX_HOST")}", "https://#{System.get_env("PHX_HOST")}"],
@@ -156,7 +157,8 @@ config :passwordless, :content_security_policy,
     "https:",
     "'self'",
     "data:",
-    "blob:"
+    "blob:",
+    "cdn.jsdelivr.net"
   ],
   font_src: [
     "https://rsms.me",

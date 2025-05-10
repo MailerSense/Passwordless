@@ -6,7 +6,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   alias Passwordless.Action
   alias Passwordless.ActionEvent
   alias Passwordless.App
-  alias Passwordless.User
   alias PasswordlessWeb.Components.DataTable
   alias PasswordlessWeb.Endpoint
 

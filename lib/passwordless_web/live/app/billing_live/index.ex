@@ -3,6 +3,8 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
   use PasswordlessWeb, :live_view
   use Gettext, backend: PasswordlessWeb.Gettext
 
+  alias Passwordless.Locale.Number, as: NumberLocale
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, apply_action(socket, socket.assigns.live_action)}

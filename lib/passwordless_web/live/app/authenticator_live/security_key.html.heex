@@ -18,6 +18,7 @@
         label={gettext("Relying party ID")}
         disabled={not @enabled}
         required
+        required_asterix={false}
       />
     </.box>
     <.box padded>
@@ -26,7 +27,7 @@
         The expected origins are the domains that the key can be used on. The key will only be valid for the specified domains.
       </.p>
       <div class="pc-form-field-wrapper">
-        <.field_label required>{gettext("Expected origins")}</.field_label>
+        <.field_label>{gettext("Allowed origins")}</.field_label>
         <div class="flex flex-col gap-y-2">
           <.inputs_for :let={expected_origin} field={@form[:expected_origins]}>
             <input
@@ -62,7 +63,7 @@
         </div>
         <div class="flex mt-3">
           <.button
-            size="xs"
+            size="sm"
             type="button"
             color="light"
             icon="remix-add-circle-line"

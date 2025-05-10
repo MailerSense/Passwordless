@@ -10,6 +10,7 @@ defmodule Passwordless do
   alias Database.Tenant
   alias Passwordless.Action
   alias Passwordless.ActionEvent
+  alias Passwordless.ActionTemplate
   alias Passwordless.App
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
@@ -792,6 +793,27 @@ defmodule Passwordless do
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
+  def create_action_template(%App{} = app, attrs \\ %{}) do
+    app
+    |> Ecto.build_assoc(:action_templates)
+    |> ActionTemplate.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def get_action_template!(%App{} = app, id) do
+    app
+    |> Ecto.assoc(:action_templates)
+    |> Repo.get!(id)
+  end
+
+  def change_action_template(%ActionTemplate{} = action_template, attrs \\ %{}) do
+    if Ecto.get_meta(action_template, :state) == :loaded do
+      ActionTemplate.changeset(action_template, attrs)
+    else
+      ActionTemplate.changeset(action_template, attrs)
+    end
+  end
+
   def update_action_in_flow(%App{} = app, %Action{} = action, attrs \\ %{}) do
     action
     |> Action.changeset(attrs)
@@ -811,16 +833,13 @@ defmodule Passwordless do
   end
 
   def locate_action_event(%App{} = app, %ActionEvent{ip_address: ip_address} = event) when is_binary(ip_address) do
-    key = "ip_loc_" <> ip_address
-
-    case Passwordless.Cache.get(key) do
-      %{"city" => city, "country" => country} when is_binary(city) and is_binary(country) ->
+    case Passwordless.GeoIP.lookup(ip_address) do
+      {:ok, %{"country" => %{"iso_code" => country}, "city" => %{"names" => %{"en" => city}}}}
+      when is_binary(city) and is_binary(country) ->
         Passwordless.update_action_event(app, event, %{city: city, country: country})
 
-      _ ->
-        %{app_id: app.id, action_event_id: event.id}
-        |> Passwordless.ActionLocator.new()
-        |> Oban.insert()
+      {:error, _} ->
+        {:ok, event}
     end
   end
 

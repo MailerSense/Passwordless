@@ -9,6 +9,7 @@ defmodule PasswordlessWeb.Helpers do
   alias Passwordless.Accounts.User
   alias Passwordless.Action
   alias Passwordless.ActionEvent
+  alias Passwordless.ActionTemplate
   alias Passwordless.Activity.Log
   alias Passwordless.App
   alias Passwordless.AuthToken
@@ -62,24 +63,43 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
+        name: :ui,
+        label: "Components",
+        icon: "remix-cursor-line",
+        path: ~p"/embed/ui",
+        link_type: "live_patch"
+      },
+      %{
         name: :api,
         label: "Backend API",
-        icon: "remix-server-line",
+        icon: "remix-code-s-slash-line",
         path: ~p"/embed/api",
         link_type: "live_patch"
-      },
+      }
+    ]
+  end
+
+  def action_menu_items(%ActionTemplate{} = action_template) do
+    [
       %{
-        name: :rules_engine,
-        label: "Rules Engine",
-        icon: "remix-toggle-line",
-        path: ~p"/embed/rules-engine",
+        name: :edit,
+        label: "Rules",
+        icon: "remix-checkbox-line",
+        path: ~p"/actions/#{action_template}/edit",
         link_type: "live_patch"
       },
       %{
-        name: :ui,
-        label: "Web Components",
-        icon: "remix-reactjs-line",
-        path: ~p"/embed/ui",
+        name: :branding,
+        label: "Embed",
+        icon: "remix-code-s-slash-line",
+        path: ~p"/actions/#{action_template}/branding",
+        link_type: "live_patch"
+      },
+      %{
+        name: :activity,
+        label: "Activity",
+        icon: "remix-line-chart-line",
+        path: ~p"/actions/#{action_template}/activity",
         link_type: "live_patch"
       }
     ]
