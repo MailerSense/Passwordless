@@ -19,10 +19,12 @@
     "@codemirror/view": "^6.36.5",
     "@lezer/highlight": "^1.2.1",
     "@sentry/browser": "^9.15.0",
+    "@types/sortablejs": "^1.15.8",
     "codemirror": "^6.0.1",
     "globe.gl": "^2.41.4",
     "highlight.js": "^11.11.1",
     "motion": "^12.6.5",
+    "sortablejs": "^1.15.6",
     "tippy.js": "^6.3.7",
     "topbar": "^3.0.0"
   },

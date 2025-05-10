@@ -129,7 +129,31 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
     templates =
       for name <- @random_actions do
-        {:ok, t} = Passwordless.create_action_template(app, %{name: name})
+        {:ok, t} =
+          Passwordless.create_action_template(app, %{
+            name: name,
+            rules: [
+              %{
+                index: 0,
+                enabled: true,
+                condition: %{},
+                effects: %{}
+              },
+              %{
+                index: 1,
+                enabled: true,
+                condition: %{},
+                effects: %{}
+              },
+              %{
+                index: 2,
+                enabled: true,
+                condition: %{},
+                effects: %{}
+              }
+            ]
+          })
+
         t
       end
 

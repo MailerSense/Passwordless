@@ -47,6 +47,8 @@ defmodule Passwordless.ActionTemplate do
     embeds_many :rules, Rule, on_replace: :delete do
       @derive Jason.Encoder
 
+      field :enabled, :boolean, default: true
+      field :index, :integer, default: 0
       field :condition, :map
       field :effects, :map
     end
@@ -105,6 +107,12 @@ defmodule Passwordless.ActionTemplate do
   def changeset(%__MODULE__{} = action_template, attrs \\ %{}, opts \\ []) do
     action_template
     |> cast(attrs, @fields)
+    |> cast_embed(:rules,
+      with: &rule_changeset/2,
+      sort_param: :rules_sort,
+      drop_param: :rules_drop,
+      required: true
+    )
     |> validate_required(@required_fields)
     |> validate_name()
     |> put_alias()
@@ -124,5 +132,19 @@ defmodule Passwordless.ActionTemplate do
     else
       changeset
     end
+  end
+
+  @rule_fields ~w(
+    enabled
+    index
+    condition
+    effects
+  )a
+  @rule_required_fields @rule_fields
+
+  defp rule_changeset(%__MODULE__.Rule{} = rule, attrs) do
+    rule
+    |> cast(attrs, @rule_fields)
+    |> validate_required(@rule_required_fields)
   end
 end

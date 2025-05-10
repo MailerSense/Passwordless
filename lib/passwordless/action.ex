@@ -57,6 +57,14 @@ defmodule Passwordless.Action do
 
   def readable_name(%__MODULE__{template: %ActionTemplate{name: name}}), do: Recase.to_sentence(name)
 
+  def assign_first_event(%__MODULE__{events: [_ | _] = events}) do
+    events
+    |> Enum.sort_by(& &1.inserted_at, :asc)
+    |> Enum.find(fn %Event{city: city, country: country} ->
+      is_binary(city) and is_binary(country)
+    end)
+  end
+
   def first_event(%__MODULE__{events: [_ | _] = events}) do
     events
     |> Enum.sort_by(& &1.inserted_at, :asc)

@@ -53,6 +53,9 @@ importers:
       '@sentry/browser':
         specifier: ^9.15.0
         version: 9.15.0
+      '@types/sortablejs':
+        specifier: ^1.15.8
+        version: 1.15.8
       codemirror:
         specifier: ^6.0.1
         version: 6.0.1
@@ -65,6 +68,9 @@ importers:
       motion:
         specifier: ^12.6.5
         version: 12.6.5
+      sortablejs:
+        specifier: ^1.15.6
+        version: 1.15.6
       tippy.js:
         specifier: ^6.3.7
         version: 6.3.7
@@ -701,6 +707,9 @@ packages:
 
   '@types/phoenix_live_view@1.0.0':
     resolution: {integrity: sha512-GGs3POhwsgcEjLU2Vey1dPRF1Sz9HXgdd78itt+bLJqta4uOIpctkaZm5lhunJ/3kLPx9M65d5URFklRdaQM1w==}
+
+  '@types/sortablejs@1.15.8':
+    resolution: {integrity: sha512-b79830lW+RZfwaztgs1aVPgbasJ8e7AXtZYHTELNXZPsERt4ymJdjV4OccDbHQAvHrCcFpbF78jkm0R6h/pZVg==}
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
@@ -2611,6 +2620,9 @@ packages:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
 
+  sortablejs@1.15.6:
+    resolution: {integrity: sha512-aNfiuwMEpfBM/CN6LY0ibyhxPfPbyFeBTYJKCvzkJ2GkUpazIt3H+QIPAMHwqQ7tMKaHz1Qj+rJJCqljnf4p3A==}
+
   source-map-support@0.5.13:
     resolution: {integrity: sha512-SHSKFHadjVA5oR4PPqhtAVdcBWwRYVd6g6cAXnIbRiIwc2EhPrTuKUBdSLvlEKyIP3GCf89fltvcZiP9MMFA1w==}
 
@@ -3735,6 +3747,8 @@ snapshots:
   '@types/phoenix_live_view@1.0.0':
     dependencies:
       '@types/phoenix': 1.6.6
+
+  '@types/sortablejs@1.15.8': {}
 
   '@types/stack-utils@2.0.3': {}
 
@@ -6108,6 +6122,8 @@ snapshots:
   sisteransi@1.0.5: {}
 
   slash@3.0.0: {}
+
+  sortablejs@1.15.6: {}
 
   source-map-support@0.5.13:
     dependencies:

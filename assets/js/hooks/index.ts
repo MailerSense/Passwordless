@@ -12,6 +12,7 @@ import OTPHook from "./otp-hook";
 import ProgressInput from "./progress-input";
 import ResetColorSchemeHook from "./reset-color-scheme-hook";
 import SetSentryUserHook from "./set-sentry-user-hook";
+import SortableHook from "./sortable-hook";
 import TippyHook from "./tippy-hook";
 
 export default {
@@ -29,5 +30,6 @@ export default {
   OTPHook,
   SetSentryUserHook,
   GlobeHook,
+  SortableHook,
   LiveToast: createLiveToastHook(),
 };

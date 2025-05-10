@@ -695,15 +695,17 @@ defmodule PasswordlessWeb.DashboardComponents do
     """
   end
 
+  attr :index, :integer, required: true
   attr :class, :string, default: nil
   attr :rest, :global
   slot :inner_block
+  slot :switch
 
   def rule_card(assigns) do
     ~H"""
-    <section {@rest} class={["pc-rule-card", @class]}>
+    <section {@rest} class={["pc-rule-card group", @class]}>
       <div class="flex items-stretch divide-x divide-slate-200 dark:divide-slate-700/40">
-        <div class="flex flex-col items-center justify-center">
+        <div class="flex flex-col items-center justify-center drag-handle cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 active:bg-slate-100 dark:active:bg-slate-600">
           <.icon name="custom-drag" class="w-[18px] h-[18px] text-slate-900 dark:text-white" />
         </div>
         <div class="grow flex flex-col divide-y divide-slate-200 dark:divide-slate-700/40">
@@ -711,21 +713,20 @@ defmodule PasswordlessWeb.DashboardComponents do
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 p-2.5 bg-white rounded-[100px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.06)] shadow-[0px_1px_3px_0px_rgba(16,24,40,0.10)] outline outline-1 outline-offset-[-1px] outline-[#e4e7ec] inline-flex flex-col justify-center items-center gap-2.5">
                 <div class="justify-start text-[#243837] text-sm font-semibold font-['Inter'] leading-tight">
-                  1
+                  {@index}
                 </div>
               </div>
               <h4 class="text-sm font-semibold text-slate-900 dark:text-white leading-tight">
                 {gettext("Rule name")}
               </h4>
             </div>
-            <.field type="switch" label="" name="test" value={true} label_class="!mb-0" />
+            {render_slot(@switch)}
           </div>
           <div class="p-3 flex justify-between items-center">
-            test
+            {render_slot(@inner_block)}
           </div>
         </div>
       </div>
-      {render_slot(@inner_block)}
     </section>
     """
   end

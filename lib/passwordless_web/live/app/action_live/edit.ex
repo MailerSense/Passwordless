@@ -23,6 +23,16 @@ defmodule PasswordlessWeb.App.ActionLive.Edit do
   end
 
   @impl true
+  def handle_event("validate", %{"action_template" => action_template_params}, socket) do
+    changeset =
+      socket.assigns.action_template
+      |> Passwordless.change_action_template(action_template_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign_action_form(socket, changeset)}
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end

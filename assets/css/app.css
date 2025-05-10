@@ -63,14 +63,14 @@
 
   --shadow-m2: 0 1px 2px 0 rgb(16 24 40 / 0.05);
   --shadow-m3: 0 1px 2px 0 rgb(16 24 40 / 0.05);
-  --shadow-0: 0 1px 3px 0 rgb(16 24 40 / 0.1),
-    0 1px 2px 0px rgb(16 24 40 / 0.06);
-  --shadow-1: 0 4px 8px -2px rgb(16 24 40 / 0.1),
-    0 2px 4px -2px rgb(16 24 40 / 0.06);
-  --shadow-2: 0 12px 16px -4px rgb(16 24 40 / 0.08),
-    0 4px 6px -2px rgb(16 24 40 / 0.03);
-  --shadow-3: 0 20px 24px -4px rgb(16 24 40 / 0.08),
-    0 8px 8px -4px rgb(16 24 40 / 0.03);
+  --shadow-0:
+    0 1px 3px 0 rgb(16 24 40 / 0.1), 0 1px 2px 0px rgb(16 24 40 / 0.06);
+  --shadow-1:
+    0 4px 8px -2px rgb(16 24 40 / 0.1), 0 2px 4px -2px rgb(16 24 40 / 0.06);
+  --shadow-2:
+    0 12px 16px -4px rgb(16 24 40 / 0.08), 0 4px 6px -2px rgb(16 24 40 / 0.03);
+  --shadow-3:
+    0 20px 24px -4px rgb(16 24 40 / 0.08), 0 8px 8px -4px rgb(16 24 40 / 0.03);
   --shadow-4: 0 24px 48px -12px rgb(16 24 40 / 0.18);
 
   --color-preview-100: #ebf2fa;
@@ -303,7 +303,7 @@
   /* Buttons - sizes */
 
   .pc-button--xs {
-    @apply text-xs leading-4 px-2.5 py-1.5;
+    @apply text-xs px-2.5 py-1 leading-tight;
   }
   .pc-button--sm {
     @apply px-3.5 py-2 h-[42px] text-sm font-semibold leading-tight;
@@ -654,52 +654,52 @@
   /* Badges - colors */
 
   .pc-badge--primary {
-    @apply text-primary-800 dark:text-primary-50 bg-primary-100 dark:bg-primary-900;
+    @apply text-primary-700 dark:text-primary-50 bg-primary-100 dark:bg-primary-900;
   }
   .pc-badge--secondary {
     @apply text-primary-300 dark:text-primary-300 bg-slate-900 dark:bg-slate-900;
   }
   .pc-badge--success {
-    @apply text-success-800 dark:text-success-50 bg-success-100 dark:bg-success-900;
+    @apply text-success-700 dark:text-success-50 bg-success-100 dark:bg-success-900;
   }
   .pc-badge--danger {
-    @apply text-danger-800 dark:text-danger-50 bg-danger-100 dark:bg-danger-900;
+    @apply text-danger-700 dark:text-danger-50 bg-danger-100 dark:bg-danger-900;
   }
   .pc-badge--warning {
-    @apply text-warning-800 dark:text-warning-50 bg-warning-100 dark:bg-warning-900;
+    @apply text-warning-700 dark:text-warning-50 bg-warning-100 dark:bg-warning-900;
   }
   .pc-badge--info {
-    @apply text-blue-800 dark:text-blue-50 bg-blue-100 dark:bg-blue-900;
+    @apply text-blue-700 dark:text-blue-50 bg-blue-100 dark:bg-blue-900;
   }
   .pc-badge--gray {
-    @apply text-slate-800 dark:text-slate-50 bg-slate-100 dark:bg-slate-700;
+    @apply text-slate-700 dark:text-slate-50 bg-slate-100 dark:bg-slate-700;
   }
   .pc-badge--light-muted {
     @apply text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900;
   }
   .pc-badge--indigo {
-    @apply text-indigo-800 bg-indigo-100 dark:text-indigo-50 dark:bg-indigo-900;
+    @apply text-indigo-700 bg-indigo-100 dark:text-indigo-50 dark:bg-indigo-900;
   }
   .pc-badge--purple {
-    @apply text-purple-800 bg-purple-100 dark:text-purple-50 dark:bg-purple-900;
+    @apply text-purple-700 bg-purple-100 dark:text-purple-50 dark:bg-purple-900;
   }
   .pc-badge--fuchsia {
-    @apply text-fuchsia-800 bg-fuchsia-100 dark:text-fuchsia-50 dark:bg-fuchsia-900;
+    @apply text-fuchsia-700 bg-fuchsia-100 dark:text-fuchsia-50 dark:bg-fuchsia-900;
   }
   .pc-badge--pink {
-    @apply text-pink-800 bg-pink-100 dark:text-pink-50 dark:bg-pink-900;
+    @apply text-pink-700 bg-pink-100 dark:text-pink-50 dark:bg-pink-900;
   }
   .pc-badge--rose {
-    @apply text-rose-800 bg-rose-100 dark:text-rose-50 dark:bg-rose-900;
+    @apply text-rose-700 bg-rose-100 dark:text-rose-50 dark:bg-rose-900;
   }
   .pc-badge--sky {
-    @apply text-sky-800 bg-sky-100 dark:text-sky-50 dark:bg-sky-900;
+    @apply text-sky-700 bg-sky-100 dark:text-sky-50 dark:bg-sky-900;
   }
   .pc-badge--cyan {
-    @apply text-cyan-800 bg-cyan-100 dark:text-cyan-50 dark:bg-cyan-900;
+    @apply text-cyan-700 bg-cyan-100 dark:text-cyan-50 dark:bg-cyan-900;
   }
   .pc-badge--teal {
-    @apply text-teal-800 bg-teal-100 dark:text-teal-50 dark:bg-teal-900;
+    @apply text-teal-700 bg-teal-100 dark:text-teal-50 dark:bg-teal-900;
   }
 
   /* Icon Badge */
@@ -1381,6 +1381,7 @@
     @apply bg-white dark:bg-slate-800/30;
     @apply rounded-md shadow-0;
     @apply border border-slate-200 dark:border-slate-700/40;
+    @apply overflow-hidden select-none;
   }
 
   /* Code Line */
