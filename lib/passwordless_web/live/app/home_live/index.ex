@@ -4,6 +4,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   alias Database.QueryExt
   alias Passwordless.Action
+  alias Passwordless.ActionTemplate
   alias Passwordless.App
   alias Passwordless.Event
   alias PasswordlessWeb.Components.DataTable
@@ -189,7 +190,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     |> Action.preload_events()
   end
 
-  defp update_top_actions(socket, %Action{name: action_name, state: state}) do
+  defp update_top_actions(socket, %Action{template: %ActionTemplate{name: action_name}, state: state}) do
     update(socket, :top_actions, fn top_actions ->
       Enum.map(top_actions, fn
         %{key: ^action_name, items: items, value: value} = top_action ->
@@ -212,4 +213,19 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
       end)
     end)
   end
+
+  defp browser_to_icon("Microsoft Edge"), do: "edge"
+  defp browser_to_icon(browser), do: String.downcase(browser)
+
+  defp os_to_icon("Mac"), do: "macos"
+  defp os_to_icon("Windows"), do: "windows"
+  defp os_to_icon("Linux"), do: "linux"
+  defp os_to_icon("Android"), do: "android"
+  defp os_to_icon("iOS"), do: "ios"
+  defp os_to_icon("Chrome OS"), do: "chromeos"
+  defp os_to_icon(os), do: String.downcase(os)
+
+  defp device_type_to_icon("desktop"), do: "remix-computer-line"
+  defp device_type_to_icon("mobile"), do: "remix-smartphone-line"
+  defp device_type_to_icon(_), do: "remix-tablet-line"
 end

@@ -3,7 +3,7 @@
     <.data_table
       meta={@meta}
       items={@actions}
-      title={gettext("All actions")}
+      title={gettext("Actions")}
       search_placeholder={gettext("Search by name or alias")}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("actions"))}</:if_empty>
@@ -12,9 +12,7 @@
       <:col :let={action} field={:alias}>
         <.code_line>{action.alias}</.code_line>
       </:col>
-      <:col :let={action} field={:attempts} sortable>
-        1
-      </:col>
+      <:col field={:action_count} sortable label={gettext("Attempts")} />
       <:col :let={action} label={gettext("Added")} field={:inserted_at} sortable>
         {format_date(action.inserted_at)}
       </:col>

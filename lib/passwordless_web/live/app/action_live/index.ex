@@ -2,6 +2,7 @@ defmodule PasswordlessWeb.App.ActionLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
+  alias Database.Tenant
   alias Passwordless.ActionTemplate
   alias Passwordless.App
   alias PasswordlessWeb.Components.DataTable
@@ -111,7 +112,12 @@ defmodule PasswordlessWeb.App.ActionLive.Index do
 
   defp assign_actions(socket, params) when is_map(params) do
     app = socket.assigns.current_app
-    query = ActionTemplate.get_by_app(app)
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    query =
+      app
+      |> ActionTemplate.get_by_app()
+      |> ActionTemplate.join_adapter_opts(opts)
 
     {actions, meta} = DataTable.search(query, params, @data_table_opts)
     assign(socket, actions: actions, meta: meta)

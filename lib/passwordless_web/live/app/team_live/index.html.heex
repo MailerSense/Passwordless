@@ -1,26 +1,5 @@
 <.tabbed_settings_layout current_user={@current_user} current_page={:team}>
   <div class="flex flex-col gap-6 p-6">
-    <.box card>
-      <.form_header title={gettext("Team")} no_margin />
-      <.p>
-        Members of the team have access to specific areas, such as user management or authenticator configuration. Assign roles to control their permissions and ensure they have the appropriate level of access for their responsibilities.
-      </.p>
-      <div class="flex items-center gap-3 justify-between">
-        <.a
-          to={~p"/app/new"}
-          label={gettext("Learn about roles")}
-          style="link"
-          link_type="live_redirect"
-        />
-
-        <.button
-          to={~p"/team/invite"}
-          icon="remix-mail-line"
-          label={gettext("Invite member")}
-          link_type="live_redirect"
-        />
-      </div>
-    </.box>
     <.data_table
       meta={@meta}
       items={@memberships}
@@ -70,6 +49,15 @@
           to={apply_filters(@filters, @meta, ~p"/team/#{membership}/edit")}
         />
       </:actions>
+
+      <:header_actions>
+        <.button
+          to={~p"/team/invite"}
+          icon="remix-add-circle-line"
+          label={gettext("Add member")}
+          link_type="live_redirect"
+        />
+      </:header_actions>
     </.data_table>
 
     <.simple_table

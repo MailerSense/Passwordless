@@ -3,7 +3,7 @@
     <.data_table
       meta={@meta}
       items={@users}
-      title={gettext("All users")}
+      title={gettext("Users")}
       search_placeholder={gettext("Search by email or user ID")}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>

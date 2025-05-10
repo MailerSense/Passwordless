@@ -152,8 +152,10 @@ defmodule PasswordlessWeb.Helpers do
     ]
   end
 
-  def verbalize_action(%Action{challenge: %Challenge{} = challenge, events: events} = action) do
-    name = Recase.to_sentence(action.name)
+  def verbalize_action(
+        %Action{challenge: %Challenge{} = challenge, template: %ActionTemplate{name: name}, events: events} = action
+      ) do
+    name = Recase.to_sentence(name)
 
     challenge_name =
       case challenge.kind do

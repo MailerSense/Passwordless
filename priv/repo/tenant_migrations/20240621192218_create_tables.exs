@@ -25,7 +25,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
       add :alias, :string, null: false
-      add :rules, :map, null: false, default: %{}
+      add :rules, :map
 
       timestamps()
       soft_delete_column()
@@ -43,16 +43,14 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
       add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
-      add :action_template_id,
-          references(:action_templates, type: :uuid, on_delete: :delete_all),
-          null: false
+      add :template_id, references(:action_templates, type: :uuid, on_delete: :delete_all),
+        null: false
 
       timestamps()
     end
 
-    create index(:actions, [:name])
-    create index(:actions, [:rule_id])
     create index(:actions, [:user_id])
+    create index(:actions, [:template_id])
 
     ## Challenge
 
@@ -382,22 +380,19 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       add :event, :string, null: false
       add :metadata, :map, null: false, default: %{}
       add :ip_address, :inet
-      add :user_agent, :string
+      add :user_agent, :text
       add :browser, :string
       add :browser_version, :string
       add :operating_system, :string
       add :operating_system_version, :string
+      add :device_type, :string
       add :language, :string
       add :city, :string
       add :region, :string
-      add :country, :string
-      add :country_iso, :char, size: 2
+      add :country, :char, size: 2
       add :latitude, :float
       add :longitude, :float
       add :timezone, :string
-      add :screen_width, :integer
-      add :screen_height, :integer
-      add :device_type, :string
 
       add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
       add :action_id, references(:actions, type: :uuid, on_delete: :nilify_all)

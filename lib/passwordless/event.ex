@@ -1,6 +1,6 @@
 defmodule Passwordless.Event do
   @moduledoc """
-  An action avent.
+  An avent.
   """
 
   use Passwordless.Schema, prefix: "event"
@@ -41,17 +41,14 @@ defmodule Passwordless.Event do
     field :browser_version, :string
     field :operating_system, :string
     field :operating_system_version, :string
+    field :device_type, :string
     field :language, :string
     field :city, :string
     field :region, :string
     field :country, :string
-    field :country_iso, :string
     field :latitude, :float
     field :longitude, :float
     field :timezone, :string
-    field :screen_width, :integer
-    field :screen_height, :integer
-    field :device_type, :string
 
     belongs_to :user, User
     belongs_to :action, Action
@@ -61,15 +58,26 @@ defmodule Passwordless.Event do
 
   @fields ~w(
     event
-    user_agent
     ip_address
-    country
+    user_agent
+    browser
+    browser_version
+    operating_system
+    operating_system_version
+    device_type
+    language
     city
+    region
+    country
+    latitude
+    longitude
+    timezone
+    user_id
     action_id
   )a
   @required_fields ~w(
     event
-    action_id
+    user_id
   )a
 
   @doc """
@@ -83,8 +91,20 @@ defmodule Passwordless.Event do
     |> validate_user_agent()
     |> put_ip_data()
     |> put_user_agent_data()
-    |> validate_string(:country)
+    |> validate_string(:browser)
+    |> validate_string(:browser_version)
+    |> validate_string(:operating_system)
+    |> validate_string(:operating_system_version)
+    |> validate_string(:device_type)
+    |> validate_string(:language)
     |> validate_string(:city)
+    |> validate_string(:region)
+    |> validate_string(:country)
+    |> validate_string(:timezone)
+    |> validate_number(:latitude, greater_than: -90, less_than_or_equal_to: 90)
+    |> validate_number(:longitude, greater_than: -180, less_than_or_equal_to: 180)
+    |> validate_string(:timezone)
+    |> assoc_constraint(:user)
     |> assoc_constraint(:action)
     |> cast_embed(:metadata, with: &metadata_changeset/2)
   end
@@ -132,18 +152,30 @@ defmodule Passwordless.Event do
          {:ok, geo_data} when is_map(geo_data) <- GeoIP.lookup(ip) do
       paths = [
         city: ["city", "names", "en"],
-        country: ["country", "names", "en"],
-        country_iso: ["country", "isoCode"],
+        region: fn data ->
+          case {get_in(data, ["country", "iso_code"]), get_in(data, ["subdivisions", Access.at(0), "iso_code"])} do
+            {country, region} when is_binary(country) and is_binary(region) -> "#{country}-#{region}"
+            _ -> nil
+          end
+        end,
+        country: ["country", "iso_code"],
         latitude: ["location", "latitude"],
         longitude: ["location", "longitude"],
-        timezone: ["location", "timeZone"]
+        timezone: ["location", "time_zone"]
       ]
 
-      Enum.reduce(paths, changeset, fn {key, path}, acc ->
-        case get_in(geo_data, path) do
-          value when is_binary(value) or is_number(value) -> put_change(acc, key, value)
-          _ -> acc
-        end
+      Enum.reduce(paths, changeset, fn
+        {key, path}, acc when is_list(path) ->
+          case get_in(geo_data, path) do
+            value when is_binary(value) or is_number(value) -> put_change(acc, key, value)
+            _ -> acc
+          end
+
+        {key, path}, acc when is_function(path, 1) ->
+          case path.(geo_data) do
+            value when is_binary(value) or is_number(value) -> put_change(acc, key, value)
+            _ -> acc
+          end
       end)
     else
       _ -> changeset
@@ -155,7 +187,20 @@ defmodule Passwordless.Event do
   defp put_user_agent_data(%Ecto.Changeset{valid?: true} = changeset) do
     with ua when is_binary(ua) <- get_change(changeset, :user_agent),
          result when is_struct(result) <- UAInspector.parse(ua) do
-      changeset
+      paths = [
+        browser: [Access.key(:client), Access.key(:name)],
+        browser_version: [Access.key(:client), Access.key(:version)],
+        operating_system: [Access.key(:os), Access.key(:name)],
+        operating_system_version: [Access.key(:os), Access.key(:version)],
+        device_type: [Access.key(:device), Access.key(:type)]
+      ]
+
+      Enum.reduce(paths, changeset, fn {key, path}, acc ->
+        case get_in(result, path) do
+          value when is_binary(value) or is_number(value) -> put_change(acc, key, value)
+          _ -> acc
+        end
+      end)
     else
       _ -> changeset
     end

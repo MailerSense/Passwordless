@@ -9,10 +9,10 @@ defmodule Passwordless.Action do
 
   alias Database.ChangesetExt
   alias Database.Tenant
+  alias Passwordless.ActionTemplate
   alias Passwordless.App
   alias Passwordless.Challenge
   alias Passwordless.Event
-  alias Passwordless.Rule
   alias Passwordless.User
 
   @states ~w(allow timeout block pending)a
@@ -22,12 +22,10 @@ defmodule Passwordless.Action do
     only: [
       :id,
       :data,
-      :name,
       :state,
       :challenge,
       :events,
       :user,
-      :rule,
       :inserted_at,
       :updated_at
     ]
@@ -37,7 +35,6 @@ defmodule Passwordless.Action do
     filterable: [:id], sortable: [:id]
   }
   schema "actions" do
-    field :name, :string
     field :data, Passwordless.EncryptedMap
     field :state, Ecto.Enum, values: @states, default: :pending
 
@@ -46,8 +43,8 @@ defmodule Passwordless.Action do
     has_many :events, Event, preload_order: [asc: :inserted_at]
     has_many :challenges, Challenge, preload_order: [asc: :inserted_at]
 
-    belongs_to :rule, Rule
     belongs_to :user, User
+    belongs_to :template, ActionTemplate
 
     timestamps()
   end
@@ -56,9 +53,9 @@ defmodule Passwordless.Action do
 
   def topic_for(%App{} = app), do: "#{prefix()}:#{app.id}"
 
-  def preloads, do: [:rule, {:user, [:totps, :email, :emails, :phone, :phones]}, {:challenge, [:email_message]}, :events]
+  def preloads, do: [{:user, [:totps, :email, :emails, :phone, :phones]}, {:challenge, [:email_message]}, :events]
 
-  def readable_name(%__MODULE__{name: name}), do: Recase.to_sentence(name)
+  def readable_name(%__MODULE__{template: %ActionTemplate{name: name}}), do: Recase.to_sentence(name)
 
   def first_event(%__MODULE__{events: [_ | _] = events}) do
     events
@@ -109,7 +106,7 @@ defmodule Passwordless.Action do
   Preload events.
   """
   def preload_events(query \\ __MODULE__) do
-    from q in query, preload: [{:challenge, [:email_message]}, :events]
+    from q in query, preload: [:template, {:challenge, [:email_message]}, :events]
   end
 
   @doc """
@@ -118,7 +115,6 @@ defmodule Passwordless.Action do
   def preload_challenge(query \\ __MODULE__) do
     from q in query,
       preload: [
-        :rule,
         {:user, [:totps, :email, :emails, :phone, :phones]},
         {:challenge, [:email_message]},
         :events
@@ -126,11 +122,10 @@ defmodule Passwordless.Action do
   end
 
   @fields ~w(
-    name
     data
     state
-    rule_id
     user_id
+    template_id
   )a
   @required_fields @fields -- [:data]
 
@@ -141,10 +136,10 @@ defmodule Passwordless.Action do
     action
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> validate_name()
     |> validate_data()
     |> validate_state()
     |> assoc_constraint(:user)
+    |> assoc_constraint(:template)
   end
 
   @doc """
@@ -158,12 +153,6 @@ defmodule Passwordless.Action do
   end
 
   # Private
-
-  defp validate_name(changeset) do
-    changeset
-    |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 255)
-  end
 
   defp validate_data(changeset) do
     changeset

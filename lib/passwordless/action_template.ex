@@ -6,6 +6,8 @@ defmodule Passwordless.ActionTemplate do
   import Ecto.Query
 
   alias Database.ChangesetExt
+  alias Database.Tenant
+  alias Passwordless.Action
   alias Passwordless.App
 
   @derive {
@@ -19,11 +21,20 @@ defmodule Passwordless.ActionTemplate do
   @derive {
     Flop.Schema,
     filterable: [:id, :search],
-    sortable: [:id, :inserted_at],
+    sortable: [:id, :action_count, :inserted_at],
     custom_fields: [
       search: [
         filter: {__MODULE__, :unified_search_filter, []},
         ecto_type: :string
+      ]
+    ],
+    adapter_opts: [
+      join_fields: [
+        action_count: [
+          binding: :action_count,
+          field: :count,
+          ecto_type: :integer
+        ]
       ]
     ]
   }
@@ -31,17 +42,48 @@ defmodule Passwordless.ActionTemplate do
     field :name, :string
     field :alias, :string
 
-    belongs_to :app, App
+    field :action_count, :integer, virtual: true, default: 0
+
+    embeds_many :rules, Rule, on_replace: :delete do
+      @derive Jason.Encoder
+
+      field :condition, :map
+      field :effects, :map
+    end
+
+    has_many :actions, Action, preload_order: [desc: :inserted_at]
 
     timestamps()
     soft_delete_timestamp()
   end
 
   @doc """
+  Join the adapter opts.
+  """
+  def join_adapter_opts(query \\ __MODULE__, opts \\ []) do
+    action_count =
+      from a in Action,
+        prefix: ^Keyword.get(opts, :prefix, "public"),
+        where: a.template_id == parent_as(:template).id,
+        select: %{count: count(a.id)}
+
+    query =
+      if has_named_binding?(query, :template),
+        do: query,
+        else: from(q in query, as: :template)
+
+    from q in query,
+      left_lateral_join: ac in subquery(action_count),
+      on: true,
+      as: :action_count,
+      select_merge: %{action_count: ac.count}
+  end
+
+  @doc """
   Get by app.
   """
   def get_by_app(query \\ __MODULE__, %App{} = app) do
-    from q in query, where: q.app_id == ^app.id
+    from q in query, prefix: ^Tenant.to_prefix(app)
   end
 
   @doc """
@@ -54,7 +96,6 @@ defmodule Passwordless.ActionTemplate do
 
   @fields ~w(
     name
-    app_id
   )a
   @required_fields @fields
 
@@ -67,7 +108,6 @@ defmodule Passwordless.ActionTemplate do
     |> validate_required(@required_fields)
     |> validate_name()
     |> put_alias()
-    |> assoc_constraint(:app)
   end
 
   # Private
