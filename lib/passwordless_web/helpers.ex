@@ -8,13 +8,13 @@ defmodule PasswordlessWeb.Helpers do
 
   alias Passwordless.Accounts.User
   alias Passwordless.Action
-  alias Passwordless.ActionEvent
   alias Passwordless.ActionTemplate
   alias Passwordless.Activity.Log
   alias Passwordless.App
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
   alias Passwordless.EmailTemplate
+  alias Passwordless.Event
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
@@ -180,7 +180,7 @@ defmodule PasswordlessWeb.Helpers do
       end
 
     events =
-      Enum.map(events, fn %ActionEvent{event: event, inserted_at: inserted_at} = event_struct ->
+      Enum.map(events, fn %Event{event: event, inserted_at: inserted_at} = event_struct ->
         name =
           case event do
             "send_otp" -> gettext("Requested a %{challenge}", challenge: challenge_name)

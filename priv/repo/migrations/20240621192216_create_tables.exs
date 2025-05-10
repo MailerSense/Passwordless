@@ -267,22 +267,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create unique_index(:auth_tokens, [:key_hash], where: "deleted_at is null")
     create unique_index(:auth_tokens, [:app_id], where: "deleted_at is null")
 
-    ## Action Templates
-
-    create table(:action_templates, primary_key: false) do
-      add :id, :uuid, primary_key: true
-      add :name, :string, null: false
-      add :alias, :string, null: false
-
-      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
-
-      timestamps()
-      soft_delete_column()
-    end
-
-    create index(:action_templates, [:app_id], where: "deleted_at is null")
-    create index(:action_templates, [:alias], where: "deleted_at is null")
-
     ## Domain
 
     create table(:domains, primary_key: false) do

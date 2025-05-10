@@ -9,9 +9,9 @@ defmodule Passwordless.Action do
 
   alias Database.ChangesetExt
   alias Database.Tenant
-  alias Passwordless.ActionEvent
   alias Passwordless.App
   alias Passwordless.Challenge
+  alias Passwordless.Event
   alias Passwordless.Rule
   alias Passwordless.User
 
@@ -43,7 +43,7 @@ defmodule Passwordless.Action do
 
     has_one :challenge, Challenge, where: [current: true]
 
-    has_many :events, ActionEvent, preload_order: [asc: :inserted_at]
+    has_many :events, Event, preload_order: [asc: :inserted_at]
     has_many :challenges, Challenge, preload_order: [asc: :inserted_at]
 
     belongs_to :rule, Rule
@@ -63,7 +63,7 @@ defmodule Passwordless.Action do
   def first_event(%__MODULE__{events: [_ | _] = events}) do
     events
     |> Enum.sort_by(& &1.inserted_at, :asc)
-    |> Enum.find(fn %ActionEvent{city: city, country: country} ->
+    |> Enum.find(fn %Event{city: city, country: country} ->
       is_binary(city) and is_binary(country)
     end)
   end

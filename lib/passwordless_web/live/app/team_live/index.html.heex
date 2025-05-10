@@ -5,15 +5,14 @@
       <.p>
         Members of the team have access to specific areas, such as user management or authenticator configuration. Assign roles to control their permissions and ensure they have the appropriate level of access for their responsibilities.
       </.p>
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3 flex-wrap">
-          <.a
-            to={~p"/app/new"}
-            label={gettext("Learn about roles")}
-            style="link"
-            link_type="live_redirect"
-          />
-        </div>
+      <div class="flex items-center gap-3 justify-between">
+        <.a
+          to={~p"/app/new"}
+          label={gettext("Learn about roles")}
+          style="link"
+          link_type="live_redirect"
+        />
+
         <.button
           to={~p"/team/invite"}
           icon="remix-mail-line"

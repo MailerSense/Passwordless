@@ -4,8 +4,8 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   alias Database.QueryExt
   alias Passwordless.Action
-  alias Passwordless.ActionEvent
   alias Passwordless.App
+  alias Passwordless.Event
   alias PasswordlessWeb.Components.DataTable
   alias PasswordlessWeb.Endpoint
 

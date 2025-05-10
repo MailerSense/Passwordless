@@ -101,7 +101,7 @@
 
       <:col :let={action} label={gettext("Country")} field={:country}>
         <%= case Action.first_event(action) do %>
-          <% %ActionEvent{city: city, country: country} -> %>
+          <% %Event{city: city, country: country} -> %>
             <div class="flex items-center gap-2">
               <.icon name={"flag-#{String.downcase(country)}"} class="pc-flag-icon" /> {city}
             </div>

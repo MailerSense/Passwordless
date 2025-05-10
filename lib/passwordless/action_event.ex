@@ -1,4 +1,4 @@
-defmodule Passwordless.ActionEvent do
+defmodule Passwordless.Event do
   @moduledoc """
   An action avent.
   """
@@ -8,6 +8,8 @@ defmodule Passwordless.ActionEvent do
   alias Database.ChangesetExt
   alias Database.Inet
   alias Passwordless.Action
+  alias Passwordless.GeoIP
+  alias Passwordless.User
 
   @derive {
     Jason.Encoder,
@@ -22,7 +24,7 @@ defmodule Passwordless.ActionEvent do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "action_events" do
+  schema "events" do
     field :event, :string
 
     embeds_one :metadata, Metadata, on_replace: :delete do
@@ -33,11 +35,25 @@ defmodule Passwordless.ActionEvent do
       field :attrs, :map, default: %{}
     end
 
-    field :user_agent, :string
     field :ip_address, Inet
-    field :country, :string
+    field :user_agent, :string
+    field :browser, :string
+    field :browser_version, :string
+    field :operating_system, :string
+    field :operating_system_version, :string
+    field :language, :string
     field :city, :string
+    field :region, :string
+    field :country, :string
+    field :country_iso, :string
+    field :latitude, :float
+    field :longitude, :float
+    field :timezone, :string
+    field :screen_width, :integer
+    field :screen_height, :integer
+    field :device_type, :string
 
+    belongs_to :user, User
     belongs_to :action, Action
 
     timestamps(updated_at: false)
@@ -59,12 +75,14 @@ defmodule Passwordless.ActionEvent do
   @doc """
   A changeset.
   """
-  def changeset(%__MODULE__{} = action_event, attrs \\ %{}) do
-    action_event
+  def changeset(%__MODULE__{} = event, attrs \\ %{}) do
+    event
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_ip_address()
     |> validate_user_agent()
+    |> put_ip_data()
+    |> put_user_agent_data()
     |> validate_string(:country)
     |> validate_string(:city)
     |> assoc_constraint(:action)
@@ -80,7 +98,7 @@ defmodule Passwordless.ActionEvent do
   end
 
   defp validate_ip_address(%Ecto.Changeset{valid?: true} = changeset) do
-    with {_, raw_ip} <- fetch_field(changeset, :ip_address),
+    with raw_ip when is_binary(raw_ip) <- get_change(changeset, :ip_address),
          {:ok, ip_address} <- InetCidr.parse_address(raw_ip),
          true <- public_ip?(ip_address) do
       put_change(changeset, :ip_address, to_string(:inet.ntoa(ip_address)))
@@ -108,6 +126,42 @@ defmodule Passwordless.ActionEvent do
       _ -> false
     end
   end
+
+  defp put_ip_data(%Ecto.Changeset{valid?: true} = changeset) do
+    with ip when is_binary(ip) <- get_change(changeset, :ip_address),
+         {:ok, geo_data} when is_map(geo_data) <- GeoIP.lookup(ip) do
+      paths = [
+        city: ["city", "names", "en"],
+        country: ["country", "names", "en"],
+        country_iso: ["country", "isoCode"],
+        latitude: ["location", "latitude"],
+        longitude: ["location", "longitude"],
+        timezone: ["location", "timeZone"]
+      ]
+
+      Enum.reduce(paths, changeset, fn {key, path}, acc ->
+        case get_in(geo_data, path) do
+          value when is_binary(value) or is_number(value) -> put_change(acc, key, value)
+          _ -> acc
+        end
+      end)
+    else
+      _ -> changeset
+    end
+  end
+
+  defp put_ip_data(%Ecto.Changeset{} = changeset), do: changeset
+
+  defp put_user_agent_data(%Ecto.Changeset{valid?: true} = changeset) do
+    with ua when is_binary(ua) <- get_change(changeset, :user_agent),
+         result when is_struct(result) <- UAInspector.parse(ua) do
+      changeset
+    else
+      _ -> changeset
+    end
+  end
+
+  defp put_user_agent_data(%Ecto.Changeset{} = changeset), do: changeset
 
   @metadata_fields ~w(
     before

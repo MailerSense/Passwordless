@@ -51,3 +51,9 @@ defmodule Database.Inet do
   @impl Ecto.Type
   def embed_as(_), do: :self
 end
+
+defimpl Jason.Encoder, for: Postgrex.INET do
+  def encode(%Postgrex.INET{address: address}, opts) do
+    :inet.ntoa(address)
+  end
+end

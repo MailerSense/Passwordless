@@ -5,18 +5,18 @@ defmodule Passwordless.ActionLocator do
 
   use Oban.Pro.Worker, queue: :locator, max_attempts: 5, tags: ["action", "locator"]
 
-  alias Passwordless.ActionEvent
   alias Passwordless.App
   alias Passwordless.Cache
+  alias Passwordless.Event
 
   @impl true
-  def process(%Oban.Job{args: %{"app_id" => app_id, "action_event_id" => action_event_id}}) do
+  def process(%Oban.Job{args: %{"app_id" => app_id, "event_id" => event_id}}) do
     with %App{state: :active} = app <- Passwordless.get_app(app_id),
-         %ActionEvent{ip_address: ip_address} = action_event <- Passwordless.get_action_event(app, action_event_id),
+         %Event{ip_address: ip_address} = event <- Passwordless.get_event(app, event_id),
          {:ok, %{"city" => city, "country_code" => country_code}} <- IPStack.locate(ip_address),
          :ok <- update_cache(ip_address, city, country_code),
          do:
-           Passwordless.update_action_event(app, action_event, %{
+           Passwordless.update_event(app, event, %{
              city: city,
              country: country_code
            })

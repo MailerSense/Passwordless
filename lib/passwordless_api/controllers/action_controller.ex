@@ -120,7 +120,7 @@ defmodule PasswordlessApi.ActionController do
                {:ok, new_action} <-
                  Passwordless.handle_challenge(app, user, action, challenge, "send_otp", %{email: user.email}),
                {:ok, event} <- Passwordless.create_event(app, action, event_params.(action, new_action)),
-               {:ok, _event_or_job} <- Passwordless.locate_action_event(app, event),
+               {:ok, _event_or_job} <- Passwordless.locate_event(app, event),
                do: {:ok, new_action}
         end)
 

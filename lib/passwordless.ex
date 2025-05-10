@@ -9,7 +9,6 @@ defmodule Passwordless do
   alias Database.PrefixedUUID
   alias Database.Tenant
   alias Passwordless.Action
-  alias Passwordless.ActionEvent
   alias Passwordless.ActionTemplate
   alias Passwordless.App
   alias Passwordless.Authenticators
@@ -27,6 +26,7 @@ defmodule Passwordless do
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateStyle
   alias Passwordless.EmailUnsubscribeLinkMapping
+  alias Passwordless.Event
   alias Passwordless.Media
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
@@ -822,28 +822,28 @@ defmodule Passwordless do
 
   # Action Event
 
-  def get_action_event(%App{} = app, id) do
-    Repo.get(ActionEvent, id, prefix: Tenant.to_prefix(app))
+  def get_event(%App{} = app, id) do
+    Repo.get(Event, id, prefix: Tenant.to_prefix(app))
   end
 
-  def update_action_event(%App{} = app, %ActionEvent{} = action_event, attrs) do
-    action_event
-    |> ActionEvent.changeset(attrs)
+  def update_event(%App{} = app, %Event{} = event, attrs) do
+    event
+    |> Event.changeset(attrs)
     |> Repo.update(prefix: Tenant.to_prefix(app))
   end
 
-  def locate_action_event(%App{} = app, %ActionEvent{ip_address: ip_address} = event) when is_binary(ip_address) do
+  def locate_event(%App{} = app, %Event{ip_address: ip_address} = event) when is_binary(ip_address) do
     case Passwordless.GeoIP.lookup(ip_address) do
       {:ok, %{"country" => %{"iso_code" => country}, "city" => %{"names" => %{"en" => city}}}}
       when is_binary(city) and is_binary(country) ->
-        Passwordless.update_action_event(app, event, %{city: city, country: country})
+        Passwordless.update_event(app, event, %{city: city, country: country})
 
       {:error, _} ->
         {:ok, event}
     end
   end
 
-  def locate_action_event(%App{} = app, event), do: {:ok, event}
+  def locate_event(%App{} = app, event), do: {:ok, event}
 
   # Challenge
 
@@ -882,7 +882,7 @@ defmodule Passwordless do
   def create_event(%App{} = app, %Action{} = action, attrs \\ %{}) do
     action
     |> Ecto.build_assoc(:events)
-    |> ActionEvent.changeset(attrs)
+    |> Event.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
