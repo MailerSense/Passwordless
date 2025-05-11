@@ -1,4 +1,4 @@
-<div class="flex flex-col p-6 gap-6">
+<div class="flex flex-col gap-6 py-6 px-8">
   <.box card>
     <.form_header title={gettext("Installation")} no_margin />
     <.p>
@@ -109,7 +109,8 @@
                   minlength="7"
                   maxlength="15"
                   pattern="^(?>(\d|[1-9]\d{2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?1)$"
-                  label=""
+                  label={gettext("Address")}
+                  label_sr_only={true}
                   field={f[:address]}
                   required
                   class="font-mono"

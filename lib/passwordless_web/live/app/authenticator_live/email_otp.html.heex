@@ -1,4 +1,4 @@
-<div class="flex flex-col p-6 gap-6">
+<div class="flex flex-col gap-6 py-6 px-8">
   <.form
     id="edit-email-form"
     for={@form}
@@ -7,6 +7,16 @@
     phx-change="validate"
     class="flex flex-col gap-6"
   >
+    <.alert :if={Domain.system?(@domain)} color="info" with_icon>
+      Do you want to send branded emails?
+      <.a
+        to={~p"/domain"}
+        label={gettext("Set up domain")}
+        style="link"
+        class="inline-flex"
+        link_type="live_redirect"
+      />
+    </.alert>
     <.box padded>
       <.form_header title={gettext("Email OTP")} />
       <.p class="mb-6">
@@ -33,16 +43,6 @@
           wrapper_class="mb-0!"
         />
       </div>
-      <.alert :if={Domain.system?(@domain)} color="info" with_icon class="mb-6">
-        Do you want to send branded emails?
-        <.a
-          to={~p"/domain"}
-          label={gettext("Set up domain")}
-          style="link"
-          class="inline-flex"
-          link_type="live_redirect"
-        />
-      </.alert>
       <.email_preview
         to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/email-otp"}"}
         name={gettext("Edit email template")}

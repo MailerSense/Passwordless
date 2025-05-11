@@ -95,13 +95,13 @@
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
 
-      <:col :let={action} label={gettext("Action")} field={:name}>
-        {Recase.to_sentence(action.name)}
+      <:col :let={action} label={gettext("Event")} field={:name}>
+        {action.template.name}
       </:col>
 
       <:col :let={action} label={gettext("Country")} field={:country}>
         <%= case Action.first_event(action) do %>
-          <% %ActionEvent{city: city, country: country} -> %>
+          <% %Event{city: city, country: country} -> %>
             <div class="flex items-center gap-2">
               <.icon name={"flag-#{String.downcase(country)}"} class="pc-flag-icon" /> {city}
             </div>
@@ -110,26 +110,35 @@
       </:col>
 
       <:col :let={action} label={gettext("Browser")} field={:browser}>
-        <div class="flex items-center gap-2">
-          <.icon name="browser-chrome" class="w-5 h-5" /> Chrome
-        </div>
+        <%= case Action.first_event(action) do %>
+          <% %Event{browser: browser} -> %>
+            <div class="flex items-center gap-2">
+              <.icon name={"browser-#{browser_to_icon(browser)}"} class="w-5 h-5" /> {browser}
+            </div>
+          <% _ -> %>
+        <% end %>
       </:col>
 
       <:col :let={action} label={gettext("Operating System")} field={:os}>
-        <div class="flex items-center gap-2">
-          <.icon name="os-ios" class="w-5 h-5" /> iOS
-        </div>
+        <%= case Action.first_event(action) do %>
+          <% %Event{operating_system: operating_system} -> %>
+            <div class="flex items-center gap-2">
+              <.icon name={"os-#{os_to_icon(operating_system)}"} class="w-5 h-5" /> {operating_system}
+            </div>
+          <% _ -> %>
+        <% end %>
       </:col>
 
-      <:col :let={action} label={gettext("Authenticator")} field={:authenticator}>
-        <div class="flex items-center gap-2">
-          <.icon name="remix-mail-open-line" class="w-5 h-5" /> Email OTP
-        </div>
-      </:col>
-
-      <:col :let={action} label={gettext("Result")} field={:result}>
-        <% {badge_label, badge_color} = action_state_badge(action) %>
-        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
+      <:col :let={action} label={gettext("Device")} field={:device}>
+        <%= case Action.first_event(action) do %>
+          <% %Event{device_type: device_type} -> %>
+            <div class="flex items-center gap-2">
+              <.icon name={device_type_to_icon(device_type)} class="w-5 h-5" /> {Recase.to_sentence(
+                device_type
+              )}
+            </div>
+          <% _ -> %>
+        <% end %>
       </:col>
 
       <:col :let={action} label={gettext("Last seen")} field={:inserted_at}>

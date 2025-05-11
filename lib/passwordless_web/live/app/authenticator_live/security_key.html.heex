@@ -1,4 +1,4 @@
-<div class="flex flex-col p-6 gap-6">
+<div class="flex flex-col gap-6 py-6 px-8">
   <.form
     id="edit-security-key-form"
     for={@form}
@@ -13,69 +13,21 @@
         WebAuthn security keys, also known as FIDO2 keys, are physical devices that use public key cryptography to securely authenticate users online, replacing passwords with a more secure method.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
+    </.box>
+    <.box padded>
+      <.form_header title={gettext("Relying Party ID")} />
+      <.p class="mb-6">
+        A passkey is a digital credential that replaces passwords for signing into websites and apps. It is a more secure and user-friendly alternative to traditional passwords, as it uses public key cryptography to authenticate users without the need for a shared secret.
+      </.p>
       <.field
         field={@form[:relying_party_id]}
-        label={gettext("Relying party ID")}
+        label={gettext("Relying Party ID")}
+        label_sr_only={true}
+        prefix={gettext("https://")}
         disabled={not @enabled}
         required
         required_asterix={false}
       />
-    </.box>
-    <.box padded>
-      <.form_header title={gettext("Origins")} />
-      <.p class="mb-6">
-        The expected origins are the domains that the key can be used on. The key will only be valid for the specified domains.
-      </.p>
-      <div class="pc-form-field-wrapper">
-        <.field_label>{gettext("Allowed origins")}</.field_label>
-        <div class="flex flex-col gap-y-2">
-          <.inputs_for :let={expected_origin} field={@form[:expected_origins]}>
-            <input
-              type="hidden"
-              name="security_key[expected_origins_sort][]"
-              value={expected_origin.index}
-            />
-            <div class="flex items-center grow gap-2">
-              <.field
-                type="url"
-                label=""
-                field={expected_origin[:url]}
-                required
-                wrapper_class="mb-0! w-full grow"
-                disabled={not @enabled}
-              >
-                <:action>
-                  <.icon_form_button
-                    size="sm"
-                    name="security_key[expected_origins_drop][]"
-                    type="button"
-                    icon="custom-trash"
-                    color="light"
-                    title={gettext("Remove")}
-                    value={expected_origin.index}
-                    event={JS.dispatch("change")}
-                    disabled={not @enabled or expected_origin.index == 0}
-                  />
-                </:action>
-              </.field>
-            </div>
-          </.inputs_for>
-        </div>
-        <div class="flex mt-3">
-          <.button
-            size="sm"
-            type="button"
-            color="light"
-            icon="remix-add-circle-line"
-            label={gettext("Add origin")}
-            name="security_key[expected_origins_sort][]"
-            value="new"
-            phx-click={JS.dispatch("change")}
-            disabled={not @enabled}
-          />
-        </div>
-        <input type="hidden" name="security_key[expected_origins_drop][]" />
-      </div>
     </.box>
   </.form>
 </div>

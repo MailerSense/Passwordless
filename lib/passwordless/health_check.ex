@@ -56,13 +56,15 @@ defmodule Passwordless.HealthCheck do
 
   @impl true
   def init({ready, live}) do
-    :ets.new(@table, [
-      :set,
-      :named_table,
-      :protected,
-      read_concurrency: true,
-      write_concurrency: false
-    ])
+    if :ets.info(@table) == :undefined do
+      :ets.new(@table, [
+        :set,
+        :named_table,
+        :protected,
+        read_concurrency: true,
+        write_concurrency: false
+      ])
+    end
 
     tick()
 

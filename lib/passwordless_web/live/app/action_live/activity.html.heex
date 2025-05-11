@@ -1,0 +1,173 @@
+<.layout current_user={@current_user} current_page={:actions} current_section={:app}>
+  <div class="flex flex-col gap-6 px-8 py-6">
+    <.form
+      id="edit-action-template-form"
+      for={@action_form}
+      phx-change="validate"
+      phx-submit="save"
+      class="flex flex-col gap-6"
+    >
+      <.subpage_header field={@action_form[:name]}>
+        <div class="flex gap-3">
+          <.button
+            size="md"
+            type="button"
+            color="light"
+            label={gettext("Cancel")}
+            to={~p"/actions"}
+            link_type="live_patch"
+          />
+          <.button
+            to={~p"/actions/#{@action_template}/activity/delete"}
+            type="button"
+            label={gettext("Delete")}
+            icon="remix-delete-bin-line"
+            color="danger"
+            variant="outline"
+            link_type="live_patch"
+          />
+          <.button
+            size="md"
+            type="submit"
+            form="edit-template-locale"
+            icon="remix-save-line"
+            label={gettext("Save")}
+            disabled={not @action_form.source.valid? or Enum.empty?(@action_form.source.changes)}
+          />
+        </div>
+      </.subpage_header>
+
+      <div>
+        <.tab_menu menu_items={action_menu_items(@action_template)} current_tab={:activity} />
+      </div>
+
+      <.bar_stats />
+
+      <.box card>
+        <.form_header title={gettext("Status distribution")} no_margin />
+        <.p>
+          {gettext(
+            "The status distribution shows the percentage of rule evaluations that resulted in each status. The status can be one of the following: allow, timeout, or block. The percentage is calculated based on the total number of rule evaluations."
+          )}
+        </.p>
+        <.multi_progress
+          max={100}
+          size="lg"
+          label={true}
+          items={[
+            %{key: :allow, value: 80, color: "success"},
+            %{key: :timeout, value: 10, color: "warning"},
+            %{key: :block, value: 10, color: "danger"}
+          ]}
+        />
+      </.box>
+
+      <div class="flex flex-col lg:flex-row lg:items-center gap-6">
+        <.circle_stat
+          label={gettext("Rule evaluations")}
+          legend_color_class="bg-purple-500"
+          circle_color_class="text-purple-500"
+          value={200}
+          value_max={1000}
+          class="grow"
+        />
+        <.circle_stat
+          label={gettext("Unique users")}
+          legend_color_class="bg-rose-500"
+          circle_color_class="text-rose-500"
+          value={100}
+          value_max={1000}
+          class="grow"
+        />
+      </div>
+    </.form>
+
+    <.stream_table
+      id="actions"
+      meta={@meta}
+      title={gettext("Recent events")}
+      items={@streams.actions}
+      finished={@finished}
+    >
+      <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
+
+      <:col :let={action} label={gettext("Event")} field={:name}>
+        {action.template.name}
+      </:col>
+
+      <:col :let={action} label={gettext("Country")} field={:country}>
+        <%= case Action.first_event(action) do %>
+          <% %Event{city: city, country: country} -> %>
+            <div class="flex items-center gap-2">
+              <.icon name={"flag-#{String.downcase(country)}"} class="pc-flag-icon" /> {city}
+            </div>
+          <% _ -> %>
+        <% end %>
+      </:col>
+
+      <:col :let={action} label={gettext("Browser")} field={:browser}>
+        <%= case Action.first_event(action) do %>
+          <% %Event{browser: browser} -> %>
+            <div class="flex items-center gap-2">
+              <.icon name={"browser-#{browser_to_icon(browser)}"} class="w-5 h-5" /> {browser}
+            </div>
+          <% _ -> %>
+        <% end %>
+      </:col>
+
+      <:col :let={action} label={gettext("Operating System")} field={:os}>
+        <%= case Action.first_event(action) do %>
+          <% %Event{operating_system: operating_system} -> %>
+            <div class="flex items-center gap-2">
+              <.icon name={"os-#{os_to_icon(operating_system)}"} class="w-5 h-5" /> {operating_system}
+            </div>
+          <% _ -> %>
+        <% end %>
+      </:col>
+
+      <:col :let={action} label={gettext("Device")} field={:device}>
+        <%= case Action.first_event(action) do %>
+          <% %Event{device_type: device_type} -> %>
+            <div class="flex items-center gap-2">
+              <.icon name={device_type_to_icon(device_type)} class="w-5 h-5" /> {Recase.to_sentence(
+                device_type
+              )}
+            </div>
+          <% _ -> %>
+        <% end %>
+      </:col>
+
+      <:col :let={action} label={gettext("Last seen")} field={:inserted_at}>
+        {Timex.from_now(action.inserted_at)}
+      </:col>
+    </.stream_table>
+  </div>
+</.layout>
+
+<%= case @live_action do %>
+  <% :delete -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Reset \"%{name}\"", name: @action_template.name)}
+          color="danger"
+          phx-click="delete_template"
+        />
+      </div>
+    </.modal>
+  <% _ -> %>
+<% end %>

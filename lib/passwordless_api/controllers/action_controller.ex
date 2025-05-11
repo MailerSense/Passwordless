@@ -113,14 +113,12 @@ defmodule PasswordlessApi.ActionController do
 
       result =
         Repo.transact(fn ->
-          with {:ok, rule} <- Passwordless.create_rule(app, %{conditions: %{}, effects: %{}}),
-               {:ok, user} <- Passwordless.resolve_user(app, user_params),
-               {:ok, action} <- Passwordless.create_action(app, user, Map.put(action_params, :rule_id, rule.id)),
+          with {:ok, user} <- Passwordless.resolve_user(app, user_params),
+               {:ok, action} <- Passwordless.create_action(app, user, action_params),
                {:ok, challenge} <- Passwordless.create_challenge(app, action, challenge_params),
                {:ok, new_action} <-
                  Passwordless.handle_challenge(app, user, action, challenge, "send_otp", %{email: user.email}),
                {:ok, event} <- Passwordless.create_event(app, action, event_params.(action, new_action)),
-               {:ok, _event_or_job} <- Passwordless.locate_action_event(app, event),
                do: {:ok, new_action}
         end)
 

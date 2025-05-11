@@ -3,8 +3,8 @@
     <.form
       id="edit-action-template-form"
       for={@action_form}
-      phx-change="validate_template"
-      phx-submit="save_template"
+      phx-change="validate"
+      phx-submit="save"
     >
       <.subpage_header field={@action_form[:name]} class="mb-6">
         <div class="flex gap-3">
@@ -34,40 +34,87 @@
             disabled={not @action_form.source.valid? or Enum.empty?(@action_form.source.changes)}
           />
         </div>
-
-        <:badge>
-          <.code_line>{@action_template.alias}</.code_line>
-        </:badge>
       </.subpage_header>
       <.tab_menu
         menu_items={action_menu_items(@action_template)}
-        current_tab={@live_action}
+        current_tab={:edit}
         class="mb-6"
       />
       <.area padded class="flex flex-col gap-6">
         <div class="flex items-center justify-between gap-3">
-          <.area_header title={gettext("Rules")} />
-
-          <.button
-            size="sm"
-            type="button"
-            color="light"
-            icon="remix-add-circle-line"
-            label={gettext("Create rule")}
-          />
+          <.area_header title={gettext("Rule Editor")} />
+          <div class="flex items-center gap-3">
+            <.button
+              size="sm"
+              type="button"
+              color="light"
+              icon="remix-play-circle-line"
+              label={gettext("Run test")}
+            />
+            <.button
+              size="sm"
+              type="button"
+              color="light"
+              icon="remix-add-circle-line"
+              label={gettext("Create rule")}
+              name="action_template[rules_sort][]"
+              value="new"
+              phx-click={JS.dispatch("change")}
+            />
+            <input type="hidden" name="action_template[rules_drop][]" />
+          </div>
         </div>
 
-        <div class="flex flex-col gap-3">
-          <.rule_card />
-          <.rule_card />
+        <div id="rule-list" role="list" class="flex flex-col gap-3" phx-hook="SortableHook">
+          <.inputs_for :let={rule} field={@action_form[:rules]}>
+            <.rule_card index={rule.index} id={rule.id}>
+              <:switch>
+                <div class="flex items-center gap-3">
+                  <button
+                    name="action_template[rules_drop][]"
+                    type="button"
+                    color="light"
+                    class={[
+                      "group-hover:block hidden",
+                      if(rule.index == 0,
+                        do: "pc-link--styled__disabled",
+                        else: "pc-link--delete"
+                      )
+                    ]}
+                    title={gettext("Delete")}
+                    value={rule.index}
+                    phx-click={JS.dispatch("change")}
+                    data-confirm={gettext("Are you sure you want to delete this rule?")}
+                    disabled={rule.index == 0}
+                  >
+                    {gettext("Delete")}
+                  </button>
+                  <.field type="switch" label="" field={rule[:enabled]} label_class="!mb-0" />
+                </div>
+              </:switch>
+              <input type="hidden" name="action_template[rules_sort][]" value={rule.index} />
+              <div class="flex items-center justify-between grow gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium text-slate-600 dark:text-slate-300">
+                    Rule results in
+                  </span>
+                  <.badge size="sm" color="success" label="Allow" with_dot />
+                  <span class="text-xs font-medium text-slate-600 dark:text-slate-300">
+                    if some stuff happens
+                  </span>
+                </div>
+                <.icon name="remix-arrow-down-s-line" class="text-slate-500 dark:text-slate-400" />
+              </div>
+            </.rule_card>
+          </.inputs_for>
         </div>
       </.area>
     </.form>
   </div>
 </.layout>
 
-<%= cond do %>
-  <% @delete? -> %>
+<%= case @live_action do %>
+  <% :delete -> %>
     <.modal
       max_width="lg"
       title={@page_title}
@@ -91,5 +138,5 @@
         />
       </div>
     </.modal>
-  <% true -> %>
+  <% _ -> %>
 <% end %>

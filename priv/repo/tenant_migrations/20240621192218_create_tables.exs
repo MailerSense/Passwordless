@@ -13,43 +13,44 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create table(:users, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :data, :binary, null: false
-      add :language, :char, size: 2, null: false
+      add :language, :string
 
       timestamps()
       soft_delete_column()
     end
 
-    ## Action rules
+    ## Action Templates
 
-    create table(:rules, primary_key: false) do
+    create table(:action_templates, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :hash, :binary, null: false
-      add :condition, :map, null: false, default: %{}
-      add :effects, {:array, :map}, null: false, default: []
+      add :name, :string, null: false
+      add :alias, :string, null: false
+      add :rules, :map
 
       timestamps()
+      soft_delete_column()
     end
 
-    create unique_index(:rules, [:hash])
+    create unique_index(:action_templates, [:alias], where: "deleted_at is null")
 
     ## Action
 
     create table(:actions, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :name, :string, null: false
       add :data, :binary
       add :state, :string, null: false
       add :completed_at, :utc_datetime_usec
 
-      add :rule_id, references(:rules, type: :uuid, on_delete: :delete_all), null: false
       add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
+
+      add :template_id, references(:action_templates, type: :uuid, on_delete: :delete_all),
+        null: false
 
       timestamps()
     end
 
-    create index(:actions, [:name])
-    create index(:actions, [:rule_id])
     create index(:actions, [:user_id])
+    create index(:actions, [:template_id])
 
     ## Challenge
 
@@ -372,22 +373,36 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
     create unique_index(:magic_links, [:email_message_id])
 
-    ## Action events
+    ## Events
 
-    create table(:action_events, primary_key: false) do
+    create table(:events, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :event, :string, null: false
       add :metadata, :map, null: false, default: %{}
-      add :user_agent, :string
       add :ip_address, :inet
-      add :country, :string
+      add :user_agent, :text
+      add :browser, :string
+      add :browser_version, :string
+      add :operating_system, :string
+      add :operating_system_version, :string
+      add :device_type, :string
+      add :language, :string
       add :city, :string
+      add :region, :string
+      add :country, :char, size: 2
+      add :latitude, :float
+      add :longitude, :float
+      add :timezone, :string
 
-      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
+      add :action_id, references(:actions, type: :uuid, on_delete: :nilify_all)
+      add :enrollment_id, references(:enrollments, type: :uuid, on_delete: :nilify_all)
 
       timestamps(updated_at: false)
     end
 
-    create index(:action_events, [:action_id])
+    create index(:events, [:user_id])
+    create index(:events, [:action_id])
+    create index(:events, [:enrollment_id])
   end
 end

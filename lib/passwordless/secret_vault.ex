@@ -25,13 +25,15 @@ defmodule Passwordless.SecretVault do
 
   @impl true
   def init(secret_name) do
-    :ets.new(@table, [
-      :set,
-      :named_table,
-      :protected,
-      read_concurrency: true,
-      write_concurrency: false
-    ])
+    if :ets.info(@table) == :undefined do
+      :ets.new(@table, [
+        :set,
+        :named_table,
+        :protected,
+        read_concurrency: true,
+        write_concurrency: false
+      ])
+    end
 
     refresh_secret(secret_name)
 

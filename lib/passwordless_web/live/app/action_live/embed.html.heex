@@ -1,0 +1,73 @@
+<.layout current_user={@current_user} current_page={:actions} current_section={:app}>
+  <div class="flex flex-col gap-6 px-8 py-6">
+    <.form
+      id="edit-action-template-form"
+      for={@action_form}
+      phx-change="validate"
+      phx-submit="save"
+    >
+      <.subpage_header field={@action_form[:name]} class="mb-6">
+        <div class="flex gap-3">
+          <.button
+            size="md"
+            type="button"
+            color="light"
+            label={gettext("Cancel")}
+            to={~p"/actions"}
+            link_type="live_patch"
+          />
+          <.button
+            to={~p"/actions/#{@action_template}/embed/delete"}
+            type="button"
+            label={gettext("Delete")}
+            icon="remix-delete-bin-line"
+            color="danger"
+            variant="outline"
+            link_type="live_patch"
+          />
+          <.button
+            size="md"
+            type="submit"
+            form="edit-template-locale"
+            icon="remix-save-line"
+            label={gettext("Save")}
+            disabled={not @action_form.source.valid? or Enum.empty?(@action_form.source.changes)}
+          />
+        </div>
+      </.subpage_header>
+      <.tab_menu
+        menu_items={action_menu_items(@action_template)}
+        current_tab={:embed}
+        class="mb-6"
+      />
+    </.form>
+  </div>
+</.layout>
+
+<%= case @live_action do %>
+  <% :delete -> %>
+    <.modal
+      max_width="lg"
+      title={@page_title}
+      subtitle={@page_subtitle}
+      variant="delete"
+      hide_close_button
+    >
+      <div class="flex justify-end gap-3">
+        <.button
+          size="md"
+          label="Cancel"
+          color="light"
+          phx-click={JS.exec("data-cancel", to: "#modal")}
+        />
+        <.button
+          icon="remix-delete-bin-line"
+          size="md"
+          label={gettext("Yes, Reset \"%{name}\"", name: @action_template.name)}
+          color="danger"
+          phx-click="delete_template"
+        />
+      </div>
+    </.modal>
+  <% _ -> %>
+<% end %>

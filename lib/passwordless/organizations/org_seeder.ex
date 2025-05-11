@@ -12,6 +12,11 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
   require Logger
 
+  @random_ips ~w(
+    23.192.228.80
+    78.30.102.205
+  )
+
   @random_emails fn -> Slug.slugify(Faker.Person.name()) <> "." <> Util.random_string(6) end
                  |> Stream.repeatedly()
                  |> Stream.take(10_000)
@@ -84,10 +89,6 @@ defmodule Passwordless.Organizations.OrgSeeder do
         purpose: :tracking
       })
 
-    for name <- @random_actions do
-      {:ok, _} = Passwordless.create_action_template(app, %{name: name})
-    end
-
     {:ok, magic_link_template} =
       Passwordless.seed_email_template(app, :magic_link, :en, :magic_link_clean, %{tags: [:magic_link]})
 
@@ -126,7 +127,37 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
     {:ok, _tenant} = Tenant.create(app)
 
-    for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(1_00) do
+    templates =
+      for name <- @random_actions do
+        {:ok, t} =
+          Passwordless.create_action_template(app, %{
+            name: name,
+            rules: [
+              %{
+                index: 0,
+                enabled: true,
+                condition: %{},
+                effects: %{}
+              },
+              %{
+                index: 1,
+                enabled: true,
+                condition: %{},
+                effects: %{}
+              },
+              %{
+                index: 2,
+                enabled: true,
+                condition: %{},
+                effects: %{}
+              }
+            ]
+          })
+
+        t
+      end
+
+    for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(100) do
       {:ok, app_user} =
         Passwordless.create_user(app, %{
           data: %{
@@ -168,15 +199,12 @@ defmodule Passwordless.Organizations.OrgSeeder do
           then: []
         })
 
-      {:ok, rule} = Passwordless.create_rule(app, Map.from_struct(mem_rule))
-
       for _ <- 1..10 do
         {:ok, action} =
           Passwordless.create_action(app, app_user, %{
-            name: Enum.random(~w(signIn withdraw placeOrder)),
             data: %{"some" => "body"},
             state: Enum.random(Action.states()),
-            rule_id: rule.id
+            template_id: Enum.random(templates).id
           })
 
         {:ok, _challenge} =
@@ -201,7 +229,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
           })
 
         {:ok, _event} =
-          Passwordless.create_event(app, action, %{
+          Passwordless.create_event(app, app_user, %{
             event: "send_otp",
             metadata: %{
               before: %{
@@ -221,9 +249,8 @@ defmodule Passwordless.Organizations.OrgSeeder do
               }
             },
             user_agent: Faker.Internet.UserAgent.desktop_user_agent(),
-            ip_address: Faker.Internet.ip_v4_address(),
-            country: Faker.Address.country_code(),
-            city: Faker.Address.city()
+            ip_address: Enum.random(@random_ips),
+            action_id: action.id
           })
       end
     end

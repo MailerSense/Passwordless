@@ -9,7 +9,6 @@ defmodule Passwordless do
   alias Database.PrefixedUUID
   alias Database.Tenant
   alias Passwordless.Action
-  alias Passwordless.ActionEvent
   alias Passwordless.ActionTemplate
   alias Passwordless.App
   alias Passwordless.Authenticators
@@ -27,12 +26,12 @@ defmodule Passwordless do
   alias Passwordless.EmailTemplates
   alias Passwordless.EmailTemplateStyle
   alias Passwordless.EmailUnsubscribeLinkMapping
+  alias Passwordless.Event
   alias Passwordless.Media
   alias Passwordless.Organizations.Org
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
-  alias Passwordless.Rule
   alias Passwordless.User
 
   @authenticators [
@@ -794,15 +793,16 @@ defmodule Passwordless do
   end
 
   def create_action_template(%App{} = app, attrs \\ %{}) do
-    app
-    |> Ecto.build_assoc(:action_templates)
-    |> ActionTemplate.changeset(attrs)
-    |> Repo.insert()
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    %ActionTemplate{}
+    |> ActionTemplate.changeset(attrs, opts)
+    |> Repo.insert(opts)
   end
 
   def get_action_template!(%App{} = app, id) do
-    app
-    |> Ecto.assoc(:action_templates)
+    ActionTemplate
+    |> ActionTemplate.get_by_app(app)
     |> Repo.get!(id)
   end
 
@@ -814,36 +814,17 @@ defmodule Passwordless do
     end
   end
 
-  def update_action_in_flow(%App{} = app, %Action{} = action, attrs \\ %{}) do
-    action
-    |> Action.changeset(attrs)
+  # Event
+
+  def get_event(%App{} = app, id) do
+    Repo.get(Event, id, prefix: Tenant.to_prefix(app))
+  end
+
+  def update_event(%App{} = app, %Event{} = event, attrs) do
+    event
+    |> Event.changeset(attrs)
     |> Repo.update(prefix: Tenant.to_prefix(app))
   end
-
-  # Action Event
-
-  def get_action_event(%App{} = app, id) do
-    Repo.get(ActionEvent, id, prefix: Tenant.to_prefix(app))
-  end
-
-  def update_action_event(%App{} = app, %ActionEvent{} = action_event, attrs) do
-    action_event
-    |> ActionEvent.changeset(attrs)
-    |> Repo.update(prefix: Tenant.to_prefix(app))
-  end
-
-  def locate_action_event(%App{} = app, %ActionEvent{ip_address: ip_address} = event) when is_binary(ip_address) do
-    case Passwordless.GeoIP.lookup(ip_address) do
-      {:ok, %{"country" => %{"iso_code" => country}, "city" => %{"names" => %{"en" => city}}}}
-      when is_binary(city) and is_binary(country) ->
-        Passwordless.update_action_event(app, event, %{city: city, country: country})
-
-      {:error, _} ->
-        {:ok, event}
-    end
-  end
-
-  def locate_action_event(%App{} = app, event), do: {:ok, event}
 
   # Challenge
 
@@ -879,10 +860,10 @@ defmodule Passwordless do
 
   # Event
 
-  def create_event(%App{} = app, %Action{} = action, attrs \\ %{}) do
-    action
+  def create_event(%App{} = app, %User{} = user, attrs \\ %{}) do
+    user
     |> Ecto.build_assoc(:events)
-    |> ActionEvent.changeset(attrs)
+    |> Event.changeset(attrs)
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
@@ -890,20 +871,6 @@ defmodule Passwordless do
 
   def get_rule!(%App{} = app, id) do
     Repo.get!(Action, id, prefix: Tenant.to_prefix(app))
-  end
-
-  def create_rule(%App{} = app, attrs \\ %{}) do
-    opts = [prefix: Tenant.to_prefix(app)]
-    changeset = Rule.changeset(%Rule{}, attrs)
-
-    with {:ok, rule} <- Ecto.Changeset.apply_action(changeset, :insert) do
-      Repo.transact(fn ->
-        case Repo.get_by(Rule, [hash: rule.hash], opts) do
-          %Rule{} = rule -> {:ok, rule}
-          nil -> Repo.insert(changeset, opts)
-        end
-      end)
-    end
   end
 
   # Email templates
@@ -1041,9 +1008,11 @@ defmodule Passwordless do
       from(a in Action,
         prefix: ^Tenant.to_prefix(app),
         where: a.state in [:allow, :timeout, :block],
-        group_by: a.name,
+        left_join: t in assoc(a, :template),
+        prefix: ^Tenant.to_prefix(app),
+        group_by: t.name,
         select: %{
-          action: a.name,
+          action: t.name,
           total: count(a.id),
           states: %{
             allow: a.id |> count() |> filter(a.state == :allow),

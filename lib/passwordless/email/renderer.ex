@@ -4,6 +4,7 @@ defmodule Passwordless.Email.Renderer do
   """
 
   alias Passwordless.Action
+  alias Passwordless.ActionTemplate
   alias Passwordless.Email
   alias Passwordless.EmailTemplateLocale
   alias Passwordless.Identifier
@@ -33,7 +34,10 @@ defmodule Passwordless.Email.Renderer do
       }
     },
     action: %Action{
-      name: "signIn"
+      template: %ActionTemplate{
+        name: "Sign In",
+        alias: "signIn"
+      }
     }
   ]
 

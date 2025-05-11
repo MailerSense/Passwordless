@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.ActionLive.Edit do
+defmodule PasswordlessWeb.App.ActionLive.Embed do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
@@ -33,12 +33,12 @@ defmodule PasswordlessWeb.App.ActionLive.Edit do
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/actions/#{socket.assigns.action_template}/edit")}
+    {:noreply, push_patch(socket, to: ~p"/actions/#{socket.assigns.action_template}/embed")}
   end
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/actions/#{socket.assigns.action_template}/edit")}
+    {:noreply, push_patch(socket, to: ~p"/actions/#{socket.assigns.action_template}/embed")}
   end
 
   @impl true
@@ -60,7 +60,7 @@ defmodule PasswordlessWeb.App.ActionLive.Edit do
 
   defp apply_action(socket, _action) do
     assign(socket,
-      page_title: gettext("Action Rules"),
+      page_title: gettext("Embed Action"),
       page_subtitle: gettext("Manage this action")
     )
   end

@@ -65,7 +65,14 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
 
     behaviors =
       Enum.map(MagicLink.behaviors(), fn step ->
-        [key: behaviour_translation(step), value: step, disabled: step not in MagicLink.behaviors_enabled()]
+        {label, description} = behaviour_translation(step)
+
+        %{
+          label: label,
+          value: step,
+          description: description,
+          disabled: step not in MagicLink.behaviors_enabled()
+        }
       end)
 
     {:ok,
@@ -94,9 +101,14 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
 
   # Private
 
-  defp behaviour_translation(:authenticate), do: gettext("allow user immediately")
-  defp behaviour_translation(:click), do: gettext("ask user to press a button")
-  defp behaviour_translation(:short_code), do: gettext("ask user to type a short-code")
+  defp behaviour_translation(:authenticate),
+    do: {gettext("Redirect"), gettext("Authenticate user immediately after clicking the link")}
+
+  defp behaviour_translation(:click),
+    do: {gettext("Press button"), gettext("Ask user to click a button to confirm the action")}
+
+  defp behaviour_translation(:short_code),
+    do: {gettext("Short code"), gettext("Ask user to type a short-code they were shown when the link was sent")}
 
   defp save_magic_link(socket, params) do
     opts = [domain: socket.assigns[:domain]]

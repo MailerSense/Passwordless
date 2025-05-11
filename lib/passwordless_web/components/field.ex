@@ -185,7 +185,7 @@ defmodule PasswordlessWeb.Components.Field do
         required={@required}
         required_asterix={@required_asterix}
         for={@id}
-        class={@label_class}
+        class={[@label_class, @label_sr_only && "sr-only"]}
       >
         {@label}
       </.field_label>
@@ -298,7 +298,7 @@ defmodule PasswordlessWeb.Components.Field do
         required={@required}
         required_asterix={@required_asterix}
         for={@id}
-        class={@label_class}
+        class={[@label_class, @label_sr_only && "sr-only"]}
       >
         <.div_wrapper class="flex items-center justify-between" wrap={Util.present?(@label_action)}>
           {@label}
@@ -377,7 +377,7 @@ defmodule PasswordlessWeb.Components.Field do
         required={@required}
         required_asterix={@required_asterix}
         for={@id}
-        class={@label_class}
+        class={[@label_class, @label_sr_only && "sr-only"]}
       >
         {@label}
       </.field_label>
@@ -485,7 +485,8 @@ defmodule PasswordlessWeb.Components.Field do
         :if={Util.present?(@label)}
         required={@required}
         required_asterix={@required_asterix}
-        class={@label_class}
+        for={@id}
+        class={[@label_class, @label_sr_only && "sr-only"]}
       >
         {@label}
       </.field_label>
@@ -564,7 +565,8 @@ defmodule PasswordlessWeb.Components.Field do
         :if={Util.present?(@label)}
         required={@required}
         required_asterix={@required_asterix}
-        class={@label_class}
+        for={@id}
+        class={[@label_class, @label_sr_only && "sr-only"]}
       >
         {@label}
       </.field_label>
@@ -638,10 +640,11 @@ defmodule PasswordlessWeb.Components.Field do
     ~H"""
     <.field_wrapper errors={@errors} name={@name} class={@wrapper_class} no_margin={@no_margin}>
       <.field_label
+        :if={Util.present?(@label)}
         required={@required}
         required_asterix={@required_asterix}
         for={@id}
-        class={@label_class}
+        class={[@label_class, @label_sr_only && "sr-only"]}
       >
         <.div_wrapper class="flex items-center justify-between" wrap={Util.present?(@label_action)}>
           {@label}
@@ -693,7 +696,13 @@ defmodule PasswordlessWeb.Components.Field do
       no_margin={@no_margin}
     >
       <!-- Field Label -->
-      <.field_label :if={Util.present?(@label)} required={@required} for={@id} class={@label_class}>
+      <.field_label
+        :if={Util.present?(@label)}
+        required={@required}
+        required_asterix={@required_asterix}
+        for={@id}
+        class={[@label_class, @label_sr_only && "sr-only"]}
+      >
         {@label}
       </.field_label>
       <!-- Copyable Field Wrapper -->
@@ -750,7 +759,13 @@ defmodule PasswordlessWeb.Components.Field do
       no_margin={@no_margin}
     >
       <!-- Field Label -->
-      <.field_label :if={Util.present?(@label)} required={@required} for={@id} class={@label_class}>
+      <.field_label
+        :if={Util.present?(@label)}
+        required={@required}
+        required_asterix={@required_asterix}
+        for={@id}
+        class={[@label_class, @label_sr_only && "sr-only"]}
+      >
         {@label}
       </.field_label>
       <!-- Searchable Field Wrapper -->
@@ -830,7 +845,7 @@ defmodule PasswordlessWeb.Components.Field do
         required={@required}
         required_asterix={@required_asterix}
         for={@id}
-        class={@label_class}
+        class={[@label_class, @label_sr_only && "sr-only"]}
       >
         {@label}
       </.field_label>
@@ -869,7 +884,7 @@ defmodule PasswordlessWeb.Components.Field do
         required={@required}
         required_asterix={@required_asterix}
         for={@id}
-        class={@label_class}
+        class={[@label_class, @label_sr_only && "sr-only"]}
       >
         {@label}
       </.field_label>
@@ -988,7 +1003,7 @@ defmodule PasswordlessWeb.Components.Field do
   Renders a label.
   """
   attr :for, :string, default: nil
-  attr :class, :string, default: nil
+  attr :class, :any, default: nil
   attr :rest, :global
   attr :required, :boolean, default: false
   attr :required_asterix, :boolean, default: true
@@ -1084,6 +1099,7 @@ defmodule PasswordlessWeb.Components.Field do
           :if={Util.present?(@label)}
           required={@required}
           required_asterix={@required_asterix}
+          class={[@label_sr_only && "sr-only"]}
           for={"#{@id}-input-#{1}"}
         >
           {@label}

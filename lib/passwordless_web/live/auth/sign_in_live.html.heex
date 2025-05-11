@@ -13,7 +13,8 @@
         icon="remix-mail-line"
         type="email"
         field={@form[:email]}
-        label=""
+        label={gettext("Email")}
+        label_sr_only={true}
         required
         required_asterix={false}
         autocomplete="email"
@@ -73,7 +74,8 @@
       >
         <.otp_input
           field={@token_form[:code]}
-          label=""
+          label={gettext("OTP Code")}
+          label_sr_only={true}
           disabled={@loading}
           code_errors={@code_errors}
         />

@@ -10,6 +10,8 @@
 
 @source inline('from-streetlight-{100..900}');
 @source inline('to-streetlight-{100..900}');
+@source inline('browser-{chrome,chromium,safari,firefox,edge,opera,webkit}');
+@source inline('os-{android,io,macos,linux,windows,ubuntu,chromeos}');
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
@@ -301,7 +303,7 @@
   /* Buttons - sizes */
 
   .pc-button--xs {
-    @apply text-xs leading-4 px-2.5 py-1.5;
+    @apply text-xs px-2.5 py-1 leading-tight;
   }
   .pc-button--sm {
     @apply px-3.5 py-2 h-[42px] text-sm font-semibold leading-tight;
@@ -652,52 +654,52 @@
   /* Badges - colors */
 
   .pc-badge--primary {
-    @apply text-primary-800 dark:text-primary-50 bg-primary-100 dark:bg-primary-900;
+    @apply text-primary-700 dark:text-primary-50 bg-primary-100 dark:bg-primary-900;
   }
   .pc-badge--secondary {
     @apply text-primary-300 dark:text-primary-300 bg-slate-900 dark:bg-slate-900;
   }
   .pc-badge--success {
-    @apply text-success-800 dark:text-success-50 bg-success-100 dark:bg-success-900;
+    @apply text-success-700 dark:text-success-50 bg-success-100 dark:bg-success-900;
   }
   .pc-badge--danger {
-    @apply text-danger-800 dark:text-danger-50 bg-danger-100 dark:bg-danger-900;
+    @apply text-danger-700 dark:text-danger-50 bg-danger-100 dark:bg-danger-900;
   }
   .pc-badge--warning {
-    @apply text-warning-800 dark:text-warning-50 bg-warning-100 dark:bg-warning-900;
+    @apply text-warning-700 dark:text-warning-50 bg-warning-100 dark:bg-warning-900;
   }
   .pc-badge--info {
-    @apply text-blue-800 dark:text-blue-50 bg-blue-100 dark:bg-blue-900;
+    @apply text-blue-700 dark:text-blue-50 bg-blue-100 dark:bg-blue-900;
   }
   .pc-badge--gray {
-    @apply text-slate-800 dark:text-slate-50 bg-slate-100 dark:bg-slate-700;
+    @apply text-slate-700 dark:text-slate-50 bg-slate-100 dark:bg-slate-700;
   }
   .pc-badge--light-muted {
     @apply text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900;
   }
   .pc-badge--indigo {
-    @apply text-indigo-800 bg-indigo-100 dark:text-indigo-50 dark:bg-indigo-900;
+    @apply text-indigo-700 bg-indigo-100 dark:text-indigo-50 dark:bg-indigo-900;
   }
   .pc-badge--purple {
-    @apply text-purple-800 bg-purple-100 dark:text-purple-50 dark:bg-purple-900;
+    @apply text-purple-700 bg-purple-100 dark:text-purple-50 dark:bg-purple-900;
   }
   .pc-badge--fuchsia {
-    @apply text-fuchsia-800 bg-fuchsia-100 dark:text-fuchsia-50 dark:bg-fuchsia-900;
+    @apply text-fuchsia-700 bg-fuchsia-100 dark:text-fuchsia-50 dark:bg-fuchsia-900;
   }
   .pc-badge--pink {
-    @apply text-pink-800 bg-pink-100 dark:text-pink-50 dark:bg-pink-900;
+    @apply text-pink-700 bg-pink-100 dark:text-pink-50 dark:bg-pink-900;
   }
   .pc-badge--rose {
-    @apply text-rose-800 bg-rose-100 dark:text-rose-50 dark:bg-rose-900;
+    @apply text-rose-700 bg-rose-100 dark:text-rose-50 dark:bg-rose-900;
   }
   .pc-badge--sky {
-    @apply text-sky-800 bg-sky-100 dark:text-sky-50 dark:bg-sky-900;
+    @apply text-sky-700 bg-sky-100 dark:text-sky-50 dark:bg-sky-900;
   }
   .pc-badge--cyan {
-    @apply text-cyan-800 bg-cyan-100 dark:text-cyan-50 dark:bg-cyan-900;
+    @apply text-cyan-700 bg-cyan-100 dark:text-cyan-50 dark:bg-cyan-900;
   }
   .pc-badge--teal {
-    @apply text-teal-800 bg-teal-100 dark:text-teal-50 dark:bg-teal-900;
+    @apply text-teal-700 bg-teal-100 dark:text-teal-50 dark:bg-teal-900;
   }
 
   /* Icon Badge */
@@ -890,7 +892,7 @@
   }
   .pc-switch__fake-input {
     @apply absolute h-6 mx-auto transition-colors duration-200 ease-in-out bg-slate-200 border dark:border-slate-900 rounded-full pointer-events-none w-11 dark:bg-slate-900 peer-checked:border-primary-500 dark:peer-checked:border-primary-500 peer-checked:bg-primary-500 dark:peer-checked:bg-primary-500;
-    @apply peer-focus:ring-2 peer-focus:ring-offset-2 peer-focus:ring-primary-500 dark:peer-focus:ring-primary-400 peer-focus:outline-hidden;
+    @apply peer-focus:ring-2 peer-focus:ring-offset-white dark:peer-focus:ring-offset-slate-800 peer-focus:ring-offset-2 peer-focus:ring-primary-500 dark:peer-focus:ring-primary-400 peer-focus:outline-hidden;
   }
   .pc-switch__fake-input-bg {
     @apply absolute left-0 inline-block w-5 h-5 transition-transform duration-200 ease-in-out transform translate-x-0 bg-white dark:bg-white rounded-full shadow-sm pointer-events-none peer-checked:translate-x-5 dark:peer-checked:bg-white ring-0;
@@ -908,7 +910,7 @@
     @apply block w-full px-3.5 py-2.5 border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
   }
   .pc-text-input--sm {
-    @apply block min-w-16 px-2.5 py-2 font-medium border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-xs disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
+    @apply block min-w-16 px-3.5 py-2.5 font-medium border border-slate-300 rounded-lg shadow-m2 focus:border-primary-500 dark:focus:ring-primary-400 focus:ring-primary-500 dark:border-slate-600 dark:focus:border-primary-400 text-sm disabled:bg-slate-100 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700 z-20 focus:outline-hidden;
   }
 
   /* OTP Input */
@@ -1104,7 +1106,7 @@
   }
 
   .pc-radio-card--md > .pc-radio-card__content {
-    @apply px-3.5 py-[11px];
+    @apply px-3.5 py-3;
   }
 
   .pc-radio-card--lg > .pc-radio-card__content {
@@ -1117,7 +1119,7 @@
   }
 
   .pc-radio-card--md .pc-radio-card__label {
-    @apply text-base;
+    @apply text-sm;
   }
 
   .pc-radio-card--lg .pc-radio-card__label {
@@ -1155,10 +1157,10 @@
   }
 
   /* Checked State Styles */
-  /*   .pc-radio-card__input:checked ~ .pc-radio-card__fake-input {
+  .pc-radio-card__input:checked ~ .pc-radio-card__fake-input {
     @apply border-2 border-primary-500 bg-primary-50;
     @apply dark:bg-primary-900/50 dark:border-primary-400;
-  } */
+  }
 
   /* Disabled State */
   .pc-radio-card--disabled {
@@ -1186,7 +1188,7 @@
 
   /* Label Styles */
   .pc-radio-card__label {
-    @apply font-normal text-slate-900 dark:text-white;
+    @apply font-semibold text-slate-900 dark:text-white;
   }
 
   /* Description Styles */
@@ -1348,7 +1350,7 @@
   }
 
   .pc-page-header--text {
-    @apply text-2xl sm:text-3xl font-semibold text-slate-900 dark:text-white;
+    @apply text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-9 sm:leading-10;
   }
 
   /* Separator */
@@ -1360,7 +1362,7 @@
   /* Box */
 
   .pc-box {
-    @apply bg-white dark:bg-slate-800/30;
+    @apply bg-white dark:bg-slate-800/50;
     @apply rounded-lg shadow-1;
     @apply border border-slate-200 dark:border-slate-700/40;
   }
@@ -1376,9 +1378,10 @@
   /* Rule Card */
 
   .pc-rule-card {
-    @apply bg-white dark:bg-slate-800/30;
+    @apply bg-white dark:bg-slate-700/30;
     @apply rounded-md shadow-0;
     @apply border border-slate-200 dark:border-slate-700/40;
+    @apply overflow-hidden select-none;
   }
 
   /* Code Line */
@@ -1931,7 +1934,7 @@
     @apply min-w-full table-auto;
   }
   .pc-table__wrapper {
-    @apply bg-white dark:bg-slate-800/30;
+    @apply bg-white dark:bg-slate-800/50;
     @apply rounded-lg shadow-1;
     @apply border border-slate-200 dark:border-slate-700/40;
   }

@@ -1,11 +1,13 @@
 <.tabbed_settings_layout current_user={@current_user} current_page={:app_settings}>
-  <div class="flex flex-col gap-6 p-6">
+  <div class="flex flex-col gap-6 py-6 px-8">
     <.box card>
+      <.form_header title={gettext("App")} no_margin />
+      <.p>
+        {gettext(
+          "App is a container for your users, authentication methods and other data. Create one app per project or environment."
+        )}
+      </.p>
       <.form id="edit-app-form" for={@form} phx-submit="save" phx-change="validate">
-        <.form_header title={gettext("App")} />
-        <.p class="mb-6">
-          App is a container for your users, authentication methods and other data. Create one app per project or environment.
-        </.p>
         <.inputs_for :let={settings} field={@form[:settings]}>
           <.image_input
             upload={@uploads.logo}
@@ -30,8 +32,6 @@
             required
             required_asterix={false}
           />
-          <.form_separator />
-          <.form_header title={gettext("Branding")} />
           <.field
             field={settings[:display_name]}
             placeholder={gettext("e.g. YourApp")}

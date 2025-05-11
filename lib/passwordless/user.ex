@@ -13,6 +13,7 @@ defmodule Passwordless.User do
   alias Passwordless.App
   alias Passwordless.Email
   alias Passwordless.Enrollment
+  alias Passwordless.Event
   alias Passwordless.Identifier
   alias Passwordless.Locale
   alias Passwordless.Phone
@@ -77,6 +78,7 @@ defmodule Passwordless.User do
 
     has_many :totps, TOTP, preload_order: [asc: :inserted_at]
     has_many :emails, Email, preload_order: [asc: :inserted_at]
+    has_many :events, Event, preload_order: [asc: :inserted_at]
     has_many :phones, Phone, preload_order: [asc: :inserted_at]
     has_many :actions, Action, preload_order: [asc: :inserted_at]
     has_many :enrollments, Enrollment, preload_order: [asc: :inserted_at]

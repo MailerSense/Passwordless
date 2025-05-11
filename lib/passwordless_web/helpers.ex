@@ -8,13 +8,13 @@ defmodule PasswordlessWeb.Helpers do
 
   alias Passwordless.Accounts.User
   alias Passwordless.Action
-  alias Passwordless.ActionEvent
   alias Passwordless.ActionTemplate
   alias Passwordless.Activity.Log
   alias Passwordless.App
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
   alias Passwordless.EmailTemplate
+  alias Passwordless.Event
   alias Passwordless.Organizations
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
@@ -89,10 +89,10 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
-        name: :branding,
+        name: :embed,
         label: "Embed",
         icon: "remix-code-s-slash-line",
-        path: ~p"/actions/#{action_template}/branding",
+        path: ~p"/actions/#{action_template}/embed",
         link_type: "live_patch"
       },
       %{
@@ -152,8 +152,10 @@ defmodule PasswordlessWeb.Helpers do
     ]
   end
 
-  def verbalize_action(%Action{challenge: %Challenge{} = challenge, events: events} = action) do
-    name = Recase.to_sentence(action.name)
+  def verbalize_action(
+        %Action{challenge: %Challenge{} = challenge, template: %ActionTemplate{name: name}, events: events} = action
+      ) do
+    name = Recase.to_sentence(name)
 
     challenge_name =
       case challenge.kind do
@@ -180,7 +182,7 @@ defmodule PasswordlessWeb.Helpers do
       end
 
     events =
-      Enum.map(events, fn %ActionEvent{event: event, inserted_at: inserted_at} = event_struct ->
+      Enum.map(events, fn %Event{event: event, inserted_at: inserted_at} = event_struct ->
         name =
           case event do
             "send_otp" -> gettext("Requested a %{challenge}", challenge: challenge_name)
