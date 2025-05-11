@@ -16,7 +16,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
 
   def page_header(assigns) do
     ~H"""
-    <div class={["pc-page-header my-6", @class]}>
+    <div class={["pc-page-header", @class]}>
       <h1 class="pc-page-header--text">
         {@title}
       </h1>

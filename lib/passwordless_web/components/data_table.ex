@@ -450,7 +450,8 @@ defmodule PasswordlessWeb.Components.DataTable do
               type="search"
               field={f2[:value]}
               class="xl:min-w-[400px] h-12"
-              label=""
+              label={gettext("Search")}
+              label_sr_only={true}
               clearable={true}
               wrapper_class="mb-0!"
               placeholder={@search_placeholder}

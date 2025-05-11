@@ -176,7 +176,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
   defp domain_state_badge(%Domain{verified: true}),
     do: %{
       size: "md",
-      label: gettext("Domain ready"),
+      label: gettext("Ready"),
       color: "success",
       variant: "rectangle",
       with_icon: true,

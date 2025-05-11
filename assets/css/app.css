@@ -1106,7 +1106,7 @@
   }
 
   .pc-radio-card--md > .pc-radio-card__content {
-    @apply px-3.5 py-[11px];
+    @apply px-3.5 py-3;
   }
 
   .pc-radio-card--lg > .pc-radio-card__content {
@@ -1119,7 +1119,7 @@
   }
 
   .pc-radio-card--md .pc-radio-card__label {
-    @apply text-base;
+    @apply text-sm;
   }
 
   .pc-radio-card--lg .pc-radio-card__label {
@@ -1157,10 +1157,10 @@
   }
 
   /* Checked State Styles */
-  /*   .pc-radio-card__input:checked ~ .pc-radio-card__fake-input {
+  .pc-radio-card__input:checked ~ .pc-radio-card__fake-input {
     @apply border-2 border-primary-500 bg-primary-50;
     @apply dark:bg-primary-900/50 dark:border-primary-400;
-  } */
+  }
 
   /* Disabled State */
   .pc-radio-card--disabled {
@@ -1188,7 +1188,7 @@
 
   /* Label Styles */
   .pc-radio-card__label {
-    @apply font-normal text-slate-900 dark:text-white;
+    @apply font-semibold text-slate-900 dark:text-white;
   }
 
   /* Description Styles */
@@ -1350,7 +1350,7 @@
   }
 
   .pc-page-header--text {
-    @apply text-2xl sm:text-5xl font-semibold text-slate-900 dark:text-white;
+    @apply text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-9 sm:leading-10;
   }
 
   /* Separator */
