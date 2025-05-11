@@ -77,7 +77,7 @@ export class Migration extends Construct {
         ...environment,
       },
       timeout: Duration.minutes(5),
-      memorySize: 512,
+      memorySize: 1024,
     });
 
     if (!this.lambda.role) {
