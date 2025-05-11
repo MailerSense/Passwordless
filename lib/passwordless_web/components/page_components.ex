@@ -16,7 +16,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
 
   def page_header(assigns) do
     ~H"""
-    <div class={["pc-page-header", @class]}>
+    <div class={["pc-page-header my-6", @class]}>
       <h1 class="pc-page-header--text">
         {@title}
       </h1>
@@ -85,7 +85,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
     ~H"""
     <section
       {@rest}
-      class={["bg-slate-200 dark:bg-slate-950 rounded-lg", if(@padded, do: "p-6"), @class]}
+      class={["bg-slate-200 dark:bg-slate-950/30 rounded-lg", if(@padded, do: "p-6"), @class]}
     >
       {render_slot(@inner_block)}
     </section>

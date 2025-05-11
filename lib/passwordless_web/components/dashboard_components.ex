@@ -6,7 +6,6 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   import PasswordlessWeb.Components.Avatar
   import PasswordlessWeb.Components.Badge
-  import PasswordlessWeb.Components.Field
   import PasswordlessWeb.Components.Form
   import PasswordlessWeb.Components.Icon
   import PasswordlessWeb.Components.Link
@@ -256,7 +255,6 @@ defmodule PasswordlessWeb.DashboardComponents do
 
     ~H"""
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
-      <.field_label>{gettext("Email template")}</.field_label>
       <.a
         to={@to}
         title={@name}
@@ -378,7 +376,6 @@ defmodule PasswordlessWeb.DashboardComponents do
   def totp_preview(assigns) do
     ~H"""
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
-      <.field_label>{gettext("Preview")}</.field_label>
       <div class="flex justify-center items-center bg-slate-100 rounded-lg dark:bg-slate-700/50 shadow-m2 p-6 gap-6">
         <div class="inline-block">
           {generate_qrcode(@code)}
@@ -717,7 +714,7 @@ defmodule PasswordlessWeb.DashboardComponents do
                 </div>
               </div>
               <h4 class="text-sm font-semibold text-slate-900 dark:text-white leading-tight">
-                {gettext("Rule name")}
+                {gettext("Rule priority %{index}", index: @index)}
               </h4>
             </div>
             {render_slot(@switch)}

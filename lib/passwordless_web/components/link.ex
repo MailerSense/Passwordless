@@ -18,7 +18,7 @@ defmodule PasswordlessWeb.Components.Link do
     default: false,
     doc: "disables the link. This will turn an <a> into a <button> (<a> tags can't be disabled)"
 
-  attr :rest, :global, include: ~w(method download)
+  attr :rest, :global, include: ~w(method download value name target rel class id style phx-click)
   slot :inner_block, required: false
 
   def a(%{link_type: "button", disabled: true} = assigns) do

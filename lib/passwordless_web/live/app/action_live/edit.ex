@@ -5,21 +5,20 @@ defmodule PasswordlessWeb.App.ActionLive.Edit do
   alias Passwordless.App
 
   @impl true
-  def mount(params, _session, socket) do
-    {:ok, apply_action(socket, socket.assigns.live_action, params)}
+  def mount(_params, _session, socket) do
+    {:ok, apply_action(socket, socket.assigns.live_action)}
   end
 
   @impl true
-  def handle_params(%{"id" => id} = params, _url, %{assigns: %{current_app: %App{} = current_app}} = socket) do
+  def handle_params(%{"id" => id}, _url, %{assigns: %{current_app: %App{} = current_app}} = socket) do
     action_template = Passwordless.get_action_template!(current_app, id)
     changeset = Passwordless.change_action_template(action_template)
-    delete? = Map.has_key?(params, "delete")
 
     {:noreply,
      socket
-     |> assign(delete?: delete?, action_template: action_template)
+     |> assign(action_template: action_template)
      |> assign_action_form(changeset)
-     |> apply_action(socket.assigns.live_action, params)}
+     |> apply_action(socket.assigns.live_action)}
   end
 
   @impl true
@@ -33,13 +32,23 @@ defmodule PasswordlessWeb.App.ActionLive.Edit do
   end
 
   @impl true
+  def handle_event("close_modal", _params, socket) do
+    {:noreply, push_patch(socket, to: ~p"/actions/#{socket.assigns.action_template}/edit")}
+  end
+
+  @impl true
+  def handle_event("close_slide_over", _params, socket) do
+    {:noreply, push_patch(socket, to: ~p"/actions/#{socket.assigns.action_template}/edit")}
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
 
   # Private
 
-  defp apply_action(%{assigns: %{delete?: true, action_template: action_template}} = socket, _action, _params) do
+  defp apply_action(socket, :delete) do
     assign(socket,
       page_title: gettext("Delete action"),
       page_subtitle:
@@ -49,7 +58,7 @@ defmodule PasswordlessWeb.App.ActionLive.Edit do
     )
   end
 
-  defp apply_action(socket, _action, _params) do
+  defp apply_action(socket, _action) do
     assign(socket,
       page_title: gettext("Action"),
       page_subtitle: gettext("Manage this action")
