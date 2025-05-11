@@ -7,6 +7,17 @@
     phx-change="validate"
     class="flex flex-col gap-6"
   >
+    <.alert :if={Domain.system?(@domain)} color="info" with_icon>
+      Do you want to send branded emails?
+      <.a
+        to={~p"/domain"}
+        label={gettext("Set up domain")}
+        style="link"
+        class="inline-flex"
+        link_type="live_redirect"
+      />
+    </.alert>
+
     <.box padded>
       <.form_header title={gettext("Magic link")} />
       <.p class="mb-6">
@@ -17,7 +28,6 @@
         <.field
           field={@form[:sender_name]}
           label={gettext("Name")}
-          prefix={gettext("From")}
           disabled={not @enabled}
           required
           required_asterix={false}
@@ -34,16 +44,7 @@
           wrapper_class="mb-0!"
         />
       </div>
-      <.alert :if={Domain.system?(@domain)} color="info" with_icon class="mb-6">
-        Do you want to send branded emails?
-        <.a
-          to={~p"/domain"}
-          label={gettext("Set up domain")}
-          style="link"
-          class="inline-flex"
-          link_type="live_redirect"
-        />
-      </.alert>
+
       <.email_preview
         to={~p"/emails/#{@email_template}/en/edit?return_to=#{~p"/authenticators/magic-link"}"}
         name={gettext("Edit email template")}
