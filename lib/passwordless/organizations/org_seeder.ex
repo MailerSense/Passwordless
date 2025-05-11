@@ -35,22 +35,17 @@ defmodule Passwordless.Organizations.OrgSeeder do
                   |> Stream.uniq()
                   |> Enum.to_list()
 
-  def root_org(%AccountsUser{} = user, attrs \\ %{}) do
-    root_org_local(user, attrs)
+  def root_org(%AccountsUser{} = user, opts \\ []) do
+    root_org_local(user, opts)
   end
 
-  def root_org_local(%AccountsUser{} = user, attrs \\ %{}) do
-    attrs =
-      Map.merge(
-        %{
-          tags: [:system, :default, :admin],
-          name: "OpenTide GmbH",
-          email: "passwordless@opentide.com"
-        },
-        attrs
-      )
-
-    {:ok, org, _membership} = Organizations.create_org_with_owner(user, attrs)
+  def root_org_local(%AccountsUser{} = user, opts \\ []) do
+    {:ok, org, _membership} =
+      Organizations.create_org_with_owner(user, %{
+        tags: [:system, :default, :admin],
+        name: "OpenTide GmbH",
+        email: "passwordless@opentide.com"
+      })
 
     {:ok, app} =
       Passwordless.create_app(org, %{
@@ -157,7 +152,10 @@ defmodule Passwordless.Organizations.OrgSeeder do
         t
       end
 
-    for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(100) do
+    users_count = Keyword.get(opts, :users, 50)
+    actions_count = Keyword.get(opts, :actions, 5)
+
+    for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(users_count) do
       {:ok, app_user} =
         Passwordless.create_user(app, %{
           data: %{
@@ -199,7 +197,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
           then: []
         })
 
-      for _ <- 1..10 do
+      for _ <- 1..actions_count do
         {:ok, action} =
           Passwordless.create_action(app, app_user, %{
             data: %{"some" => "body"},

@@ -1065,6 +1065,7 @@ defmodule PasswordlessWeb.Components.Field do
   attr :id, :any
   attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
   attr :label, :string
+  attr :label_sr_only, :boolean, default: false
   attr :class, :string, default: nil, doc: "the class to add to the input"
   attr :code_errors, :list, default: []
   attr :disabled, :boolean, default: false, doc: "indicates a disabled state"

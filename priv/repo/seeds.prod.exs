@@ -15,6 +15,6 @@ normal_user =
     confirmed_at: DateTime.utc_now()
   })
 
-org = OrgSeeder.root_org(admin)
+org = OrgSeeder.root_org(admin, users: 10, actions: 5)
 
 Organizations.create_invitation(org, %{email: normal_user.email})
