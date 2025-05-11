@@ -147,10 +147,10 @@ defmodule PasswordlessWeb.Router do
       live "/actions/:id/delete", App.ActionLive.Index, :delete
       live "/actions/:id/edit", App.ActionLive.Edit, :edit
       live "/actions/:id/edit/delete", App.ActionLive.Edit, :delete
-      live "/actions/:id/branding", App.ActionLive.Edit, :branding
-      live "/actions/:id/branding/delete", App.ActionLive.Edit, :delete
-      live "/actions/:id/api", App.ActionLive.Edit, :api
-      live "/actions/:id/api/delete", App.ActionLive.Edit, :delete
+      live "/actions/:id/embed", App.ActionLive.Embed, :embed
+      live "/actions/:id/embed/delete", App.ActionLive.Embed, :delete
+      live "/actions/:id/activity", App.ActionLive.Activity, :activity
+      live "/actions/:id/activity/delete", App.ActionLive.Activity, :delete
 
       # Authenticators
       live "/authenticators/email-otp", App.AuthenticatorLive.Index, :email_otp

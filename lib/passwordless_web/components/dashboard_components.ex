@@ -632,7 +632,7 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   def circle_stat(assigns) do
     ~H"""
-    <.box class="flex gap-6" padded>
+    <.box class={["flex gap-6", @class]} padded>
       <div class="flex flex-col justify-between gap-4">
         <badge class="flex gap-2 items-center">
           <div class={["w-4 h-2 rounded-full", @legend_color_class]}></div>
@@ -643,7 +643,7 @@ defmodule PasswordlessWeb.DashboardComponents do
           {NumberLocale.to_string!(@value)}
         </h3>
       </div>
-      <div class="ml-auto relative size-24 2xl:size-32">
+      <div class="ml-auto relative size-24 xl:size-32">
         <svg class="size-full -rotate-90" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
           <circle
             cx="18"
@@ -680,7 +680,7 @@ defmodule PasswordlessWeb.DashboardComponents do
   def bar_stats(assigns) do
     ~H"""
     <.box class="flex items-center gap-2 divide-x divide-slate-200 dark:divide-slate-700/40">
-      <div :for={i <- 1..6} class="flex flex-col grow p-6">
+      <div :for={i <- 1..3} class="flex flex-col grow p-6">
         <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Value {i}</span>
         <div class="flex gap-2 items-center justify-between">
           <span class="text-xl xl:text-2xl font-semibold text-slate-900 dark:text-white">

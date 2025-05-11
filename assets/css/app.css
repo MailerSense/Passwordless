@@ -1362,7 +1362,7 @@
   /* Box */
 
   .pc-box {
-    @apply bg-white dark:bg-slate-800/30;
+    @apply bg-white dark:bg-slate-800/50;
     @apply rounded-lg shadow-1;
     @apply border border-slate-200 dark:border-slate-700/40;
   }
@@ -1934,7 +1934,7 @@
     @apply min-w-full table-auto;
   }
   .pc-table__wrapper {
-    @apply bg-white dark:bg-slate-800/30;
+    @apply bg-white dark:bg-slate-800/50;
     @apply rounded-lg shadow-1;
     @apply border border-slate-200 dark:border-slate-700/40;
   }

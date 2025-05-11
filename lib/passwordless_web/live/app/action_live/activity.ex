@@ -1,4 +1,4 @@
-defmodule PasswordlessWeb.App.HomeLive.Index do
+defmodule PasswordlessWeb.App.ActionLive.Activity do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
@@ -25,61 +25,38 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   end
 
   @impl true
-  def handle_params(params, _url, socket) do
-    app = socket.assigns.current_app
+  def handle_params(%{"id" => id} = params, _url, %{assigns: %{current_app: %App{} = current_app}} = socket) do
+    action_template = Passwordless.get_action_template!(current_app, id)
+    changeset = Passwordless.change_action_template(action_template)
 
-    if connected?(socket), do: Endpoint.subscribe(Action.topic_for(app))
-
-    top_actions =
-      app
-      |> Passwordless.get_top_actions_cached()
-      |> Enum.map(fn %{
-                       total: total,
-                       states: %{timeout: timeout, block: block, allow: allow},
-                       action: action
-                     } ->
-        %{
-          key: action,
-          name: Phoenix.Naming.humanize(Macro.underscore(action)),
-          value: total,
-          progress: %{
-            max: total,
-            items: [
-              %{key: :allow, value: allow, color: "success"},
-              %{key: :timeout, value: timeout, color: "warning"},
-              %{key: :block, value: block, color: "danger"}
-            ]
-          }
-        }
-      end)
-
-    authenticators =
-      app
-      |> Passwordless.list_authenticators()
-      |> Enum.map(fn {key, authenticator} ->
-        params =
-          PasswordlessWeb.Helpers.authenticator_menu_items()
-          |> Enum.find(&(&1[:name] == key))
-          |> Map.take([:label, :icon, :path])
-
-        Map.merge(%{id: key, enabled: authenticator.enabled}, params)
-      end)
+    if connected?(socket), do: Endpoint.subscribe(Action.topic_for(current_app))
 
     {:noreply,
      socket
-     |> assign(top_actions: top_actions, authenticators: authenticators)
+     |> assign(action_template: action_template)
+     |> assign_action_form(changeset)
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}
   end
 
   @impl true
+  def handle_event("validate", %{"action_template" => action_template_params}, socket) do
+    changeset =
+      socket.assigns.action_template
+      |> Passwordless.change_action_template(action_template_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign_action_form(socket, changeset)}
+  end
+
+  @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/home")}
+    {:noreply, push_patch(socket, to: ~p"/actions/#{socket.assigns.action_template}/activity")}
   end
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/home")}
+    {:noreply, push_patch(socket, to: ~p"/actions/#{socket.assigns.action_template}/activity")}
   end
 
   @impl true
@@ -87,7 +64,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     if socket.assigns[:finished] do
       {:noreply, socket}
     else
-      query = user_query(socket.assigns.current_app)
+      query = user_query(socket.assigns.current_app, socket.assigns.action_template)
       assigns = Map.take(socket.assigns, ~w(cursor)a)
 
       {:noreply,
@@ -105,7 +82,6 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
   @impl true
   def handle_info(%{event: _event, payload: %Action{} = action}, socket) do
     socket = if(has_filters?(socket), do: socket, else: stream_insert(socket, :actions, action, at: 0))
-    socket = update_top_actions(socket, action)
 
     {:noreply, socket}
   end
@@ -130,22 +106,29 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
   # Private
 
-  defp apply_action(socket, :index) do
+  defp apply_action(socket, :delete) do
     assign(socket,
-      page_title: gettext("Home"),
-      page_subtitle: gettext("Welcome to Passwordless")
+      page_title: gettext("Delete action"),
+      page_subtitle:
+        gettext(
+          "Are you sure you want to delete this action? This action will be permanently deleted, and all widgets or API integrations using this action will stop working."
+        )
     )
   end
 
-  defp apply_action(socket, :view) do
+  defp apply_action(socket, _action) do
     assign(socket,
-      page_title: gettext("Action details"),
-      page_subtitle: gettext("Review the action details and the events that led to it")
+      page_title: gettext("Action Activity"),
+      page_subtitle: gettext("Manage this action")
     )
+  end
+
+  defp assign_action_form(socket, %Ecto.Changeset{} = changeset) do
+    assign(socket, action_form: to_form(changeset))
   end
 
   defp assign_actions(socket, params) do
-    query = user_query(socket.assigns.current_app)
+    query = user_query(socket.assigns.current_app, socket.assigns.action_template)
     params = Map.take(params, ~w(filters order_by order_directions))
     {actions, meta} = DataTable.search(query, params, @data_table_opts)
 
@@ -180,35 +163,12 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     end
   end
 
-  defp user_query(%App{} = app) do
+  defp user_query(%App{} = app, %ActionTemplate{} = action_template) do
     app
     |> Action.get_by_app()
+    |> Action.get_by_template(action_template)
     |> Action.preload_user()
     |> Action.preload_events()
-  end
-
-  defp update_top_actions(socket, %Action{template: %ActionTemplate{name: action_name}, state: state}) do
-    update(socket, :top_actions, fn top_actions ->
-      Enum.map(top_actions, fn
-        %{key: ^action_name, items: items, value: value} = top_action ->
-          items =
-            Enum.map(
-              items,
-              fn
-                %{key: ^state, value: value} ->
-                  %{key: state, value: value + 1}
-
-                item ->
-                  item
-              end
-            )
-
-          %{top_action | value: value + 1, items: items}
-
-        top_action ->
-          top_action
-      end)
-    end)
   end
 
   defp browser_to_icon("Microsoft Edge"), do: "edge"

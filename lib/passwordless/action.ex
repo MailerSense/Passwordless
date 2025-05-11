@@ -83,6 +83,13 @@ defmodule Passwordless.Action do
   end
 
   @doc """
+  Get by action template.
+  """
+  def get_by_template(query \\ __MODULE__, %ActionTemplate{} = action_template) do
+    from q in query, where: q.template_id == ^action_template.id
+  end
+
+  @doc """
   Get where user is present.
   """
   def where_user_is_present(query \\ __MODULE__) do

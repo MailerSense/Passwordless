@@ -89,10 +89,10 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
-        name: :branding,
+        name: :embed,
         label: "Embed",
         icon: "remix-code-s-slash-line",
-        path: ~p"/actions/#{action_template}/branding",
+        path: ~p"/actions/#{action_template}/embed",
         link_type: "live_patch"
       },
       %{
