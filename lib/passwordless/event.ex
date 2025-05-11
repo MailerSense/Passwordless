@@ -188,15 +188,30 @@ defmodule Passwordless.Event do
     with ua when is_binary(ua) <- get_change(changeset, :user_agent),
          result when is_struct(result) <- UAInspector.parse(ua) do
       paths = [
-        browser: [Access.key(:client), Access.key(:name)],
-        browser_version: [Access.key(:client), Access.key(:version)],
-        operating_system: [Access.key(:os), Access.key(:name)],
-        operating_system_version: [Access.key(:os), Access.key(:version)],
-        device_type: [Access.key(:device), Access.key(:type)]
+        browser: fn
+          %UAInspector.Result{client: %UAInspector.Result.Client{name: name}} -> name
+          _ -> nil
+        end,
+        browser_version: fn
+          %UAInspector.Result{client: %UAInspector.Result.Client{version: version}} -> version
+          _ -> nil
+        end,
+        operating_system: fn
+          %UAInspector.Result{os: %UAInspector.Result.OS{name: name}} -> name
+          _ -> nil
+        end,
+        operating_system_version: fn
+          %UAInspector.Result{os: %UAInspector.Result.OS{version: version}} -> version
+          _ -> nil
+        end,
+        device_type: fn
+          %UAInspector.Result{device: %UAInspector.Result.Device{type: type}} -> type
+          _ -> nil
+        end
       ]
 
       Enum.reduce(paths, changeset, fn {key, path}, acc ->
-        case get_in(result, path) do
+        case path.(result) do
           value when is_binary(value) or is_number(value) -> put_change(acc, key, value)
           _ -> acc
         end
