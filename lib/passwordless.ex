@@ -810,11 +810,13 @@ defmodule Passwordless do
     |> Repo.get!(id)
   end
 
-  def change_action_template(%ActionTemplate{} = action_template, attrs \\ %{}) do
+  def change_action_template(%App{} = app, %ActionTemplate{} = action_template, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     if Ecto.get_meta(action_template, :state) == :loaded do
-      ActionTemplate.changeset(action_template, attrs)
+      ActionTemplate.changeset(action_template, attrs, opts)
     else
-      ActionTemplate.changeset(action_template, attrs)
+      ActionTemplate.changeset(action_template, attrs, opts)
     end
   end
 

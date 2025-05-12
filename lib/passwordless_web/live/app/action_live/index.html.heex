@@ -70,6 +70,19 @@
 </.layout>
 
 <%= case @live_action do %>
+  <% :new -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      action_template={%ActionTemplate{}}
+      module={PasswordlessWeb.App.ActionLive.FormComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_app={@current_app}
+      current_user={@current_user}
+      return_to={apply_filters(@filters, @meta, ~p"/actions")}
+    />
   <% :delete -> %>
     <.modal
       max_width="lg"

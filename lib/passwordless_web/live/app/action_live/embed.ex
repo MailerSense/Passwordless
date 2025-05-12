@@ -12,7 +12,7 @@ defmodule PasswordlessWeb.App.ActionLive.Embed do
   @impl true
   def handle_params(%{"id" => id}, _url, %{assigns: %{current_app: %App{} = current_app}} = socket) do
     action_template = Passwordless.get_action_template!(current_app, id)
-    changeset = Passwordless.change_action_template(action_template)
+    changeset = Passwordless.change_action_template(current_app, action_template)
 
     {:noreply,
      socket
@@ -24,8 +24,8 @@ defmodule PasswordlessWeb.App.ActionLive.Embed do
   @impl true
   def handle_event("validate", %{"action_template" => action_template_params}, socket) do
     changeset =
-      socket.assigns.action_template
-      |> Passwordless.change_action_template(action_template_params)
+      socket.assigns.current_app
+      |> Passwordless.change_action_template(socket.assigns.action_template, action_template_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign_action_form(socket, changeset)}

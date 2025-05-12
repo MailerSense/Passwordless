@@ -82,6 +82,16 @@ defmodule PasswordlessWeb.App.ActionLive.Index do
 
   # Private
 
+  defp apply_action(socket, :new) do
+    assign(socket,
+      page_title: gettext("Create action"),
+      page_subtitle:
+        gettext(
+          "Actions are the building blocks that let you create contextual, risk-based authentication flows that enhance security without sacrificing user experience."
+        )
+    )
+  end
+
   defp apply_action(socket, :index) do
     assign(socket,
       page_title: gettext("Rules"),
