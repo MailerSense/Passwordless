@@ -11,6 +11,7 @@ defmodule Passwordless do
   alias Passwordless.Action
   alias Passwordless.ActionStatistic
   alias Passwordless.ActionTemplate
+  alias Passwordless.ActionTemplateUniqueUser
   alias Passwordless.App
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
@@ -34,6 +35,7 @@ defmodule Passwordless do
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
   alias Passwordless.User
+  alias Passwordless.UserTotal
 
   @authenticators [
     email_otp: Authenticators.EmailOTP,
@@ -796,9 +798,22 @@ defmodule Passwordless do
   def create_action_template(%App{} = app, attrs \\ %{}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
-    %ActionTemplate{}
+    Repo.transact(fn ->
+      with {:ok, action_template} <-
+             %ActionTemplate{}
+             |> ActionTemplate.changeset(attrs, opts)
+             |> Repo.insert(opts),
+           {:ok, _action_statistic} <- insert_action_statistic(app, action_template),
+           do: {:ok, action_template}
+    end)
+  end
+
+  def update_action_template(%App{} = app, %ActionTemplate{} = action_template, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    action_template
     |> ActionTemplate.changeset(attrs, opts)
-    |> Repo.insert(opts)
+    |> Repo.update(opts)
   end
 
   def get_action_template!(%App{} = app, id) do
@@ -822,7 +837,7 @@ defmodule Passwordless do
 
   # Action Statistic
 
-  def get_action_statistic!(%App{} = app, %ActionTemplate{} = action_template) do
+  def insert_action_statistic(%App{} = app, %ActionTemplate{} = action_template) do
     changeset =
       action_template
       |> Ecto.build_assoc(:statistic)
@@ -830,12 +845,11 @@ defmodule Passwordless do
 
     upsert_clause = [
       prefix: Tenant.to_prefix(app),
-      returning: true,
       on_conflict: :nothing,
       conflict_target: [:action_template_id]
     ]
 
-    Repo.insert!(changeset, upsert_clause)
+    Repo.insert(changeset, upsert_clause)
   end
 
   def update_action_statistic(%App{} = app, %Action{state: state, action_template_id: action_template_id}) do
@@ -856,6 +870,30 @@ defmodule Passwordless do
     ]
 
     Repo.insert(changeset, upsert_clause)
+  end
+
+  def get_total_users(%App{} = app) do
+    UserTotal
+    |> UserTotal.get_by_app(app)
+    |> Repo.one()
+    |> case do
+      %UserTotal{users: users} -> users
+      nil -> 0
+    end
+  end
+
+  def get_action_template_unique_users(%App{} = app, %ActionTemplate{} = action_template) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    ActionTemplateUniqueUser
+    |> ActionTemplateUniqueUser.get_by_app(app)
+    |> ActionTemplateUniqueUser.join_with_templates(opts)
+    |> ActionTemplateUniqueUser.get_by_template(action_template)
+    |> Repo.one()
+    |> case do
+      %ActionTemplateUniqueUser{users: users} -> users
+      nil -> 0
+    end
   end
 
   # Event

@@ -35,11 +35,19 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
       |> Enum.map(& &1.attempts)
       |> Enum.sum()
 
+    unique_users = Passwordless.get_action_template_unique_users(current_app, action_template)
+    all_users = Passwordless.get_total_users(current_app)
+
     if connected?(socket), do: Endpoint.subscribe(Action.topic_for(current_app))
 
     {:noreply,
      socket
-     |> assign(action_template: action_template, all_attempts: all_attempts)
+     |> assign(
+       action_template: action_template,
+       all_attempts: all_attempts,
+       unique_users: unique_users,
+       all_users: all_users
+     )
      |> assign_action_form(changeset)
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}
@@ -88,7 +96,6 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
   @impl true
   def handle_info(%{event: _event, payload: %Action{} = action}, socket) do
     socket = if(has_filters?(socket), do: socket, else: stream_insert(socket, :actions, action, at: 0))
-
     {:noreply, socket}
   end
 
@@ -101,7 +108,6 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
   def handle_async(:load_actions, {:ok, %{actions: actions, meta: meta, cursor: cursor}}, socket) do
     socket = assign(socket, meta: meta, cursor: cursor, finished: Enum.empty?(actions))
     socket = stream(socket, :actions, actions)
-
     {:noreply, socket}
   end
 

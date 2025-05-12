@@ -30,7 +30,21 @@ defmodule PasswordlessWeb.App.ActionLive.FormComponent do
 
   @impl true
   def handle_event("save", %{"action_template" => action_template_params}, socket) do
-    {:noreply, socket}
+    current_app = socket.assigns.current_app
+
+    action_template_params =
+      Map.put(action_template_params, "rules", sample_rules())
+
+    case Passwordless.create_action_template(current_app, action_template_params) do
+      {:ok, action_template} ->
+        {:noreply,
+         socket
+         |> put_toast(:info, gettext("Action has been created."), title: gettext("Success"))
+         |> push_navigate(to: ~p"/actions/#{action_template}/edit")}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
   end
 
   @impl true

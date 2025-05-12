@@ -71,7 +71,7 @@ defmodule PasswordlessWeb.Components.Progress do
             "pc-multi-progress__inner",
             if(item[:rounded], do: "rounded-r-full", else: nil)
           ]}
-          style={"width: #{Float.round(item.value/@max*100, 2)}%"}
+          style={"width: #{Float.round((if @max > 0, do: item.value/@max*100, else: 0.0), 2)}%"}
         />
       </div>
       <span :if={Util.present?(@label)} class="pc-progress__label">
