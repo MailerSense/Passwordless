@@ -14,7 +14,8 @@ defmodule Passwordless.ViewRefresher do
 
   @task_opts [
     ordered: false,
-    timeout: :timer.minutes(5)
+    timeout: :timer.minutes(5),
+    max_concurrency: 10
   ]
 
   @impl true
