@@ -43,14 +43,29 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
 
       add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
-      add :template_id, references(:action_templates, type: :uuid, on_delete: :delete_all),
+      add :action_template_id, references(:action_templates, type: :uuid, on_delete: :delete_all),
         null: false
 
       timestamps()
     end
 
     create index(:actions, [:user_id])
-    create index(:actions, [:template_id])
+    create index(:actions, [:action_template_id])
+
+    # Action Statistics
+
+    create table(:action_statistics, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :attempts, :integer, null: false, default: 0
+      add :allowed_attempts, :integer, null: false, default: 0
+      add :timed_out_attempts, :integer, null: false, default: 0
+      add :blocked_attempts, :integer, null: false, default: 0
+
+      add :action_template_id, references(:action_templates, type: :uuid, on_delete: :delete_all),
+        null: false
+    end
+
+    create unique_index(:action_statistics, :action_template_id)
 
     ## Challenge
 

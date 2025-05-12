@@ -29,11 +29,17 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
     action_template = Passwordless.get_action_template!(current_app, id)
     changeset = Passwordless.change_action_template(action_template)
 
+    all_attempts =
+      current_app
+      |> Passwordless.get_top_actions()
+      |> Enum.map(& &1.attempts)
+      |> Enum.sum()
+
     if connected?(socket), do: Endpoint.subscribe(Action.topic_for(current_app))
 
     {:noreply,
      socket
-     |> assign(action_template: action_template)
+     |> assign(action_template: action_template, all_attempts: all_attempts)
      |> assign_action_form(changeset)
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}

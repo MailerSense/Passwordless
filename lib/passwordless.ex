@@ -9,6 +9,7 @@ defmodule Passwordless do
   alias Database.PrefixedUUID
   alias Database.Tenant
   alias Passwordless.Action
+  alias Passwordless.ActionStatistic
   alias Passwordless.ActionTemplate
   alias Passwordless.App
   alias Passwordless.Authenticators
@@ -801,8 +802,11 @@ defmodule Passwordless do
   end
 
   def get_action_template!(%App{} = app, id) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     ActionTemplate
     |> ActionTemplate.get_by_app(app)
+    |> ActionTemplate.join_adapter_opts(opts)
     |> Repo.get!(id)
   end
 
@@ -812,6 +816,44 @@ defmodule Passwordless do
     else
       ActionTemplate.changeset(action_template, attrs)
     end
+  end
+
+  # Action Statistic
+
+  def get_action_statistic!(%App{} = app, %ActionTemplate{} = action_template) do
+    changeset =
+      action_template
+      |> Ecto.build_assoc(:statistic)
+      |> ActionStatistic.changeset()
+
+    upsert_clause = [
+      prefix: Tenant.to_prefix(app),
+      returning: true,
+      on_conflict: :nothing,
+      conflict_target: [:action_template_id]
+    ]
+
+    Repo.insert!(changeset, upsert_clause)
+  end
+
+  def update_action_statistic(%App{} = app, %Action{state: state, action_template_id: action_template_id}) do
+    changeset = ActionStatistic.changeset(%ActionStatistic{action_template_id: action_template_id})
+
+    conflict_fields =
+      case state do
+        :allow -> [inc: [attempts: 1, allowed_attempts: 1]]
+        :timeout -> [inc: [attempts: 1, timed_out_attempts: 1]]
+        :block -> [inc: [attempts: 1, blocked_attempts: 1]]
+        _ -> :nothing
+      end
+
+    upsert_clause = [
+      prefix: Tenant.to_prefix(app),
+      on_conflict: conflict_fields,
+      conflict_target: [:action_template_id]
+    ]
+
+    Repo.insert(changeset, upsert_clause)
   end
 
   # Event
@@ -1003,27 +1045,22 @@ defmodule Passwordless do
     Repo.insert!(changeset, upsert_clause)
   end
 
-  def get_top_actions(%App{} = app) do
+  def get_top_actions(%App{} = app, opts \\ []) do
     Repo.all(
-      from(a in Action,
-        prefix: ^Tenant.to_prefix(app),
-        where: a.state in [:allow, :timeout, :block],
-        left_join: t in assoc(a, :template),
-        prefix: ^Tenant.to_prefix(app),
-        group_by: t.name,
+      from(
+        at in ActionTemplate,
+        join: as in assoc(at, :statistic),
         select: %{
-          action: t.name,
-          total: count(a.id),
-          states: %{
-            allow: a.id |> count() |> filter(a.state == :allow),
-            timeout: a.id |> count() |> filter(a.state == :timeout),
-            block: a.id |> count() |> filter(a.state == :block)
-          }
+          action: at.name,
+          attempts: as.attempts,
+          allowed_attempts: as.allowed_attempts,
+          blocked_attempts: as.blocked_attempts,
+          timed_out_attempts: as.timed_out_attempts
         },
-        having: count(a.id) > 0,
-        order_by: [desc: count(a.id)],
-        limit: 3
-      )
+        order_by: [desc: as.attempts],
+        limit: ^Keyword.get(opts, :limit, nil)
+      ),
+      prefix: Tenant.to_prefix(app)
     )
   end
 

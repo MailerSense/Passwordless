@@ -151,9 +151,9 @@ defmodule Passwordless.User do
   end
 
   @doc """
-  Join the details.
+  Join the adapter opts.
   """
-  def join_details(query \\ __MODULE__, opts \\ []) do
+  def join_adapter_opts(query \\ __MODULE__, opts \\ []) do
     prefix = Keyword.get(opts, :prefix, "public")
 
     email =

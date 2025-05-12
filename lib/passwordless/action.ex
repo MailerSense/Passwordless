@@ -44,7 +44,7 @@ defmodule Passwordless.Action do
     has_many :challenges, Challenge, preload_order: [asc: :inserted_at]
 
     belongs_to :user, User
-    belongs_to :template, ActionTemplate
+    belongs_to :action_template, ActionTemplate
 
     timestamps()
   end
@@ -55,7 +55,7 @@ defmodule Passwordless.Action do
 
   def preloads, do: [{:user, [:totps, :email, :emails, :phone, :phones]}, {:challenge, [:email_message]}, :events]
 
-  def readable_name(%__MODULE__{template: %ActionTemplate{name: name}}), do: Recase.to_sentence(name)
+  def readable_name(%__MODULE__{action_template: %ActionTemplate{name: name}}), do: Recase.to_sentence(name)
 
   def assign_first_event(%__MODULE__{events: [_ | _] = events}) do
     events
@@ -86,7 +86,7 @@ defmodule Passwordless.Action do
   Get by action template.
   """
   def get_by_template(query \\ __MODULE__, %ActionTemplate{} = action_template) do
-    from q in query, where: q.template_id == ^action_template.id
+    from q in query, where: q.action_template_id == ^action_template.id
   end
 
   @doc """
@@ -121,7 +121,7 @@ defmodule Passwordless.Action do
   Preload events.
   """
   def preload_events(query \\ __MODULE__) do
-    from q in query, preload: [:template, {:challenge, [:email_message]}, :events]
+    from q in query, preload: [:action_template, {:challenge, [:email_message]}, :events]
   end
 
   @doc """
@@ -140,7 +140,7 @@ defmodule Passwordless.Action do
     data
     state
     user_id
-    template_id
+    action_template_id
   )a
   @required_fields @fields -- [:data]
 
@@ -154,7 +154,7 @@ defmodule Passwordless.Action do
     |> validate_data()
     |> validate_state()
     |> assoc_constraint(:user)
-    |> assoc_constraint(:template)
+    |> assoc_constraint(:action_template)
   end
 
   @doc """

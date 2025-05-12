@@ -12,18 +12,18 @@
       <:col :let={action} field={:alias}>
         <.code_line>{action.alias}</.code_line>
       </:col>
-      <:col field={:action_count} sortable label={gettext("Attempts")} />
+      <:col field={:attempts} sortable />
       <:col :let={action} label={gettext("Added")} field={:inserted_at} sortable>
         {format_date(action.inserted_at)}
       </:col>
-      <:col :let={action} field={:completion_rate} label={gettext("Completion Rate")}>
+      <:col :let={action} field={:completion_rate} label={gettext("Completion Rate")} sortable>
         <.multi_progress
-          max={100}
-          label={true}
+          max={action.attempts}
+          label={action.completion_rate}
           items={[
-            %{key: :allow, value: 80, color: "success"},
-            %{key: :timeout, value: 10, color: "warning"},
-            %{key: :block, value: 10, color: "danger"}
+            %{key: :allow, value: action.allowed_attempts, color: "success"},
+            %{key: :timeout, value: action.timed_out_attempts, color: "warning"},
+            %{key: :block, value: action.blocked_attempts, color: "danger"}
           ]}
         />
       </:col>

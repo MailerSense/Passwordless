@@ -8,6 +8,7 @@ defmodule Passwordless.ActionTemplate do
   alias Database.ChangesetExt
   alias Database.Tenant
   alias Passwordless.Action
+  alias Passwordless.ActionStatistic
   alias Passwordless.App
 
   @derive {
@@ -21,7 +22,7 @@ defmodule Passwordless.ActionTemplate do
   @derive {
     Flop.Schema,
     filterable: [:id, :search],
-    sortable: [:id, :action_count, :inserted_at],
+    sortable: [:id, :attempts, :completion_rate, :inserted_at],
     custom_fields: [
       search: [
         filter: {__MODULE__, :unified_search_filter, []},
@@ -30,10 +31,15 @@ defmodule Passwordless.ActionTemplate do
     ],
     adapter_opts: [
       join_fields: [
-        action_count: [
-          binding: :action_count,
-          field: :count,
+        attempts: [
+          binding: :attempts,
+          field: :attempts,
           ecto_type: :integer
+        ],
+        completion_rate: [
+          binding: :attempts,
+          field: :completion_rate,
+          ecto_type: :float
         ]
       ]
     ]
@@ -41,8 +47,11 @@ defmodule Passwordless.ActionTemplate do
   schema "action_templates" do
     field :name, :string
     field :alias, :string
-
-    field :action_count, :integer, virtual: true, default: 0
+    field :attempts, :integer, virtual: true, default: 0
+    field :allowed_attempts, :integer, virtual: true, default: 0
+    field :timed_out_attempts, :integer, virtual: true, default: 0
+    field :blocked_attempts, :integer, virtual: true, default: 0
+    field :completion_rate, :float, virtual: true, default: 0.0
 
     embeds_many :rules, Rule, on_replace: :delete do
       @derive Jason.Encoder
@@ -52,6 +61,8 @@ defmodule Passwordless.ActionTemplate do
       field :condition, :map
       field :effects, :map
     end
+
+    has_one :statistic, ActionStatistic
 
     has_many :actions, Action, preload_order: [desc: :inserted_at]
 
@@ -63,11 +74,23 @@ defmodule Passwordless.ActionTemplate do
   Join the adapter opts.
   """
   def join_adapter_opts(query \\ __MODULE__, opts \\ []) do
-    action_count =
-      from a in Action,
+    attempts =
+      from s in ActionStatistic,
         prefix: ^Keyword.get(opts, :prefix, "public"),
-        where: a.template_id == parent_as(:template).id,
-        select: %{count: count(a.id)}
+        where: s.action_template_id == parent_as(:template).id,
+        select: %{
+          attempts: coalesce(s.attempts, 0),
+          allowed_attempts: coalesce(s.allowed_attempts, 0),
+          timed_out_attempts: coalesce(s.timed_out_attempts, 0),
+          blocked_attempts: coalesce(s.blocked_attempts, 0),
+          completion_rate:
+            fragment(
+              "CASE WHEN ? > 0 THEN ?::float / ?::float ELSE 0 END",
+              s.allowed_attempts,
+              s.allowed_attempts,
+              s.attempts
+            )
+        }
 
     query =
       if has_named_binding?(query, :template),
@@ -75,10 +98,16 @@ defmodule Passwordless.ActionTemplate do
         else: from(q in query, as: :template)
 
     from q in query,
-      left_lateral_join: ac in subquery(action_count),
+      left_lateral_join: ac in subquery(attempts),
       on: true,
-      as: :action_count,
-      select_merge: %{action_count: ac.count}
+      as: :attempts,
+      select_merge: %{
+        attempts: ac.attempts,
+        allowed_attempts: ac.allowed_attempts,
+        timed_out_attempts: ac.timed_out_attempts,
+        blocked_attempts: ac.blocked_attempts,
+        completion_rate: ac.completion_rate
+      }
   end
 
   @doc """

@@ -96,12 +96,12 @@
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
 
       <:col :let={action} label={gettext("Event")} field={:name}>
-        {action.template.name}
+        {action.action_template.name}
       </:col>
 
       <:col :let={action} label={gettext("Country")} field={:country}>
         <%= case Action.first_event(action) do %>
-          <% %Event{city: city, country: country} -> %>
+          <% %Event{city: city, country: country} when is_binary(city) and is_binary(country) -> %>
             <div class="flex items-center gap-2">
               <.icon name={"flag-#{String.downcase(country)}"} class="pc-flag-icon" /> {city}
             </div>
@@ -111,7 +111,7 @@
 
       <:col :let={action} label={gettext("Browser")} field={:browser}>
         <%= case Action.first_event(action) do %>
-          <% %Event{browser: browser} -> %>
+          <% %Event{browser: browser} when is_binary(browser) -> %>
             <div class="flex items-center gap-2">
               <.icon name={"browser-#{browser_to_icon(browser)}"} class="w-5 h-5" /> {browser}
             </div>
@@ -121,7 +121,7 @@
 
       <:col :let={action} label={gettext("Operating System")} field={:os}>
         <%= case Action.first_event(action) do %>
-          <% %Event{operating_system: operating_system} -> %>
+          <% %Event{operating_system: operating_system} when is_binary(operating_system) -> %>
             <div class="flex items-center gap-2">
               <.icon name={"os-#{os_to_icon(operating_system)}"} class="w-5 h-5" /> {operating_system}
             </div>
@@ -131,7 +131,7 @@
 
       <:col :let={action} label={gettext("Device")} field={:device}>
         <%= case Action.first_event(action) do %>
-          <% %Event{device_type: device_type} -> %>
+          <% %Event{device_type: device_type} when is_binary(device_type) -> %>
             <div class="flex items-center gap-2">
               <.icon name={device_type_to_icon(device_type)} class="w-5 h-5" /> {Recase.to_sentence(
                 device_type
@@ -144,6 +144,17 @@
       <:col :let={action} label={gettext("Last seen")} field={:inserted_at}>
         {Timex.from_now(action.inserted_at)}
       </:col>
+      <:col actions></:col>
+
+      <:actions :let={action}>
+        <.a
+          :if={Util.present?(action.user)}
+          to={~p"/users/#{action.user}/edit"}
+          label={gettext("User")}
+          style="link"
+          link_type="live_patch"
+        />
+      </:actions>
     </.stream_table>
   </div>
 </.layout>

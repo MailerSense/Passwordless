@@ -34,7 +34,7 @@ defmodule Passwordless.Email.Renderer do
       }
     },
     action: %Action{
-      template: %ActionTemplate{
+      action_template: %ActionTemplate{
         name: "Sign In",
         alias: "signIn"
       }
