@@ -160,20 +160,19 @@ config :passwordless, :content_security_policy,
     "blob:",
     "cdn.jsdelivr.net"
   ],
-  font_src: [
-    "'self'",
-    "https://*.passwordless.tools",
-    "https://*.googleapis.com",
-    "https://*.googleapis.com",
-    "https://*.gstatic.com"
-  ],
+  font_src:
+    append_if(
+      [
+        "'self'"
+      ],
+      "https://#{System.get_env("CDN_HOST")}",
+      config_env() == :prod
+    ),
   style_src:
     append_if(
       [
         "'self'",
-        "'unsafe-inline'",
-        "https://*.googleapis.com",
-        "https://*.gstatic.com"
+        "'unsafe-inline'"
       ],
       "https://#{System.get_env("CDN_HOST")}",
       config_env() == :prod
