@@ -91,10 +91,6 @@
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
 
-      <:col :let={action} label={gettext("Event")} field={:name}>
-        {action.action_template.name}
-      </:col>
-
       <:col :let={action} label={gettext("Country")} field={:country}>
         <%= case Action.first_event(action) do %>
           <% %Event{city: city, country: country} -> %>
@@ -176,7 +172,7 @@
           size="md"
           label={gettext("Yes, Delete \"%{name}\"", name: @action_template.name)}
           color="danger"
-          phx-click="delete_template"
+          phx-click="delete_action_template"
         />
       </div>
     </.modal>

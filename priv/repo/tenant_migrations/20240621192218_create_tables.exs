@@ -49,6 +49,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       timestamps()
     end
 
+    create index(:actions, [:state])
     create index(:actions, [:user_id])
     create index(:actions, [:action_template_id])
 

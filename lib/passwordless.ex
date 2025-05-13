@@ -35,7 +35,6 @@ defmodule Passwordless do
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
   alias Passwordless.User
-  alias Passwordless.UserTotal
 
   @authenticators [
     email_otp: Authenticators.EmailOTP,
@@ -795,6 +794,17 @@ defmodule Passwordless do
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
+  # Action Template
+
+  def get_action_template!(%App{} = app, id) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    ActionTemplate
+    |> ActionTemplate.get_by_app(app)
+    |> ActionTemplate.join_adapter_opts(opts)
+    |> Repo.get!(id)
+  end
+
   def create_action_template(%App{} = app, attrs \\ %{}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
@@ -816,15 +826,6 @@ defmodule Passwordless do
     |> Repo.update(opts)
   end
 
-  def get_action_template!(%App{} = app, id) do
-    opts = [prefix: Tenant.to_prefix(app)]
-
-    ActionTemplate
-    |> ActionTemplate.get_by_app(app)
-    |> ActionTemplate.join_adapter_opts(opts)
-    |> Repo.get!(id)
-  end
-
   def change_action_template(%App{} = app, %ActionTemplate{} = action_template, attrs \\ %{}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
@@ -833,6 +834,10 @@ defmodule Passwordless do
     else
       ActionTemplate.changeset(action_template, attrs, opts)
     end
+  end
+
+  def delete_action_template(%ActionTemplate{} = action_template) do
+    Repo.soft_delete(action_template)
   end
 
   # Action Statistic
@@ -873,13 +878,7 @@ defmodule Passwordless do
   end
 
   def get_total_users(%App{} = app) do
-    UserTotal
-    |> UserTotal.get_by_app(app)
-    |> Repo.one()
-    |> case do
-      %UserTotal{users: users} -> users
-      nil -> 0
-    end
+    Repo.aggregate(User, :count, :id, prefix: Tenant.to_prefix(app))
   end
 
   def get_action_template_unique_users(%App{} = app, %ActionTemplate{} = action_template) do

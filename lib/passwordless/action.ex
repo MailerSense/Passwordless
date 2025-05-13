@@ -51,6 +51,8 @@ defmodule Passwordless.Action do
 
   def states, do: @states
 
+  def final_states, do: @states -- [:pending]
+
   def topic_for(%App{} = app), do: "#{prefix()}:#{app.id}"
 
   def preloads, do: [{:user, [:totps, :email, :emails, :phone, :phones]}, {:challenge, [:email_message]}, :events]
@@ -114,7 +116,7 @@ defmodule Passwordless.Action do
   Preload associations.
   """
   def preload_user(query \\ __MODULE__) do
-    from q in query, preload: [{:user, [:email]}]
+    from q in query, preload: [:user]
   end
 
   @doc """

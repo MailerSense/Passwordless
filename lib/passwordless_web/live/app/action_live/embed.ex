@@ -42,6 +42,25 @@ defmodule PasswordlessWeb.App.ActionLive.Embed do
   end
 
   @impl true
+  def handle_event("delete_action_template", _params, socket) do
+    action_template = socket.assigns.action_template
+
+    case Passwordless.delete_action_template(action_template) do
+      {:ok, _action_template} ->
+        {:noreply,
+         socket
+         |> put_toast(:info, gettext("Action has been deleted."), title: gettext("Success"))
+         |> push_navigate(to: ~p"/actions")}
+
+      _ ->
+        {:noreply,
+         socket
+         |> put_toast(:error, gettext("Failed to delete action!"), title: gettext("Error"))
+         |> push_patch(to: ~p"/actions")}
+    end
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end

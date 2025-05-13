@@ -50,7 +50,7 @@
       <:header_actions>
         <div class="flex gap-3">
           <.button
-            to={apply_filters(@filters, @meta, ~p"/actions/import")}
+            to={apply_filters(@filters, @meta, ~p"/actions/run-test")}
             color="light"
             label={gettext("Run test")}
             icon="remix-play-circle-line"
@@ -83,6 +83,18 @@
       current_user={@current_user}
       return_to={apply_filters(@filters, @meta, ~p"/actions")}
     />
+  <% :run_test -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      module={PasswordlessWeb.App.ActionLive.RunTestComponent}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_app={@current_app}
+      current_user={@current_user}
+      return_to={apply_filters(@filters, @meta, ~p"/actions")}
+    />
   <% :delete -> %>
     <.modal
       max_width="lg"
@@ -106,7 +118,6 @@
           }
           color="danger"
           phx-click="delete_action_template"
-          phx-value-id={@action_template.id}
         />
       </div>
     </.modal>

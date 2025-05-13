@@ -96,7 +96,7 @@
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
 
       <:col :let={action} label={gettext("Event")} field={:name}>
-        {action.action_template.name}
+        <.code_line>{action.action_template.alias}</.code_line>
       </:col>
 
       <:col :let={action} label={gettext("Country")} field={:country}>

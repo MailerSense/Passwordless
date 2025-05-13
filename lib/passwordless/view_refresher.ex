@@ -22,7 +22,7 @@ defmodule Passwordless.ViewRefresher do
   def process(%Oban.Job{meta: %{"cron" => true}}) do
     queries =
       for u <- Tenant.all(),
-          {m, v} <- [{:sequential, "user_total"}, {:concurrent, "action_template_unique_users"}],
+          {m, v} <- [{:concurrent, "action_template_unique_users"}],
           do:
             (
               case_result =

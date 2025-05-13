@@ -21,17 +21,6 @@ defmodule Passwordless.Repo.TenantMigrations.CreateViews do
             |> String.replace("prefix", prefix())
 
     execute ~SQL"""
-            CREATE MATERIALIZED VIEW prefix.user_total AS
-            SELECT
-              COUNT(*) AS users
-            FROM
-              prefix.users
-            WHERE
-              deleted_at IS NULL;
-            """
-            |> String.replace("prefix", prefix())
-
-    execute ~SQL"""
             CREATE UNIQUE INDEX ON prefix.action_template_unique_users (action_template_id);
             """
             |> String.replace("prefix", prefix())
@@ -40,7 +29,5 @@ defmodule Passwordless.Repo.TenantMigrations.CreateViews do
   def down do
     execute ~SQL"DROP VIEW prefix.action_template_unique_users;"
             |> String.replace("prefix", prefix())
-
-    execute ~SQL"DROP VIEW prefix.user_total;" |> String.replace("prefix", prefix())
   end
 end

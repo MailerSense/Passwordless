@@ -1,0 +1,22 @@
+<div>
+  <% origin = "right" %>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+    <:actions>
+      <.button
+        size="wide"
+        type="submit"
+        color="light-flat"
+        label={gettext("Cancel")}
+        phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+      />
+      <.button
+        id="manage-run-test-form-submit"
+        size="wide"
+        type="submit"
+        form="manage-run-test-form"
+        disabled={true}
+        label={gettext("Run test")}
+      />
+    </:actions>
+  </.slide_over>
+</div>
