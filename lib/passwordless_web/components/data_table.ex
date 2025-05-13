@@ -98,7 +98,7 @@ defmodule PasswordlessWeb.Components.DataTable do
       <section class={[@wrapper_class, @class]}>
         <div
           :if={@search_field}
-          class="flex items-center justify-between gap-3 p-6 bg-slate-50 dark:bg-transparent border-b border-slate-200 dark:border-slate-700/30"
+          class="flex items-center justify-between gap-3 p-6 bg-gray-50 dark:bg-transparent border-b border-gray-200 dark:border-gray-700/30"
         >
           <.table_search_bar
             meta={@meta}
@@ -426,7 +426,7 @@ defmodule PasswordlessWeb.Components.DataTable do
       "p-6 flex items-center justify-between gap-4"
     ]}>
       <.div_wrapper class="flex items-center gap-2" wrap={Util.present?(@badge)}>
-        <h1 class="text-lg font-semibold text-slate-900 dark:text-white">
+        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
           {@title}
         </h1>
         <.badge :if={Util.present?(@badge)} size="sm" color="primary" label={@badge} />
@@ -465,7 +465,7 @@ defmodule PasswordlessWeb.Components.DataTable do
 
       <button
         :if={@show_clear_button}
-        class="shrink-0 inline-flex justify-start items-center gap-2 text-slate-700 dark:text-slate-200"
+        class="shrink-0 inline-flex justify-start items-center gap-2 text-gray-700 dark:text-gray-200"
         phx-click="clear_filters"
       >
         <Icon.icon name="remix-close-circle-line" class="w-[18px] h-[18px]" />

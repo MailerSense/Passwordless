@@ -99,7 +99,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
       </Field.field_label>
       <button
         type="button"
-        class="custom-select relative block w-full h-[46px] px-3 py-2 border border-slate-300 rounded-lg shadow-m2 focus:ring-primary-500 dark:focus:ring-primary-400 dark:border-slate-600 text-base disabled:bg-slate-100 disabled:cursor-not-allowed dark:text-slate-300 dark:disabled:bg-slate-700  focus:ring-2 focus:border-transparent focus:outline-hidden"
+        class="custom-select relative block w-full h-[46px] px-3 py-2 border border-gray-300 rounded-lg shadow-m2 focus:ring-primary-500 dark:focus:ring-primary-400 dark:border-gray-600 text-base disabled:bg-gray-100 disabled:cursor-not-allowed dark:text-gray-300 dark:disabled:bg-gray-700  focus:ring-2 focus:border-transparent focus:outline-hidden"
         x-ref="button"
         disabled={@disabled}
         @click="open = !open"
@@ -117,11 +117,11 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
           <span class="absolute inset-y-0 right-0 flex items-center pr-2 ml-3 pointer-events-none">
             <Icon.icon
               name="remix-arrow-down-s-line"
-              class="w-6 h-6 text-slate-600 dark:text-slate-300"
+              class="w-6 h-6 text-gray-600 dark:text-gray-300"
             />
           </span>
         <% else %>
-          <span class="text-slate-400 dark:text-slate-500 flex">{@placeholder}</span>
+          <span class="text-gray-400 dark:text-gray-500 flex">{@placeholder}</span>
         <% end %>
       </button>
 
@@ -131,7 +131,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         class={[
-          "absolute z-50 w-full mt-1 overflow-auto text-base bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-4 rounded-lg",
+          "absolute z-50 w-full mt-1 overflow-auto text-base bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-4 rounded-lg",
           "p-1"
         ]}
         @click.away="open = false"
@@ -142,9 +142,9 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
           :if={not @required}
           role="option"
           class={[
-            if(@selected_idx == nil, do: "bg-slate-100 dark:bg-slate-800"),
+            if(@selected_idx == nil, do: "bg-gray-100 dark:bg-gray-800"),
             "rounded-sm",
-            "relative py-2 pl-3 text-slate-900 dark:text-white cursor-pointer select-none pr-9 hover:bg-slate-50 dark:hover:bg-slate-700"
+            "relative py-2 pl-3 text-gray-900 dark:text-white cursor-pointer select-none pr-9 hover:bg-gray-50 dark:hover:bg-gray-700"
           ]}
           {li_assigns(nil)}
         >
@@ -157,7 +157,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
           role="option"
           class={[
             "rounded-sm",
-            "relative py-2 px-2.5 text-slate-900 dark:text-white cursor-pointer select-none hover:bg-slate-50 dark:hover:bg-slate-700"
+            "relative py-2 px-2.5 text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-700"
           ]}
           {li_assigns(idx)}
         >
@@ -168,7 +168,7 @@ defmodule PasswordlessWeb.Components.BadgeSelect do
             <Icon.icon
               :if={idx == @selected_idx}
               name="remix-check-fill"
-              class="w-5 h-5 text-slate-900 dark:text-white"
+              class="w-5 h-5 text-gray-900 dark:text-white"
             />
             <Badge.badge with_dot size="sm" label={option.label} color={option.color} />
             <span :if={option[:name]} class="block truncate">

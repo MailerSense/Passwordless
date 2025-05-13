@@ -85,7 +85,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
     ~H"""
     <section
       {@rest}
-      class={["bg-slate-200 dark:bg-slate-950/30 rounded-lg", if(@padded, do: "p-6"), @class]}
+      class={["bg-gray-200 dark:bg-gray-950/30 rounded-lg", if(@padded, do: "p-6"), @class]}
     >
       {render_slot(@inner_block)}
     </section>
@@ -99,7 +99,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
 
   def area_header(assigns) do
     ~H"""
-    <h3 class={["font-semibold text-slate-500 dark:text-slate-400 text-lg", @class]} {@rest}>
+    <h3 class={["font-semibold text-gray-500 dark:text-gray-400 text-lg", @class]} {@rest}>
       {@title}
     </h3>
     """

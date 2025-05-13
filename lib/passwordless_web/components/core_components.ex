@@ -41,7 +41,7 @@ defmodule PasswordlessWeb.CoreComponents do
     <nav>
       <p
         :if={Util.present?(@title)}
-        class="px-4 mb-3 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase select-none"
+        class="px-4 mb-3 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase select-none"
       >
         {@title}
       </p>
@@ -57,13 +57,13 @@ defmodule PasswordlessWeb.CoreComponents do
     ~H"""
     <footer class="pt-12 pb-8 bg-white">
       <.container max_width={@max_width}>
-        <div class="flex flex-wrap items-center pb-8 gap-20 border-b border-slate-200">
+        <div class="flex flex-wrap items-center pb-8 gap-20 border-b border-gray-200">
           <.a to="/" title={Passwordless.config(:app_name)}>
             <.logo variant="dark" class="h-6" />
           </.a>
           <ul class="items-center gap-8 hidden lg:inline-flex">
             <.list_menu_items
-              a_class="text-slate-900 text-base font-semibold leading-normal"
+              a_class="text-gray-900 text-base font-semibold leading-normal"
               menu_items={footer_menu_items()}
             />
           </ul>
@@ -86,7 +86,7 @@ defmodule PasswordlessWeb.CoreComponents do
           </div>
         </div>
         <div class="flex flex-wrap items-center justify-between mt-8">
-          <span class="text-sm text-slate-600 leading-tight">
+          <span class="text-sm text-gray-600 leading-tight">
             Copyright © {Timex.now().year} {Passwordless.config(:business_name) <>
               ". All rights reserved."}
           </span>
@@ -106,12 +106,12 @@ defmodule PasswordlessWeb.CoreComponents do
     <.link
       href={@to}
       class={[
-        "group w-12 h-12 px-3 py-2 rounded-full text-slate-900 border border-slate-200 hover:bg-slate-900 hover:border-slate-900 justify-center items-center inline-flex transition duration-150 ease-in-out",
+        "group w-12 h-12 px-3 py-2 rounded-full text-gray-900 border border-gray-200 hover:bg-gray-900 hover:border-gray-900 justify-center items-center inline-flex transition duration-150 ease-in-out",
         @class
       ]}
       title={@platform}
     >
-      <.icon name={@icon} class="w-6 h-6 bg-slate-900 group-hover:bg-primary-300" />
+      <.icon name={@icon} class="w-6 h-6 bg-gray-900 group-hover:bg-primary-300" />
     </.link>
     """
   end
@@ -246,11 +246,11 @@ defmodule PasswordlessWeb.CoreComponents do
   def or_break(assigns) do
     ~H"""
     <div class="flex items-center gap-4 my-4">
-      <div class="w-full h-[1px] bg-slate-200 dark:bg-slate-700/70"></div>
-      <span class="text-slate-500">
+      <div class="w-full h-[1px] bg-gray-200 dark:bg-gray-700/70"></div>
+      <span class="text-gray-500">
         {@or_text}
       </span>
-      <div class="w-full h-[1px] bg-slate-200 dark:bg-slate-700/70"></div>
+      <div class="w-full h-[1px] bg-gray-200 dark:bg-gray-700/70"></div>
     </div>
     """
   end
@@ -431,11 +431,11 @@ defmodule PasswordlessWeb.CoreComponents do
           @class,
           "text-sm",
           case @style do
-            :normal -> "rounded-lg border border-slate-300 dark:border-slate-600 shadow-m2 p-2"
-            :compact -> "rounded-lg border border-slate-300 dark:border-slate-600 shadow-m2 p-1"
+            :normal -> "rounded-lg border border-gray-300 dark:border-gray-600 shadow-m2 p-2"
+            :compact -> "rounded-lg border border-gray-300 dark:border-gray-600 shadow-m2 p-1"
             :flex -> ""
           end,
-          if(@disabled, do: "bg-slate-100 dark:bg-slate-700", else: "dark:bg-slate-900")
+          if(@disabled, do: "bg-gray-100 dark:bg-gray-700", else: "dark:bg-gray-900")
         ]}>
           <code id={@id} phx-hook="JSONHook" data-json={@code} data-expand={@expanded}></code>
         </div>
@@ -445,11 +445,11 @@ defmodule PasswordlessWeb.CoreComponents do
         @class,
         "text-sm",
         case @style do
-          :normal -> "rounded-lg border border-slate-300 dark:border-slate-600 shadow-m2 p-2"
-          :compact -> "rounded-lg border border-slate-300 dark:border-slate-600 shadow-m2 p-1"
+          :normal -> "rounded-lg border border-gray-300 dark:border-gray-600 shadow-m2 p-2"
+          :compact -> "rounded-lg border border-gray-300 dark:border-gray-600 shadow-m2 p-1"
           :flex -> ""
         end,
-        if(@disabled, do: "bg-slate-100 dark:bg-slate-700", else: "dark:bg-slate-900")
+        if(@disabled, do: "bg-gray-100 dark:bg-gray-700", else: "dark:bg-gray-900")
       ]}>
         <code id={@id} phx-hook="JSONHook" data-json={@code} data-expand={@expanded}></code>
       </div>

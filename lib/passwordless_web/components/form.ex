@@ -784,9 +784,9 @@ defmodule PasswordlessWeb.Components.Form do
   def form_header(assigns) do
     ~H"""
     <.div_wrapper class="flex items-center gap-2" wrap={Util.present?(@count)}>
-      <h1 class={["pc-form-header", unless(@no_margin, do: "mb-6"), @class]} {@rest}>
+      <h2 class={["pc-form-header", unless(@no_margin, do: "mb-6"), @class]} {@rest}>
         {@title}
-      </h1>
+      </h2>
       <Badge.badge :if={Util.present?(@count)} size="sm" color="primary" label={@count} />
     </.div_wrapper>
     """

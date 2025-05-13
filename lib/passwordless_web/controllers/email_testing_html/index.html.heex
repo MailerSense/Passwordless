@@ -5,7 +5,7 @@
   padded={false}
 >
   <.tabbed_layout current_page={@email_name} menu_items={@email_options} container={false}>
-    <div class="flex flex-col bg-slate-50 dark:bg-slate-900">
+    <div class="flex flex-col bg-gray-50 dark:bg-gray-900">
       <main class="relative z-0 flex-1 overflow-y-auto focus:outline-hidden">
         <div class="p-6">
           <%= if Application.fetch_env!(:passwordless, Passwordless.Mailer) |> Keyword.get(:adapter) ==
@@ -30,7 +30,7 @@
           <.page_header title={@email_name} />
 
           <div class="flex justify-between">
-            <div class="text-sm dark:text-slate-100">
+            <div class="text-sm dark:text-gray-100">
               <div>
                 From:
                 <strong>

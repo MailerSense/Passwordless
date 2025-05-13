@@ -161,7 +161,6 @@ config :passwordless, :content_security_policy,
     "cdn.jsdelivr.net"
   ],
   font_src: [
-    "https://rsms.me",
     "https://*.googleapis.com",
     "https://*.gstatic.com"
   ],
@@ -170,7 +169,6 @@ config :passwordless, :content_security_policy,
       [
         "'self'",
         "'unsafe-inline'",
-        "https://rsms.me",
         "https://*.googleapis.com",
         "https://*.gstatic.com"
       ],

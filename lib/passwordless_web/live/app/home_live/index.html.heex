@@ -43,7 +43,7 @@
           "Enable authentication methods users can use to prove their identity within your app."
         )}
       </.p>
-      <div class="grid grid-cols-5 divide-x divide-slate-200 dark:divide-slate-700">
+      <div class="grid grid-cols-5 divide-x divide-gray-200 dark:divide-gray-700">
         <.quick_action
           :for={item <- @authenticators |> Enum.take(5)}
           to={item.path}
@@ -160,7 +160,7 @@
         <% end %>
       </:col>
 
-      <:col :let={action} label={gettext("Last seen")} field={:inserted_at}>
+      <:col :let={action} label={gettext("Last Seen")} field={:inserted_at}>
         {Timex.from_now(action.inserted_at)}
       </:col>
       <:col actions></:col>

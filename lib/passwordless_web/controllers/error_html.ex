@@ -33,7 +33,13 @@ defmodule PasswordlessWeb.ErrorHTML do
       </.alert>
 
       <div class="flex">
-        <.button size="xl" link_type="a" title={gettext("Go Home")} to={~p"/"} class="flex flex-1" />
+        <.button
+          size="xl"
+          link_type="a"
+          title={gettext("Back to home")}
+          to={~p"/"}
+          class="flex flex-1"
+        />
       </div>
 
       <:bottom_links>
@@ -79,7 +85,13 @@ defmodule PasswordlessWeb.ErrorHTML do
       </.alert>
 
       <div class="flex">
-        <.button size="xl" link_type="a" title={gettext("Go Home")} to={~p"/"} class="flex flex-1" />
+        <.button
+          size="xl"
+          link_type="a"
+          title={gettext("Back to home")}
+          to={~p"/"}
+          class="flex flex-1"
+        />
       </div>
 
       <:bottom_links>

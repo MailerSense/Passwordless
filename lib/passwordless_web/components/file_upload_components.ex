@@ -16,7 +16,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
   attr :current_image_src, :string, default: nil
   attr :required, :boolean, default: false
 
-  attr :current_image_class, :string, default: "h-16 w-16 rounded-md border border-slate-200 dark:border-slate-700"
+  attr :current_image_class, :string, default: "h-16 w-16 rounded-md border border-gray-200 dark:border-gray-700"
 
   attr :new_image_class, :string, doc: "classes for the new image. Defaults to current_image_class"
 
@@ -28,7 +28,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
 
   attr :delete_button_class, :string,
     default:
-      "rounded-full w-6 h-6 p-0 m-0 absolute bottom-[-10%] right-[-10%] bg-slate-700/70 text-white hover:bg-slate-700 dark:hover:bg-slate-500/50 flex items-center justify-center"
+      "rounded-full w-6 h-6 p-0 m-0 absolute bottom-[-10%] right-[-10%] bg-gray-700/70 text-white hover:bg-gray-700 dark:hover:bg-gray-500/50 flex items-center justify-center"
 
   attr :on_delete, :string,
     default: nil,
@@ -82,7 +82,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
           />
 
           <%= if @upload.entries != [] do %>
-            <.icon name="remix-arrow-right-line text-slate-900 dark:text-white" class="h-5" />
+            <.icon name="remix-arrow-right-line text-gray-900 dark:text-white" class="h-5" />
             <%= for entry <- @upload.entries do %>
               <div class="relative shrink-0">
                 <.live_img_preview entry={entry} class={@new_image_class} />
@@ -104,7 +104,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
         <div>
           <.live_file_input
             upload={@upload}
-            class="block w-full text-sm rounded-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 dark:file:bg-slate-700 dark:file:text-slate-300 dark:hover:file:bg-slate-600 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 cursor-pointer"
+            class="block w-full text-sm rounded-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 dark:file:bg-gray-700 dark:file:text-gray-300 dark:hover:file:bg-gray-600 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 cursor-pointer"
           />
 
           <p :if={@automatic_help_text} class="pc-form-help-text">
@@ -171,7 +171,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
 
   attr :delete_button_class, :string,
     default:
-      "rounded-full w-6 h-6 p-0 m-0 absolute bottom-[-10%] right-[-10%] bg-slate-700/70 text-white hover:bg-slate-700 dark:hover:bg-slate-500/50 flex items-center justify-center"
+      "rounded-full w-6 h-6 p-0 m-0 absolute bottom-[-10%] right-[-10%] bg-gray-700/70 text-white hover:bg-gray-700 dark:hover:bg-gray-500/50 flex items-center justify-center"
 
   attr :on_delete, :string,
     default: nil,
@@ -215,7 +215,7 @@ defmodule PasswordlessWeb.FileUploadComponents do
         <div>
           <.live_file_input
             upload={@upload}
-            class="block w-full text-sm rounded-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 dark:file:bg-slate-700 dark:file:text-slate-300 dark:hover:file:bg-slate-600 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 cursor-pointer"
+            class="block w-full text-sm rounded-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 dark:file:bg-gray-700 dark:file:text-gray-300 dark:hover:file:bg-gray-600 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 cursor-pointer"
           />
 
           <p :if={@automatic_help_text} class="pc-form-help-text">
@@ -270,10 +270,10 @@ defmodule PasswordlessWeb.FileUploadComponents do
   def dummy_image(assigns) do
     ~H"""
     <div class={[
-      "flex items-center justify-center bg-slate-100 dark:bg-slate-700",
+      "flex items-center justify-center bg-gray-100 dark:bg-gray-700",
       @class
     ]}>
-      <.icon name={@inner_icon} class={["text-slate-300 dark:text-slate-500", @inner_icon_class]} />
+      <.icon name={@inner_icon} class={["text-gray-300 dark:text-gray-500", @inner_icon_class]} />
     </div>
     """
   end

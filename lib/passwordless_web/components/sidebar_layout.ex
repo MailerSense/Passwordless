@@ -80,7 +80,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
 
   def sidebar_layout(assigns) do
     ~H"""
-    <div class="flex h-screen bg-white dark:bg-slate-900" x-data="sidebar">
+    <div class="flex h-screen bg-white dark:bg-gray-900" x-data="sidebar">
       <div class="pc-sidebar__container">
         <.sidebar_section_menu menu_items={@section_menu_items} current_section={@current_section} />
 
@@ -104,7 +104,7 @@ defmodule PasswordlessWeb.Components.SidebarLayout do
       </div>
 
       <aside id="sidebar" role="navigation" class="pc-sidebar__aside" x-show="sidebarOpen">
-        <div class="flex items-center justify-between px-8 py-6 border-b border-slate-700 h-[88px]">
+        <div class="flex items-center justify-between px-8 py-6 border-b border-gray-700 h-[88px]">
           <.link navigate={@home_path}>
             {render_slot(@logo)}
           </.link>
