@@ -161,6 +161,9 @@ config :passwordless, :content_security_policy,
     "cdn.jsdelivr.net"
   ],
   font_src: [
+    "'self'",
+    "https://*.passwordless.tools",
+    "https://*.googleapis.com",
     "https://*.googleapis.com",
     "https://*.gstatic.com"
   ],
