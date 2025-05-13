@@ -110,7 +110,10 @@ defmodule PasswordlessWeb.App.UserLive.Index do
   defp apply_action(socket, :new, _) do
     assign(socket,
       page_title: gettext("Create user"),
-      page_subtitle: gettext("Create a new app user. You can also import users in batch from a CSV file.")
+      page_subtitle:
+        gettext(
+          "Drop-in customized user experiences anywhere in your customer journeys. Future-proof your product from day one with comprehensive software development kits. Customize the experience with your own logo and colors."
+        )
     )
   end
 
