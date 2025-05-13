@@ -55,9 +55,9 @@
           size="lg"
           label={@action_template.completion_rate}
           items={[
-            %{key: :allow, value: @action_template.allowed_attempts, color: "success"},
-            %{key: :timeout, value: @action_template.timed_out_attempts, color: "warning"},
-            %{key: :block, value: @action_template.blocked_attempts, color: "danger"}
+            %{key: :allow, value: @action_template.allows, color: "success"},
+            %{key: :timeout, value: @action_template.timeouts, color: "warning"},
+            %{key: :block, value: @action_template.blocks, color: "danger"}
           ]}
         />
       </.box>

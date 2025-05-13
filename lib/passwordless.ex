@@ -862,9 +862,9 @@ defmodule Passwordless do
 
     conflict_fields =
       case state do
-        :allow -> [inc: [attempts: 1, allowed_attempts: 1]]
-        :timeout -> [inc: [attempts: 1, timed_out_attempts: 1]]
-        :block -> [inc: [attempts: 1, blocked_attempts: 1]]
+        :allow -> [inc: [attempts: 1, allows: 1]]
+        :timeout -> [inc: [attempts: 1, timeouts: 1]]
+        :block -> [inc: [attempts: 1, blocks: 1]]
         _ -> :nothing
       end
 
@@ -1092,9 +1092,9 @@ defmodule Passwordless do
         select: %{
           action: at.name,
           attempts: as.attempts,
-          allowed_attempts: as.allowed_attempts,
-          blocked_attempts: as.blocked_attempts,
-          timed_out_attempts: as.timed_out_attempts
+          allows: as.allows,
+          blocks: as.blocks,
+          timeouts: as.timeouts
         },
         order_by: [desc: as.attempts],
         limit: ^Keyword.get(opts, :limit, nil)

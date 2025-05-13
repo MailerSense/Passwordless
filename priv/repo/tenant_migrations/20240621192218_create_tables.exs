@@ -58,9 +58,9 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create table(:action_statistics, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :attempts, :integer, null: false, default: 0
-      add :allowed_attempts, :integer, null: false, default: 0
-      add :timed_out_attempts, :integer, null: false, default: 0
-      add :blocked_attempts, :integer, null: false, default: 0
+      add :allows, :integer, null: false, default: 0
+      add :timeouts, :integer, null: false, default: 0
+      add :blocks, :integer, null: false, default: 0
 
       add :action_template_id, references(:action_templates, type: :uuid, on_delete: :delete_all),
         null: false

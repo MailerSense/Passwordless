@@ -21,9 +21,9 @@
           max={action.attempts}
           label={action.completion_rate}
           items={[
-            %{key: :allow, value: action.allowed_attempts, color: "success"},
-            %{key: :timeout, value: action.timed_out_attempts, color: "warning"},
-            %{key: :block, value: action.blocked_attempts, color: "danger"}
+            %{key: :allow, value: action.allows, color: "success"},
+            %{key: :timeout, value: action.timeouts, color: "warning"},
+            %{key: :block, value: action.blocks, color: "danger"}
           ]}
         />
       </:col>

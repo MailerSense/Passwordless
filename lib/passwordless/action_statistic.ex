@@ -12,11 +12,10 @@ defmodule Passwordless.ActionStatistic do
     Jason.Encoder,
     only: [
       :id,
-      :name,
       :attempts,
-      :allowed_attempts,
-      :timed_out_attempts,
-      :blocked_attempts
+      :allows,
+      :timeouts,
+      :blocks
     ]
   }
   @derive {
@@ -24,11 +23,10 @@ defmodule Passwordless.ActionStatistic do
     filterable: [:id], sortable: [:id]
   }
   schema "action_statistics" do
-    field :name, :string, virtual: true
     field :attempts, :integer, default: 0
-    field :allowed_attempts, :integer, default: 0
-    field :timed_out_attempts, :integer, default: 0
-    field :blocked_attempts, :integer, default: 0
+    field :allows, :integer, default: 0
+    field :timeouts, :integer, default: 0
+    field :blocks, :integer, default: 0
 
     belongs_to :action_template, ActionTemplate
   end
@@ -42,9 +40,9 @@ defmodule Passwordless.ActionStatistic do
 
   @fields ~w(
     attempts
-    allowed_attempts
-    timed_out_attempts
-    blocked_attempts
+    allows
+    timeouts
+    blocks
     action_template_id
   )a
   @required_fields @fields

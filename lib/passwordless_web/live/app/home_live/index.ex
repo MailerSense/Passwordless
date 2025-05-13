@@ -36,9 +36,9 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
       |> Enum.map(fn %{
                        action: action,
                        attempts: total,
-                       allowed_attempts: allow,
-                       timed_out_attempts: timeout,
-                       blocked_attempts: block
+                       allows: allow,
+                       timeouts: timeout,
+                       blocks: block
                      } ->
         %{
           key: action,

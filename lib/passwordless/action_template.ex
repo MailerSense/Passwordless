@@ -48,9 +48,9 @@ defmodule Passwordless.ActionTemplate do
     field :name, :string
     field :alias, :string
     field :attempts, :integer, virtual: true, default: 0
-    field :allowed_attempts, :integer, virtual: true, default: 0
-    field :timed_out_attempts, :integer, virtual: true, default: 0
-    field :blocked_attempts, :integer, virtual: true, default: 0
+    field :allows, :integer, virtual: true, default: 0
+    field :timeouts, :integer, virtual: true, default: 0
+    field :blocks, :integer, virtual: true, default: 0
     field :completion_rate, :float, virtual: true, default: 0.0
 
     embeds_many :rules, Rule, on_replace: :delete do
@@ -80,15 +80,15 @@ defmodule Passwordless.ActionTemplate do
         where: s.action_template_id == parent_as(:template).id,
         select: %{
           attempts: coalesce(s.attempts, 0),
-          allowed_attempts: coalesce(s.allowed_attempts, 0),
-          timed_out_attempts: coalesce(s.timed_out_attempts, 0),
-          blocked_attempts: coalesce(s.blocked_attempts, 0),
+          allows: coalesce(s.allows, 0),
+          timeouts: coalesce(s.timeouts, 0),
+          blocks: coalesce(s.blocks, 0),
           completion_rate:
             fragment(
               "CASE WHEN ? > 0 THEN ?::float / ?::float ELSE 0 END",
-              s.allowed_attempts,
-              s.allowed_attempts,
-              s.attempts
+              coalesce(s.allows, 0),
+              coalesce(s.allows, 0),
+              coalesce(s.attempts, 0)
             )
         }
 
@@ -101,13 +101,7 @@ defmodule Passwordless.ActionTemplate do
       left_lateral_join: ac in subquery(attempts),
       on: true,
       as: :attempts,
-      select_merge: %{
-        attempts: ac.attempts,
-        allowed_attempts: ac.allowed_attempts,
-        timed_out_attempts: ac.timed_out_attempts,
-        blocked_attempts: ac.blocked_attempts,
-        completion_rate: ac.completion_rate
-      }
+      select_merge: map(ac, [:attempts, :allows, :timeouts, :blocks, :completion_rate])
   end
 
   @doc """
