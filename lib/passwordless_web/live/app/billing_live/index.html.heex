@@ -1,25 +1,7 @@
 <.layout current_user={@current_user} current_page={:billing} current_section={:app}>
   <div class="flex flex-col gap-6 px-8 py-6">
-    <.page_header title={gettext("Billing")}>
-      <div class="flex gap-3">
-        <.button
-          to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
-          color="light"
-          label={gettext("Contact support")}
-          icon="remix-megaphone-line"
-          link_type="a"
-        />
-        <.button
-          color="primary"
-          label={gettext("Upgrade")}
-          icon="remix-arrow-up-circle-line"
-          link_type="live_patch"
-        />
-      </div>
-    </.page_header>
-
     <.box card>
-      <.form_header title={gettext("Overview")} no_margin />
+      <.form_header title={gettext("Billing")} no_margin />
       <.p>
         {gettext(
           "You have %{mau} Monthly Active Users (MAU) out of %{max_mau}. This quota is shared across all apps in %{org}. Table below shows precise usage of services and estimated charges for your organization. Have any questions? Reach out to our support.",
@@ -31,11 +13,12 @@
         )}
       </.p>
       <div class="flex items-center gap-3 flex-wrap">
+        <.a label={gettext("Upgrade")} style="link" link_type="live_redirect" />
         <.a
-          to={~p"/pricing/free"}
-          label={gettext("Review pricing")}
+          to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
+          label={gettext("Contact support")}
           style="link"
-          link_type="live_redirect"
+          link_type="a"
         />
       </div>
     </.box>

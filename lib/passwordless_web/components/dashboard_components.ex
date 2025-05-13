@@ -29,40 +29,14 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   def simple_card(assigns) do
     ~H"""
-    <%= if @to do %>
-      <.a
-        to={@to}
-        link_type={@link_type}
-        title={"#{@badge}: #{@content}"}
-        {@rest}
-        class={[
-          "shadow-1 hover:shadow-2 active:shadow-3 transition-all duration-150 ease-in-out",
-          "border border-gray-200 dark:border-gray-700"
-        ]}
-      >
-        <section class={[
-          "p-6 rounded-lg flex flex-col gap-4",
-          "bg-white dark:bg-gray-700/30",
-          @class
-        ]}>
-          <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold leading-tight">
-            {@badge}
-          </badge>
-          <h4 class="text-gray-900 dark:text-white text-2xl font-bold">
-            {@content}
-          </h4>
-        </section>
-      </.a>
-    <% else %>
-      <.box class="p-6 flex flex-col gap-4">
-        <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold leading-tight">
-          {@badge}
-        </badge>
-        <h4 class="text-gray-900 dark:text-white text-2xl font-bold">
-          {@content}
-        </h4>
-      </.box>
-    <% end %>
+    <.box padded body_class="flex flex-col gap-4">
+      <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold leading-tight">
+        {@badge}
+      </badge>
+      <h4 class="text-gray-900 dark:text-white text-2xl font-bold">
+        {@content}
+      </h4>
+    </.box>
     """
   end
 

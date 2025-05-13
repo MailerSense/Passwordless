@@ -1,24 +1,5 @@
 <.layout current_user={@current_user} current_page={:home} current_section={:app}>
   <div class="flex flex-col gap-6 px-8 py-6">
-    <.page_header title={gettext("Home")}>
-      <div class="flex gap-3">
-        <.button
-          to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
-          color="light"
-          label={gettext("Learn more")}
-          icon="remix-graduation-cap-line"
-          link_type="a"
-        />
-        <.button
-          to={~p"/actions/new"}
-          color="primary"
-          label={gettext("Create action")}
-          icon="remix-add-circle-line"
-          link_type="live_patch"
-        />
-      </div>
-    </.page_header>
-
     <.box card>
       <.form_header title={gettext("Top actions")} no_margin />
       <.p>
