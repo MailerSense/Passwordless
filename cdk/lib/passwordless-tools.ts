@@ -5,6 +5,7 @@ import {
   BehaviorOptions,
   CachePolicy,
   OriginRequestPolicy,
+  ResponseHeadersPolicy,
   ViewerProtocolPolicy,
 } from "aws-cdk-lib/aws-cloudfront";
 import {
@@ -434,8 +435,9 @@ export class PasswordlessTools extends cdk.Stack {
     const albBehavior: BehaviorOptions = {
       origin: new LoadBalancerV2Origin(app.service.loadBalancer),
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS,
+      cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS_QUERY_STRINGS,
       originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
+      responseHeadersPolicy: ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS,
     };
 
     const _appCdn = new CDN(this, `${env}-app-cdn`, {
