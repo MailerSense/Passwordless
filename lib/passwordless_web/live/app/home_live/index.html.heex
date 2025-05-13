@@ -160,7 +160,7 @@
         <% end %>
       </:col>
 
-      <:col :let={action} label={gettext("Last seen")} field={:inserted_at}>
+      <:col :let={action} label={gettext("Last Seen")} field={:inserted_at}>
         {Timex.from_now(action.inserted_at)}
       </:col>
       <:col actions></:col>
