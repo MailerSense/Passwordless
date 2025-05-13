@@ -23,7 +23,7 @@ defmodule PasswordlessWeb.Components.DataTable.Header do
           class={[
             "flex items-center gap-1",
             if(@column[:align_right], do: "justify-end"),
-            if(@currently_ordered, do: "text-slate-900 dark:text-white")
+            if(@currently_ordered, do: "text-gray-900 dark:text-white")
           ]}
           link_type="live_patch"
         >

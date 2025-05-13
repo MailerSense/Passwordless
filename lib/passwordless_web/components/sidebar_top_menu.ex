@@ -38,10 +38,10 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
               <% end %>
 
               <div class="flex-col justify-start items-start inline-flex gap-1">
-                <div class="text-slate-900 dark:text-white text-base font-semibold leading-normal">
+                <div class="text-gray-900 dark:text-white text-base font-semibold leading-normal">
                   {user_name(@current_user)}
                 </div>
-                <div class="text-slate-500 dark:text-slate-400 text-xs font-normal">
+                <div class="text-gray-500 dark:text-gray-400 text-xs font-normal">
                   {user_email(@current_user)}
                 </div>
                 <%= if user_impersonated?(@current_user) do %>
@@ -53,7 +53,7 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
                 <% end %>
               </div>
             </div>
-            <.icon name="remix-arrow-down-s-line" class="w-6 h-6 text-slate-900 dark:text-white" />
+            <.icon name="remix-arrow-down-s-line" class="w-6 h-6 text-gray-900 dark:text-white" />
           </div>
         </:trigger_element>
         <%= for child_item <- @user_menu_items do %>
@@ -99,7 +99,7 @@ defmodule PasswordlessWeb.Components.UserTopbarMenu do
           case l[:kind] do
             :admin -> "text-danger-700 dark:text-danger-400"
             :oban -> "text-yellow-500 dark:text-yellow-400"
-            _ -> "text-slate-500 dark:text-slate-400"
+            _ -> "text-gray-500 dark:text-gray-400"
           end,
           "text-xs font-medium"
         ]}

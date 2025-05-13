@@ -37,28 +37,28 @@ defmodule PasswordlessWeb.DashboardComponents do
         {@rest}
         class={[
           "shadow-1 hover:shadow-2 active:shadow-3 transition-all duration-150 ease-in-out",
-          "border border-slate-200 dark:border-slate-700"
+          "border border-gray-200 dark:border-gray-700"
         ]}
       >
         <section class={[
           "p-6 rounded-lg flex flex-col gap-4",
-          "bg-white dark:bg-slate-700/30",
+          "bg-white dark:bg-gray-700/30",
           @class
         ]}>
-          <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
+          <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold leading-tight">
             {@badge}
           </badge>
-          <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
+          <h4 class="text-gray-900 dark:text-white text-2xl font-bold">
             {@content}
           </h4>
         </section>
       </.a>
     <% else %>
       <.box class="p-6 flex flex-col gap-4">
-        <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
+        <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold leading-tight">
           {@badge}
         </badge>
-        <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
+        <h4 class="text-gray-900 dark:text-white text-2xl font-bold">
           {@content}
         </h4>
       </.box>
@@ -82,20 +82,20 @@ defmodule PasswordlessWeb.DashboardComponents do
     <.a
       to={@to}
       class={[
-        "p-6 bg-white dark:bg-slate-800",
+        "p-6 bg-white dark:bg-gray-800",
         "flex rounded-lg shadow-m2 justify-between",
         "hover:shadow-2 active:shadow-3 select-none",
         "transition duration-150 ease-in-out",
-        "border border-slate-200 dark:border-slate-700",
+        "border border-gray-200 dark:border-gray-700",
         @class
       ]}
       link_type={@link_type}
     >
       <div class="flex flex-col justify-between">
-        <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
+        <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold leading-tight">
           {@label}
         </badge>
-        <h4 class="text-slate-900 dark:text-white text-2xl font-bold">
+        <h4 class="text-gray-900 dark:text-white text-2xl font-bold">
           {Passwordless.Locale.Number.to_string!(@value)}
         </h4>
       </div>
@@ -106,7 +106,7 @@ defmodule PasswordlessWeb.DashboardComponents do
             cy="18"
             r="16"
             fill="none"
-            class="stroke-current text-slate-100 dark:text-slate-700"
+            class="stroke-current text-gray-100 dark:text-gray-700"
             stroke-width="3.5"
           >
           </circle>
@@ -156,7 +156,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       <div class={[
         @grid_class,
         "grid grid-cols-1",
-        "gap-6 lg:gap-0 lg:divide-x divide-slate-200 dark:divide-slate-700"
+        "gap-6 lg:gap-0 lg:divide-x divide-gray-200 dark:divide-gray-700"
       ]}>
         <div
           :for={item <- @items}
@@ -165,10 +165,10 @@ defmodule PasswordlessWeb.DashboardComponents do
             "lg:first:pl-0 lg:last:pr-0"
           ]}
         >
-          <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold">
+          <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold">
             {item.name}
           </badge>
-          <h2 class="text-slate-900 dark:text-white text-2xl font-bold">
+          <h2 class="text-gray-900 dark:text-white text-2xl font-bold">
             {Util.number!(item.value)} {ngettext(
               "time",
               "times",
@@ -187,7 +187,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       <div class="flex gap-6 items-center flex-wrap">
         <div :for={item <- @legend} class="flex gap-2 items-center">
           <span class={["w-4 h-2 rounded-full", item.color]}></span>
-          <p class="text-slate-600 dark:text-slate-300 text-xs font-semibold">{item.label}</p>
+          <p class="text-gray-600 dark:text-gray-300 text-xs font-semibold">{item.label}</p>
         </div>
       </div>
     </div>
@@ -212,8 +212,8 @@ defmodule PasswordlessWeb.DashboardComponents do
     ~H"""
     <article
       class={[
-        "p-6 bg-white dark:bg-slate-700/50 rounded-lg shadow-m2 flex flex-col gap-4",
-        "border border-slate-200 dark:border-slate-700",
+        "p-6 bg-white dark:bg-gray-700/50 rounded-lg shadow-m2 flex flex-col gap-4",
+        "border border-gray-200 dark:border-gray-700",
         @class
       ]}
       {@rest}
@@ -221,10 +221,10 @@ defmodule PasswordlessWeb.DashboardComponents do
       <div class="flex items-center gap-4">
         <div class={["w-1 h-full rounded-lg", @color_class]}></div>
         <div class="flex flex-col gap-4">
-          <badge class="text-slate-500 dark:text-slate-400 text-sm font-semibold leading-tight">
+          <badge class="text-gray-500 dark:text-gray-400 text-sm font-semibold leading-tight">
             {@label}
           </badge>
-          <h3 class="text-slate-900 dark:text-white text-2xl font-bold leading-6">
+          <h3 class="text-gray-900 dark:text-white text-2xl font-bold leading-6">
             {@value}
           </h3>
         </div>
@@ -232,7 +232,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       <div class="flex items-center gap-1">
         <.icon name="custom-rise-line" class={["w-4 h-4", @change_class, @change_icon_class]} />
         <span class={["text-xs font-bold", @change_class]}>{"#{@change_symbol}#{@change}"}</span>
-        <span class="text-slate-500 dark:text-slate-400 text-xs font-normal">
+        <span class="text-gray-500 dark:text-gray-400 text-xs font-normal">
           change since last period
         </span>
       </div>
@@ -260,7 +260,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       <.a
         to={@to}
         title={@name}
-        class="flex items-start justify-center bg-slate-100 rounded-lg dark:bg-slate-700/50 max-h-[300px] shadow-m2 overflow-hidden"
+        class="flex items-start justify-center bg-gray-100 rounded-lg dark:bg-gray-700/50 max-h-[300px] shadow-m2 overflow-hidden"
         link_type={@link_type}
       >
         <iframe
@@ -299,7 +299,7 @@ defmodule PasswordlessWeb.DashboardComponents do
         whatsapp: assigns[:variant] == "whatsapp",
         bg_class:
           case assigns[:variant] do
-            "sms" -> "bg-slate-100 dark:bg-slate-700/50"
+            "sms" -> "bg-gray-100 dark:bg-gray-700/50"
             "whatsapp" -> "relative overflow-hidden"
           end,
         avatar_attrs: %{
@@ -329,8 +329,8 @@ defmodule PasswordlessWeb.DashboardComponents do
 
         <div class="flex flex-row items-center max-w-md ml-4 z-20">
           <.avatar {@avatar_attrs} size="md" color="success" class="shrink-0" />
-          <div class="relative px-4 py-2 ml-3 text-sm bg-white shadow-0 dark:bg-slate-600 rounded-xl">
-            <.p class="text-slate-900 dark:text-white">{Phoenix.HTML.raw(@preview)}</.p>
+          <div class="relative px-4 py-2 ml-3 text-sm bg-white shadow-0 dark:bg-gray-600 rounded-xl">
+            <.p class="text-gray-900 dark:text-white">{Phoenix.HTML.raw(@preview)}</.p>
           </div>
         </div>
 
@@ -339,7 +339,7 @@ defmodule PasswordlessWeb.DashboardComponents do
             <button
               type="button"
               id="microphone"
-              class="w-9 h-9 flex items-center justify-center text-sm text-slate-600 bg-white rounded-full shadow-sm dark:text-white hover:bg-slate-100 ring-slate-300 dark:bg-slate-700 ring-1 dark:ring-slate-500 group dark:hover:bg-slate-600 active:ring-4 active:ring-blue-300 dark:focus:bg-slate-700 active:animate-pulse active:bg-red-400 dark:active:bg-red-500"
+              class="w-9 h-9 flex items-center justify-center text-sm text-gray-600 bg-white rounded-full shadow-sm dark:text-white hover:bg-gray-100 ring-gray-300 dark:bg-gray-700 ring-1 dark:ring-gray-500 group dark:hover:bg-gray-600 active:ring-4 active:ring-blue-300 dark:focus:bg-gray-700 active:animate-pulse active:bg-red-400 dark:active:bg-red-500"
             >
               <.icon name="remix-mic-fill" class="w-4 h-4" />
             </button>
@@ -352,7 +352,7 @@ defmodule PasswordlessWeb.DashboardComponents do
                 value=""
                 type="textarea"
                 rows="1"
-                class="flex w-full pl-4 border min-h-10 rounded-xl bg-white dark:bg-slate-700 focus:outline-hidden border border-slate-300 dark:border-slate-600"
+                class="flex w-full pl-4 border min-h-10 rounded-xl bg-white dark:bg-gray-700 focus:outline-hidden border border-gray-300 dark:border-gray-600"
               />
             </div>
           </div>
@@ -360,7 +360,7 @@ defmodule PasswordlessWeb.DashboardComponents do
             <button
               type="submit"
               id="submit-button"
-              class="w-9 h-9 flex items-center justify-center text-sm text-slate-600 rounded-full shadow-sm dark:text-white ring-slate-300 hover:bg-slate-100 focus:bg-white ring-1 dark:ring-slate-500 group dark:hover:bg-slate-400 bg-white dark:bg-slate-700"
+              class="w-9 h-9 flex items-center justify-center text-sm text-gray-600 rounded-full shadow-sm dark:text-white ring-gray-300 hover:bg-gray-100 focus:bg-white ring-1 dark:ring-gray-500 group dark:hover:bg-gray-400 bg-white dark:bg-gray-700"
             >
               <.icon id="icon" name="remix-send-plane-2-fill" class={["w-4 h-4"]} />
             </button>
@@ -379,7 +379,7 @@ defmodule PasswordlessWeb.DashboardComponents do
     ~H"""
     <div class={["pc-form-field-wrapper", @class]} {@rest}>
       <.field_label>{gettext("Preview")}</.field_label>
-      <div class="flex justify-center items-center bg-slate-100 rounded-lg dark:bg-slate-700/50 shadow-m2 p-6 gap-6">
+      <div class="flex justify-center items-center bg-gray-100 rounded-lg dark:bg-gray-700/50 shadow-m2 p-6 gap-6">
         <div class="inline-block">
           {generate_qrcode(@code)}
         </div>
@@ -387,8 +387,8 @@ defmodule PasswordlessWeb.DashboardComponents do
           <.p>
             {gettext("Or enter this secret into your two-factor authentication app:")}
           </.p>
-          <div class="p-5 border-4 border-slate-300 border-dashed rounded-lg dark:border-slate-700">
-            <div class="text-xl font-bold text-slate-900 dark:text-white" id="totp-secret">
+          <div class="p-5 border-4 border-gray-300 border-dashed rounded-lg dark:border-gray-700">
+            <div class="text-xl font-bold text-gray-900 dark:text-white" id="totp-secret">
               {format_secret(@code)}
             </div>
           </div>
@@ -424,7 +424,7 @@ defmodule PasswordlessWeb.DashboardComponents do
     ~H"""
     <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
       <%= for backup_code <- @codes do %>
-        <div class="flex items-center justify-center p-3 font-mono bg-slate-300 rounded-sm dark:bg-slate-700">
+        <div class="flex items-center justify-center p-3 font-mono bg-gray-300 rounded-sm dark:bg-gray-700">
           <h4>
             <%= if backup_code.used_at do %>
               <del class="line-through">{backup_code.code}</del>
@@ -469,7 +469,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       {@rest}
     >
       <div class="flex items-center gap-2">
-        <h3 class="text-lg font-medium text-slate-900 dark:text-white">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">
           {@title}
         </h3>
         <.badge :if={Util.present?(@badge)} size="sm" color="primary" label={@badge} />
@@ -506,7 +506,7 @@ defmodule PasswordlessWeb.DashboardComponents do
       class={[
         "flex flex-col items-center justify-center gap-4 px-6",
         "lg:first:pl-0 lg:last:pr-0",
-        "transition duration-150 ease-in-out hover:bg-slate-50 focus:bg-slate-100 active:bg-slate-100 dark:hover:bg-slate-700 dark:focus:bg-slate-600 dark:active:bg-slate-600",
+        "transition duration-150 ease-in-out hover:bg-gray-50 focus:bg-gray-100 active:bg-gray-100 dark:hover:bg-gray-700 dark:focus:bg-gray-600 dark:active:bg-gray-600",
         @class
       ]}
     >
@@ -514,7 +514,7 @@ defmodule PasswordlessWeb.DashboardComponents do
         <.icon name={@icon} class={["w-8 h-8", "pc-quickadd--#{@color}-text"]} />
       </span>
       <div class="flex flex-col gap-1 items-center">
-        <span class="text-base font-semibold leading-tight text-slate-900 dark:text-white">
+        <span class="text-base font-semibold leading-tight text-gray-900 dark:text-white">
           {@title}
         </span>
         <.badge size="sm" color={@badge_color} label={@badge_label} />
@@ -569,8 +569,8 @@ defmodule PasswordlessWeb.DashboardComponents do
     ~H"""
     <div class={["flex gap-3", @class]} {@rest}>
       <div class="flex flex-col items-center gap-4">
-        <.icon name="custom-play-circle" class={["w-5 h-5", "text-slate-300 dark:text-white/30"]} />
-        <span class="w-[1px] border border-dashed border-slate-300 dark:border-white/30 grow mb-4">
+        <.icon name="custom-play-circle" class={["w-5 h-5", "text-gray-300 dark:text-white/30"]} />
+        <span class="w-[1px] border border-dashed border-gray-300 dark:border-white/30 grow mb-4">
         </span>
       </div>
       <div class="flex flex-col items-start gap-2 mb-10">
@@ -680,11 +680,11 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   def bar_stats(assigns) do
     ~H"""
-    <.box class="flex items-center gap-2 divide-x divide-slate-200 dark:divide-slate-700/40">
+    <.box class="flex items-center gap-2 divide-x divide-gray-200 dark:divide-gray-700/40">
       <div :for={i <- 1..3} class="flex flex-col grow p-6">
-        <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Value {i}</span>
+        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Value {i}</span>
         <div class="flex gap-2 items-center justify-between">
-          <span class="text-xl xl:text-2xl font-semibold text-slate-900 dark:text-white">
+          <span class="text-xl xl:text-2xl font-semibold text-gray-900 dark:text-white">
             9.6K
           </span>
           <span class="text-xs font-bold flex gap-1 items-center text-success-600 dark:text-success-400">
@@ -705,19 +705,19 @@ defmodule PasswordlessWeb.DashboardComponents do
   def rule_card(assigns) do
     ~H"""
     <section {@rest} class={["pc-rule-card group", @class]}>
-      <div class="flex items-stretch divide-x divide-slate-200 dark:divide-slate-700/40">
-        <div class="flex flex-col items-center justify-center drag-handle cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 active:bg-slate-100 dark:active:bg-slate-600">
-          <.icon name="custom-drag" class="w-[18px] h-[18px] text-slate-900 dark:text-white" />
+      <div class="flex items-stretch divide-x divide-gray-200 dark:divide-gray-700/40">
+        <div class="flex flex-col items-center justify-center drag-handle cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-600">
+          <.icon name="custom-drag" class="w-[18px] h-[18px] text-gray-900 dark:text-white" />
         </div>
-        <div class="grow flex flex-col divide-y divide-slate-200 dark:divide-slate-700/40">
+        <div class="grow flex flex-col divide-y divide-gray-200 dark:divide-gray-700/40">
           <div class="p-3 flex justify-between items-center">
             <div class="flex items-center gap-3">
-              <div class="w-8 h-8 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-full shadow-0 outline outline-1 outline-offset-[-1px] outline-slate-300 dark:outline-slate-600 inline-flex flex-col justify-center items-center gap-2.5">
+              <div class="w-8 h-8 p-2.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-full shadow-0 outline outline-1 outline-offset-[-1px] outline-gray-300 dark:outline-gray-600 inline-flex flex-col justify-center items-center gap-2.5">
                 <div class=" text-sm font-semibold leading-tight">
                   {@index}
                 </div>
               </div>
-              <h4 class="text-sm font-semibold text-slate-900 dark:text-white leading-tight">
+              <h4 class="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
                 {gettext("Rule priority %{index}", index: @index)}
               </h4>
             </div>
