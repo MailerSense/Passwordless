@@ -190,6 +190,11 @@ defmodule PasswordlessWeb.App.TeamLive.Index do
   end
 
   @impl true
+  def handle_event("clear_filters", _params, socket) do
+    {:noreply, push_navigate(socket, to: ~p"/team")}
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end

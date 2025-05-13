@@ -1,9 +1,26 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
   <div class="flex flex-col gap-6 px-8 py-6">
+    <.page_header title={gettext("Users")}>
+      <div class="flex gap-3">
+        <.button
+          to={apply_filters(@filters, @meta, ~p"/users/import")}
+          color="light"
+          label={gettext("Import")}
+          icon="remix-download-line"
+          link_type="live_patch"
+        />
+        <.button
+          to={apply_filters(@filters, @meta, ~p"/users/new")}
+          color="primary"
+          label={gettext("Create")}
+          icon="remix-add-circle-line"
+          link_type="live_patch"
+        />
+      </div>
+    </.page_header>
     <.data_table
       meta={@meta}
       items={@users}
-      title={gettext("Users")}
       search_placeholder={gettext("Search by email or user ID")}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
@@ -54,24 +71,6 @@
           link_type="live_patch"
         />
       </:actions>
-      <:header_actions>
-        <div class="flex gap-3">
-          <.button
-            to={apply_filters(@filters, @meta, ~p"/users/import")}
-            color="light"
-            label={gettext("Import")}
-            icon="remix-download-line"
-            link_type="live_patch"
-          />
-          <.button
-            to={apply_filters(@filters, @meta, ~p"/users/new")}
-            color="primary"
-            label={gettext("Create")}
-            icon="remix-add-circle-line"
-            link_type="live_patch"
-          />
-        </div>
-      </:header_actions>
     </.data_table>
   </div>
 </.layout>

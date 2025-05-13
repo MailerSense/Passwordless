@@ -15,6 +15,7 @@ defmodule PasswordlessWeb.Components.DataTable do
   alias PasswordlessWeb.Components.DataTable.Filter
   alias PasswordlessWeb.Components.DataTable.FilterSet
   alias PasswordlessWeb.Components.DataTable.Header
+  alias PasswordlessWeb.Components.Icon
 
   attr :id, :string
   attr :size, :string, default: "md", values: ["sm", "md", "lg", "xl", "wide"], doc: "table sizes"
@@ -30,6 +31,7 @@ defmodule PasswordlessWeb.Components.DataTable do
     doc: "CSS class to add to the table"
 
   attr :base_url_params, :map, required: false
+  attr :show_clear_button, :boolean, default: true
 
   attr :form_target, :string,
     default: nil,
@@ -103,6 +105,7 @@ defmodule PasswordlessWeb.Components.DataTable do
             form={filter_form}
             search_field={@search_field}
             search_placeholder={@search_placeholder}
+            show_clear_button={@show_clear_button}
           />
           {render_slot(@header_actions)}
         </div>
@@ -434,13 +437,13 @@ defmodule PasswordlessWeb.Components.DataTable do
 
   attr :form, :map, default: nil
   attr :meta, Flop.Meta, required: true
-
   attr :search_field, :atom, default: nil
   attr :search_placeholder, :string, default: "Search"
+  attr :show_clear_button, :boolean, default: true
 
   defp table_search_bar(assigns) do
     ~H"""
-    <div class="flex items-center justify-between gap-3">
+    <div class="grow flex items-end justify-between gap-3">
       <.inputs_for :let={f2} field={@form[:filters]}>
         <%= if Phoenix.HTML.Form.input_value(f2, :field) == @search_field do %>
           <div class="flex items-center gap-3">
@@ -449,7 +452,7 @@ defmodule PasswordlessWeb.Components.DataTable do
               icon="custom-search"
               type="search"
               field={f2[:value]}
-              class="xl:min-w-[400px] h-12"
+              class="lg:min-w-[350px] xl:min-w-[400px] h-12"
               label={gettext("Search")}
               label_sr_only={true}
               clearable={true}
@@ -459,6 +462,17 @@ defmodule PasswordlessWeb.Components.DataTable do
           </div>
         <% end %>
       </.inputs_for>
+
+      <button
+        :if={@show_clear_button}
+        class="shrink-0 inline-flex justify-start items-center gap-2 text-slate-700 dark:text-slate-200"
+        phx-click="clear_filters"
+      >
+        <Icon.icon name="remix-close-circle-line" class="w-[18px] h-[18px]" />
+        <span class="text-xs font-semibold">
+          Clear filters
+        </span>
+      </button>
     </div>
     """
   end

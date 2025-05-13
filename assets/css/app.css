@@ -1346,11 +1346,11 @@
   /* Page header */
 
   .pc-page-header {
-    @apply flex justify-between items-center gap-4;
+    @apply flex justify-between items-center gap-4 h-12;
   }
 
   .pc-page-header--text {
-    @apply text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-9 sm:leading-10;
+    @apply text-3xl font-semibold text-slate-900 dark:text-white;
   }
 
   /* Separator */

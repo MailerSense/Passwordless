@@ -5,6 +5,7 @@
       items={@memberships}
       title={gettext("Members")}
       search_placeholder={gettext("Search by email or name")}
+      show_clear_button={false}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("members"))}</:if_empty>
       <:col field={:search} searchable filterable={[:==]} />
