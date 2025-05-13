@@ -1,5 +1,6 @@
 import SqlFmt.Helpers
 
+alias Database.Tenant
 alias Passwordless.Accounts
 alias Passwordless.Accounts.Notifier
 alias Passwordless.Accounts.Query
@@ -44,4 +45,8 @@ defmodule Helpers do
 
     :ok
   end
+end
+
+for t <- Tenant.all(Repo) do
+  Ecto.Adapters.SQL.query(Repo, "REFRESH MATERIALIZED VIEW CONCURRENTLY #{t}.action_template_unique_users;")
 end

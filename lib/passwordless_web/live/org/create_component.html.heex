@@ -38,7 +38,7 @@
         size="wide"
         type="submit"
         form="create-org-form"
-        disabled={not @form.source.valid?}
+        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
         label={
           if @live_action == :new,
             do: gettext("Create"),

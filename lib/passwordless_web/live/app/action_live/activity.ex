@@ -27,13 +27,27 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
   @impl true
   def handle_params(%{"id" => id} = params, _url, %{assigns: %{current_app: %App{} = current_app}} = socket) do
     action_template = Passwordless.get_action_template!(current_app, id)
-    changeset = Passwordless.change_action_template(action_template)
+    changeset = Passwordless.change_action_template(current_app, action_template)
+
+    all_attempts =
+      current_app
+      |> Passwordless.get_top_actions()
+      |> Enum.map(& &1.attempts)
+      |> Enum.sum()
+
+    unique_users = Passwordless.get_action_template_unique_users(current_app, action_template)
+    all_users = Passwordless.get_total_users(current_app)
 
     if connected?(socket), do: Endpoint.subscribe(Action.topic_for(current_app))
 
     {:noreply,
      socket
-     |> assign(action_template: action_template)
+     |> assign(
+       action_template: action_template,
+       all_attempts: all_attempts,
+       unique_users: unique_users,
+       all_users: all_users
+     )
      |> assign_action_form(changeset)
      |> assign_actions(params)
      |> apply_action(socket.assigns.live_action)}
@@ -42,8 +56,8 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
   @impl true
   def handle_event("validate", %{"action_template" => action_template_params}, socket) do
     changeset =
-      socket.assigns.action_template
-      |> Passwordless.change_action_template(action_template_params)
+      socket.assigns.current_app
+      |> Passwordless.change_action_template(socket.assigns.action_template, action_template_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign_action_form(socket, changeset)}
@@ -75,6 +89,25 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
   end
 
   @impl true
+  def handle_event("delete_action_template", _params, socket) do
+    action_template = socket.assigns.action_template
+
+    case Passwordless.delete_action_template(action_template) do
+      {:ok, _action_template} ->
+        {:noreply,
+         socket
+         |> put_toast(:info, gettext("Action has been deleted."), title: gettext("Success"))
+         |> push_navigate(to: ~p"/actions")}
+
+      _ ->
+        {:noreply,
+         socket
+         |> put_toast(:error, gettext("Failed to delete action!"), title: gettext("Error"))
+         |> push_patch(to: ~p"/actions")}
+    end
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
@@ -82,7 +115,6 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
   @impl true
   def handle_info(%{event: _event, payload: %Action{} = action}, socket) do
     socket = if(has_filters?(socket), do: socket, else: stream_insert(socket, :actions, action, at: 0))
-
     {:noreply, socket}
   end
 
@@ -95,7 +127,6 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
   def handle_async(:load_actions, {:ok, %{actions: actions, meta: meta, cursor: cursor}}, socket) do
     socket = assign(socket, meta: meta, cursor: cursor, finished: Enum.empty?(actions))
     socket = stream(socket, :actions, actions)
-
     {:noreply, socket}
   end
 

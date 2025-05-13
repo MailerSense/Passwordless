@@ -202,8 +202,10 @@ defmodule Passwordless.Organizations.OrgSeeder do
           Passwordless.create_action(app, app_user, %{
             data: %{"some" => "body"},
             state: Enum.random(Action.states()),
-            template_id: Enum.random(templates).id
+            action_template_id: Enum.random(templates).id
           })
+
+        {:ok, _update} = Passwordless.update_action_statistic(app, action)
 
         {:ok, _challenge} =
           Passwordless.create_challenge(app, action, %{

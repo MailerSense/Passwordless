@@ -144,6 +144,8 @@ defmodule PasswordlessWeb.Router do
 
       # Actions
       live "/actions", App.ActionLive.Index, :index
+      live "/actions/new", App.ActionLive.Index, :new
+      live "/actions/run-test", App.ActionLive.Index, :run_test
       live "/actions/:id/delete", App.ActionLive.Index, :delete
       live "/actions/:id/edit", App.ActionLive.Edit, :edit
       live "/actions/:id/edit/delete", App.ActionLive.Edit, :delete

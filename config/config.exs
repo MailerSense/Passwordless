@@ -77,7 +77,10 @@ config :passwordless, Oban,
     Oban.Pro.Plugins.DynamicLifeline,
     Oban.Pro.Plugins.DynamicPrioritizer,
     Oban.Pro.Plugins.DynamicPartitioner,
-    {Oban.Pro.Plugins.DynamicCron, crontab: []}
+    {Oban.Pro.Plugins.DynamicCron,
+     crontab: [
+       {"*/15 * * * *", Passwordless.ViewRefresher}
+     ]}
   ]
 
 config :money,

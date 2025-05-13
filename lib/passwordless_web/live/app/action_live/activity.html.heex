@@ -51,13 +51,13 @@
           )}
         </.p>
         <.multi_progress
-          max={100}
+          max={@action_template.attempts}
           size="lg"
-          label={true}
+          label={@action_template.completion_rate}
           items={[
-            %{key: :allow, value: 80, color: "success"},
-            %{key: :timeout, value: 10, color: "warning"},
-            %{key: :block, value: 10, color: "danger"}
+            %{key: :allow, value: @action_template.allows, color: "success"},
+            %{key: :timeout, value: @action_template.timeouts, color: "warning"},
+            %{key: :block, value: @action_template.blocks, color: "danger"}
           ]}
         />
       </.box>
@@ -67,16 +67,16 @@
           label={gettext("Rule evaluations")}
           legend_color_class="bg-purple-500"
           circle_color_class="text-purple-500"
-          value={200}
-          value_max={1000}
+          value={@action_template.attempts}
+          value_max={@all_attempts}
           class="grow"
         />
         <.circle_stat
           label={gettext("Unique users")}
           legend_color_class="bg-rose-500"
           circle_color_class="text-rose-500"
-          value={100}
-          value_max={1000}
+          value={@unique_users}
+          value_max={@all_users}
           class="grow"
         />
       </div>
@@ -90,10 +90,6 @@
       finished={@finished}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
-
-      <:col :let={action} label={gettext("Event")} field={:name}>
-        {action.template.name}
-      </:col>
 
       <:col :let={action} label={gettext("Country")} field={:country}>
         <%= case Action.first_event(action) do %>
@@ -140,6 +136,17 @@
       <:col :let={action} label={gettext("Last seen")} field={:inserted_at}>
         {Timex.from_now(action.inserted_at)}
       </:col>
+      <:col actions></:col>
+
+      <:actions :let={action}>
+        <.a
+          :if={Util.present?(action.user)}
+          to={~p"/users/#{action.user}/edit"}
+          label={gettext("User")}
+          style="link"
+          link_type="live_patch"
+        />
+      </:actions>
     </.stream_table>
   </div>
 </.layout>
@@ -163,9 +170,9 @@
         <.button
           icon="remix-delete-bin-line"
           size="md"
-          label={gettext("Yes, Reset \"%{name}\"", name: @action_template.name)}
+          label={gettext("Yes, Delete \"%{name}\"", name: @action_template.name)}
           color="danger"
-          phx-click="delete_template"
+          phx-click="delete_action_template"
         />
       </div>
     </.modal>

@@ -2,19 +2,26 @@
   <% origin = "right" %>
   <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
     <.form
-      id="change-email-form"
+      id="manage-action-template-form"
       for={@form}
-      phx-submit="submit"
-      phx-change="validate"
       phx-target={@myself}
+      phx-submit="save"
+      phx-change="validate"
     >
+      <.field field={@form[:name]} required />
       <.field
-        type="email"
-        field={@form[:email]}
-        label={gettext("Email")}
-        placeholder={gettext("john.doe@company.com")}
-        autocomplete="email"
+        field={@form[:alias]}
+        readonly
+        class="font-mono"
+        disabled
+        copyable
         required
+        required_asterix={false}
+        help_text={
+          gettext(
+            "Alias is a unique identifier for the action template. It can be used in the API to refer to this template."
+          )
+        }
       />
     </.form>
 
@@ -27,12 +34,12 @@
         phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
       />
       <.button
-        id="change-email-form-submit"
+        id="manage-action-template-form-submit"
         size="wide"
         type="submit"
-        form="change-email-form"
+        form="manage-action-template-form"
         disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
-        label={gettext("Change")}
+        label={gettext("Create")}
       />
     </:actions>
   </.slide_over>

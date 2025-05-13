@@ -162,7 +162,7 @@ defmodule PasswordlessWeb.App.UserLive.Index do
     query =
       app
       |> User.get_by_app()
-      |> User.join_details(prefix: Database.Tenant.to_prefix(app))
+      |> User.join_adapter_opts(prefix: Database.Tenant.to_prefix(app))
       |> User.preload_details()
 
     {users, meta} = DataTable.search(query, params, @data_table_opts)

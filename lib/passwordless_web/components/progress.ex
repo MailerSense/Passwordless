@@ -46,20 +46,14 @@ defmodule PasswordlessWeb.Components.Progress do
   attr(:size, :string, default: "md", values: ["xs", "sm", "md", "lg", "xl"])
 
   attr(:items, :list, default: [], doc: "adds a value to your progress bar")
-  attr(:label, :boolean, default: false, doc: "labels your progress bar [xl only]")
+  attr(:label, :float, default: nil, doc: "labels your progress bar [xl only]")
   attr(:max, :integer, default: 100, doc: "sets a max value for your progress bar")
   attr(:class, :string, default: "", doc: "CSS class")
   attr(:rest, :global)
 
   def multi_progress(assigns) do
-    assigns =
-      case Enum.sort_by(assigns.items, & &1.value, :desc) do
-        [%{value: value} | _] -> assign(assigns, :max_value, value)
-        _ -> assign(assigns, :max_value, 0)
-      end
-
     ~H"""
-    <.div_wrapper class="flex gap-2 items-center" wrap={@label}>
+    <.div_wrapper class="flex gap-2 items-center" wrap={Util.present?(@label)}>
       <div
         class={[
           "pc-progress--#{@size}",
@@ -77,11 +71,11 @@ defmodule PasswordlessWeb.Components.Progress do
             "pc-multi-progress__inner",
             if(item[:rounded], do: "rounded-r-full", else: nil)
           ]}
-          style={"width: #{Float.round(item.value/@max*100, 2)}%"}
+          style={"width: #{Float.round((if @max > 0, do: item.value/@max*100, else: 0.0), 2)}%"}
         />
       </div>
-      <span :if={@label} class="pc-progress__label">
-        {trunc(Float.round(@max_value / @max * 100, 0))}%
+      <span :if={Util.present?(@label)} class="pc-progress__label">
+        {trunc(Float.round(@label * 100, 0))}%
       </span>
     </.div_wrapper>
     """

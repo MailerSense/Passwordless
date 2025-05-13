@@ -9,7 +9,9 @@ defmodule Passwordless do
   alias Database.PrefixedUUID
   alias Database.Tenant
   alias Passwordless.Action
+  alias Passwordless.ActionStatistic
   alias Passwordless.ActionTemplate
+  alias Passwordless.ActionTemplateUniqueUser
   alias Passwordless.App
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
@@ -792,25 +794,104 @@ defmodule Passwordless do
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
-  def create_action_template(%App{} = app, attrs \\ %{}) do
-    opts = [prefix: Tenant.to_prefix(app)]
-
-    %ActionTemplate{}
-    |> ActionTemplate.changeset(attrs, opts)
-    |> Repo.insert(opts)
-  end
+  # Action Template
 
   def get_action_template!(%App{} = app, id) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     ActionTemplate
     |> ActionTemplate.get_by_app(app)
+    |> ActionTemplate.join_adapter_opts(opts)
     |> Repo.get!(id)
   end
 
-  def change_action_template(%ActionTemplate{} = action_template, attrs \\ %{}) do
+  def create_action_template(%App{} = app, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    Repo.transact(fn ->
+      with {:ok, action_template} <-
+             %ActionTemplate{}
+             |> ActionTemplate.changeset(attrs, opts)
+             |> Repo.insert(opts),
+           {:ok, _action_statistic} <- insert_action_statistic(app, action_template),
+           do: {:ok, action_template}
+    end)
+  end
+
+  def update_action_template(%App{} = app, %ActionTemplate{} = action_template, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    action_template
+    |> ActionTemplate.changeset(attrs, opts)
+    |> Repo.update(opts)
+  end
+
+  def change_action_template(%App{} = app, %ActionTemplate{} = action_template, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
     if Ecto.get_meta(action_template, :state) == :loaded do
-      ActionTemplate.changeset(action_template, attrs)
+      ActionTemplate.changeset(action_template, attrs, opts)
     else
-      ActionTemplate.changeset(action_template, attrs)
+      ActionTemplate.changeset(action_template, attrs, opts)
+    end
+  end
+
+  def delete_action_template(%ActionTemplate{} = action_template) do
+    Repo.soft_delete(action_template)
+  end
+
+  # Action Statistic
+
+  def insert_action_statistic(%App{} = app, %ActionTemplate{} = action_template) do
+    changeset =
+      action_template
+      |> Ecto.build_assoc(:statistic)
+      |> ActionStatistic.changeset()
+
+    upsert_clause = [
+      prefix: Tenant.to_prefix(app),
+      on_conflict: :nothing,
+      conflict_target: [:action_template_id]
+    ]
+
+    Repo.insert(changeset, upsert_clause)
+  end
+
+  def update_action_statistic(%App{} = app, %Action{state: state, action_template_id: action_template_id}) do
+    changeset = ActionStatistic.changeset(%ActionStatistic{action_template_id: action_template_id})
+
+    conflict_fields =
+      case state do
+        :allow -> [inc: [attempts: 1, allows: 1]]
+        :timeout -> [inc: [attempts: 1, timeouts: 1]]
+        :block -> [inc: [attempts: 1, blocks: 1]]
+        _ -> :nothing
+      end
+
+    upsert_clause = [
+      prefix: Tenant.to_prefix(app),
+      on_conflict: conflict_fields,
+      conflict_target: [:action_template_id]
+    ]
+
+    Repo.insert(changeset, upsert_clause)
+  end
+
+  def get_total_users(%App{} = app) do
+    Repo.aggregate(User, :count, :id, prefix: Tenant.to_prefix(app))
+  end
+
+  def get_action_template_unique_users(%App{} = app, %ActionTemplate{} = action_template) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    ActionTemplateUniqueUser
+    |> ActionTemplateUniqueUser.get_by_app(app)
+    |> ActionTemplateUniqueUser.join_with_templates(opts)
+    |> ActionTemplateUniqueUser.get_by_template(action_template)
+    |> Repo.one()
+    |> case do
+      %ActionTemplateUniqueUser{users: users} -> users
+      nil -> 0
     end
   end
 
@@ -1003,27 +1084,22 @@ defmodule Passwordless do
     Repo.insert!(changeset, upsert_clause)
   end
 
-  def get_top_actions(%App{} = app) do
+  def get_top_actions(%App{} = app, opts \\ []) do
     Repo.all(
-      from(a in Action,
-        prefix: ^Tenant.to_prefix(app),
-        where: a.state in [:allow, :timeout, :block],
-        left_join: t in assoc(a, :template),
-        prefix: ^Tenant.to_prefix(app),
-        group_by: t.name,
+      from(
+        at in ActionTemplate,
+        join: as in assoc(at, :statistic),
         select: %{
-          action: t.name,
-          total: count(a.id),
-          states: %{
-            allow: a.id |> count() |> filter(a.state == :allow),
-            timeout: a.id |> count() |> filter(a.state == :timeout),
-            block: a.id |> count() |> filter(a.state == :block)
-          }
+          action: at.name,
+          attempts: as.attempts,
+          allows: as.allows,
+          blocks: as.blocks,
+          timeouts: as.timeouts
         },
-        having: count(a.id) > 0,
-        order_by: [desc: count(a.id)],
-        limit: 3
-      )
+        order_by: [desc: as.attempts],
+        limit: ^Keyword.get(opts, :limit, nil)
+      ),
+      prefix: Tenant.to_prefix(app)
     )
   end
 

@@ -32,15 +32,17 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
 
     top_actions =
       app
-      |> Passwordless.get_top_actions_cached()
+      |> Passwordless.get_top_actions(limit: 3)
       |> Enum.map(fn %{
-                       total: total,
-                       states: %{timeout: timeout, block: block, allow: allow},
-                       action: action
+                       action: action,
+                       attempts: total,
+                       allows: allow,
+                       timeouts: timeout,
+                       blocks: block
                      } ->
         %{
           key: action,
-          name: Phoenix.Naming.humanize(Macro.underscore(action)),
+          name: action,
           value: total,
           progress: %{
             max: total,
@@ -187,7 +189,7 @@ defmodule PasswordlessWeb.App.HomeLive.Index do
     |> Action.preload_events()
   end
 
-  defp update_top_actions(socket, %Action{template: %ActionTemplate{name: action_name}, state: state}) do
+  defp update_top_actions(socket, %Action{action_template: %ActionTemplate{name: action_name}, state: state}) do
     update(socket, :top_actions, fn top_actions ->
       Enum.map(top_actions, fn
         %{key: ^action_name, items: items, value: value} = top_action ->

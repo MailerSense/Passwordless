@@ -638,8 +638,7 @@ defmodule PasswordlessWeb.DashboardComponents do
           <div class={["w-4 h-2 rounded-full", @legend_color_class]}></div>
           <p class="text-gray-600 dark:text-gray-300 text-xs font-semibold">{@label}</p>
         </badge>
-
-        <h3 class="text-gray-900 dark:text-white text-2xl font-bold">
+        <h3 class="text-gray-900 dark:text-white text-xl xl:text-2xl font-bold">
           {NumberLocale.to_string!(@value)}
         </h3>
       </div>
@@ -662,14 +661,16 @@ defmodule PasswordlessWeb.DashboardComponents do
             class={["stroke-current", @circle_color_class]}
             stroke-width="3.5"
             stroke-dasharray="100"
-            stroke-dashoffset={100 - trunc(Float.round(@value / @value_max * 100))}
+            stroke-dashoffset={
+              100 - trunc(if @value_max > 0, do: Float.round(@value / @value_max * 100), else: 0.0)
+            }
             stroke-linecap="round"
           >
           </circle>
         </svg>
         <div class="absolute top-1/2 start-1/2 transform -translate-y-1/2 -translate-x-1/2">
           <span class={["text-center text-xl xl:text-2xl font-semibold", @circle_color_class]}>
-            {trunc(Float.round(@value / @value_max * 100))}%
+            {trunc(if @value_max > 0, do: Float.round(@value / @value_max * 100), else: 0.0)}%
           </span>
         </div>
       </div>

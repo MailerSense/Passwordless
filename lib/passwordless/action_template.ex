@@ -8,6 +8,7 @@ defmodule Passwordless.ActionTemplate do
   alias Database.ChangesetExt
   alias Database.Tenant
   alias Passwordless.Action
+  alias Passwordless.ActionStatistic
   alias Passwordless.App
 
   @derive {
@@ -21,7 +22,7 @@ defmodule Passwordless.ActionTemplate do
   @derive {
     Flop.Schema,
     filterable: [:id, :search],
-    sortable: [:id, :action_count, :inserted_at],
+    sortable: [:id, :attempts, :completion_rate, :inserted_at],
     custom_fields: [
       search: [
         filter: {__MODULE__, :unified_search_filter, []},
@@ -30,10 +31,15 @@ defmodule Passwordless.ActionTemplate do
     ],
     adapter_opts: [
       join_fields: [
-        action_count: [
-          binding: :action_count,
-          field: :count,
+        attempts: [
+          binding: :attempts,
+          field: :attempts,
           ecto_type: :integer
+        ],
+        completion_rate: [
+          binding: :attempts,
+          field: :completion_rate,
+          ecto_type: :float
         ]
       ]
     ]
@@ -41,8 +47,11 @@ defmodule Passwordless.ActionTemplate do
   schema "action_templates" do
     field :name, :string
     field :alias, :string
-
-    field :action_count, :integer, virtual: true, default: 0
+    field :attempts, :integer, virtual: true, default: 0
+    field :allows, :integer, virtual: true, default: 0
+    field :timeouts, :integer, virtual: true, default: 0
+    field :blocks, :integer, virtual: true, default: 0
+    field :completion_rate, :float, virtual: true, default: 0.0
 
     embeds_many :rules, Rule, on_replace: :delete do
       @derive Jason.Encoder
@@ -52,6 +61,8 @@ defmodule Passwordless.ActionTemplate do
       field :condition, :map
       field :effects, :map
     end
+
+    has_one :statistic, ActionStatistic
 
     has_many :actions, Action, preload_order: [desc: :inserted_at]
 
@@ -63,11 +74,23 @@ defmodule Passwordless.ActionTemplate do
   Join the adapter opts.
   """
   def join_adapter_opts(query \\ __MODULE__, opts \\ []) do
-    action_count =
-      from a in Action,
+    attempts =
+      from s in ActionStatistic,
         prefix: ^Keyword.get(opts, :prefix, "public"),
-        where: a.template_id == parent_as(:template).id,
-        select: %{count: count(a.id)}
+        where: s.action_template_id == parent_as(:template).id,
+        select: %{
+          attempts: coalesce(s.attempts, 0),
+          allows: coalesce(s.allows, 0),
+          timeouts: coalesce(s.timeouts, 0),
+          blocks: coalesce(s.blocks, 0),
+          completion_rate:
+            fragment(
+              "CASE WHEN ? > 0 THEN ?::float / ?::float ELSE 0 END",
+              coalesce(s.allows, 0),
+              coalesce(s.allows, 0),
+              coalesce(s.attempts, 0)
+            )
+        }
 
     query =
       if has_named_binding?(query, :template),
@@ -75,10 +98,10 @@ defmodule Passwordless.ActionTemplate do
         else: from(q in query, as: :template)
 
     from q in query,
-      left_lateral_join: ac in subquery(action_count),
+      left_lateral_join: ac in subquery(attempts),
       on: true,
-      as: :action_count,
-      select_merge: %{action_count: ac.count}
+      as: :attempts,
+      select_merge: map(ac, [:attempts, :allows, :timeouts, :blocks, :completion_rate])
   end
 
   @doc """
@@ -115,7 +138,8 @@ defmodule Passwordless.ActionTemplate do
     )
     |> validate_required(@required_fields)
     |> validate_name()
-    |> put_alias()
+    |> name_to_alias(opts)
+    |> validate_alias(opts)
   end
 
   # Private
@@ -123,15 +147,41 @@ defmodule Passwordless.ActionTemplate do
   defp validate_name(changeset) do
     changeset
     |> ChangesetExt.ensure_trimmed(:name)
-    |> validate_length(:name, min: 1, max: 255)
+    |> validate_length(:name, min: 1, max: 64)
   end
 
-  defp put_alias(changeset) do
-    if value = get_field(changeset, :name) do
-      put_change(changeset, :alias, Recase.to_camel(value))
-    else
-      changeset
+  defp name_to_alias(changeset, opts) do
+    case get_change(changeset, :name) do
+      name when is_binary(name) ->
+        code_alias = Recase.to_camel(name)
+
+        code_alias =
+          Util.generate_until(
+            code_alias,
+            fn _prev -> code_alias <> Util.random_numeric_string(2) end,
+            fn code_alias ->
+              Passwordless.Repo.exists?(
+                from __MODULE__,
+                  prefix: ^Keyword.get(opts, :prefix, "public"),
+                  where: [alias: ^code_alias]
+              )
+            end
+          )
+
+        put_change(changeset, :alias, code_alias)
+
+      _ ->
+        changeset
     end
+  end
+
+  defp validate_alias(changeset, opts) do
+    changeset
+    |> validate_required(:alias)
+    |> ChangesetExt.ensure_trimmed(:alias)
+    |> validate_length(:alias, min: 1, max: 64)
+    |> unique_constraint(:alias)
+    |> unsafe_validate_unique(:alias, Passwordless.Repo, opts)
   end
 
   @rule_fields ~w(

@@ -15,20 +15,22 @@
         </div>
       </:col>
 
-      <:col :let={user} field={:last_result} label={gettext("Last Result")}>
-        <.badge with_dot size="sm" label={gettext("Allow")} color="success" />
+      <:col :let={user} field={:last_action_state} label={gettext("Last Result")}>
+        <% {badge_label, badge_color} =
+          action_state_badge(%Passwordless.Action{state: user.last_action_state}) %>
+        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
       </:col>
 
       <:col :let={actor} label={gettext("Added")} field={:inserted_at} sortable>
         {format_date(actor.inserted_at)}
       </:col>
 
-      <:col :let={user} field={:success_rate} label={gettext("Allow Rate")}>
+      <:col :let={user} field={:allow_rate} label={gettext("Allow Rate")} sortable>
         <.progress
           label
           color="primary"
-          value={(0.3 || 0.0) * 100.0}
-          max={100}
+          value={user.action_allow}
+          max={user.action_all}
           class="flex-grow min-w-16"
         />
       </:col>

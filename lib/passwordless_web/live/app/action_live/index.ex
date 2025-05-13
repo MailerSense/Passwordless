@@ -76,11 +76,40 @@ defmodule PasswordlessWeb.App.ActionLive.Index do
   end
 
   @impl true
+  def handle_event("delete_action_template", _params, socket) do
+    action_template = socket.assigns.action_template
+
+    case Passwordless.delete_action_template(action_template) do
+      {:ok, _action_template} ->
+        {:noreply,
+         socket
+         |> put_toast(:info, gettext("Action has been deleted."), title: gettext("Success"))
+         |> push_navigate(to: ~p"/actions")}
+
+      _ ->
+        {:noreply,
+         socket
+         |> put_toast(:error, gettext("Failed to delete action!"), title: gettext("Error"))
+         |> push_patch(to: ~p"/actions")}
+    end
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
 
   # Private
+
+  defp apply_action(socket, :new) do
+    assign(socket,
+      page_title: gettext("Create action"),
+      page_subtitle:
+        gettext(
+          "Actions are the building blocks that let you create contextual, risk-based authentication flows that enhance security without sacrificing user experience."
+        )
+    )
+  end
 
   defp apply_action(socket, :index) do
     assign(socket,
@@ -95,6 +124,16 @@ defmodule PasswordlessWeb.App.ActionLive.Index do
       page_subtitle:
         gettext(
           "Are you sure you want to delete this action? This action will be permanently deleted, and all widgets or API integrations using this action will stop working."
+        )
+    )
+  end
+
+  defp apply_action(socket, :run_test) do
+    assign(socket,
+      page_title: gettext("Run test"),
+      page_subtitle:
+        gettext(
+          "Test your actions by running them against a test user. This way, you can see how the action will behave in a real-world scenario."
         )
     )
   end

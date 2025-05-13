@@ -38,7 +38,7 @@ defmodule Passwordless.User do
   @derive {
     Flop.Schema,
     filterable: [:id, :search],
-    sortable: [:id, :email, :phone, :identifier, :inserted_at],
+    sortable: [:id, :email, :allow_rate, :inserted_at],
     custom_fields: [
       search: [
         filter: {__MODULE__, :unified_search_filter, []},
@@ -61,6 +61,16 @@ defmodule Passwordless.User do
           binding: :phone,
           field: :phone,
           ecto_type: :string
+        ],
+        last_action_state: [
+          binding: :last_action,
+          field: :state,
+          ecto_type: :string
+        ],
+        allow_rate: [
+          binding: :action_stats,
+          field: :allow_rate,
+          ecto_type: :string
         ]
       ]
     ]
@@ -69,6 +79,10 @@ defmodule Passwordless.User do
     field :language, Ecto.Enum, values: Locale.language_codes(), default: :en
     field :data, Passwordless.EncryptedMap
     field :data_text, :string, virtual: true
+    field :last_action_state, :string, virtual: true
+    field :allow_rate, :float, virtual: true
+    field :action_all, :integer, virtual: true
+    field :action_allow, :integer, virtual: true
 
     has_one :email, Email, where: [primary: true]
     has_one :phone, Phone, where: [primary: true]
@@ -151,9 +165,9 @@ defmodule Passwordless.User do
   end
 
   @doc """
-  Join the details.
+  Join the adapter opts.
   """
-  def join_details(query \\ __MODULE__, opts \\ []) do
+  def join_adapter_opts(query \\ __MODULE__, opts \\ []) do
     prefix = Keyword.get(opts, :prefix, "public")
 
     email =
@@ -174,6 +188,31 @@ defmodule Passwordless.User do
         where: i.user_id == parent_as(:user).id and i.primary,
         select: %{identifier: i.value}
 
+    last_action =
+      from a in Action,
+        prefix: ^prefix,
+        where: a.user_id == parent_as(:user).id and a.state in ^Action.final_states(),
+        limit: 1,
+        select: map(a, [:state]),
+        order_by: [desc: a.inserted_at]
+
+    action_stats =
+      from a in Action,
+        prefix: ^prefix,
+        where: a.user_id == parent_as(:user).id and a.state in ^Action.final_states(),
+        group_by: a.user_id,
+        select: %{
+          action_all: count(a.id),
+          action_allow: a.id |> count() |> filter(a.state == :allow),
+          allow_rate:
+            fragment(
+              "CASE WHEN ? > 0 THEN ?::float / ?::float ELSE 0 END",
+              count(a.id),
+              a.id |> count() |> filter(a.state == :allow),
+              count(a.id)
+            )
+        }
+
     query =
       if has_named_binding?(query, :user),
         do: query,
@@ -188,7 +227,19 @@ defmodule Passwordless.User do
       as: :phone,
       left_lateral_join: i in subquery(identifier),
       on: true,
-      as: :identifier
+      as: :identifier,
+      left_lateral_join: la in subquery(last_action),
+      on: true,
+      as: :last_action,
+      left_lateral_join: as in subquery(action_stats),
+      on: true,
+      as: :action_stats,
+      select_merge: %{
+        last_action_state: la.state,
+        allow_rate: as.allow_rate,
+        action_all: as.action_all,
+        action_allow: as.action_allow
+      }
   end
 
   @fields ~w(language data data_text)a
