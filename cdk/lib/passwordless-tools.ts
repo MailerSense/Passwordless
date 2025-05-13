@@ -437,7 +437,8 @@ export class PasswordlessTools extends cdk.Stack {
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS_QUERY_STRINGS,
       originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
-      responseHeadersPolicy: ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS,
+      responseHeadersPolicy:
+        ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT,
     };
 
     const _appCdn = new CDN(this, `${env}-app-cdn`, {
