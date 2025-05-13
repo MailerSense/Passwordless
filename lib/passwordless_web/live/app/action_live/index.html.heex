@@ -33,7 +33,7 @@
       <:col :let={action} label={gettext("Added")} field={:inserted_at} sortable>
         {format_date(action.inserted_at)}
       </:col>
-      <:col :let={action} field={:completion_rate} label={gettext("Completion Rate")} sortable>
+      <:col :let={action} field={:completion_rate} label={gettext("Status Breakdown")} sortable>
         <.multi_progress
           max={action.attempts}
           label={action.completion_rate}

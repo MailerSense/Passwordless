@@ -58,7 +58,7 @@
 @variant phx-change-loading (.phx-change-loading&, .phx-change-loading &);
 
 @theme {
-  --font-sans: "Inter var", sans-serif;
+  --font-sans: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
   --shadow-m2: 0 1px 2px 0 rgb(16 24 40 / 0.05);
@@ -368,7 +368,7 @@
     @apply w-5 h-5;
   }
   .pc-button__spinner-icon--md {
-    @apply w-6 h-6;
+    @apply w-5 h-5;
   }
   .pc-button__spinner-icon--lg {
     @apply w-6 h-6;
@@ -1350,7 +1350,7 @@
   }
 
   .pc-page-header--text {
-    @apply text-3xl font-semibold text-slate-900 dark:text-white;
+    @apply text-3xl font-bold text-slate-900 dark:text-white;
   }
 
   /* Separator */
@@ -1935,7 +1935,7 @@
   }
   .pc-table__wrapper {
     @apply bg-white dark:bg-slate-800/50;
-    @apply rounded-lg shadow-1;
+    @apply rounded-lg shadow-2;
     @apply border border-slate-200 dark:border-slate-700/40;
   }
   .pc-data-table {
