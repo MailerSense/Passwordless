@@ -105,7 +105,6 @@ defmodule PasswordlessWeb.Components.DataTable do
         />
         {render_slot(@header_actions)}
       </div>
-
       <section class={[@wrapper_class, @class]}>
         <.table_header :if={Util.present?(@title)} meta={@meta} title={@title} />
         <div class="pc-data-table">

@@ -60,7 +60,7 @@ defmodule PasswordlessWeb.Components.AuthLayoutWide do
             src={~p"/images/auth-layout-promo.webp"}
             alt={Passwordless.config(:app_name)}
             title={Passwordless.config(:app_name)}
-            class="rounded-xl shadow-2 translate-x-32 z-10 dark:border dark:border-gray-700"
+            class="rounded-xl shadow-2 translate-x-32 z-10 border border-transparent dark:border-gray-700"
           />
 
           <div class="absolute w-[298px] h-[152px] bottom-0">

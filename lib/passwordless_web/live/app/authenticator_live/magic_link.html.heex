@@ -7,23 +7,18 @@
     phx-change="validate"
     class="flex flex-col gap-6"
   >
-    <.alert :if={Domain.system?(@domain)} color="info" with_icon>
-      Do you want to send branded emails?
-      <.a
-        to={~p"/domain"}
-        label={gettext("Set up domain")}
-        style="link"
-        class="inline-flex"
-        link_type="live_redirect"
-      />
-    </.alert>
-
     <.box padded>
       <.form_header title={gettext("Magic link")} />
       <.p class="mb-6">
         Magic link authentication creates a unique link for authenticating user actions that can only be used one time.
       </.p>
       <.field type="checkbox" field={@form[:enabled]} />
+    </.box>
+    <.box padded>
+      <.form_header title={gettext("Delivery")} />
+      <.p class="mb-6">
+        The Email OTP authenticator can be used to authenticate users via email. The user provides their email address and the application sends a one-time code to the user. The user then provides the code back to the application.
+      </.p>
       <div class="grid gap-6 grid-cols-1 2xl:grid-cols-2 mb-6">
         <.field
           field={@form[:sender_name]}

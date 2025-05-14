@@ -61,6 +61,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
   attr :class, :any, default: nil
   attr :card, :boolean, default: false
   attr :padded, :boolean, default: false
+  attr :header, :string, default: nil
   attr :body_class, :string, default: nil
   attr :rest, :global
   slot :inner_block
@@ -69,6 +70,11 @@ defmodule PasswordlessWeb.Components.PageComponents do
   def box(assigns) do
     ~H"""
     <section {@rest} class={["pc-box", @class]}>
+      <.div_wrapper class="pc-box__header" wrap={Util.present?(@header)}>
+        <h2 class={["text-lg font-semibold text-gray-900 dark:text-white"]}>
+          {@header}
+        </h2>
+      </.div_wrapper>
       <div class={[if(@card, do: "pc-box__card"), if(@padded, do: "pc-box__padded"), @body_class]}>
         {render_slot(@inner_block)}
       </div>
