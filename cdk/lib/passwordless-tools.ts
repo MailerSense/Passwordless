@@ -274,7 +274,6 @@ export class PasswordlessTools extends cdk.Stack {
       CUSTOMER_MEDIA_BUCKET: customerMedia.bucket.bucketName,
       CUSTOMER_MEDIA_CDN_URL: `https://${cdnDomain}/`,
       SES_QUEUE_URL: ses.eventQueue.queueUrl,
-      SES_CLICK_DOMAIN: ses.clickDomain?.emailIdentityName,
     };
 
     const appContainer: AppContainer = {
