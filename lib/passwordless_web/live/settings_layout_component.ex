@@ -25,9 +25,12 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
       current_subpage={@current_page}
       padded={false}
     >
-      <.tabbed_layout current_page={@current_page} menu_items={@menu_items} inner_class={@inner_class}>
+      <.pilled_layout current_page={@current_page} menu_items={@menu_items}>
+        <:header>
+          <.page_header title={gettext("Settings")} />
+        </:header>
         {render_slot(@inner_block)}
-      </.tabbed_layout>
+      </.pilled_layout>
     </.layout>
     """
   end

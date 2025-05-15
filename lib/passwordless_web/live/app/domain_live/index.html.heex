@@ -1,5 +1,5 @@
 <.tabbed_settings_layout current_page={:domain} current_user={@current_user}>
-  <div class="flex flex-col gap-6 py-6 px-8">
+  <div class="flex flex-col gap-6">
     <.box card>
       <.form_header title={gettext("Domain")} no_margin />
       <.p :if={Util.present?(@email_domain)}>

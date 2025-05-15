@@ -324,6 +324,9 @@ defmodule PasswordlessWeb.Helpers do
   def user_name(nil), do: nil
   def user_name(%User{} = user), do: user.name
 
+  def user_first_name(nil), do: nil
+  def user_first_name(%User{} = user), do: user.name |> String.split(" ") |> hd()
+
   def user_email(nil), do: nil
   def user_email(%User{} = user), do: user.email
 

@@ -33,6 +33,31 @@ defmodule PasswordlessWeb.CoreComponents do
   end
 
   attr :current_page, :atom
+
+  attr :menu_items, :list,
+    required: true,
+    doc: "list of maps with keys :name, :path, :label, :icon (atom)"
+
+  attr :class, :any, default: nil
+  attr :inner_class, :any, default: nil
+  attr :container, :boolean, default: true
+
+  slot :inner_block
+  slot :header
+
+  def pilled_layout(assigns) do
+    ~H"""
+    <div class={["flex flex-col gap-6 px-8 py-6", @class]}>
+      {render_slot(@header)}
+      <div>
+        <.tab_menu menu_items={@menu_items} current_tab={@current_page} />
+      </div>
+      {render_slot(@inner_block)}
+    </div>
+    """
+  end
+
+  attr :current_page, :atom
   attr :menu_items, :list
   attr :title, :string
 

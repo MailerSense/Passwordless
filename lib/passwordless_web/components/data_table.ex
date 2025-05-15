@@ -95,20 +95,17 @@ defmodule PasswordlessWeb.Components.DataTable do
       phx-submit="update_filters"
       {form_assigns(@form_target)}
     >
+      <div :if={@search_field} class="flex items-center justify-between gap-3 mb-6">
+        <.table_search_bar
+          meta={@meta}
+          form={filter_form}
+          search_field={@search_field}
+          search_placeholder={@search_placeholder}
+          show_clear_button={@show_clear_button}
+        />
+        {render_slot(@header_actions)}
+      </div>
       <section class={[@wrapper_class, @class]}>
-        <div
-          :if={@search_field}
-          class="flex items-center justify-between gap-3 p-6 bg-gray-50 dark:bg-transparent border-b border-gray-200 dark:border-gray-700/30"
-        >
-          <.table_search_bar
-            meta={@meta}
-            form={filter_form}
-            search_field={@search_field}
-            search_placeholder={@search_placeholder}
-            show_clear_button={@show_clear_button}
-          />
-          {render_slot(@header_actions)}
-        </div>
         <.table_header :if={Util.present?(@title)} meta={@meta} title={@title} />
         <div class="pc-data-table">
           <.table>
@@ -452,7 +449,7 @@ defmodule PasswordlessWeb.Components.DataTable do
               icon="custom-search"
               type="search"
               field={f2[:value]}
-              class="lg:min-w-[350px] xl:min-w-[400px] h-12"
+              class="lg:min-w-[500px] h-12"
               label={gettext("Search")}
               label_sr_only={true}
               clearable={true}

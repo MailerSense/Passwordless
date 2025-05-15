@@ -1,7 +1,8 @@
 <.layout current_user={@current_user} current_page={:billing} current_section={:app}>
   <div class="flex flex-col gap-6 px-8 py-6">
+    <.page_header title={gettext("Billing")} />
     <.box card>
-      <.form_header title={gettext("Billing")} no_margin />
+      <.form_header title={gettext("Overview")} no_margin />
       <.p>
         {gettext(
           "You have %{mau} Monthly Active Users (MAU) out of %{max_mau}. This quota is shared across all apps in %{org}. Table below shows precise usage of services and estimated charges for your organization. Have any questions? Reach out to our support.",
