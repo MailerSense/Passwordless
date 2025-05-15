@@ -6,6 +6,7 @@ defmodule Passwordless.ActionStatistic do
   import Ecto.Query
 
   alias Database.Tenant
+  alias Passwordless.ActionTemplate
   alias Passwordless.App
 
   @derive {
@@ -54,6 +55,10 @@ defmodule Passwordless.ActionStatistic do
     action_statistic
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+    |> validate_number(:attempts, greater_than_or_equal_to: 0)
+    |> validate_number(:allows, greater_than_or_equal_to: 0)
+    |> validate_number(:timeouts, greater_than_or_equal_to: 0)
+    |> validate_number(:blocks, greater_than_or_equal_to: 0)
     |> unique_constraint(:action_template_id)
     |> assoc_constraint(:action_template)
   end

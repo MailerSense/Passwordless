@@ -53,7 +53,7 @@
         <.multi_progress
           max={@action_template.attempts}
           size="lg"
-          label={@action_template.completion_rate}
+          label={@action_template.allow_rate}
           items={[
             %{key: :allow, value: @action_template.allows, color: "success"},
             %{key: :timeout, value: @action_template.timeouts, color: "warning"},

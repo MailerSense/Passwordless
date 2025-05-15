@@ -17,10 +17,10 @@
       <:col :let={action} label={gettext("Added")} field={:inserted_at} sortable>
         {format_date(action.inserted_at)}
       </:col>
-      <:col :let={action} field={:completion_rate} label={gettext("Status Breakdown")} sortable>
+      <:col :let={action} field={:allow_rate} label={gettext("Status Breakdown")} sortable>
         <.multi_progress
           max={action.attempts}
-          label={action.completion_rate}
+          label={action.allow_rate}
           items={[
             %{key: :allow, value: action.allows, color: "success"},
             %{key: :timeout, value: action.timeouts, color: "warning"},

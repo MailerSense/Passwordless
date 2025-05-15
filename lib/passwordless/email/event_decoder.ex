@@ -3,7 +3,7 @@ defmodule Passwordless.Email.EventDecoder do
   Decodes email events from SES.
   """
 
-  use Oban.Pro.Worker, queue: :queue_processor, max_attempts: 5, tags: ["event", "decoder"]
+  use Oban.Pro.Worker, queue: :queue_processor, tags: ["event", "decoder"]
 
   alias Database.PrefixedUUID
   alias Database.Tenant

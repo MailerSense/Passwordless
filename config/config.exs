@@ -66,6 +66,7 @@ config :passwordless, Oban,
   queues: [
     default: 100,
     mailer: [local_limit: 10, global_limit: 20],
+    domain: [local_limit: 1, global_limit: 1],
     executor: [local_limit: 10, global_limit: 20],
     scheduler: [local_limit: 10, global_limit: 10],
     statistics: [local_limit: 10, global_limit: 10],
@@ -79,7 +80,9 @@ config :passwordless, Oban,
     Oban.Pro.Plugins.DynamicPartitioner,
     {Oban.Pro.Plugins.DynamicCron,
      crontab: [
-       {"*/15 * * * *", Passwordless.ViewRefresher}
+       {"*/15 * * * *", Passwordless.ViewRefresher},
+       {"0 * * * *", Passwordless.Domain.Deleter},
+       {"15 * * * *", Passwordless.Domain.Verifier}
      ]}
   ]
 
