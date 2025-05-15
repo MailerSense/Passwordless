@@ -6,6 +6,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
   alias Passwordless.Accounts.User
   alias Passwordless.Domain
+  alias Passwordless.Domain.ConfigSetReconciler
   alias Passwordless.Repo
 
   @impl true
@@ -196,18 +197,31 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
     }
 
   defp save_app(socket, app_params) do
-    case Passwordless.update_app(socket.assigns.current_app, app_params) do
-      {:ok, app} ->
-        socket =
-          socket
-          |> assign(current_app: app)
-          |> assign(current_user: %User{socket.assigns.current_user | current_app: app})
-          |> assign_form(Passwordless.change_app(app))
+    with {:ok, app} <- Passwordless.update_app(socket.assigns.current_app, app_params),
+         {:ok, _job} <- insert_tracking_reconcile_job(socket) do
+      socket =
+        socket
+        |> assign(current_app: app)
+        |> assign(current_user: %User{socket.assigns.current_user | current_app: app})
+        |> assign_form(Passwordless.change_app(app))
 
-        {:noreply, socket}
-
+      {:noreply, socket}
+    else
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
+
+      {:error, _} ->
+        {:noreply, socket}
     end
+  end
+
+  defp insert_tracking_reconcile_job(socket) do
+    %{
+      change: "toggle_tracking",
+      domain_id: socket.assigns.email_domain.id,
+      tracking_domain: socket.assigns.tracking_domain.name
+    }
+    |> ConfigSetReconciler.new()
+    |> Oban.insert()
   end
 end

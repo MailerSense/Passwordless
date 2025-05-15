@@ -11,7 +11,6 @@ defmodule Passwordless do
   alias Passwordless.Action
   alias Passwordless.ActionStatistic
   alias Passwordless.ActionTemplate
-  alias Passwordless.ActionTemplateUniqueUser
   alias Passwordless.App
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
@@ -35,6 +34,7 @@ defmodule Passwordless do
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
   alias Passwordless.User
+  alias Passwordless.Views.ActionTemplateUniqueUser
 
   @authenticators [
     email_otp: Authenticators.EmailOTP,
@@ -882,13 +882,9 @@ defmodule Passwordless do
   end
 
   def get_action_template_unique_users(%App{} = app, %ActionTemplate{} = action_template) do
-    opts = [prefix: Tenant.to_prefix(app)]
-
     ActionTemplateUniqueUser
     |> ActionTemplateUniqueUser.get_by_app(app)
-    |> ActionTemplateUniqueUser.join_with_templates(opts)
-    |> ActionTemplateUniqueUser.get_by_template(action_template)
-    |> Repo.one()
+    |> Repo.get(action_template.id)
     |> case do
       %ActionTemplateUniqueUser{users: users} -> users
       nil -> 0

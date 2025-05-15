@@ -22,7 +22,7 @@ defmodule Passwordless.ActionTemplate do
   @derive {
     Flop.Schema,
     filterable: [:id, :search],
-    sortable: [:id, :attempts, :completion_rate, :inserted_at],
+    sortable: [:id, :attempts, :allow_rate, :inserted_at],
     custom_fields: [
       search: [
         filter: {__MODULE__, :unified_search_filter, []},
@@ -36,9 +36,9 @@ defmodule Passwordless.ActionTemplate do
           field: :attempts,
           ecto_type: :integer
         ],
-        completion_rate: [
+        allow_rate: [
           binding: :attempts,
-          field: :completion_rate,
+          field: :allow_rate,
           ecto_type: :float
         ]
       ]
@@ -51,7 +51,7 @@ defmodule Passwordless.ActionTemplate do
     field :allows, :integer, virtual: true, default: 0
     field :timeouts, :integer, virtual: true, default: 0
     field :blocks, :integer, virtual: true, default: 0
-    field :completion_rate, :float, virtual: true, default: 0.0
+    field :allow_rate, :float, virtual: true, default: 0.0
 
     embeds_many :rules, Rule, on_replace: :delete do
       @derive Jason.Encoder
@@ -83,7 +83,7 @@ defmodule Passwordless.ActionTemplate do
           allows: coalesce(s.allows, 0),
           timeouts: coalesce(s.timeouts, 0),
           blocks: coalesce(s.blocks, 0),
-          completion_rate:
+          allow_rate:
             fragment(
               "CASE WHEN ? > 0 THEN ?::float / ?::float ELSE 0 END",
               coalesce(s.allows, 0),
@@ -101,7 +101,7 @@ defmodule Passwordless.ActionTemplate do
       left_lateral_join: ac in subquery(attempts),
       on: true,
       as: :attempts,
-      select_merge: map(ac, [:attempts, :allows, :timeouts, :blocks, :completion_rate])
+      select_merge: map(ac, [:attempts, :allows, :timeouts, :blocks, :allow_rate])
   end
 
   @doc """

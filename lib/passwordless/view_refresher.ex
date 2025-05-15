@@ -18,11 +18,28 @@ defmodule Passwordless.ViewRefresher do
     max_concurrency: 10
   ]
 
+  @views [
+    {:app, :concurrent, "action_template_unique_users"}
+  ]
+
   @impl true
   def process(%Oban.Job{meta: %{"cron" => true}}) do
-    queries =
+    public_queries =
+      for {_d, m, v} <- Enum.filter(@views, fn {domain, _, _} -> domain == :public end),
+          do:
+            (
+              case_result =
+                case m do
+                  :sequential -> ~SQL"REFRESH MATERIALIZED VIEW VIEW;"
+                  :concurrent -> ~SQL"REFRESH MATERIALIZED VIEW CONCURRENTLY VIEW;"
+                end
+
+              String.replace(case_result, "view", v)
+            )
+
+    schema_queries =
       for u <- Tenant.all(),
-          {m, v} <- [{:concurrent, "action_template_unique_users"}],
+          {_d, m, v} <- Enum.filter(@views, fn {domain, _, _} -> domain == :app end),
           do:
             (
               case_result =
@@ -36,15 +53,17 @@ defmodule Passwordless.ViewRefresher do
               |> String.replace("view", v)
             )
 
-    queries
-    |> Task.async_stream(&run_query/1, @task_opts)
+    (public_queries ++ schema_queries)
+    |> Task.async_stream(&Ecto.Adapters.SQL.query(Repo, &1), @task_opts)
+    |> Stream.each(fn
+      {:ok, _} ->
+        :ok
+
+      {:error, error} ->
+        Logger.error("Failed to refresh view: #{inspect(error)}")
+    end)
     |> Stream.run()
 
-    :ok
-  end
-
-  defp run_query(query) do
-    Ecto.Adapters.SQL.query(Repo, query)
     :ok
   end
 end
