@@ -100,14 +100,21 @@ end
 
 defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Action do
   alias Passwordless.Action
+  alias Passwordless.Repo
 
   def name(_), do: "action"
 
   @doc """
   Provide the action variables.
   """
-  def variables(%Action{state: state} = action) do
-    %{"name" => Action.readable_name(action), "state" => Atom.to_string(state)}
+  def variables(%Action{} = action) do
+    user = Repo.preload(action, :action_template)
+
+    %{
+      "name" => action.action_template.name,
+      "alias" => action.action_template.alias,
+      "state" => action.state
+    }
   end
 end
 

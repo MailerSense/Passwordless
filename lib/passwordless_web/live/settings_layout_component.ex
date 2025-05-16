@@ -42,8 +42,6 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
 
     user_routes = [
       :edit_profile,
-      :edit_totp,
-      :edit_password,
       :org_invitations
     ]
 

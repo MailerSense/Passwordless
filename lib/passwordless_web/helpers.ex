@@ -53,6 +53,18 @@ defmodule PasswordlessWeb.Helpers do
 
   def action_state_badge(_user), do: {nil, "info"}
 
+  def event_badge(%Event{} = event),
+    do:
+      {Recase.to_sentence(event.event),
+       case event.event do
+         "allow" -> "success"
+         "timeout" -> "warning"
+         "block" -> "danger"
+         _ -> "info"
+       end}
+
+  def event_badge(_event), do: {nil, "info"}
+
   def embed_menu_items do
     [
       %{

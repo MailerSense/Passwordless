@@ -1350,7 +1350,7 @@
   }
 
   .pc-page-header--text {
-    @apply text-3xl font-semibold text-gray-900 dark:text-white tracking-tight;
+    @apply text-3xl font-semibold text-gray-900 dark:text-white h-12 flex items-center;
   }
 
   /* Separator */

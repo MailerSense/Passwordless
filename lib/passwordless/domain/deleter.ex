@@ -31,7 +31,7 @@ defmodule Passwordless.Domain.Deleter do
         Repo.soft_delete(domain, prefix: Database.Tenant.to_prefix(app))
 
         case AWS.SESv2.delete_email_identity(Session.get_client!(), domain.name, %{}) do
-          {:ok, %{}, _} ->
+          {:ok, _, _} ->
             Logger.info("Deleted domain #{domain.name} from SES")
 
           {:error, error} ->
