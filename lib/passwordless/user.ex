@@ -254,7 +254,7 @@ defmodule Passwordless.User do
     |> validate_required(@required_fields)
     |> validate_text_data()
     |> validate_data()
-    |> cast_assoc(:email)
+    |> cast_assoc(:email, with: &Email.changeset/2)
     |> cast_assoc(:phone, with: &Phone.regional_changeset/2)
     |> cast_assoc(:identifier)
   end

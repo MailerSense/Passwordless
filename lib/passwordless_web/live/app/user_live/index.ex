@@ -112,7 +112,7 @@ defmodule PasswordlessWeb.App.UserLive.Index do
       page_title: gettext("Create user"),
       page_subtitle:
         gettext(
-          "Drop-in customized user experiences anywhere in your customer journeys. Future-proof your product from day one with comprehensive software development kits. Customize the experience with your own logo and colors."
+          "Every person authenticating with your app will be recorded as a user. A Monthly Active User (MAU) is one that has performed at least two actions in the current month."
         )
     )
   end
