@@ -1,6 +1,6 @@
 <.layout current_user={@current_user} current_page={:home} current_section={:app}>
   <div class="flex flex-col gap-6 px-8 py-6">
-    <.page_header title={gettext("Welcome, %{name} 👋", name: user_first_name(@current_user))} />
+    <.page_header title={gettext("Good morning, %{name} 👋", name: user_first_name(@current_user))} />
     <.box card>
       <.form_header title={gettext("Top actions")} no_margin />
       <.p>

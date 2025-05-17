@@ -449,7 +449,7 @@ defmodule PasswordlessWeb.Components.DataTable do
               icon="custom-search"
               type="search"
               field={f2[:value]}
-              class="lg:min-w-[500px] h-12"
+              class="lg:min-w-[500px]"
               label={gettext("Search")}
               label_sr_only={true}
               clearable={true}
