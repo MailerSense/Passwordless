@@ -10,7 +10,7 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
   alias PasswordlessWeb.Endpoint
 
   @data_table_opts [
-    for: Action,
+    for: Event,
     count: 0,
     default_limit: 25,
     default_order: %{
@@ -49,7 +49,7 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
        all_users: all_users
      )
      |> assign_action_form(changeset)
-     |> assign_actions(params)
+     |> assign_events(params)
      |> apply_action(socket.assigns.live_action)}
   end
 
@@ -78,13 +78,13 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
     if socket.assigns[:finished] do
       {:noreply, socket}
     else
-      query = user_query(socket.assigns.current_app, socket.assigns.action_template)
+      query = event_query(socket.assigns.current_app, socket.assigns.action_template)
       assigns = Map.take(socket.assigns, ~w(cursor)a)
 
       {:noreply,
        socket
        |> assign(finished: false)
-       |> start_async(:load_actions, fn -> load_actions(query, assigns) end)}
+       |> start_async(:load_events, fn -> load_events(query, assigns) end)}
     end
   end
 
@@ -113,8 +113,8 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
   end
 
   @impl true
-  def handle_info(%{event: _event, payload: %Action{} = action}, socket) do
-    socket = if(has_filters?(socket), do: socket, else: stream_insert(socket, :actions, action, at: 0))
+  def handle_info(%{event: _event, payload: %Event{} = event}, socket) do
+    socket = if(has_filters?(socket), do: socket, else: stream_insert(socket, :events, event, at: 0))
     {:noreply, socket}
   end
 
@@ -124,9 +124,10 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
   end
 
   @impl true
-  def handle_async(:load_actions, {:ok, %{actions: actions, meta: meta, cursor: cursor}}, socket) do
-    socket = assign(socket, meta: meta, cursor: cursor, finished: Enum.empty?(actions))
-    socket = stream(socket, :actions, actions)
+  def handle_async(:load_events, {:ok, %{events: events, meta: meta, cursor: cursor}}, socket) do
+    socket = assign(socket, meta: meta, cursor: cursor, finished: Enum.empty?(events))
+    socket = stream(socket, :events, events)
+
     {:noreply, socket}
   end
 
@@ -158,33 +159,33 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
     assign(socket, action_form: to_form(changeset))
   end
 
-  defp assign_actions(socket, params) do
-    query = user_query(socket.assigns.current_app, socket.assigns.action_template)
+  defp assign_events(socket, params) do
+    query = event_query(socket.assigns.current_app, socket.assigns.action_template)
     params = Map.take(params, ~w(filters order_by order_directions))
-    {actions, meta} = DataTable.search(query, params, @data_table_opts)
+    {events, meta} = DataTable.search(query, params, @data_table_opts)
 
     cursor =
-      case List.last(actions) do
-        %Action{} = action -> Flop.Cursor.encode(%{id: action.id})
+      case List.last(events) do
+        %Event{} = event -> Flop.Cursor.encode(%{id: event.id})
         _ -> nil
       end
 
     socket
     |> assign(meta: meta, cursor: cursor, finished: false)
-    |> stream(:actions, actions, reset: true)
+    |> stream(:events, events, reset: true)
   end
 
-  defp load_actions(query, %{cursor: cursor}) do
-    filters = %{"first" => 50, "after" => cursor}
-    {actions, meta} = DataTable.search(query, filters, @data_table_opts)
+  defp load_events(query, %{cursor: cursor}) do
+    filters = %{"first" => 25, "after" => cursor}
+    {events, meta} = DataTable.search(query, filters, @data_table_opts)
 
     cursor =
-      case List.last(actions) do
-        %Action{} = action -> Flop.Cursor.encode(%{id: action.id})
+      case List.last(events) do
+        %Event{} = event -> Flop.Cursor.encode(%{id: event.id})
         _ -> nil
       end
 
-    %{actions: actions, meta: meta, cursor: cursor}
+    %{events: events, meta: meta, cursor: cursor}
   end
 
   defp has_filters?(socket) do
@@ -194,12 +195,12 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
     end
   end
 
-  defp user_query(%App{} = app, %ActionTemplate{} = action_template) do
+  defp event_query(%App{} = app, %ActionTemplate{} = action_template) do
     app
-    |> Action.get_by_app()
-    |> Action.get_by_template(action_template)
-    |> Action.preload_user()
-    |> Action.preload_events()
+    |> Event.get_by_app()
+    |> Event.preload_user()
+    |> Event.preload_action()
+    |> Event.get_by_template(app, action_template)
   end
 
   defp browser_to_icon("Microsoft Edge"), do: "edge"

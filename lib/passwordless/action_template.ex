@@ -22,7 +22,7 @@ defmodule Passwordless.ActionTemplate do
   @derive {
     Flop.Schema,
     filterable: [:id, :search],
-    sortable: [:id, :attempts, :allow_rate, :inserted_at],
+    sortable: [:id, :name, :alias, :attempts, :allow_rate, :inserted_at],
     custom_fields: [
       search: [
         filter: {__MODULE__, :unified_search_filter, []},

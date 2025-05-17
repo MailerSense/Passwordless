@@ -17,6 +17,15 @@
         required
         required_asterix={false}
       />
+      <.inputs_for :let={email} field={@form[:email]}>
+        <.field
+          type="email"
+          field={email[:email]}
+          label={gettext("Email")}
+          placeholder={gettext("john.doe@company.com")}
+          autocomplete="email"
+        />
+      </.inputs_for>
       <.field field={@form[:data_text]} type="hidden" value="{}" />
     </.form>
 

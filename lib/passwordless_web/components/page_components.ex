@@ -16,14 +16,14 @@ defmodule PasswordlessWeb.Components.PageComponents do
 
   def page_header(assigns) do
     ~H"""
-    <div class={["pc-page-header", @class]}>
+    <.div_wrapper class={["pc-page-header", @class]} wrap={Util.present?(@inner_block)}>
       <h1 class="pc-page-header--text">
         {@title}
       </h1>
       <%= if @inner_block do %>
         {render_slot(@inner_block)}
       <% end %>
-    </div>
+    </.div_wrapper>
     """
   end
 

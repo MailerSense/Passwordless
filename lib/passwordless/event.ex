@@ -5,9 +5,15 @@ defmodule Passwordless.Event do
 
   use Passwordless.Schema, prefix: "event"
 
+  import Ecto.Query
+
   alias Database.ChangesetExt
   alias Database.Inet
+  alias Database.Tenant
   alias Passwordless.Action
+  alias Passwordless.ActionTemplate
+  alias Passwordless.App
+  alias Passwordless.Enrollment
   alias Passwordless.GeoIP
   alias Passwordless.User
 
@@ -16,7 +22,20 @@ defmodule Passwordless.Event do
     only: [
       :id,
       :event,
-      :metadata,
+      :ip_address,
+      :user_agent,
+      :browser,
+      :browser_version,
+      :operating_system,
+      :operating_system_version,
+      :device_type,
+      :language,
+      :city,
+      :region,
+      :country,
+      :latitude,
+      :longitude,
+      :timezone,
       :inserted_at
     ]
   }
@@ -26,15 +45,6 @@ defmodule Passwordless.Event do
   }
   schema "events" do
     field :event, :string
-
-    embeds_one :metadata, Metadata, on_replace: :delete do
-      @derive Jason.Encoder
-
-      field :before, :map, default: %{}
-      field :after, :map, default: %{}
-      field :attrs, :map, default: %{}
-    end
-
     field :ip_address, Inet
     field :user_agent, :string
     field :browser, :string
@@ -52,8 +62,40 @@ defmodule Passwordless.Event do
 
     belongs_to :user, User
     belongs_to :action, Action
+    belongs_to :enrollment, Enrollment
 
     timestamps(updated_at: false)
+  end
+
+  @doc """
+  Get by app.
+  """
+  def get_by_app(query \\ __MODULE__, %App{} = app) do
+    from q in query, prefix: ^Tenant.to_prefix(app)
+  end
+
+  @doc """
+  Preload action.
+  """
+  def preload_action(query \\ __MODULE__) do
+    from q in query, preload: [{:action, [:action_template]}]
+  end
+
+  @doc """
+  Preload user.
+  """
+  def preload_user(query \\ __MODULE__) do
+    from q in query, preload: :user
+  end
+
+  @doc """
+  Get by action template.
+  """
+  def get_by_template(query \\ __MODULE__, %App{} = app, %ActionTemplate{} = action_template) do
+    from q in query,
+      left_join: a in assoc(q, :action),
+      prefix: ^Tenant.to_prefix(app),
+      where: a.action_template_id == ^action_template.id
   end
 
   @fields ~w(
@@ -106,7 +148,6 @@ defmodule Passwordless.Event do
     |> validate_string(:timezone)
     |> assoc_constraint(:user)
     |> assoc_constraint(:action)
-    |> cast_embed(:metadata, with: &metadata_changeset/2)
   end
 
   # Private
@@ -222,18 +263,4 @@ defmodule Passwordless.Event do
   end
 
   defp put_user_agent_data(%Ecto.Changeset{} = changeset), do: changeset
-
-  @metadata_fields ~w(
-    before
-    after
-    attrs
-  )a
-
-  defp metadata_changeset(%__MODULE__.Metadata{} = metadata, attrs) do
-    metadata
-    |> cast(attrs, @metadata_fields)
-    |> ChangesetExt.ensure_property_map(:before)
-    |> ChangesetExt.ensure_property_map(:after)
-    |> ChangesetExt.ensure_property_map(:attrs)
-  end
 end

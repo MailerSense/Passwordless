@@ -83,17 +83,22 @@
     </.form>
 
     <.stream_table
-      id="actions"
+      id="events"
       meta={@meta}
       title={gettext("Recent events")}
-      items={@streams.actions}
+      items={@streams.events}
       finished={@finished}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("events"))}</:if_empty>
 
-      <:col :let={action} label={gettext("Country")} field={:country}>
-        <%= case Action.first_event(action) do %>
-          <% %Event{city: city, country: country} -> %>
+      <:col :let={event} field={:event}>
+        <% {label, color} = event_badge(event) %>
+        <.badge size="sm" color={color} label={label} />
+      </:col>
+
+      <:col :let={event} label={gettext("Country")} field={:country}>
+        <%= case event do %>
+          <% %Event{city: city, country: country} when is_binary(city) and is_binary(country) -> %>
             <div class="flex items-center gap-2">
               <.icon name={"flag-#{String.downcase(country)}"} class="pc-flag-icon" /> {city}
             </div>
@@ -101,9 +106,9 @@
         <% end %>
       </:col>
 
-      <:col :let={action} label={gettext("Browser")} field={:browser}>
-        <%= case Action.first_event(action) do %>
-          <% %Event{browser: browser} -> %>
+      <:col :let={event} label={gettext("Browser")} field={:browser}>
+        <%= case event  do %>
+          <% %Event{browser: browser} when is_binary(browser) -> %>
             <div class="flex items-center gap-2">
               <.icon name={"browser-#{browser_to_icon(browser)}"} class="w-5 h-5" /> {browser}
             </div>
@@ -111,9 +116,9 @@
         <% end %>
       </:col>
 
-      <:col :let={action} label={gettext("Operating System")} field={:os}>
-        <%= case Action.first_event(action) do %>
-          <% %Event{operating_system: operating_system} -> %>
+      <:col :let={event} label={gettext("Operating System")} field={:os}>
+        <%= case event do %>
+          <% %Event{operating_system: operating_system} when is_binary(operating_system) -> %>
             <div class="flex items-center gap-2">
               <.icon name={"os-#{os_to_icon(operating_system)}"} class="w-5 h-5" /> {operating_system}
             </div>
@@ -121,9 +126,9 @@
         <% end %>
       </:col>
 
-      <:col :let={action} label={gettext("Device")} field={:device}>
-        <%= case Action.first_event(action) do %>
-          <% %Event{device_type: device_type} -> %>
+      <:col :let={event} label={gettext("Device")} field={:device}>
+        <%= case event do %>
+          <% %Event{device_type: device_type} when is_binary(device_type) -> %>
             <div class="flex items-center gap-2">
               <.icon name={device_type_to_icon(device_type)} class="w-5 h-5" /> {Recase.to_sentence(
                 device_type
@@ -133,15 +138,15 @@
         <% end %>
       </:col>
 
-      <:col :let={action} label={gettext("Last Seen")} field={:inserted_at}>
-        {Timex.from_now(action.inserted_at)}
+      <:col :let={event} label={gettext("Last Seen")} field={:inserted_at}>
+        {Timex.from_now(event.inserted_at)}
       </:col>
       <:col actions></:col>
 
-      <:actions :let={action}>
+      <:actions :let={event}>
         <.a
-          :if={Util.present?(action.user)}
-          to={~p"/users/#{action.user}/edit"}
+          :if={Util.present?(event.user)}
+          to={~p"/users/#{event.user}/edit"}
           label={gettext("User")}
           style="link"
           link_type="live_patch"
