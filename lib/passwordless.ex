@@ -40,7 +40,6 @@ defmodule Passwordless do
     email_otp: Authenticators.EmailOTP,
     magic_link: Authenticators.MagicLink,
     passkey: Authenticators.Passkey,
-    security_key: Authenticators.SecurityKey,
     totp: Authenticators.TOTP,
     recovery_codes: Authenticators.RecoveryCodes
   ]

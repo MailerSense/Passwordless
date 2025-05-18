@@ -82,7 +82,7 @@ config :passwordless, Oban,
      crontab: [
        {"*/15 * * * *", Passwordless.ViewRefresher},
        {"0 * * * *", Passwordless.Domain.Deleter},
-       {"15 * * * *", Passwordless.Domain.Verifier}
+       {"*/10 * * * *", Passwordless.Domain.Verifier}
      ]}
   ]
 

@@ -2,20 +2,18 @@
   <div class="flex flex-col gap-6">
     <.box card>
       <.form_header title={gettext("Domain")} no_margin />
-      <.p :if={Util.present?(@email_domain)}>
+      <.p :if={not Domain.system?(@email_domain)}>
         Emails (OTPs, magic links) are sent from your domain. This allows you to send branded emails and improves deliverability. You can set up a custom domain for your app or use the default system domain.
       </.p>
-      <.p :if={Util.blank?(@email_domain)}>
+      <.p :if={Domain.system?(@email_domain)}>
         Emails (OTPs, magic links) are sent by default from
-        <.a label={@default_email_domain.name} style="link" class="inline-flex" />. If you want a more unified user experience, we encourage you to set up a custom domain for sending emails. We'll guide you through the process.
+        <.a label={@email_domain.name} style="link" class="inline-flex" />. If you want a more unified user experience, we encourage you to set up a custom domain for sending emails. We'll guide you through the process.
       </.p>
       <.field
-        :if={Util.present?(@email_domain)}
+        :if={not Domain.system?(@email_domain)}
         name="email_domain"
         value={@email_domain.name}
         label={gettext("Domain")}
-        label_sr_only={true}
-        prefix={gettext("https://")}
         badge={domain_state_badge(@email_domain)}
         readonly
         wrapper_class="mb-0!"
@@ -23,12 +21,12 @@
       <.a
         :if={Util.present?(@email_domain) and not Domain.verified?(@email_domain)}
         to={~p"/domain/email/dns"}
-        label={gettext("Setup DNS records")}
+        label={gettext("Configure DNS records")}
         style="link"
         link_type="live_patch"
       />
       <.a
-        :if={Util.blank?(@email_domain)}
+        :if={Domain.system?(@email_domain)}
         to={~p"/domain/email/new"}
         label={gettext("Set up domain")}
         style="link"
@@ -48,7 +46,7 @@
         </.form>
       </.inputs_for>
     </.box>
-    <.box :if={Util.present?(@email_domain)} card>
+    <.box :if={not Domain.system?(@email_domain)} card>
       <.form_header title={gettext("Danger zone")} no_margin />
       <.p>
         Email domains can be changed or removed at any time. Be aware that a domain will continue to be active for 1 day after you remove it. This is to ensure that any emails sent during that time are not lost.

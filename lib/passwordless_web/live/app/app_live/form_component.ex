@@ -25,6 +25,13 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
 
   @impl true
   def handle_event("validate", %{"new_app" => app_params}, socket) do
+    app_name = get_in(app_params, ["name"])
+
+    app_params =
+      app_params
+      |> put_in(["settings", "display_name"], app_name)
+      |> put_in(["settings", "allowlisted_ip_addresses"], [%{address: "0.0.0.0/0"}])
+
     changeset =
       socket.assigns.app
       |> Passwordless.change_app(app_params)
@@ -64,6 +71,13 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
   end
 
   defp save_app(socket, app_params) do
+    app_name = get_in(app_params, ["name"])
+
+    app_params =
+      app_params
+      |> put_in(["settings", "display_name"], app_name)
+      |> put_in(["settings", "allowlisted_ip_addresses"], [%{address: "0.0.0.0/0"}])
+
     case Passwordless.create_full_app(socket.assigns.current_org, app_params) do
       {:ok, _app} ->
         {:noreply,

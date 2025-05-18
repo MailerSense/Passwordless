@@ -50,16 +50,15 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
     socket =
       case Passwordless.get_fallback_domain(current_app, :email) do
-        {:ok, email_domain} -> assign(socket, default_email_domain: email_domain)
-        _ -> assign(socket, default_email_domain: nil)
+        {:ok, email_domain} -> assign(socket, email_domain: email_domain)
+        _ -> assign(socket, email_domain: nil)
       end
 
     {:noreply,
      socket
      |> assign(
        current_app: current_app,
-       domain_kind: domain_kind,
-       email_domain: current_app.email_domain
+       domain_kind: domain_kind
      )
      |> assign(domain_assigns)
      |> assign_form(changeset)
@@ -132,7 +131,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
   defp apply_action(socket, :new, _kind) do
     assign(socket,
-      page_title: gettext("New domain"),
+      page_title: gettext("Set up domain"),
       page_subtitle: gettext("Register your own domain to improve deliverability of Email OTPs and Magic Links.")
     )
   end

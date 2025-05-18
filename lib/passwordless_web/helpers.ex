@@ -141,13 +141,6 @@ defmodule PasswordlessWeb.Helpers do
         link_type: "live_patch"
       },
       %{
-        name: :security_key,
-        label: "Security key",
-        icon: "remix-usb-line",
-        path: ~p"/authenticators/security-key",
-        link_type: "live_patch"
-      },
-      %{
         name: :totp,
         label: "Time-based OTP",
         icon: "remix-qr-code-line",
@@ -228,27 +221,6 @@ defmodule PasswordlessWeb.Helpers do
       color: color,
       events: events
     }
-  end
-
-  def flow_details(%Action{challenge: %Challenge{kind: kind}}) do
-    Keyword.get(
-      [
-        email_otp: %{label: gettext("Email OTP"), icon: "remix-mail-open-line"},
-        sms_otp: %{label: gettext("SMS OTP"), icon: "remix-message-line"},
-        whatsapp_otp: %{label: gettext("WhatsApp OTP"), icon: "remix-whatsapp-line"},
-        magic_link: %{label: gettext("Magic link"), icon: "remix-link"},
-        totp: %{label: gettext("Time-based OTP"), icon: "remix-qr-code-line"},
-        security_key: %{label: gettext("Security key"), icon: "remix-usb-line"},
-        passkey: %{label: gettext("Passkey"), icon: "remix-fingerprint-line"},
-        password: %{label: gettext("Password"), icon: "remix-key-line"},
-        recovery_codes: %{label: gettext("Recovery codes"), icon: "remix-file-list-line"}
-      ],
-      kind
-    )
-  end
-
-  def flow_details(%Action{}) do
-    %{label: gettext("None"), icon: "remix-fingerprint-line"}
   end
 
   def email_menu_items(%EmailTemplate{} = email_template, language \\ :en) do
