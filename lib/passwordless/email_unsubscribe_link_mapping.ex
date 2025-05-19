@@ -24,11 +24,7 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
     timestamps(updated_at: false)
   end
 
-  @fields ~w(
-    key
-    email_id
-    app_id
-  )a
+  @fields ~w(key email_id app_id)a
   @required_fields @fields
 
   @doc """

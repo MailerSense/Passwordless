@@ -422,7 +422,7 @@ export class PasswordlessTools extends cdk.Stack {
           arn: app.service.loadBalancer.loadBalancerArn,
         },
       ],
-      allowedPathPrefixes: ["/api", "/webhook"],
+      allowedPathPrefixes: ["/webhook"],
       blockedPathPrefixes: ["/health"],
     });
 
