@@ -85,6 +85,13 @@ defmodule Passwordless.Domain do
   def email_suffix(%__MODULE__{name: name}), do: "@#{name}"
 
   @doc """
+  Generate a config set name for the domain.
+  """
+  def config_set_name(%__MODULE__{name: name}) do
+    Slug.slugify(name) <> "-" <> Util.random_numeric_string(4)
+  end
+
+  @doc """
   Check if the domain is a system domain.
   """
   def system?(%__MODULE__{tags: tags}) do

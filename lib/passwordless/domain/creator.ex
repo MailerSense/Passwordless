@@ -42,15 +42,9 @@ defmodule Passwordless.Domain.Creator do
           {:ok,
            %{
              "DkimAttributes" => %{
-               "CurrentSigningKeyLength" => list(any()),
-               "LastKeyGenerationTimestamp" => non_neg_integer(),
-               "NextSigningKeyLength" => list(any()),
-               "SigningAttributesOrigin" => list(any()),
-               "SigningEnabled" => boolean(),
-               "Status" => list(any()),
-               "Tokens" => list(String.t()())
+               "SigningEnabled" => true,
+               "Tokens" => tokens
              },
-             "IdentityType" => "DOMAIN",
              "VerifiedForSendingStatus" => verified_for_sending_status
            }, _} ->
             Logger.info("Successfully update configset tracking options for #{domain.name}")

@@ -407,50 +407,6 @@ defmodule PasswordlessWeb.Helpers do
 
   def random_color(term), do: Enum.at(@common_colors, :erlang.phash2(term, length(@common_colors)))
 
-  @icon_mapping %{
-    "create_auth_token" => "🔑",
-    "update_auth_token" => "🔑",
-    "revoke_auth_token" => "🔑",
-    "join_list" => "📝",
-    "leave_list" => "📝",
-    "delete" => "❌",
-    "delete_invitation" => "❌",
-    "subscribe" => "✅",
-    "unsubscribe" => "❌",
-    "not_subscribe" => "🤷",
-    "subscribe_to_topic" => "✅",
-    "unsubscribe_from_topic" => "❌"
-  }
-  @icon_fallback_mapping %{
-    "user" => "👤",
-    "org" => "🏢",
-    "identity" => "📮",
-    "message" => "📩",
-    "contact" => "🧑",
-    "list" => "📝"
-  }
-
-  @resource_colors %{
-    "user" => "primary",
-    "org" => "indigo",
-    "identity" => "purple",
-    "message" => "purple"
-  }
-
-  def action_color(action) do
-    case String.split(action, ".", parts: 2) do
-      [domain, action] when is_binary(domain) ->
-        if String.contains?(String.downcase(action), ["delete", "revoke", "cancel"]) do
-          "danger"
-        else
-          Map.get(@resource_colors, domain, "primary")
-        end
-
-      _ ->
-        "primary"
-    end
-  end
-
   def auth_token_permissions(%AuthToken{permissions: [_ | _] = permissions}) when length(permissions) > 2,
     do:
       permissions
