@@ -207,7 +207,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
         {:ok, _update} = Passwordless.update_action_statistic(app, action)
 
-        {:ok, _challenge} =
+        {:ok, challenge} =
           Passwordless.create_challenge(app, action, %{
             kind: Enum.random(Challenge.kinds()),
             state: :started,
@@ -227,6 +227,8 @@ defmodule Passwordless.Organizations.OrgSeeder do
               }
             ]
           })
+
+        {:ok, _challenge_token} = Passwordless.create_challenge_token(app, challenge)
 
         {:ok, _event} =
           Passwordless.create_event(app, app_user, %{

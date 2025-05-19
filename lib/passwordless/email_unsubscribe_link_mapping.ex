@@ -12,7 +12,7 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
 
-  @size 24
+  @size 16
 
   schema "email_unsubscribe_link_mappings" do
     field :key, Passwordless.EncryptedBinary, redact: true

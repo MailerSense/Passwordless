@@ -10,6 +10,7 @@ defmodule Passwordless.Action do
   alias Database.ChangesetExt
   alias Database.Tenant
   alias Passwordless.ActionTemplate
+  alias Passwordless.ActionToken
   alias Passwordless.App
   alias Passwordless.Challenge
   alias Passwordless.Event
@@ -39,6 +40,8 @@ defmodule Passwordless.Action do
     field :state, Ecto.Enum, values: @states, default: :pending
 
     has_one :challenge, Challenge, where: [current: true]
+    has_one :bearer_token, ActionToken, where: [kind: :bearer]
+    has_one :exchange_token, ActionToken, where: [kind: :exchange]
 
     has_many :events, Event, preload_order: [asc: :inserted_at]
     has_many :challenges, Challenge, preload_order: [asc: :inserted_at]

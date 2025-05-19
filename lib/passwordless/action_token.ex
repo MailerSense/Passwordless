@@ -1,40 +1,56 @@
-defmodule Passwordless.MagicLink do
+defmodule Passwordless.ActionToken do
   @moduledoc """
-  A magic link.
+  A action token.
   """
 
-  use Passwordless.Schema, prefix: "mgclnk"
+  use Passwordless.Schema, prefix: "acttk"
 
   import Ecto.Query
 
+  alias Passwordless.Action
   alias Passwordless.App
-  alias Passwordless.EmailMessage
   alias PasswordlessWeb.Endpoint
   alias Phoenix.Token
 
   @size 16
+  @lifetimes [
+    exchange: :timer.minutes(5),
+    bearer: :timer.hours(1)
+  ]
+  @kinds Keyword.keys(@lifetimes)
 
   @derive {
     Jason.Encoder,
     only: [
       :id,
+      :kind,
       :expires_at,
-      :accepted_at
+      :inserted_at,
+      :updated_at
     ]
   }
   @derive {
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "magic_links" do
+  schema "action_tokens" do
+    field :kind, Ecto.Enum, values: @kinds
     field :key, Passwordless.EncryptedBinary, redact: true
     field :key_hash, Passwordless.HashedBinary, redact: true
     field :expires_at, :utc_datetime_usec
-    field :accepted_at, :utc_datetime_usec
 
-    belongs_to :email_message, EmailMessage
+    belongs_to :action, Action
 
     timestamps()
+  end
+
+  def hash(%__MODULE__{key_hash: key_hash}), do: key_hash
+
+  @doc """
+  Get expiry time for the given kind.
+  """
+  def get_expires_at(kind) when kind in @kinds do
+    DateTime.add(DateTime.utc_now(), Keyword.fetch!(@lifetimes, kind), :millisecond)
   end
 
   @doc """
@@ -54,13 +70,6 @@ defmodule Passwordless.MagicLink do
   end
 
   @doc """
-  Generate an underlying key.
-  """
-  def generate_key do
-    :crypto.strong_rand_bytes(@size)
-  end
-
-  @doc """
   Sign the token.
   """
   def sign_token(%__MODULE__{key: key, expires_at: expires_at}) when is_binary(key) do
@@ -68,24 +77,29 @@ defmodule Passwordless.MagicLink do
     Token.sign(Endpoint, key_salt(), key, max_age: max_age)
   end
 
-  @fields ~w(
-    key
-    expires_at
-    accepted_at
-    email_message_id
-  )a
-  @required_fields @fields -- [:accepted_at]
+  @doc """
+  Generate an underlying key.
+  """
+  def generate_key do
+    :crypto.strong_rand_bytes(@size)
+  end
 
-  def changeset(%__MODULE__{} = magic_link, attrs \\ %{}, opts \\ []) do
-    magic_link
+  @fields ~w(kind key expires_at action_id)a
+  @required_fields @fields
+
+  @doc """
+  A changeset.
+  """
+  def changeset(%__MODULE__{} = action_token, attrs \\ %{}, opts \\ []) do
+    action_token
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> validate_key()
     |> put_hash_fields()
-    |> validate_key_hash()
-    |> assoc_constraint(:email_message)
-    |> unique_constraint(:email_message_id)
-    |> unsafe_validate_unique(:email_message_id, Passwordless.Repo, opts)
+    |> validate_key_hash(opts)
+    |> unique_constraint([:action_id, :kind])
+    |> unsafe_validate_unique([:action_id, :kind], Passwordless.Repo, prefix: Keyword.get(opts, :prefix))
+    |> assoc_constraint(:action)
   end
 
   # Private
@@ -94,8 +108,11 @@ defmodule Passwordless.MagicLink do
     validate_length(changeset, :key, is: @size, count: :bytes)
   end
 
-  defp validate_key_hash(changeset) do
-    validate_required(changeset, :key_hash)
+  defp validate_key_hash(changeset, opts) do
+    changeset
+    |> validate_required(:key_hash)
+    |> unique_constraint(:key_hash)
+    |> unsafe_validate_unique(:key_hash, Passwordless.Repo, prefix: Keyword.get(opts, :prefix))
   end
 
   @hashed_fields [key_hash: :key]

@@ -10,7 +10,7 @@ defmodule Passwordless.AuthToken do
   alias Passwordless.App
   alias Util.Base58
 
-  @size 24
+  @size 16
   @prefix "sk_live_"
   @permissions [
     actions: [
@@ -22,6 +22,15 @@ defmodule Passwordless.AuthToken do
                     |> Enum.flat_map(fn {domain, actions} -> [domain | Enum.map(actions, &:"#{&1}_#{domain}")] end)
                     |> Enum.uniq()
 
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :permissions,
+      :inserted_at,
+      :updated_at
+    ]
+  }
   @derive {
     Flop.Schema,
     sortable: [:id], filterable: [:id]

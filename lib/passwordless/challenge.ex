@@ -7,6 +7,7 @@ defmodule Passwordless.Challenge do
 
   alias Database.ChangesetExt
   alias Passwordless.Action
+  alias Passwordless.ChallengeToken
   alias Passwordless.EmailMessage
 
   @typedoc """
@@ -103,6 +104,7 @@ defmodule Passwordless.Challenge do
     end
 
     has_one :email_message, EmailMessage, where: [current: true]
+    has_one :challenge_token, ChallengeToken
 
     has_many :email_messages, EmailMessage, preload_order: [asc: :inserted_at]
 

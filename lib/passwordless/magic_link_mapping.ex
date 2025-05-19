@@ -5,7 +5,7 @@ defmodule Passwordless.MagicLinkMapping do
 
   use Passwordless.Schema, prefix: "mglnkmap"
 
-  import Ecto.Changeset
+  import Ecto.Query
 
   alias Passwordless.App
   alias PasswordlessWeb.Endpoint
@@ -23,10 +23,27 @@ defmodule Passwordless.MagicLinkMapping do
     timestamps(updated_at: false)
   end
 
+  @doc """
+  Get by signed token.
+  """
+  def get_by_token(query \\ __MODULE__, token_signed) when is_binary(token_signed) do
+    with {:ok, token} <- verify_token(token_signed) do
+      {:ok, from(q in query, where: q.key_hash == ^token and q.key == ^token)}
+    end
+  end
+
+  @doc """
+  Sign the token.
+  """
+  def sign_token(%__MODULE__{key: key}) when is_binary(key) do
+    Token.sign(Endpoint, key_salt(), key)
+  end
+
+  @doc """
+  Generate an underlying key.
+  """
   def generate_key do
-    raw = :crypto.strong_rand_bytes(@size)
-    signed = Token.sign(Endpoint, key_salt(), raw)
-    {raw, signed}
+    :crypto.strong_rand_bytes(@size)
   end
 
   @fields ~w(
@@ -81,7 +98,7 @@ defmodule Passwordless.MagicLinkMapping do
     end)
   end
 
-  defp verify_key(token) when is_binary(token) do
+  defp verify_token(token) when is_binary(token) do
     Token.verify(Endpoint, key_salt(), token)
   end
 

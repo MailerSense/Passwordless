@@ -16,6 +16,7 @@ defmodule Passwordless do
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
   alias Passwordless.Challenges
+  alias Passwordless.ChallengeToken
   alias Passwordless.Domain
   alias Passwordless.DomainRecord
   alias Passwordless.Email
@@ -932,6 +933,25 @@ defmodule Passwordless do
     action = %Action{action | challenge: challenge}
     mod = Keyword.fetch!(@challenges, kind)
     mod.handle(app, user, action, event: event, attrs: attrs)
+  end
+
+  # Challenge Token
+
+  def create_challenge_token(%App{} = app, %Challenge{} = challenge) do
+    opts = [prefix: Tenant.to_prefix(app)]
+    attrs = %{key: ChallengeToken.generate_key(), expires_at: DateTime.add(DateTime.utc_now(), 5, :minute)}
+
+    Repo.transact(fn ->
+      with {_, _} <-
+             challenge
+             |> Ecto.assoc(:challenge_token)
+             |> Repo.delete_all(),
+           do:
+             challenge
+             |> Ecto.build_assoc(:challenge_token)
+             |> ChallengeToken.changeset(attrs, opts)
+             |> Repo.insert(opts)
+    end)
   end
 
   # Event

@@ -183,10 +183,6 @@ defmodule Passwordless.EmailMessage do
     |> validate_text(:recipient_name)
   end
 
-  def sign_token(%__MODULE__{id: id}) when is_binary(id) do
-    Token.sign(Endpoint, token_salt(), id)
-  end
-
   @doc """
   Get the message by signed token.
   """

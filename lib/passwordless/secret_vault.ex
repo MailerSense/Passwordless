@@ -60,6 +60,12 @@ defmodule Passwordless.SecretVault do
          {:ok, json_body} <- Jason.decode(raw_body) do
       Enum.each(json_body, fn
         {key, value} when is_binary(key) and is_binary(value) ->
+          value =
+            case Base.decode64(value) do
+              {:ok, decoded_value} -> decoded_value
+              _ -> value
+            end
+
           :ets.insert(@table, {{__MODULE__, key}, value})
 
         _ ->

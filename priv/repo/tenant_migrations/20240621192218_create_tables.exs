@@ -53,6 +53,23 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create index(:actions, [:user_id])
     create index(:actions, [:action_template_id])
 
+    ## Challenge Tokens
+
+    create table(:action_tokens, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :kind, :string, null: false
+      add :key, :binary, null: false
+      add :key_hash, :binary, null: false
+      add :expires_at, :utc_datetime_usec, null: false
+
+      add :action_id, references(:actions, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:action_tokens, [:key_hash])
+    create unique_index(:action_tokens, [:action_id, :kind])
+
     # Action Statistics
 
     create table(:action_statistics, primary_key: false) do
@@ -83,6 +100,22 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     end
 
     create unique_index(:challenges, [:action_id], where: "\"current\"")
+
+    ## Challenge Tokens
+
+    create table(:challenge_tokens, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :key, :binary, null: false
+      add :key_hash, :binary, null: false
+      add :expires_at, :utc_datetime_usec, null: false
+
+      add :challenge_id, references(:challenges, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:challenge_tokens, [:key_hash])
+    create unique_index(:challenge_tokens, [:challenge_id])
 
     ## Identifiers
 
@@ -387,6 +420,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       timestamps()
     end
 
+    create unique_index(:magic_links, [:key_hash])
     create unique_index(:magic_links, [:email_message_id])
 
     ## Events
