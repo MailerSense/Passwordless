@@ -30,6 +30,14 @@
           autocomplete="url"
           required
         />
+        <.field
+          field={settings[:display_name]}
+          placeholder={gettext("e.g. YourApp")}
+          autocomplete="organization"
+          required
+        />
+        <.field field={settings[:primary_color]} type="color" required />
+        <.field field={settings[:background_color]} type="color" required />
       </.inputs_for>
     </.form>
 
@@ -46,8 +54,11 @@
         size="wide"
         type="submit"
         form="manage-app-form"
-        disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
-        label={gettext("Create")}
+        disabled={
+          not @form.source.valid? or
+            (Enum.empty?(@form.source.changes) and Enum.empty?(@uploads.logo.entries))
+        }
+        label={if @live_action == :new, do: gettext("Create"), else: gettext("Update")}
       />
     </:actions>
   </.slide_over>

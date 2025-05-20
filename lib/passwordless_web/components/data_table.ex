@@ -96,7 +96,10 @@ defmodule PasswordlessWeb.Components.DataTable do
       {form_assigns(@form_target)}
     >
       <section class={[@wrapper_class, @class]}>
-        <div :if={@search_field} class="flex items-center justify-between gap-3 p-6">
+        <div
+          :if={@search_field}
+          class="flex items-center justify-between gap-3 p-6 border-b border-gray-200 dark:border-gray-700/40 bg-gray-50 dark:bg-gray-800"
+        >
           <.table_search_bar
             meta={@meta}
             form={filter_form}

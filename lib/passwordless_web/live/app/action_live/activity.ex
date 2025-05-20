@@ -176,7 +176,7 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
   end
 
   defp load_events(query, %{cursor: cursor}) do
-    filters = %{"first" => 25, "after" => cursor}
+    filters = %{"first" => 50, "after" => cursor}
     {events, meta} = DataTable.search(query, filters, @data_table_opts)
 
     cursor =

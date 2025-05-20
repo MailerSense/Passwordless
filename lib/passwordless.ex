@@ -81,12 +81,14 @@ defmodule Passwordless do
     org
     |> Ecto.assoc(:apps)
     |> Repo.get(id)
+    |> Repo.preload(:settings)
   end
 
   def get_app!(%Org{} = org, id) when is_binary(id) do
     org
     |> Ecto.assoc(:apps)
     |> Repo.get!(id)
+    |> Repo.preload(:settings)
   end
 
   def create_app(%Org{} = org, attrs \\ %{}) do

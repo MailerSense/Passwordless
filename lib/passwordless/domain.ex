@@ -24,11 +24,7 @@ defmodule Passwordless.Domain do
     all_records_verified
     some_records_missing
   )a
-  @other_states ~w(
-    unhealthy
-    under_review
-  )a
-  @states @aws_states ++ @dns_states ++ @other_states
+  @states @aws_states ++ @dns_states
   @purposes ~w(email tracking)a
   @tags ~w(system default)a
 
@@ -263,9 +259,7 @@ defmodule Passwordless.Domain do
       aws_success: [:all_records_verified, :some_records_missing],
       all_records_verified: [:some_records_missing],
       some_records_missing: [:all_records_verified],
-      all_records_verified: [:aws_success, :some_records_missing, :unhealthy, :under_review],
-      unhealthy: [:aws_success, :some_records_missing, :unhealthy, :under_review],
-      under_review: [:aws_success, :some_records_missing, :unhealthy, :under_review]
+      all_records_verified: [:aws_success, :some_records_missing, :under_review]
     )
   end
 

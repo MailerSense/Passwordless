@@ -1,28 +1,6 @@
 <.layout current_user={@current_user} current_page={:billing} current_section={:app}>
   <div class="flex flex-col gap-6 px-8 py-6">
     <.page_header title={gettext("Billing")} />
-    <.box card>
-      <.form_header title={gettext("Overview")} no_margin />
-      <.p>
-        {gettext(
-          "You have %{mau} Monthly Active Users (MAU) out of %{max_mau}. This quota is shared across all apps in %{org}. Table below shows precise usage of services and estimated charges for your organization. Have any questions? Reach out to our support.",
-          mau: Util.number!(@mau_count),
-          max_mau: Util.number!(15_000),
-          org: @current_org.name,
-          month: format_date(Date.utc_today()),
-          reset_date: format_date(Date.utc_today())
-        )}
-      </.p>
-      <div class="flex items-center gap-3 flex-wrap">
-        <.a label={gettext("Upgrade")} style="link" link_type="live_redirect" />
-        <.a
-          to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
-          label={gettext("Contact support")}
-          style="link"
-          link_type="a"
-        />
-      </div>
-    </.box>
     <div class="grid gap-6 grid-cols-1 lg:grid-cols-3">
       <.simple_card badge={gettext("Plan")} content={gettext("Essential")} />
       <.simple_card
@@ -39,6 +17,34 @@
         }
       />
     </div>
+    <.box card>
+      <.form_header title={gettext("Management")} no_margin />
+      <.p>
+        {gettext(
+          "You have %{mau} Monthly Active Users (MAU) out of %{max_mau}. This quota is shared across all apps in %{org}. Table below shows precise usage of services and estimated charges for your organization. Have any questions? Reach out to our support.",
+          mau: Util.number!(@mau_count),
+          max_mau: Util.number!(15_000),
+          org: @current_org.name,
+          month: format_date(Date.utc_today()),
+          reset_date: format_date(Date.utc_today())
+        )}
+      </.p>
+      <div class="flex items-center gap-3 flex-wrap">
+        <.button
+          icon="remix-arrow-up-circle-line"
+          label={gettext("Upgrade")}
+          link_type="live_redirect"
+        />
+        <.button
+          to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
+          icon="remix-customer-service-line"
+          label={gettext("Contact support")}
+          color="light"
+          link_type="a"
+        />
+      </div>
+    </.box>
+
     <.simple_table
       items={[
         %{

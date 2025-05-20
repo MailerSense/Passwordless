@@ -5,7 +5,6 @@ defmodule Passwordless.EventQueue.Manager do
 
   use Supervisor
 
-  alias Passwordless.EventQueue.Monitor
   alias Passwordless.EventQueue.PipelineManager
   alias Passwordless.EventQueue.Source
 
@@ -22,7 +21,6 @@ defmodule Passwordless.EventQueue.Manager do
   def init(queues) do
     children = [
       {Registry, keys: :unique, name: @registry},
-      {Monitor, []},
       {PipelineManager, []},
       {Agent,
        fn ->

@@ -77,12 +77,20 @@ defmodule Passwordless.AppSettings do
     allowlist_api_access
     app_id
   )a
-  @required_fields @fields -- [:logo, :email_configuration_set, :app_id]
+  @required_fields ~w(
+    website
+    display_name
+    primary_color
+    background_color
+    email_tracking
+    default_action
+    allowlist_api_access
+  )a
 
   @doc """
   A changeset to update an existing organization.
   """
-  def changeset(org, attrs \\ %{}, _metadata \\ []) do
+  def changeset(org, attrs \\ %{}) do
     org
     |> cast(attrs, @fields)
     |> cast_embed(:allowlisted_ip_addresses,

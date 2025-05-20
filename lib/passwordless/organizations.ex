@@ -66,7 +66,10 @@ defmodule Passwordless.Organizations do
   List all apps for an org.
   """
   def list_apps(%Org{} = org) do
-    Repo.preload(org, :apps).apps
+    org
+    |> Ecto.assoc(:apps)
+    |> Repo.all()
+    |> Repo.preload(:settings)
   end
 
   @doc """

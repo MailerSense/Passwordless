@@ -75,7 +75,6 @@ config :passwordless, Oban,
   engine: Oban.Pro.Engines.Smart,
   notifier: Oban.Notifiers.PG,
   plugins: [
-    Oban.Pro.Plugins.Relay,
     Oban.Pro.Plugins.DynamicLifeline,
     Oban.Pro.Plugins.DynamicPrioritizer,
     Oban.Pro.Plugins.DynamicPartitioner,
@@ -83,7 +82,7 @@ config :passwordless, Oban,
      crontab: [
        {"*/15 * * * *", Passwordless.ViewRefresher},
        {"0 * * * *", Passwordless.Domain.Deleter},
-       {"*/10 * * * *", Passwordless.Domain.Verifier}
+       {"*/30 * * * *", Passwordless.Domain.Verifier}
      ]}
   ]
 

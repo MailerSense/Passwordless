@@ -1,15 +1,33 @@
 <.tabbed_settings_layout current_user={@current_user} current_page={:team}>
   <div class="flex flex-col gap-6">
+    <.box card>
+      <.form_header title={gettext("Team")} no_margin />
+      <.p>
+        Emails (OTPs, magic links) are sent from your domain. This allows you to send branded emails and improves deliverability. You can set up a custom domain for your app or use the default system domain.
+      </.p>
+      <div class="flex">
+        <.button
+          to={~p"/team/invite"}
+          icon="remix-mail-add-line"
+          label={gettext("Invite new member")}
+          link_type="live_redirect"
+        />
+      </div>
+    </.box>
     <.data_table
       meta={@meta}
       items={@memberships}
+      title={gettext("Members")}
       search_placeholder={gettext("Search by email or name")}
       show_clear_button={false}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("members"))}</:if_empty>
-      <:col field={:search} searchable filterable={[:==]} />
+
       <:col :let={membership} field={:name} sortable>
-        {user_name(membership.user)}
+        <div class="flex items-center gap-3">
+          <.avatar name={user_name(membership.user)} color="blue" />
+          {user_name(membership.user)}
+        </div>
       </:col>
       <:col :let={membership} field={:email} sortable>
         {user_email(membership.user)}
@@ -49,15 +67,6 @@
           to={apply_filters(@filters, @meta, ~p"/team/#{membership}/edit")}
         />
       </:actions>
-
-      <:header_actions>
-        <.button
-          to={~p"/team/invite"}
-          icon="remix-add-circle-line"
-          label={gettext("Add member")}
-          link_type="live_redirect"
-        />
-      </:header_actions>
     </.data_table>
 
     <.simple_table

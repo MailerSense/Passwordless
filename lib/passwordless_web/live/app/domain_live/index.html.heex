@@ -18,22 +18,24 @@
         readonly
         wrapper_class="mb-0!"
       />
-      <.a
-        :if={Util.present?(@email_domain) and not Domain.verified?(@email_domain)}
-        to={~p"/domain/email/dns"}
-        label={gettext("Configure DNS records")}
-        style="link"
-        link_type="live_patch"
-      />
-      <.a
-        :if={Domain.system?(@email_domain)}
-        to={~p"/domain/email/new"}
-        label={gettext("Set up domain")}
-        style="link"
-        link_type="live_patch"
-      />
+      <div :if={Util.present?(@email_domain) and not Domain.verified?(@email_domain)} class="flex">
+        <.button
+          to={~p"/domain/email/dns"}
+          icon="remix-file-line"
+          label={gettext("Get DNS records")}
+          link_type="live_patch"
+        />
+      </div>
+      <div :if={Domain.system?(@email_domain)} class="flex">
+        <.button
+          to={~p"/domain/email/new"}
+          icon="remix-install-line"
+          label={gettext("Configure domain")}
+          link_type="live_patch"
+        />
+      </div>
     </.box>
-    <.box card>
+    <.box :if={not Domain.system?(@email_domain)} card>
       <.form_header title={gettext("Email tracking")} no_margin />
       <.p>
         Enable this to accurately track the deliverability of your emails. All links will be sent via
@@ -47,21 +49,23 @@
       </.inputs_for>
     </.box>
     <.box :if={not Domain.system?(@email_domain)} card>
-      <.form_header title={gettext("Danger zone")} no_margin />
+      <.form_header title={gettext("Management")} no_margin />
       <.p>
         Email domains can be changed or removed at any time. Be aware that a domain will continue to be active for 1 day after you remove it. This is to ensure that any emails sent during that time are not lost.
       </.p>
       <div class="flex items-center gap-3 flex-wrap">
-        <.a
+        <.button
           to={~p"/domain/email/change"}
+          icon="remix-arrow-left-right-line"
+          color="light"
           label={gettext("Change domain")}
-          style="link"
           link_type="live_patch"
         />
-        <.a
+        <.button
           to={~p"/domain/delete"}
           label={gettext("Delete domain")}
-          style="delete"
+          icon="remix-delete-bin-line"
+          color="danger"
           link_type="live_patch"
         />
       </div>

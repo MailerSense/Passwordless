@@ -149,7 +149,7 @@ defmodule Passwordless.Domain.Verifier do
     other_changes =
       case changes do
         %{state: :all_records_verified} -> %{verified: true}
-        %{state: :all_records_verified} -> %{verified: false}
+        %{state: :some_records_missing} -> %{verified: false}
         _ -> %{}
       end
 

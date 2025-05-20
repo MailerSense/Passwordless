@@ -83,7 +83,7 @@ defmodule PasswordlessWeb.Helpers do
       },
       %{
         name: :api,
-        label: "Backend API",
+        label: "API",
         icon: "remix-code-s-slash-line",
         path: ~p"/embed/api",
         link_type: "live_patch"

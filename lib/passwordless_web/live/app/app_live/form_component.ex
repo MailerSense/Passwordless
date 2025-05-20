@@ -62,15 +62,12 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
     uploaded_files = FileUploads.consume_uploaded_entries(socket, :logo)
 
     case uploaded_files do
-      [{path, _entry} | _] ->
-        Map.put(user_params, "logo", path)
-
-      [] ->
-        user_params
+      [{path, _entry} | _] -> put_in(user_params, ["settings", "logo"], path)
+      [] -> user_params
     end
   end
 
-  defp save_app(socket, app_params) do
+  defp save_app(%{assigns: %{live_action: :new}} = socket, app_params) do
     app_name = get_in(app_params, ["name"])
 
     app_params =
@@ -83,6 +80,19 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
         {:noreply,
          socket
          |> put_flash(:info, gettext("App created."))
+         |> push_navigate(to: socket.assigns.return_to)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
+  end
+
+  defp save_app(%{assigns: %{live_action: :edit}} = socket, app_params) do
+    case Passwordless.update_app(socket.assigns.app, app_params) do
+      {:ok, _app} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, gettext("App updated."))
          |> push_navigate(to: socket.assigns.return_to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

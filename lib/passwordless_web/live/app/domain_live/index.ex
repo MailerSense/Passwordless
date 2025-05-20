@@ -131,7 +131,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
   defp apply_action(socket, :new, _kind) do
     assign(socket,
-      page_title: gettext("Set up domain"),
+      page_title: gettext("Configure domain"),
       page_subtitle: gettext("Register your own domain to improve deliverability of Email OTPs and Magic Links.")
     )
   end

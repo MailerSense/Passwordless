@@ -4,11 +4,18 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   import PasswordlessWeb.SettingsLayoutComponent
 
-  alias Passwordless.Accounts.User
   alias Passwordless.App
   alias Passwordless.AppSettings
-  alias Passwordless.FileUploads
-  alias Passwordless.Repo
+  alias Passwordless.Organizations.Org
+  alias PasswordlessWeb.Components.DataTable
+
+  @data_table_opts [
+    for: App,
+    default_order: %{
+      order_by: [:inserted_at],
+      order_directions: [:desc]
+    }
+  ]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -16,34 +23,35 @@ defmodule PasswordlessWeb.App.AppLive.Index do
   end
 
   @impl true
+  def handle_params(%{"id" => id} = params, url, socket) do
+    app = Passwordless.get_app!(socket.assigns.current_org, id)
+    socket = assign(socket, app: app)
+
+    params
+    |> Map.drop(["id"])
+    |> handle_params(url, socket)
+  end
+
+  @impl true
   def handle_params(params, _url, socket) do
     current_org = socket.assigns.current_org
-    current_app = socket.assigns.current_app
-    current_app = Repo.preload(current_app, :settings)
 
     new_app =
       current_org
       |> Ecto.build_assoc(:apps)
       |> Kernel.then(&%App{&1 | settings: %AppSettings{}})
 
-    upload_opts =
-      FileUploads.prepare(
-        accept: ~w(.jpg .jpeg .png .webp),
-        max_entries: 1,
-        max_file_size: 5_242_880 * 2
-      )
-
     {:noreply,
      socket
-     |> assign(uploaded_files: [], current_app: current_app, new_app: new_app)
-     |> apply_action(socket.assigns.live_action, params)
-     |> assign_form(Passwordless.change_app(current_app))
-     |> allow_upload(:logo, upload_opts)}
+     |> assign(new_app: new_app)
+     |> assign_filters(params)
+     |> assign_apps(params)
+     |> apply_action(socket.assigns.live_action, params)}
   end
 
   @impl true
   def handle_event("delete_app", _params, socket) do
-    case Passwordless.delete_app(socket.assigns.current_app) do
+    case Passwordless.delete_app(socket.assigns.app) do
       {:ok, _app} ->
         {:noreply,
          socket
@@ -60,38 +68,23 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   @impl true
   def handle_event("close_slide_over", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app")}
+    {:noreply,
+     push_patch(socket,
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app")
+     )}
   end
 
   @impl true
   def handle_event("close_modal", _params, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app")}
+    {:noreply,
+     push_patch(socket,
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app")
+     )}
   end
 
   @impl true
-  def handle_event("validate", %{"app" => app_params}, socket) do
-    changeset =
-      socket.assigns.current_app
-      |> Passwordless.change_app(app_params)
-      |> Map.put(:action, :validate)
-
-    {:noreply, assign_form(socket, changeset)}
-  end
-
-  @impl true
-  def handle_event("save", %{"app" => app_params}, socket) do
-    app_params = maybe_add_logo(app_params, socket)
-    save_app(socket, app_params)
-  end
-
-  @impl true
-  def handle_event("clear_logo", _params, socket) do
-    save_app(socket, %{logo: nil})
-  end
-
-  @impl true
-  def handle_event("cancel_upload", %{"ref" => ref}, socket) do
-    {:noreply, cancel_upload(socket, :logo, ref)}
+  def handle_event("clear_filters", _params, socket) do
+    {:noreply, push_navigate(socket, to: ~p"/app")}
   end
 
   @impl true
@@ -103,13 +96,23 @@ defmodule PasswordlessWeb.App.AppLive.Index do
 
   defp apply_action(socket, :index, _params) do
     assign(socket,
-      page_title: gettext("App")
+      page_title: gettext("Apps")
     )
   end
 
   defp apply_action(socket, :new, _params) do
     assign(socket,
-      page_title: gettext("Create app"),
+      page_title: gettext("Create new app"),
+      page_subtitle:
+        gettext(
+          "App is a container for your users, authentication methods and other data. Create one app per project or environment."
+        )
+    )
+  end
+
+  defp apply_action(socket, :edit, _params) do
+    assign(socket,
+      page_title: gettext("Edit app"),
       page_subtitle:
         gettext(
           "App is a container for your users, authentication methods and other data. Create one app per project or environment."
@@ -120,40 +123,33 @@ defmodule PasswordlessWeb.App.AppLive.Index do
   defp apply_action(socket, :delete, _params) do
     assign(socket,
       page_title: gettext("Are you sure?"),
-      page_subtitle: gettext("Are you sure you want to delete this app?")
+      page_subtitle:
+        gettext(
+          "Are you sure you want to delete this app? All resources that belong to this app will be deleted as well - your users, authentication methods, etc. This action cannot be undone."
+        )
     )
   end
 
-  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    assign(socket, form: to_form(changeset))
+  defp apply_filters(filters, %Flop.Meta{} = meta, path)
+       when is_map(filters) and map_size(filters) > 0 and is_binary(path) do
+    path <> "?" <> Plug.Conn.Query.encode(update_filter_params(meta, filters))
   end
 
-  defp maybe_add_logo(user_params, socket) do
-    uploaded_files = FileUploads.consume_uploaded_entries(socket, :logo)
+  defp apply_filters(_filters, _meta, path) when is_binary(path), do: path
 
-    case uploaded_files do
-      [{path, _entry} | _] ->
-        put_in(user_params, [Access.key("settings", %{}), Access.key("logo")], path)
-
-      [] ->
-        user_params
-    end
+  defp assign_filters(socket, params) do
+    assign(socket, filters: Map.take(params, ~w(page filters order_by order_directions)))
   end
 
-  defp save_app(socket, app_params) do
-    case Passwordless.update_app(socket.assigns.current_app, app_params) do
-      {:ok, app} ->
-        socket =
-          socket
-          |> put_toast(:info, gettext("App settings have been saved."), title: gettext("Success"))
-          |> assign(current_app: app)
-          |> assign(current_user: %User{socket.assigns.current_user | current_app: app})
-          |> assign_form(Passwordless.change_app(app))
+  defp assign_apps(socket, params) do
+    case socket.assigns[:current_org] do
+      %Org{} = org ->
+        query = App |> App.get_by_org(org) |> App.preload_settings()
+        {apps, meta} = DataTable.search(query, params, @data_table_opts)
+        assign(socket, apps: apps, meta: meta)
 
-        {:noreply, socket}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+      _ ->
+        socket
     end
   end
 end
