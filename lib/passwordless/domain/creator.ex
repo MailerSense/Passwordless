@@ -31,7 +31,8 @@ defmodule Passwordless.Domain.Creator do
              {:ok, settings} <- Passwordless.update_app_settings(settings, %{email_configuration_set: config_set}),
              {:ok, topic_arn} <- create_topic(client, config_set),
              {:ok, settings} <- Passwordless.update_app_settings(settings, %{email_event_topic_arn: topic_arn}),
-             {:ok, subscription_arn} <- subscribe_topic_to_queue(client, topic_arn, nil),
+             {:ok, subscription_arn} <-
+               subscribe_topic_to_queue(client, topic_arn, Passwordless.config([:aws_current, :ses_queue_arn])),
              {:ok, settings} <-
                Passwordless.update_app_settings(settings, %{email_event_topic_subscription_arn: subscription_arn}),
              {:ok, destination} <- create_event_destination(client, config_set, topic_arn),
