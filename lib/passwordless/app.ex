@@ -35,7 +35,7 @@ defmodule Passwordless.App do
   }
   @derive {
     Flop.Schema,
-    filterable: [:id], sortable: [:id]
+    filterable: [:id], sortable: [:id, :inserted_at]
   }
   schema "apps" do
     field :name, :string
@@ -72,8 +72,15 @@ defmodule Passwordless.App do
   @doc """
   Get by organization.
   """
-  def get_by_org(%Org{} = org) do
-    from c in __MODULE__, where: c.org_id == ^org.id
+  def get_by_org(query \\ __MODULE__, %Org{} = org) do
+    from q in query, where: q.org_id == ^org.id
+  end
+
+  @doc """
+  Preload settings.
+  """
+  def preload_settings(query \\ __MODULE__) do
+    from q in query, preload: :settings
   end
 
   @fields ~w(
@@ -92,6 +99,7 @@ defmodule Passwordless.App do
     |> cast_assoc(:settings)
     |> validate_required(@required_fields)
     |> validate_string(:name)
+    |> cast_assoc(:settings)
     |> assoc_constraint(:org)
   end
 

@@ -24,11 +24,7 @@ defmodule Passwordless.Domain do
     all_records_verified
     some_records_missing
   )a
-  @other_states ~w(
-    unhealthy
-    under_review
-  )a
-  @states @aws_states ++ @dns_states ++ @other_states
+  @states @aws_states ++ @dns_states
   @purposes ~w(email tracking)a
   @tags ~w(system default)a
 
@@ -80,9 +76,40 @@ defmodule Passwordless.Domain do
   def base_domain(%__MODULE__{}), do: nil
 
   @doc """
+  Get the subdomain.
+  """
+  def subdomain(%__MODULE__{name: domain}) when is_binary(domain) do
+    {:ok, %{subdomain: subdomain}} = Domainatrex.parse(domain)
+    subdomain
+  end
+
+  def subdomain(%__MODULE__{}), do: nil
+
+  @doc """
+  Get the envelope address for the domain.
+  """
+  def envelope(%__MODULE__{name: name}), do: "email.#{name}"
+
+  @doc """
+  Get the envelope subdomain for the domain.
+  """
+  def envelope_subdomain(%__MODULE__{} = domain), do: "email.#{subdomain(domain)}"
+
+  @doc """
   Get the domain name.
   """
   def email_suffix(%__MODULE__{name: name}), do: "@#{name}"
+
+  @doc """
+  Generate a config set name for the domain.
+  """
+  def config_set_name(%__MODULE__{name: name}) do
+    name
+    |> Slug.slugify()
+    |> Util.StringExt.truncate(omission: "", length: 32)
+    |> Kernel.<>("-")
+    |> Kernel.<>(Util.random_numeric_string(4))
+  end
 
   @doc """
   Check if the domain is a system domain.
@@ -232,9 +259,7 @@ defmodule Passwordless.Domain do
       aws_success: [:all_records_verified, :some_records_missing],
       all_records_verified: [:some_records_missing],
       some_records_missing: [:all_records_verified],
-      all_records_verified: [:aws_success, :some_records_missing, :unhealthy, :under_review],
-      unhealthy: [:aws_success, :some_records_missing, :unhealthy, :under_review],
-      under_review: [:aws_success, :some_records_missing, :unhealthy, :under_review]
+      all_records_verified: [:aws_success, :some_records_missing, :under_review]
     )
   end
 

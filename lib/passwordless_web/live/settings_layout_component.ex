@@ -38,7 +38,7 @@ defmodule PasswordlessWeb.SettingsLayoutComponent do
   # Private
 
   defp menu_items(%User{current_membership: %Membership{}} = user) do
-    org_routes = [:app_settings, :team, :domain, :organization]
+    org_routes = [:app_settings, :domain, :team, :organization]
     user_routes = append_if([:edit_profile], :org_invitations, Organizations.has_open_invitations?(user))
 
     PasswordlessWeb.Menus.build_menu(

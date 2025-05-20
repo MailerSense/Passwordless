@@ -50,7 +50,9 @@ defmodule PasswordlessWeb.App.DomainLive.ChangeComponent do
         creator =
           case socket.assigns.domain_kind do
             :email_domain ->
-              &Passwordless.create_email_domain/2
+              if Passwordless.config(:env) == :prod,
+                do: &Passwordless.create_and_register_email_domain/2,
+                else: &Passwordless.create_email_domain/2
 
             :tracking_domain ->
               &Passwordless.create_tracking_domain/2
@@ -70,6 +72,18 @@ defmodule PasswordlessWeb.App.DomainLive.ChangeComponent do
                :error,
                gettext("Failed to register domain: %{error}",
                  error: Jason.encode!(Util.humanize_changeset_errors(changeset))
+               ),
+               title: gettext("Error")
+             )
+             |> push_navigate(to: ~p"/domain")}
+
+          error ->
+            {:noreply,
+             socket
+             |> put_toast(
+               :error,
+               gettext("Failed to register domain: %{error}",
+                 error: inspect(error)
                ),
                title: gettext("Error")
              )

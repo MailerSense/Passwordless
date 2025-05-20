@@ -12,10 +12,12 @@ defmodule Passwordless do
   alias Passwordless.ActionStatistic
   alias Passwordless.ActionTemplate
   alias Passwordless.App
+  alias Passwordless.AppSettings
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
   alias Passwordless.Challenges
+  alias Passwordless.ChallengeToken
   alias Passwordless.Domain
   alias Passwordless.DomainRecord
   alias Passwordless.Email
@@ -40,7 +42,6 @@ defmodule Passwordless do
     email_otp: Authenticators.EmailOTP,
     magic_link: Authenticators.MagicLink,
     passkey: Authenticators.Passkey,
-    security_key: Authenticators.SecurityKey,
     totp: Authenticators.TOTP,
     recovery_codes: Authenticators.RecoveryCodes
   ]
@@ -80,12 +81,14 @@ defmodule Passwordless do
     org
     |> Ecto.assoc(:apps)
     |> Repo.get(id)
+    |> Repo.preload(:settings)
   end
 
   def get_app!(%Org{} = org, id) when is_binary(id) do
     org
     |> Ecto.assoc(:apps)
     |> Repo.get!(id)
+    |> Repo.preload(:settings)
   end
 
   def create_app(%Org{} = org, attrs \\ %{}) do
@@ -160,6 +163,14 @@ defmodule Passwordless do
 
   def delete_app(%App{} = app) do
     Repo.soft_delete(app)
+  end
+
+  ## App Settings
+
+  def update_app_settings(%AppSettings{} = app_settings, attrs \\ %{}) do
+    app_settings
+    |> AppSettings.changeset(attrs)
+    |> Repo.update()
   end
 
   ## Media
@@ -260,6 +271,16 @@ defmodule Passwordless do
     |> Kernel.then(&%Domain{&1 | purpose: :email})
     |> Domain.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def create_and_register_email_domain(%App{} = app, attrs \\ %{}) do
+    with {:ok, domain} <- create_email_domain(app, attrs),
+         {:ok, _domain} <-
+           %{domain_id: domain.id}
+           |> Passwordless.Domain.Creator.new()
+           |> Oban.Pro.Relay.async()
+           |> Oban.Pro.Relay.await(:timer.seconds(15)),
+         do: {:ok, domain}
   end
 
   def create_tracking_domain(%App{} = app, attrs \\ %{}) do
@@ -933,6 +954,25 @@ defmodule Passwordless do
     action = %Action{action | challenge: challenge}
     mod = Keyword.fetch!(@challenges, kind)
     mod.handle(app, user, action, event: event, attrs: attrs)
+  end
+
+  # Challenge Token
+
+  def create_challenge_token(%App{} = app, %Challenge{} = challenge) do
+    opts = [prefix: Tenant.to_prefix(app)]
+    attrs = %{key: ChallengeToken.generate_key(), expires_at: DateTime.add(DateTime.utc_now(), 5, :minute)}
+
+    Repo.transact(fn ->
+      with {_, _} <-
+             challenge
+             |> Ecto.assoc(:challenge_token)
+             |> Repo.delete_all(),
+           do:
+             challenge
+             |> Ecto.build_assoc(:challenge_token)
+             |> ChallengeToken.changeset(attrs, opts)
+             |> Repo.insert(opts)
+    end)
   end
 
   # Event

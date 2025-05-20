@@ -35,6 +35,7 @@
         type="submit"
         form="change-domain-form"
         disabled={not @form.source.valid? or Enum.empty?(@form.source.changes)}
+        phx-disable-with={gettext("Working...")}
         label={if @live_action == :change, do: gettext("Change"), else: gettext("Register")}
       />
     </:actions>

@@ -121,7 +121,8 @@ if config_env() == :prod do
 
   config :passwordless, :aws_current,
     region: System.get_env("AWS_REGION"),
-    account: System.get_env("AWS_ACCOUNT")
+    account: System.get_env("AWS_ACCOUNT"),
+    ses_queue_arn: System.get_env("SES_QUEUE_ARN")
 
   if System.get_env("DATABASE_MIGRATION") do
     config :ex_aws,

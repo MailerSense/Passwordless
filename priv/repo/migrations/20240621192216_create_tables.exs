@@ -221,6 +221,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :primary_color, :citext, null: false
       add :background_color, :citext, null: false
       add :email_configuration_set, :string
+      add :email_event_destination, :string
+      add :email_event_topic_arn, :string
+      add :email_event_topic_subscription_arn, :string
       add :email_tracking, :boolean, default: false
       add :default_action, :string, null: false
       add :allowlist_api_access, :boolean, default: false

@@ -274,6 +274,7 @@ export class PasswordlessTools extends cdk.Stack {
       CUSTOMER_MEDIA_BUCKET: customerMedia.bucket.bucketName,
       CUSTOMER_MEDIA_CDN_URL: `https://${cdnDomain}/`,
       SES_QUEUE_URL: ses.eventQueue.queueUrl,
+      SES_QUEUE_ARN: ses.eventQueue.queueArn,
     };
 
     const appContainer: AppContainer = {
@@ -422,7 +423,7 @@ export class PasswordlessTools extends cdk.Stack {
           arn: app.service.loadBalancer.loadBalancerArn,
         },
       ],
-      allowedPathPrefixes: ["/api", "/webhook"],
+      allowedPathPrefixes: ["/webhook"],
       blockedPathPrefixes: ["/health"],
     });
 

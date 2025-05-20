@@ -380,7 +380,7 @@ defmodule PasswordlessWeb.Menus do
   def get_link(:app_settings = name, _user) do
     %{
       name: name,
-      label: gettext("App"),
+      label: gettext("Apps"),
       path: ~p"/app",
       icon: "remix-instance-line",
       link_type: "live_patch"

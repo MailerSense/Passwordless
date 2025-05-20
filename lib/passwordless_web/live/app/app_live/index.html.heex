@@ -1,74 +1,66 @@
 <.tabbed_settings_layout current_user={@current_user} current_page={:app_settings}>
   <div class="flex flex-col gap-6">
     <.box card>
-      <.form_header title={gettext("App")} no_margin />
+      <.form_header title={gettext("Management")} no_margin />
       <.p>
-        {gettext(
-          "App is a container for your users, authentication methods and other data. Create one app per project or environment."
-        )}
+        App is a container for your users, authentication methods and other data. Create one app per project or environment. You can create multiple apps within an organization. Each app has its own settings and can be managed independently.
       </.p>
-      <.form id="edit-app-form" for={@form} phx-submit="save" phx-change="validate">
-        <.inputs_for :let={settings} field={@form[:settings]}>
-          <.image_input
-            upload={@uploads.logo}
-            label={gettext("Logo")}
-            current_image_src={@current_app.settings.logo}
-            placeholder_icon="remix-image-line"
-            on_delete="clear_logo"
-            automatic_help_text
-          />
-          <.field
-            field={@form[:name]}
-            placeholder={gettext("e.g. YourSite")}
-            autocomplete="organization"
-            required
-            required_asterix={false}
-          />
-          <.field
-            type="url"
-            field={settings[:website]}
-            placeholder={gettext("e.g. https://gmail.com")}
-            autocomplete="url"
-            required
-            required_asterix={false}
-          />
-          <.field
-            field={settings[:display_name]}
-            placeholder={gettext("e.g. YourApp")}
-            autocomplete="organization"
-            required
-            required_asterix={false}
-          />
-          <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 mb-6">
-            <.field
-              field={settings[:primary_color]}
-              type="color"
-              required
-              required_asterix={false}
-              wrapper_class="mb-0!"
-            />
-            <.field
-              field={settings[:background_color]}
-              type="color"
-              required
-              required_asterix={false}
-              wrapper_class="mb-0!"
-            />
-          </div>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3 flex-wrap">
-              <.a
-                to={~p"/app/new"}
-                label={gettext("Create new app")}
-                style="link"
-                link_type="live_redirect"
-              />
-            </div>
-            <.button icon="remix-save-line" label={gettext("Save")} />
-          </div>
-        </.inputs_for>
-      </.form>
+      <div class="flex">
+        <.button
+          to={~p"/app/new"}
+          icon="remix-add-circle-line"
+          label={gettext("Create new app")}
+          link_type="live_redirect"
+        />
+      </div>
     </.box>
+    <.data_table meta={@meta} items={@apps} title={gettext("Apps")}>
+      <:if_empty>{gettext("No %{models} found", models: gettext("apps"))}</:if_empty>
+      <:col :let={app} field={:name}>
+        <div class="flex items-center gap-3">
+          <.avatar src={app.settings.logo} name={app.name} color="primary" />
+          {app.name}
+          <.badge
+            :if={@current_app.id == app.id}
+            size="sm"
+            label={gettext("This app")}
+            color="success"
+          />
+        </div>
+      </:col>
+      <:col :let={app} field={:website}>
+        {app.settings.website}
+      </:col>
+      <:col :let={app} field={:inserted_at} sortable label={gettext("Created")}>
+        {format_date_time(app.inserted_at)}
+      </:col>
+      <:col actions></:col>
+      <:actions :let={app}>
+        <.icon_button
+          id="remove-app-#{app.id}"
+          to={apply_filters(@filters, @meta, ~p"/app/#{app}/delete")}
+          size="sm"
+          icon="custom-trash"
+          color="light"
+          title={gettext("Remove")}
+          disabled={@current_app.id == app.id}
+          link_type="live_patch"
+          phx-hook={if(@current_app.id == app.id, do: "TippyHook")}
+          data-tippy-content={
+            if(@current_app.id == app.id, do: gettext("You cannot remove the current app"))
+          }
+          data-tippy-placement="left"
+        />
+        <.icon_button
+          to={apply_filters(@filters, @meta, ~p"/app/#{app}/edit")}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.data_table>
   </div>
 </.tabbed_settings_layout>
 
@@ -79,6 +71,18 @@
       title={@page_title}
       subtitle={@page_subtitle}
       app={@new_app}
+      module={PasswordlessWeb.App.AppLive.FormComponent}
+      return_to={~p"/app"}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_user={@current_user}
+    />
+  <% :edit -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      app={@app}
       module={PasswordlessWeb.App.AppLive.FormComponent}
       return_to={~p"/app"}
       live_action={@live_action}

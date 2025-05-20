@@ -56,6 +56,10 @@ defmodule Passwordless.Organizations.OrgSeeder do
           display_name: Passwordless.config(:app_name),
           email_tracking: true,
           email_configuration_set: "passwordless-tools-app-ses-config-set",
+          email_event_destination: "passwordless-tools-app-ses-notification-destination",
+          email_event_topic_arn: "arn:aws:sns:eu-west-1:728247919352:passwordless-tools-app-ses-email-topic",
+          email_event_topic_subscription_arn:
+            "arn:aws:sns:eu-west-1:728247919352:passwordless-tools-app-ses-email-topic:5760c1f3-9656-44c2-883a-b961b08dbdfa",
           allowlisted_ip_addresses: [
             %{address: "0.0.0.0/0"}
           ]
@@ -207,7 +211,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
         {:ok, _update} = Passwordless.update_action_statistic(app, action)
 
-        {:ok, _challenge} =
+        {:ok, challenge} =
           Passwordless.create_challenge(app, action, %{
             kind: Enum.random(Challenge.kinds()),
             state: :started,
@@ -227,6 +231,8 @@ defmodule Passwordless.Organizations.OrgSeeder do
               }
             ]
           })
+
+        {:ok, _challenge_token} = Passwordless.create_challenge_token(app, challenge)
 
         {:ok, _event} =
           Passwordless.create_event(app, app_user, %{

@@ -83,7 +83,7 @@ defmodule PasswordlessWeb.Helpers do
       },
       %{
         name: :api,
-        label: "Backend API",
+        label: "API",
         icon: "remix-code-s-slash-line",
         path: ~p"/embed/api",
         link_type: "live_patch"
@@ -138,13 +138,6 @@ defmodule PasswordlessWeb.Helpers do
         label: "Passkey",
         icon: "remix-fingerprint-line",
         path: ~p"/authenticators/passkey",
-        link_type: "live_patch"
-      },
-      %{
-        name: :security_key,
-        label: "Security key",
-        icon: "remix-usb-line",
-        path: ~p"/authenticators/security-key",
         link_type: "live_patch"
       },
       %{
@@ -228,27 +221,6 @@ defmodule PasswordlessWeb.Helpers do
       color: color,
       events: events
     }
-  end
-
-  def flow_details(%Action{challenge: %Challenge{kind: kind}}) do
-    Keyword.get(
-      [
-        email_otp: %{label: gettext("Email OTP"), icon: "remix-mail-open-line"},
-        sms_otp: %{label: gettext("SMS OTP"), icon: "remix-message-line"},
-        whatsapp_otp: %{label: gettext("WhatsApp OTP"), icon: "remix-whatsapp-line"},
-        magic_link: %{label: gettext("Magic link"), icon: "remix-link"},
-        totp: %{label: gettext("Time-based OTP"), icon: "remix-qr-code-line"},
-        security_key: %{label: gettext("Security key"), icon: "remix-usb-line"},
-        passkey: %{label: gettext("Passkey"), icon: "remix-fingerprint-line"},
-        password: %{label: gettext("Password"), icon: "remix-key-line"},
-        recovery_codes: %{label: gettext("Recovery codes"), icon: "remix-file-list-line"}
-      ],
-      kind
-    )
-  end
-
-  def flow_details(%Action{}) do
-    %{label: gettext("None"), icon: "remix-fingerprint-line"}
   end
 
   def email_menu_items(%EmailTemplate{} = email_template, language \\ :en) do
@@ -434,50 +406,6 @@ defmodule PasswordlessWeb.Helpers do
     do: {translate_action(action), Enum.at(@common_colors, :erlang.phash2(action, length(@common_colors)))}
 
   def random_color(term), do: Enum.at(@common_colors, :erlang.phash2(term, length(@common_colors)))
-
-  @icon_mapping %{
-    "create_auth_token" => "🔑",
-    "update_auth_token" => "🔑",
-    "revoke_auth_token" => "🔑",
-    "join_list" => "📝",
-    "leave_list" => "📝",
-    "delete" => "❌",
-    "delete_invitation" => "❌",
-    "subscribe" => "✅",
-    "unsubscribe" => "❌",
-    "not_subscribe" => "🤷",
-    "subscribe_to_topic" => "✅",
-    "unsubscribe_from_topic" => "❌"
-  }
-  @icon_fallback_mapping %{
-    "user" => "👤",
-    "org" => "🏢",
-    "identity" => "📮",
-    "message" => "📩",
-    "contact" => "🧑",
-    "list" => "📝"
-  }
-
-  @resource_colors %{
-    "user" => "primary",
-    "org" => "indigo",
-    "identity" => "purple",
-    "message" => "purple"
-  }
-
-  def action_color(action) do
-    case String.split(action, ".", parts: 2) do
-      [domain, action] when is_binary(domain) ->
-        if String.contains?(String.downcase(action), ["delete", "revoke", "cancel"]) do
-          "danger"
-        else
-          Map.get(@resource_colors, domain, "primary")
-        end
-
-      _ ->
-        "primary"
-    end
-  end
 
   def auth_token_permissions(%AuthToken{permissions: [_ | _] = permissions}) when length(permissions) > 2,
     do:
