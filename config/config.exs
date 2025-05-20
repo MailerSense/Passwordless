@@ -75,6 +75,7 @@ config :passwordless, Oban,
   engine: Oban.Pro.Engines.Smart,
   notifier: Oban.Notifiers.PG,
   plugins: [
+    Oban.Pro.Plugins.Relay,
     Oban.Pro.Plugins.DynamicLifeline,
     Oban.Pro.Plugins.DynamicPrioritizer,
     Oban.Pro.Plugins.DynamicPartitioner,

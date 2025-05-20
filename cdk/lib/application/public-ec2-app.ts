@@ -210,6 +210,20 @@ export class PublicEC2App extends Construct {
 
     this.service.taskDefinition.addToTaskRolePolicy(
       new PolicyStatement({
+        sid: "EmailReporting",
+        actions: [
+          "sns:CreateTopic",
+          "sns:DeleteTopic",
+          "sns:ListSubscriptions",
+          "sns:ListSubscriptionsByTopic",
+          "sns:Subscribe",
+        ],
+        resources: ["*"],
+      }),
+    );
+
+    this.service.taskDefinition.addToTaskRolePolicy(
+      new PolicyStatement({
         sid: "EmailSending",
         actions: ["ses:SendEmail", "ses:SendRawEmail"],
         resources: ["*"],

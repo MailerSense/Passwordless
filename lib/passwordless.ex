@@ -12,6 +12,7 @@ defmodule Passwordless do
   alias Passwordless.ActionStatistic
   alias Passwordless.ActionTemplate
   alias Passwordless.App
+  alias Passwordless.AppSettings
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
@@ -162,6 +163,14 @@ defmodule Passwordless do
     Repo.soft_delete(app)
   end
 
+  ## App Settings
+
+  def update_app_settings(%AppSettings{} = app_settings, attrs \\ %{}) do
+    app_settings
+    |> AppSettings.changeset(attrs)
+    |> Repo.update()
+  end
+
   ## Media
 
   def get_media!(%App{} = app, id) when is_binary(id) do
@@ -260,6 +269,16 @@ defmodule Passwordless do
     |> Kernel.then(&%Domain{&1 | purpose: :email})
     |> Domain.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def create_and_register_email_domain(%App{} = app, attrs \\ %{}) do
+    with {:ok, domain} <- create_email_domain(app, attrs),
+         {:ok, _domain} <-
+           %{domain_id: domain.id}
+           |> Passwordless.Domain.Creator.new()
+           |> Oban.Pro.Relay.async()
+           |> Oban.Pro.Relay.await(:timer.seconds(15)),
+         do: {:ok, domain}
   end
 
   def create_tracking_domain(%App{} = app, attrs \\ %{}) do

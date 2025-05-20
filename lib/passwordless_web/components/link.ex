@@ -34,7 +34,7 @@ defmodule PasswordlessWeb.Components.Link do
       {@rest}
     >
       {if @label, do: @label, else: render_slot(@inner_block)}
-      <.icon :if={styled?(@style)} name="remix-external-link-line" class="w-4 h-4" />
+      <.icon :if={styled?(@style)} name="remix-arrow-right-up-line" class="w-4 h-4" />
     </button>
     """
   end
@@ -55,7 +55,7 @@ defmodule PasswordlessWeb.Components.Link do
       {@rest}
     >
       {if(@label, do: @label, else: render_slot(@inner_block))}
-      <.icon :if={styled?(@style)} name="remix-external-link-line" class="w-4 h-4" />
+      <.icon :if={styled?(@style)} name="remix-arrow-right-up-line" class="w-4 h-4" />
     </.link>
     """
   end
@@ -71,7 +71,7 @@ defmodule PasswordlessWeb.Components.Link do
       {@rest}
     >
       {if(@label, do: @label, else: render_slot(@inner_block))}
-      <.icon :if={styled?(@style)} name="remix-external-link-line" class="w-4 h-4" />
+      <.icon :if={styled?(@style)} name="remix-arrow-right-up-line" class="w-4 h-4" />
     </.link>
     """
   end
@@ -87,7 +87,7 @@ defmodule PasswordlessWeb.Components.Link do
       {@rest}
     >
       {if(@label, do: @label, else: render_slot(@inner_block))}
-      <.icon :if={styled?(@style)} name="remix-external-link-line" class="w-4 h-4" />
+      <.icon :if={styled?(@style)} name="remix-arrow-right-up-line" class="w-4 h-4" />
     </.link>
     """
   end
@@ -103,7 +103,7 @@ defmodule PasswordlessWeb.Components.Link do
       {@rest}
     >
       {if @label, do: @label, else: render_slot(@inner_block)}
-      <.icon :if={styled?(@style)} name="remix-external-link-line" class="w-4 h-4" />
+      <.icon :if={styled?(@style)} name="remix-arrow-right-up-line" class="w-4 h-4" />
     </button>
     """
   end

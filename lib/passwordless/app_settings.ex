@@ -20,6 +20,9 @@ defmodule Passwordless.AppSettings do
       :primary_color,
       :background_color,
       :email_configuration_set,
+      :email_event_destination,
+      :email_event_topic_arn,
+      :email_event_topic_subscription_arn,
       :email_tracking,
       :default_action,
       :allowlist_api_access,
@@ -39,6 +42,9 @@ defmodule Passwordless.AppSettings do
     field :primary_color, :string, default: "#2e90fa"
     field :background_color, :string, default: "#ffffff"
     field :email_configuration_set, :string
+    field :email_event_destination, :string
+    field :email_event_topic_arn, :string
+    field :email_event_topic_subscription_arn, :string
     field :email_tracking, :boolean, default: false
     field :default_action, Ecto.Enum, values: @actions, default: :block
     field :allowlist_api_access, :boolean, default: false
@@ -63,6 +69,9 @@ defmodule Passwordless.AppSettings do
     primary_color
     background_color
     email_configuration_set
+    email_event_destination
+    email_event_topic_arn
+    email_event_topic_subscription_arn
     email_tracking
     default_action
     allowlist_api_access

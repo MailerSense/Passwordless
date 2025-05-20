@@ -80,6 +80,26 @@ defmodule Passwordless.Domain do
   def base_domain(%__MODULE__{}), do: nil
 
   @doc """
+  Get the subdomain.
+  """
+  def subdomain(%__MODULE__{name: domain}) when is_binary(domain) do
+    {:ok, %{subdomain: subdomain}} = Domainatrex.parse(domain)
+    subdomain
+  end
+
+  def subdomain(%__MODULE__{}), do: nil
+
+  @doc """
+  Get the envelope address for the domain.
+  """
+  def envelope(%__MODULE__{name: name}), do: "email.#{name}"
+
+  @doc """
+  Get the envelope subdomain for the domain.
+  """
+  def envelope_subdomain(%__MODULE__{} = domain), do: "email.#{subdomain(domain)}"
+
+  @doc """
   Get the domain name.
   """
   def email_suffix(%__MODULE__{name: name}), do: "@#{name}"
@@ -88,7 +108,11 @@ defmodule Passwordless.Domain do
   Generate a config set name for the domain.
   """
   def config_set_name(%__MODULE__{name: name}) do
-    Slug.slugify(name) <> "-" <> Util.random_numeric_string(4)
+    name
+    |> Slug.slugify()
+    |> Util.StringExt.truncate(omission: "", length: 32)
+    |> Kernel.<>("-")
+    |> Kernel.<>(Util.random_numeric_string(4))
   end
 
   @doc """
