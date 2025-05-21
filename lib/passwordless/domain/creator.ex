@@ -66,7 +66,7 @@ defmodule Passwordless.Domain.Creator do
     }
 
     delivery_params = %{
-      "TlsPolicy" => "Require"
+      "TlsPolicy" => "REQUIRE"
     }
 
     with {:ok, _, _} <- AWS.SESv2.create_configuration_set(client, params),
@@ -74,7 +74,7 @@ defmodule Passwordless.Domain.Creator do
       case tracking_domain do
         %Domain{name: name, purpose: :tracking} ->
           tracking_params = %{
-            "HttpsPolicy" => "Require",
+            "HttpsPolicy" => "REQUIRE",
             "CustomRedirectDomain" => name
           }
 

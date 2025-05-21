@@ -51,7 +51,7 @@ defmodule Passwordless.Domain.ConfigSetReconciler do
       case {email_tracking, tracking_domain} do
         {true, %Domain{} = domain} ->
           %{
-            "HttpsPolicy" => "Require",
+            "HttpsPolicy" => "REQUIRE",
             "CustomRedirectDomain" => domain.name
           }
 
