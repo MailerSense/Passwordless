@@ -27,9 +27,9 @@ defmodule Passwordless.Domain.Creator do
         client = Session.get_client!()
 
         with {:ok, settings} <- Passwordless.update_app_settings(settings, %{email_tracking: true}),
-             {:ok, config_set} <- create_configuration_set(client, config_set_name, tracking_domain),
+             {:ok, config_set} <- create_configuration_set(client, app, config_set_name, tracking_domain),
              {:ok, settings} <- Passwordless.update_app_settings(settings, %{email_configuration_set: config_set}),
-             {:ok, topic_arn} <- create_topic(client, config_set),
+             {:ok, topic_arn} <- create_topic(client, app, config_set),
              {:ok, settings} <- Passwordless.update_app_settings(settings, %{email_event_topic_arn: topic_arn}),
              {:ok, subscription_arn} <-
                subscribe_topic_to_queue(client, topic_arn, Passwordless.config([:aws_current, :ses_queue_arn])),
@@ -54,7 +54,7 @@ defmodule Passwordless.Domain.Creator do
 
   # Private
 
-  defp create_configuration_set(%AWS.Client{} = client, config_set_name, tracking_domain) do
+  defp create_configuration_set(%AWS.Client{} = client, %App{} = app, config_set_name, tracking_domain) do
     params = %{
       "ConfigurationSetName" => config_set_name,
       "SendingEnabled" => %{
@@ -62,7 +62,17 @@ defmodule Passwordless.Domain.Creator do
       },
       "SuppressionOptions" => %{
         "SuppressedReasons" => ["BOUNCE", "COMPLAINT"]
-      }
+      },
+      "Tags" => [
+        %{
+          "Key" => "app_id",
+          "Value" => app.id
+        },
+        %{
+          "Key" => "org_id",
+          "Value" => app.org_id
+        }
+      ]
     }
 
     delivery_params = %{
@@ -87,10 +97,20 @@ defmodule Passwordless.Domain.Creator do
     end
   end
 
-  defp create_topic(%AWS.Client{} = client, config_set_name) do
-    with {:ok, %{"TopicArn" => topic_arn}, _} <-
+  defp create_topic(%AWS.Client{} = client, %App{} = app, config_set_name) do
+    with {:ok, %{"CreateTopicResponse" => %{"CreateTopicResult" => %{"TopicArn" => topic_arn}}}, _} <-
            AWS.SNS.create_topic(client, %{
-             "Name" => "#{config_set_name}-topic"
+             "Name" => "#{config_set_name}-topic",
+             "Tags" => [
+               %{
+                 "Key" => "app_id",
+                 "Value" => app.id
+               },
+               %{
+                 "Key" => "org_id",
+                 "Value" => app.org_id
+               }
+             ]
            }),
          do: {:ok, topic_arn}
   end

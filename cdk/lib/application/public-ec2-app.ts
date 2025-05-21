@@ -187,6 +187,7 @@ export class PublicEC2App extends Construct {
           "ses:SetIdentityHeadersInNotificationsEnabled",
           "ses:VerifyDomainIdentity",
           "ses:VerifyDomainDkim",
+          "ses:TagResource",
         ],
         resources: ["*"],
       }),
