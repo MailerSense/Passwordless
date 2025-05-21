@@ -19,7 +19,12 @@ import {
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { IHostedZone } from "aws-cdk-lib/aws-route53";
-import { INamespace } from "aws-cdk-lib/aws-servicediscovery";
+import {
+  DnsRecordType,
+  INamespace,
+  RoutingPolicy,
+  Service,
+} from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 
 import { ApplicationLoadBalancedEC2App } from "../pattern/application-load-balanced-ec2-app";
@@ -115,9 +120,9 @@ export class PublicEC2App extends Construct {
       healthCheck: healthCheckCmd
         ? {
             command: healthCheckCmd,
-            interval: Duration.seconds(10),
-            timeout: Duration.seconds(5),
-            startPeriod: Duration.seconds(30),
+            interval: Duration.seconds(5),
+            timeout: Duration.seconds(3),
+            startPeriod: Duration.seconds(10),
           }
         : undefined,
       capacityProviderStrategies,
@@ -274,6 +279,18 @@ export class PublicEC2App extends Construct {
         container: init,
         condition: ContainerDependencyCondition.SUCCESS,
       });
+    }
+
+    if (namespace) {
+      const internalService = new Service(this, "app-service", {
+        name,
+        namespace,
+        dnsRecordType: DnsRecordType.A,
+        routingPolicy: RoutingPolicy.WEIGHTED,
+        loadBalancer: true,
+      });
+
+      internalService.registerLoadBalancer("app-lb", this.service.loadBalancer);
     }
   }
 }

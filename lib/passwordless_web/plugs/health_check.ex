@@ -32,5 +32,7 @@ defmodule PasswordlessWeb.Plugs.HealthCheck do
 
   defp check(%Plug.Conn{} = conn, :ok), do: send_resp(conn, :ok, "")
 
+  defp check(%Plug.Conn{} = conn, :initializing), do: send_resp(conn, :precondition_failed, "")
+
   defp check(%Plug.Conn{} = conn, {:error, _error}), do: send_resp(conn, :internal_server_error, "")
 end

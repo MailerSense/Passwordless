@@ -49,6 +49,7 @@ export interface AppContainer {
   secrets: Record<string, Secret>;
   environment: Record<string, string>;
   containerPort: number;
+  minHealthyPercent: number;
 }
 
 export class PublicFargateApp extends Construct {
@@ -79,6 +80,7 @@ export class PublicFargateApp extends Construct {
 
     this.service = new ApplicationLoadBalancedFargateService(this, name, {
       cluster,
+      serviceName: name,
       taskImageOptions: {
         image: container.image,
         command: [container.command],
@@ -96,6 +98,8 @@ export class PublicFargateApp extends Construct {
       cpu: cpuLimit,
       protocol: ApplicationProtocol.HTTPS,
       memoryLimitMiB: memoryLimit,
+      minHealthyPercent: container.minHealthyPercent,
+      circuitBreaker: { rollback: true },
       loadBalancerName: `${name}-lb`,
       enableExecuteCommand: true,
       publicLoadBalancer: true,
@@ -111,6 +115,7 @@ export class PublicFargateApp extends Construct {
             startPeriod: Duration.seconds(10),
           }
         : undefined,
+      enableECSManagedTags: true,
     });
 
     // Allow connections to itself
@@ -176,6 +181,7 @@ export class PublicFargateApp extends Construct {
           "ses:SetIdentityHeadersInNotificationsEnabled",
           "ses:VerifyDomainIdentity",
           "ses:VerifyDomainDkim",
+          "ses:TagResource",
         ],
         resources: ["*"],
       }),

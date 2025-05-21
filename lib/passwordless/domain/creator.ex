@@ -29,7 +29,7 @@ defmodule Passwordless.Domain.Creator do
         with {:ok, settings} <- Passwordless.update_app_settings(settings, %{email_tracking: true}),
              {:ok, config_set} <- create_configuration_set(client, app, config_set_name, tracking_domain),
              {:ok, settings} <- Passwordless.update_app_settings(settings, %{email_configuration_set: config_set}),
-             {:ok, topic_arn} <- create_topic(client, app, config_set),
+             {:ok, topic_arn} <- create_topic(client, config_set),
              {:ok, settings} <- Passwordless.update_app_settings(settings, %{email_event_topic_arn: topic_arn}),
              {:ok, subscription_arn} <-
                subscribe_topic_to_queue(client, topic_arn, Passwordless.config([:aws_current, :ses_queue_arn])),
@@ -97,20 +97,10 @@ defmodule Passwordless.Domain.Creator do
     end
   end
 
-  defp create_topic(%AWS.Client{} = client, %App{} = app, config_set_name) do
+  defp create_topic(%AWS.Client{} = client, config_set_name) do
     with {:ok, %{"CreateTopicResponse" => %{"CreateTopicResult" => %{"TopicArn" => topic_arn}}}, _} <-
            AWS.SNS.create_topic(client, %{
-             "Name" => "#{config_set_name}-topic",
-             "Tags" => [
-               %{
-                 "Key" => "app_id",
-                 "Value" => app.id
-               },
-               %{
-                 "Key" => "org_id",
-                 "Value" => app.org_id
-               }
-             ]
+             "Name" => "#{config_set_name}-topic"
            }),
          do: {:ok, topic_arn}
   end
