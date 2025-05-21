@@ -27,6 +27,12 @@
         <div class="flex items-center gap-3">
           <.avatar name={user_name(membership.user)} color="blue" />
           {user_name(membership.user)}
+          <.badge
+            :if={@current_user.id == membership.user_id}
+            size="sm"
+            label={gettext("You")}
+            color="success"
+          />
         </div>
       </:col>
       <:col :let={membership} field={:email} sortable>

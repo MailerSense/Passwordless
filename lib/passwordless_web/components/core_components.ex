@@ -609,13 +609,12 @@ defmodule PasswordlessWeb.CoreComponents do
       <.form :for={app <- @app_menu_items} for={nil} action={~p"/apps/switch"} method="post">
         <.input type="hidden" name="app_id" value={app.id} />
         <button class="pc-dropdown__menu-item">
-          <.avatar src={app.settings.logo} name={app.name} size="sm" />
+          <.avatar src={app.settings.logo} name={app.name} size="xs" />
           <span class="line-clamp-1">{app.name}</span>
         </button>
       </.form>
-      <.dropdown_menu_item link_type="live_redirect" to={~p"/app/new"}>
-        <.icon name="remix-add-circle-line" class="w-8 h-8" />
-        {gettext("Create new app")}
+      <.dropdown_menu_item link_type="live_redirect" to={~p"/app"}>
+        {gettext("View all apps")}
       </.dropdown_menu_item>
     </.dropdown>
     """

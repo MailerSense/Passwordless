@@ -167,7 +167,7 @@ defmodule Passwordless.HealthCheck do
 
     case :ets.lookup(@table, key) do
       [{^key, value}] -> value
-      _ -> nil
+      _ -> :ok
     end
   end
 

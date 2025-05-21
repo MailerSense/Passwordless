@@ -161,25 +161,4 @@ defmodule PasswordlessWeb.App.ActionLive.Index do
     {actions, meta} = DataTable.search(query, params, @data_table_opts)
     assign(socket, actions: actions, meta: meta)
   end
-
-  defp generate_data(num_bars, max_series_per_bar) do
-    Enum.map(1..num_bars, fn _ ->
-      num_series = :rand.uniform(max_series_per_bar)
-      Enum.zip(random_colors(num_series), generate_percentages(num_series))
-    end)
-  end
-
-  # Generates random percentages that sum up to 1.0
-  defp generate_percentages(count) do
-    random_values = Enum.map(1..count, fn _ -> :rand.uniform() end)
-    total = Enum.sum(random_values)
-    Enum.map(random_values, fn value -> value / total end)
-  end
-
-  # Generates a random color in hex format
-  defp random_colors(num_series) do
-    [100, 100, 100, 100, 100, 100, 100, 100, 100, 200, 300]
-    |> Enum.shuffle()
-    |> Enum.take(num_series)
-  end
 end

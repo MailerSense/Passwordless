@@ -176,9 +176,4 @@ defmodule PasswordlessWeb.App.UserLive.EditComponent do
         {:noreply, assign_form(socket, changeset)}
     end
   end
-
-  defp translate_authenticator(:sms_otp), do: gettext("SMS OTP")
-  defp translate_authenticator(:whatsapp_otp), do: gettext("WhatsApp OTP")
-  defp translate_authenticator(:email_otp), do: gettext("Email OTP")
-  defp translate_authenticator(:magic_link), do: gettext("Magic link")
 end
