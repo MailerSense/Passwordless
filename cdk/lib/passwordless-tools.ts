@@ -1,17 +1,8 @@
 import * as cdk from "aws-cdk-lib";
 import { aws_backup as bk, Duration, RemovalPolicy } from "aws-cdk-lib";
 import { AutoScalingGroup } from "aws-cdk-lib/aws-autoscaling";
-import {
-  BehaviorOptions,
-  CachePolicy,
-  OriginRequestPolicy,
-  ResponseHeadersPolicy,
-  ViewerProtocolPolicy,
-} from "aws-cdk-lib/aws-cloudfront";
-import {
-  LoadBalancerV2Origin,
-  S3BucketOrigin,
-} from "aws-cdk-lib/aws-cloudfront-origins";
+import { ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
+import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import {
   InstanceClass,
   InstanceSize,
@@ -36,7 +27,7 @@ import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 import { join } from "path";
 
-import { AppContainer, PublicEC2App } from "./application/public-ec2-app";
+import { AppContainer } from "./application/public-ec2-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
@@ -348,7 +339,7 @@ export class PasswordlessTools extends cdk.Stack {
       environment: { ...envLookup.appConfig, POOL_SIZE: "10" },
     });
 
-    const app = new PublicEC2App(this, appName, {
+    /* const app = new PublicEC2App(this, appName, {
       name: appName,
       zone,
       domain: envLookup.hostedZone.domains.primary,
@@ -368,9 +359,9 @@ export class PasswordlessTools extends cdk.Stack {
           weight: 100,
         },
       ],
-    });
+    }); */
 
-    const scaling = app.service.service.autoScaleTaskCount({
+    /*     const scaling = app.service.service.autoScaleTaskCount({
       minCapacity: 1,
       maxCapacity: 3,
     });
@@ -385,7 +376,7 @@ export class PasswordlessTools extends cdk.Stack {
 
     generalSecret.grantRead(app.service.taskDefinition.taskRole);
 
-    customerMedia.bucket.grantReadWrite(app.service.taskDefinition.taskRole);
+    customerMedia.bucket.grantReadWrite(app.service.taskDefinition.taskRole); */
 
     postgres.db.connections.allowFrom(
       migration.lambda,
@@ -393,7 +384,7 @@ export class PasswordlessTools extends cdk.Stack {
       `Allow traffic from migration lambda to Postres RDS on port ${postgres.port}`,
     );
 
-    postgres.db.connections.allowFrom(
+    /*  postgres.db.connections.allowFrom(
       app.service.service,
       Port.tcp(postgres.port),
       `Allow traffic from app to Postres RDS on port ${postgres.port}`,
@@ -414,14 +405,14 @@ export class PasswordlessTools extends cdk.Stack {
     }
 
     ses.eventQueue.grantConsumeMessages(app.service.taskDefinition.taskRole);
-
+ */
     const _waf = new WAF(this, "main-waf", {
       name: `${appName}-waf`,
       associationArns: [
-        {
+        /*  {
           name: `${appName}-alb`,
           arn: app.service.loadBalancer.loadBalancerArn,
-        },
+        }, */
       ],
       allowedPathPrefixes: ["/webhook"],
       blockedPathPrefixes: ["/health"],
@@ -433,14 +424,14 @@ export class PasswordlessTools extends cdk.Stack {
       removalPolicy,
     });
 
-    const albBehavior: BehaviorOptions = {
+    /* const albBehavior: BehaviorOptions = {
       origin: new LoadBalancerV2Origin(app.service.loadBalancer),
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS_QUERY_STRINGS,
       originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
       responseHeadersPolicy:
         ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT,
-    };
+    }; */
 
     const _appCdn = new CDN(this, `${env}-app-cdn`, {
       name: `${appName}-app-cdn`,
@@ -454,9 +445,9 @@ export class PasswordlessTools extends cdk.Stack {
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
       additionalBehaviors: {
-        "assets/*": albBehavior,
+        /*  "assets/*": albBehavior,
         "images/*": albBehavior,
-        "fonts/*": albBehavior,
+        "fonts/*": albBehavior, */
       },
     });
 
