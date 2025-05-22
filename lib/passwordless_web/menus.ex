@@ -18,7 +18,7 @@ defmodule PasswordlessWeb.Menus do
   def main_menu_items(:app, %User{} = current_user),
     do: build_menu([:home, :users, :actions, :reports, :embed, :authenticators, :settings, :billing], current_user)
 
-  def main_menu_items(:knowledge, %User{} = current_user), do: build_menu([:pricing, :use_cases, :support], current_user)
+  def main_menu_items(:knowledge, %User{} = current_user), do: build_menu([:use_cases, :support], current_user)
 
   def main_menu_items(:admin, %User{} = current_user),
     do:
@@ -48,8 +48,7 @@ defmodule PasswordlessWeb.Menus do
 
   def section_menu_items(_user), do: []
 
-  def footer_menu_items,
-    do: [%{label: gettext("Home"), path: ~p"/"}, %{label: gettext("Pricing"), path: ~p"/pricing/free"}]
+  def footer_menu_items, do: [%{label: gettext("Home"), path: ~p"/"}]
 
   def build_menu(menu_items, current_user \\ nil) do
     menu_items
@@ -214,7 +213,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Knowledge Base"),
-      path: ~p"/pricing/free",
+      path: ~p"/use-cases",
       icon: "custom-knowledge"
     }
   end
@@ -313,46 +312,6 @@ defmodule PasswordlessWeb.Menus do
       label: gettext("Use Cases"),
       path: ~p"/use-cases",
       icon: "remix-briefcase-line",
-      link_type: "live_patch"
-    }
-  end
-
-  def get_link(:pricing = name, _user) do
-    %{
-      name: name,
-      label: gettext("Pricing"),
-      path: ~p"/pricing/free",
-      icon: "remix-price-tag-3-line",
-      link_type: "live_patch"
-    }
-  end
-
-  def get_link(:pricing_free = name, _user) do
-    %{
-      name: name,
-      label: gettext("Free"),
-      path: ~p"/pricing/free",
-      icon: "remix-seedling-line",
-      link_type: "live_patch"
-    }
-  end
-
-  def get_link(:pricing_pro = name, _user) do
-    %{
-      name: name,
-      label: gettext("Essential"),
-      path: ~p"/pricing/essential",
-      icon: "remix-line-chart-line",
-      link_type: "live_patch"
-    }
-  end
-
-  def get_link(:pricing_enterprise = name, _user) do
-    %{
-      name: name,
-      label: gettext("Enterprise"),
-      path: ~p"/pricing/enterprise",
-      icon: "remix-global-line",
       link_type: "live_patch"
     }
   end
