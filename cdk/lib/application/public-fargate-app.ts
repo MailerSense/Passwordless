@@ -229,6 +229,25 @@ export class PublicFargateApp extends Construct {
       }),
     );
 
+    this.service.taskDefinition.addToTaskRolePolicy(
+      new PolicyStatement({
+        sid: "NotificationManagement",
+        actions: [
+          "sns:CreateTopic",
+          "sns:DeleteTopic",
+          "sns:ListTopics",
+          "sns:ListSubscriptions",
+          "sns:ListSubscriptionsByTopic",
+          "sns:SetTopicAttributes",
+          "sns:GetTopicAttributes",
+          "sns:Subscribe",
+          "sns:Unsubscribe",
+          "sns:TagResource",
+        ],
+        resources: ["*"],
+      }),
+    );
+
     this.service.targetGroup.configureHealthCheck({
       path: healthCheckPath,
       interval: Duration.seconds(5),
