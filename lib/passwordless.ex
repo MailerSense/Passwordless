@@ -161,6 +161,12 @@ defmodule Passwordless do
     end
   end
 
+  def suspend_app(%App{} = app) do
+    app
+    |> App.changeset(%{state: :suspended})
+    |> Repo.update()
+  end
+
   def delete_app(%App{} = app) do
     Repo.soft_delete(app)
   end
@@ -660,6 +666,20 @@ defmodule Passwordless do
   end
 
   def email_opted_out?(%App{}, %Email{}), do: :ok
+
+  def opt_email_out(%App{} = app, %Email{} = email, reason) do
+    attrs = %{email: email.address, reason: reason}
+
+    changeset = EmailOptOut.changeset(%EmailOptOut{}, attrs)
+
+    upsert_clause = [
+      prefix: Tenant.to_prefix(app),
+      on_conflict: :nothing,
+      conflict_target: [:email]
+    ]
+
+    Repo.insert(changeset, upsert_clause)
+  end
 
   def create_email_unsubscribe_link!(%App{} = app, %Email{} = email) do
     attrs = %{key: EmailUnsubscribeLinkMapping.generate_key(), email_id: email.id}

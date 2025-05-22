@@ -207,7 +207,7 @@ defmodule PasswordlessWeb.User.OnboardingLive do
               |> assign_user_form(
                 org
                 |> Ecto.build_assoc(:apps)
-                |> App.changeset(%{settings: %{logo: Passwordless.config(:app_logo)}})
+                |> App.changeset(%{settings: %{logo: Enum.random(Passwordless.config(:logo_placeholders))}})
               )
 
             :no ->

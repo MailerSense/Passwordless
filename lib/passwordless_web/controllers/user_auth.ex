@@ -67,7 +67,7 @@ defmodule PasswordlessWeb.UserAuth do
   Returns to or redirects home.
   """
   def redirect_user_after_login(%Plug.Conn{} = conn, %User{} = user) do
-    user_return_to = get_session(conn, :user_return_to) || maybe_redirect_to_org_invitations(user)
+    user_return_to = get_session(conn, :user_return_to) || maybe_redirect_to_invitations(user)
     conn = delete_session(conn, :user_return_to)
 
     try do
@@ -118,7 +118,7 @@ defmodule PasswordlessWeb.UserAuth do
   def log_out_user(%User{} = user) do
     user
     |> Accounts.get_user_session_tokens()
-    |> disconnect_user_tokens(delete: true)
+    |> disconnect_tokens(delete: true)
   end
 
   @doc """
@@ -127,7 +127,7 @@ defmodule PasswordlessWeb.UserAuth do
   def disconnect_user_liveviews(%User{} = user) do
     user
     |> Accounts.get_user_session_tokens()
-    |> disconnect_user_tokens()
+    |> disconnect_tokens()
   end
 
   def user_session_topic(%Token{} = token), do: "users_sessions:#{Base.url_encode64(Token.hash(token))}"
@@ -271,7 +271,7 @@ defmodule PasswordlessWeb.UserAuth do
     end
   end
 
-  def maybe_redirect_to_org_invitations(%User{} = user) do
+  def maybe_redirect_to_invitations(%User{} = user) do
     invitations = Organizations.list_invitations_by_user(user)
 
     if Enum.any?(invitations),
@@ -293,10 +293,10 @@ defmodule PasswordlessWeb.UserAuth do
   end
 
   defp return_to_path(%Plug.Conn{} = conn) do
-    maybe_redirect_to_org_invitations(conn.assigns.current_user) || current_path(conn)
+    maybe_redirect_to_invitations(conn.assigns.current_user) || current_path(conn)
   end
 
-  defp disconnect_user_tokens(session_tokens, opts \\ []) when is_list(session_tokens) do
+  defp disconnect_tokens(session_tokens, opts \\ []) when is_list(session_tokens) do
     delete = Keyword.get(opts || [], :delete, false)
 
     for %Token{} = token <- session_tokens do

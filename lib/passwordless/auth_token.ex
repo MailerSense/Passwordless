@@ -3,7 +3,7 @@ defmodule Passwordless.AuthToken do
   API keys for interacting with Passwordless via JSON API.
   """
 
-  use Passwordless.Schema, prefix: "authtkn"
+  use Passwordless.Schema, prefix: "auth_token"
 
   import Ecto.Query
 

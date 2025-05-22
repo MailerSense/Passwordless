@@ -3,7 +3,7 @@ defmodule Passwordless.Accounts.Token do
   A key is assigned to a user for a specific context (purpose).
   """
 
-  use Passwordless.Schema, prefix: "acctkn"
+  use Passwordless.Schema, prefix: "token"
 
   import Ecto.Query
 
@@ -23,7 +23,7 @@ defmodule Passwordless.Accounts.Token do
   ]
   @contexts Keyword.keys(@lifetimes)
 
-  schema "user_tokens" do
+  schema "tokens" do
     field :key, Passwordless.EncryptedBinary, redact: true
     field :key_hash, Passwordless.HashedBinary, redact: true
     field :context, Ecto.Enum, values: @contexts

@@ -3,7 +3,7 @@ defmodule Passwordless.Organizations.Membership do
   An organization membership schema.
   """
 
-  use Passwordless.Schema, prefix: "orgmbr"
+  use Passwordless.Schema, prefix: "membership"
 
   import Ecto.Query
 
@@ -37,7 +37,7 @@ defmodule Passwordless.Organizations.Membership do
       ]
     ]
   }
-  schema "org_memberships" do
+  schema "memberships" do
     field :role, Ecto.Enum, values: @roles, default: :member
 
     # User

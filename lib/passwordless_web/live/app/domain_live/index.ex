@@ -6,7 +6,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
   alias Passwordless.Accounts.User
   alias Passwordless.Domain
-  alias Passwordless.Domain.ConfigSetReconciler
+  alias Passwordless.Domain.Updater
   alias Passwordless.Repo
 
   @impl true
@@ -141,7 +141,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
       page_title: gettext("DNS records"),
       page_subtitle:
         gettext(
-          "Ensure the following DNS records are set up for your domain. This is required for sending emails from your branded domain. If you need help, please contact your domain provider. The records may take up to 48 hours to propagate."
+          "Ensure the following DNS records are set up for your domain. This is required for sending emails from your branded domain. If you need help, please contact your domain provider. The records may take up to 48 hours to propagate. Select your domain provider below to open how-to guide."
         )
     )
   end
@@ -220,7 +220,7 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
       domain_id: socket.assigns.email_domain.id,
       tracking_domain: socket.assigns.tracking_domain.name
     }
-    |> ConfigSetReconciler.new()
+    |> Updater.new()
     |> Oban.insert()
   end
 end

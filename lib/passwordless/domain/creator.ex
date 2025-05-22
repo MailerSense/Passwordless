@@ -16,7 +16,7 @@ defmodule Passwordless.Domain.Creator do
   def process(%Oban.Job{args: %{"domain_id" => domain_id}}) when is_binary(domain_id) do
     case domain_id |> Passwordless.get_domain() |> Repo.preload([{:app, [:settings]}]) do
       %Domain{app: %App{settings: %AppSettings{} = settings} = app} = domain ->
-        config_set_name = Domain.config_set_name(domain)
+        ses_queue_arn = Passwordless.config([:aws_current, :ses_queue_arn])
 
         tracking_domain =
           case Passwordless.get_fallback_domain(app, :tracking) do
@@ -26,18 +26,13 @@ defmodule Passwordless.Domain.Creator do
 
         client = Session.get_client!()
 
-        with {:ok, settings} <- Passwordless.update_app_settings(settings, %{email_tracking: true}),
-             {:ok, config_set} <- create_configuration_set(client, app, config_set_name, tracking_domain),
-             {:ok, settings} <- Passwordless.update_app_settings(settings, %{email_configuration_set: config_set}),
-             {:ok, topic_arn} <- create_topic(client, config_set),
-             {:ok, settings} <- Passwordless.update_app_settings(settings, %{email_event_topic_arn: topic_arn}),
-             {:ok, subscription_arn} <-
-               subscribe_topic_to_queue(client, topic_arn, Passwordless.config([:aws_current, :ses_queue_arn])),
-             {:ok, settings} <-
-               Passwordless.update_app_settings(settings, %{email_event_topic_subscription_arn: subscription_arn}),
-             {:ok, destination} <- create_event_destination(client, config_set, topic_arn),
-             {:ok, _settings} <- Passwordless.update_app_settings(settings, %{email_event_destination: destination}),
-             {:ok, domain} <- create_email_identity(client, domain, app, config_set) do
+        with {:ok, settings} <-
+               Passwordless.update_app_settings(settings, %{email_tracking: not is_nil(tracking_domain)}),
+             {:ok, settings} <- create_configuration_set(client, %App{app | settings: settings}, domain),
+             {:ok, settings} <- create_topic(client, %App{app | settings: settings}),
+             {:ok, settings} <- subscribe_topic_to_queue(client, %App{app | settings: settings}, ses_queue_arn),
+             {:ok, settings} <- create_event_destination(client, %App{app | settings: settings}),
+             {:ok, domain} <- create_email_identity(client, domain, %App{app | settings: settings}) do
           Logger.info("Successfully created domain identity and configuration set for #{domain.name}")
           {:ok, domain.name}
         else
@@ -54,7 +49,19 @@ defmodule Passwordless.Domain.Creator do
 
   # Private
 
-  defp create_configuration_set(%AWS.Client{} = client, %App{} = app, config_set_name, tracking_domain) do
+  defp create_configuration_set(
+         %AWS.Client{} = client,
+         %App{settings: %AppSettings{email_configuration_set: nil} = settings} = app,
+         %Domain{purpose: :email} = domain
+       ) do
+    config_set_name = Domain.config_set_name(domain)
+
+    tracking_domain =
+      case Passwordless.get_fallback_domain(app, :tracking) do
+        {:ok, tracking_domain} -> tracking_domain
+        _ -> nil
+      end
+
     params = %{
       "ConfigurationSetName" => config_set_name,
       "SendingEnabled" => %{
@@ -80,7 +87,8 @@ defmodule Passwordless.Domain.Creator do
     }
 
     with {:ok, _, _} <- AWS.SESv2.create_configuration_set(client, params),
-         {:ok, _, _} <- AWS.SESv2.put_configuration_set_delivery_options(client, config_set_name, delivery_params) do
+         {:ok, _, _} <- AWS.SESv2.put_configuration_set_delivery_options(client, config_set_name, delivery_params),
+         {:ok, settings} <- Passwordless.update_app_settings(settings, %{email_configuration_set: config_set_name}) do
       case tracking_domain do
         %Domain{name: name, purpose: :tracking} ->
           tracking_params = %{
@@ -89,41 +97,71 @@ defmodule Passwordless.Domain.Creator do
           }
 
           with {:ok, _, _} <- AWS.SESv2.put_configuration_set_tracking_options(client, config_set_name, tracking_params),
-               do: {:ok, config_set_name}
+               do: {:ok, settings}
 
         _ ->
-          {:ok, config_set_name}
+          {:ok, settings}
       end
     end
   end
 
-  defp create_topic(%AWS.Client{} = client, config_set_name) do
+  defp create_configuration_set(
+         %AWS.Client{} = _client,
+         %App{settings: %AppSettings{} = settings} = _app,
+         %Domain{purpose: :email} = _domain
+       ),
+       do: {:ok, settings}
+
+  defp create_topic(%AWS.Client{} = client, %App{
+         settings: %AppSettings{email_configuration_set: email_configuration_set, email_event_topic_arn: nil} = settings
+       })
+       when is_binary(email_configuration_set) do
     with {:ok, %{"CreateTopicResponse" => %{"CreateTopicResult" => %{"TopicArn" => topic_arn}}}, _} <-
-           AWS.SNS.create_topic(client, %{
-             "Name" => "#{config_set_name}-topic"
-           }),
-         do: {:ok, topic_arn}
+           AWS.SNS.create_topic(client, %{"Name" => "#{email_configuration_set}-topic"}),
+         do: Passwordless.update_app_settings(settings, %{email_event_topic_arn: topic_arn})
   end
 
-  defp subscribe_topic_to_queue(%AWS.Client{} = client, topic_arn, queue_arn) do
-    with {:ok, %{"SubscriptionArn" => subscription_arn}, _} <-
+  defp create_topic(%AWS.Client{} = _client, %App{settings: %AppSettings{} = settings}) do
+    {:ok, settings}
+  end
+
+  defp subscribe_topic_to_queue(
+         %AWS.Client{} = client,
+         %App{
+           settings:
+             %AppSettings{email_event_topic_arn: email_event_topic_arn, email_event_topic_subscription_arn: nil} =
+               settings
+         },
+         queue_arn
+       )
+       when is_binary(email_event_topic_arn) and is_binary(queue_arn) do
+    with {:ok, %{"SubscribeResponse" => %{"SubscribeResult" => %{"SubscriptionArn" => subscription_arn}}}, _} <-
            AWS.SNS.subscribe(client, %{
-             "TopicArn" => topic_arn,
+             "TopicArn" => email_event_topic_arn,
              "Protocol" => "sqs",
              "Endpoint" => queue_arn,
              "ReturnSubscriptionArn" => true
            }),
-         do: {:ok, subscription_arn}
+         do: Passwordless.update_app_settings(settings, %{email_event_topic_subscription_arn: subscription_arn})
   end
 
-  defp create_event_destination(%AWS.Client{} = client, config_set_name, topic_arn) do
-    destination_name = "#{config_set_name}-track"
+  defp subscribe_topic_to_queue(%AWS.Client{} = _client, %App{settings: %AppSettings{} = settings}, _queue_arn) do
+    {:ok, settings}
+  end
+
+  defp create_event_destination(%AWS.Client{} = client, %App{
+         settings:
+           %AppSettings{email_configuration_set: email_configuration_set, email_event_topic_arn: email_event_topic_arn} =
+             settings
+       })
+       when is_binary(email_configuration_set) and is_binary(email_event_topic_arn) do
+    destination_name = "#{email_configuration_set}-track"
 
     params = %{
       "EventDestination" => %{
         "Enabled" => true,
         "SnsDestination" => %{
-          "TopicArn" => topic_arn
+          "TopicArn" => email_event_topic_arn
         },
         "MatchingEventTypes" => [
           "SEND",
@@ -141,14 +179,23 @@ defmodule Passwordless.Domain.Creator do
       "EventDestinationName" => destination_name
     }
 
-    with {:ok, _, _} <- AWS.SESv2.create_configuration_set_event_destination(client, config_set_name, params),
-         do: {:ok, destination_name}
+    with {:ok, _, _} <-
+           AWS.SESv2.create_configuration_set_event_destination(client, email_configuration_set, params),
+         do: Passwordless.update_app_settings(settings, %{email_event_destination: destination_name})
   end
 
-  defp create_email_identity(%AWS.Client{} = client, %Domain{purpose: :email} = domain, %App{} = app, config_set_name) do
+  defp create_event_destination(%AWS.Client{} = _client, %App{settings: %AppSettings{} = settings}) do
+    {:ok, settings}
+  end
+
+  defp create_email_identity(
+         %AWS.Client{} = client,
+         %Domain{state: :aws_not_started, purpose: :email, records: []} = domain,
+         %App{settings: %AppSettings{email_configuration_set: email_configuration_set}} = app
+       ) do
     params = %{
       "EmailIdentity" => domain.name,
-      "ConfigurationSetName" => config_set_name,
+      "ConfigurationSetName" => email_configuration_set,
       "Tags" => [
         %{
           "Key" => "app_id",
@@ -173,12 +220,20 @@ defmodule Passwordless.Domain.Creator do
     with {:ok,
           %{
             "IdentityType" => "DOMAIN",
-            "DkimAttributes" => [_ | _] = dkim_attributes,
+            "DkimAttributes" => %{
+              "SigningAttributesOrigin" => "AWS_SES",
+              "SigningEnabled" => true,
+              "Tokens" => [_ | _] = dkim_attributes
+            },
             "VerifiedForSendingStatus" => verified_status
           }, _} <- AWS.SESv2.create_email_identity(client, params),
          {:ok, _, _} <- AWS.SESv2.put_email_identity_mail_from_attributes(client, domain.name, mail_from_params),
          {:ok, domain} <- create_dns_records(domain, dkim_attributes, verified_status),
          do: update_domain_state(domain, verified_status)
+  end
+
+  defp create_email_identity(%AWS.Client{} = _client, %Domain{purpose: :email} = domain, %App{} = _app) do
+    {:ok, domain}
   end
 
   defp update_domain_state(%Domain{} = domain, true = _verified_status) do

@@ -3,33 +3,40 @@
     <.box card>
       <.form_header title={gettext("Domain")} no_margin />
       <.p :if={not Domain.system?(@email_domain)}>
-        Emails (OTPs, magic links) are sent from your domain. This allows you to send branded emails and improves deliverability. You can set up a custom domain for your app or use the default system domain.
+        Emails (OTPs, magic links) are sent from your domain
+        <.a label={@email_domain.name} style="link" class="inline-flex" />. If you need to configure DNS records, click the button below. If you have any questions, please reach out to us.
       </.p>
       <.p :if={Domain.system?(@email_domain)}>
         Emails (OTPs, magic links) are sent by default from
         <.a label={@email_domain.name} style="link" class="inline-flex" />. If you want a more unified user experience, we encourage you to set up a custom domain for sending emails. We'll guide you through the process.
       </.p>
-      <.field
-        :if={not Domain.system?(@email_domain)}
-        name="email_domain"
-        value={@email_domain.name}
-        label={gettext("Domain")}
-        badge={domain_state_badge(@email_domain)}
-        readonly
-        wrapper_class="mb-0!"
-      />
-      <div :if={Util.present?(@email_domain) and not Domain.verified?(@email_domain)} class="flex">
+      <div
+        :if={not Domain.system?(@email_domain) and not Domain.verified?(@email_domain)}
+        class="flex"
+      >
         <.button
           to={~p"/domain/email/dns"}
-          icon="remix-file-line"
-          label={gettext("Configure DNS")}
+          icon="remix-settings-2-line"
+          label={gettext("Configure DNS records")}
+          link_type="live_patch"
+        />
+      </div>
+      <div
+        :if={not Domain.system?(@email_domain) and Domain.verified?(@email_domain)}
+        class="flex"
+      >
+        <.button
+          to={~p"/domain/email/dns"}
+          icon="remix-check-line"
+          label={gettext("Domain ready", domain: @email_domain.name)}
+          color="success"
           link_type="live_patch"
         />
       </div>
       <div :if={Domain.system?(@email_domain)} class="flex">
         <.button
           to={~p"/domain/email/new"}
-          icon="remix-install-line"
+          icon="remix-settings-2-line"
           label={gettext("Configure domain")}
           link_type="live_patch"
         />

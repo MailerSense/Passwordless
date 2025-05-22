@@ -1,7 +1,7 @@
 defmodule Passwordless.Organizations.Invitation do
   @moduledoc false
 
-  use Passwordless.Schema, prefix: "orginv"
+  use Passwordless.Schema, prefix: "invitation"
 
   import Ecto.Query
 
@@ -16,7 +16,7 @@ defmodule Passwordless.Organizations.Invitation do
     Flop.Schema,
     sortable: [:id, :email], filterable: [:id]
   }
-  schema "org_invitations" do
+  schema "invitations" do
     field :email, :string
 
     belongs_to :org, Org

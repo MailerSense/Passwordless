@@ -1,12 +1,35 @@
 <div>
   <% origin = "right" %>
-  <.slide_over title={@title} subtitle={@subtitle} origin={origin} max_width="xl">
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin} max_width="2xl">
+    <div class="flex items-center gap-3 flex-wrap mb-6">
+      <.a to="https://www.godaddy.com/en/help/manage-dns-records-680" style="link" target="_blank">
+        GoDaddy
+      </.a>
+      <.a
+        to="https://www.namecheap.com/support/knowledgebase/article.aspx/434/2237/how-do-i-set-up-host-records-for-a-domain/"
+        style="link"
+        target="_blank"
+      >
+        Namecheap
+      </.a>
+      <.a
+        to="https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/"
+        style="link"
+        target="_blank"
+      >
+        Cloudflare
+      </.a>
+    </div>
     <.simple_table
       items={@records}
       count={Enum.count(@records)}
       title={gettext("Records - %{domain}", domain: @base)}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("DNS records"))}</:if_empty>
+      <:col :let={record} field={:status}>
+        <% {color, label} = verified_badge(record) %>
+        <.badge with_dot size="sm" label={label} color={color} />
+      </:col>
       <:col :let={record} field={:name}>
         <div
           id={record.id <> "-tooltip"}
@@ -22,12 +45,31 @@
           </span>
         </div>
       </:col>
-      <:col :let={record} field={:kind} body_class="font-mono">
+      <:col
+        :let={record}
+        field={:kind}
+        body_class="font-mono font-medium text-gray-900 dark:text-white"
+      >
         {String.upcase(Atom.to_string(record.kind))}
       </:col>
       <:col :let={record} field={:value}>
-        <.value_line verified={record.verified} value={record.value} />
+        <span
+          id={record.id <> "-value-tooltip"}
+          phx-hook="TippyHook"
+          data-tippy-content={gettext("Click to copy: %{value}", value: record.value)}
+        >
+          <span
+            id={record.id <> "-value-clipboard"}
+            class="flex gap-1 items-center cursor-pointer"
+            phx-hook="ClipboardHook"
+            data-content={record.value}
+          >
+            <span class="before-copied">{record.value}</span>
+            <span class="hidden text-green-600 after-copied dark:text-green-300">Copied!</span>
+          </span>
+        </span>
       </:col>
+      <:col field={:priority} />
     </.simple_table>
 
     <:actions>

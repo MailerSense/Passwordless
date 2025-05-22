@@ -91,7 +91,7 @@ defmodule Passwordless.Organizations do
   @doc """
   Preload org memberships.
   """
-  def preload_org_memberships(%Org{} = org) do
+  def preload_memberships(%Org{} = org) do
     Repo.preload(org, memberships: :user)
   end
 

@@ -1,7 +1,7 @@
 defmodule Passwordless.ActionStatistic do
   @moduledoc false
 
-  use Passwordless.Schema, prefix: "actstat"
+  use Passwordless.Schema, prefix: "action_template"
 
   import Ecto.Query
 

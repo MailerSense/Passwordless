@@ -3,7 +3,7 @@ defmodule Passwordless.Accounts.User do
   A user is a person or service who can log in and interact with the system.
   """
 
-  use Passwordless.Schema, prefix: "accuser"
+  use Passwordless.Schema, prefix: "user"
 
   alias Database.ChangesetExt
   alias Passwordless.Accounts.Credential

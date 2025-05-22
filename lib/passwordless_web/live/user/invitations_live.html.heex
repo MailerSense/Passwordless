@@ -1,4 +1,4 @@
-<.tabbed_settings_layout current_page={:org_invitations} current_user={@current_user}>
+<.tabbed_settings_layout current_page={:invitations} current_user={@current_user}>
   <%= if @current_user.confirmed_at do %>
     <%= if Util.blank?(@invitations) do %>
       <.p>

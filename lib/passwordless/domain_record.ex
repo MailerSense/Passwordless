@@ -3,7 +3,7 @@ defmodule Passwordless.DomainRecord do
   Email domain records are used to verify domain ownership & ensure high quality sendouts.
   """
 
-  use Passwordless.Schema, prefix: "dnsrec"
+  use Passwordless.Schema, prefix: "domain_record"
 
   import Ecto.Query
 
@@ -31,7 +31,7 @@ defmodule Passwordless.DomainRecord do
     field :kind, Ecto.Enum, values: ~w(mx txt cname)a
     field :name, :string
     field :value, :string
-    field :priority, :integer, default: 0
+    field :priority, :integer
     field :verified, :boolean, default: false
 
     belongs_to :domain, Domain
@@ -47,7 +47,7 @@ defmodule Passwordless.DomainRecord do
     priority
     domain_id
   )a
-  @required_fields @fields
+  @required_fields @fields -- [:priority]
 
   @doc """
   Get invitations for an organization.
@@ -101,6 +101,7 @@ defmodule Passwordless.DomainRecord do
     |> validate_required(@required_fields)
     |> validate_name()
     |> validate_value()
+    |> validate_priority()
     |> unique_constraint([:domain_id, :kind, :name, :value])
     |> unsafe_validate_unique([:domain_id, :kind, :name, :value], Passwordless.Repo)
     |> assoc_constraint(:domain)
@@ -119,5 +120,9 @@ defmodule Passwordless.DomainRecord do
     changeset
     |> ChangesetExt.ensure_trimmed(:value)
     |> validate_length(:value, min: 1, max: 255)
+  end
+
+  defp validate_priority(changeset) do
+    validate_number(changeset, :priority, greater_than: 0)
   end
 end

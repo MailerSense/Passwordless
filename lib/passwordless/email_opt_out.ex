@@ -3,7 +3,7 @@ defmodule Passwordless.EmailOptOut do
   An email opt-out.
   """
 
-  use Passwordless.Schema, prefix: "emoptout"
+  use Passwordless.Schema, prefix: "email_opt_out"
 
   alias Database.ChangesetExt
 

@@ -51,7 +51,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
       Passwordless.create_app(org, %{
         name: Passwordless.config(:app_name),
         settings: %{
-          logo: Passwordless.config(:app_logo),
+          logo: Enum.random(Passwordless.config(:logo_placeholders)),
           website: "https://passwordless.tools",
           display_name: Passwordless.config(:app_name),
           email_tracking: true,
@@ -270,7 +270,14 @@ defmodule Passwordless.Organizations.OrgSeeder do
     {:ok, %{subdomain: subdomain}} = Domainatrex.parse(domain)
 
     [
-      %{kind: :txt, name: "envelope.#{subdomain}", value: "v=spf1 include:amazonses.com ~all", verified: true},
+      %{
+        kind: :mx,
+        name: "email.#{subdomain}",
+        value: "feedback-smtp.eu-west-1.amazonses.com",
+        verified: true,
+        priority: 10
+      },
+      %{kind: :txt, name: "email.#{subdomain}", value: "v=spf1 include:amazonses.com ~all", verified: true},
       %{
         kind: :txt,
         name: "_dmarc.#{subdomain}",

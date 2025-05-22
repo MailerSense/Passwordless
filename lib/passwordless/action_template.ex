@@ -1,7 +1,7 @@
 defmodule Passwordless.ActionTemplate do
   @moduledoc false
 
-  use Passwordless.Schema, prefix: "action"
+  use Passwordless.Schema, prefix: "action_template"
 
   import Ecto.Query
 

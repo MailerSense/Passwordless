@@ -26,7 +26,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     ## User tokens
 
-    create table(:user_tokens, primary_key: false) do
+    create table(:tokens, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :key, :binary, null: false
       add :key_hash, :binary, null: false
@@ -38,14 +38,14 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create index(:user_tokens, [:user_id])
-    create index(:user_tokens, [:user_id, :context, :key_hash])
-    create index(:user_tokens, [:context, :key_hash])
-    create unique_index(:user_tokens, [:key_hash])
+    create index(:tokens, [:user_id])
+    create index(:tokens, [:user_id, :context, :key_hash])
+    create index(:tokens, [:context, :key_hash])
+    create unique_index(:tokens, [:key_hash])
 
     ## User credentials
 
-    create table(:user_credentials, primary_key: false) do
+    create table(:credentials, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :subject, :string
       add :provider, :string
@@ -55,13 +55,13 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create index(:user_credentials, [:user_id])
-    create unique_index(:user_credentials, [:user_id, :provider])
-    create unique_index(:user_credentials, [:subject, :provider])
+    create index(:credentials, [:user_id])
+    create unique_index(:credentials, [:user_id, :provider])
+    create unique_index(:credentials, [:subject, :provider])
 
     ## OTPs
 
-    create table(:user_otps, primary_key: false) do
+    create table(:otps, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :code, :binary, null: false
       add :attempts, :integer, null: false, default: 0
@@ -73,11 +73,11 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create unique_index(:user_otps, [:user_id])
+    create unique_index(:otps, [:user_id])
 
     ## User TOTP
 
-    create table(:user_totps, primary_key: false) do
+    create table(:totps, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :secret, :binary, null: false
       add :backup_codes, :map, null: false, default: %{}
@@ -87,7 +87,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create unique_index(:user_totps, [:user_id])
+    create unique_index(:totps, [:user_id])
 
     ## Organizations
 
@@ -104,9 +104,9 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create unique_index(:orgs, [:email], where: "deleted_at is null")
 
-    ## Organization memberships
+    ## Memberships
 
-    create table(:org_memberships, primary_key: false) do
+    create table(:memberships, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :role, :string, null: false
 
@@ -116,11 +116,11 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create unique_index(:org_memberships, [:org_id, :user_id])
+    create unique_index(:memberships, [:org_id, :user_id])
 
-    ## Organization invitations
+    ## Invitations
 
-    create table(:org_invitations, primary_key: false) do
+    create table(:invitations, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :email, :citext
 
@@ -130,8 +130,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
-    create index(:org_invitations, [:user_id])
-    create unique_index(:org_invitations, [:org_id, :email])
+    create index(:invitations, [:user_id])
+    create unique_index(:invitations, [:org_id, :email])
 
     ## Billing
 
@@ -295,7 +295,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :kind, :string, null: false
       add :name, :citext, null: false
       add :value, :string, null: false
-      add :priority, :integer, null: false, default: 0
+      add :priority, :integer
       add :verified, :boolean, null: false, default: false
 
       add :domain_id, references(:domains, type: :uuid, on_delete: :delete_all), null: false

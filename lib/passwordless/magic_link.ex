@@ -3,7 +3,7 @@ defmodule Passwordless.MagicLink do
   A magic link.
   """
 
-  use Passwordless.Schema, prefix: "mgclnk"
+  use Passwordless.Schema, prefix: "magic_link"
 
   import Ecto.Query
 

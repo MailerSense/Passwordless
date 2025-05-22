@@ -7,9 +7,9 @@
       </.p>
       <div class="flex">
         <.button
-          to={~p"/app/new"}
+          to={~p"/apps/new"}
           icon="remix-add-circle-line"
-          label={gettext("Create new app")}
+          label={gettext("Create app")}
           link_type="live_redirect"
         />
       </div>
@@ -38,7 +38,7 @@
       <:actions :let={app}>
         <.icon_button
           id="remove-app-#{app.id}"
-          to={apply_filters(@filters, @meta, ~p"/app/#{app}/delete")}
+          to={apply_filters(@filters, @meta, ~p"/apps/#{app}/delete")}
           size="sm"
           icon="custom-trash"
           color="light"
@@ -52,7 +52,7 @@
           data-tippy-placement="left"
         />
         <.icon_button
-          to={apply_filters(@filters, @meta, ~p"/app/#{app}/edit")}
+          to={apply_filters(@filters, @meta, ~p"/apps/#{app}/edit")}
           size="sm"
           icon="custom-edit"
           color="light"
@@ -72,7 +72,7 @@
       subtitle={@page_subtitle}
       app={@new_app}
       module={PasswordlessWeb.App.AppLive.FormComponent}
-      return_to={~p"/app"}
+      return_to={~p"/apps"}
       live_action={@live_action}
       current_org={@current_org}
       current_user={@current_user}
@@ -84,7 +84,7 @@
       subtitle={@page_subtitle}
       app={@app}
       module={PasswordlessWeb.App.AppLive.FormComponent}
-      return_to={~p"/app"}
+      return_to={~p"/apps"}
       live_action={@live_action}
       current_org={@current_org}
       current_user={@current_user}

@@ -1,7 +1,7 @@
 defmodule Passwordless.RecoveryCodes do
   @moduledoc false
 
-  use Passwordless.Schema, prefix: "reccodes"
+  use Passwordless.Schema, prefix: "recovery_codes"
 
   alias Passwordless.User
 

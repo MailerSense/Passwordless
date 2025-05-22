@@ -1,7 +1,7 @@
 defmodule Passwordless.Accounts.OTP do
   @moduledoc false
 
-  use Passwordless.Schema, prefix: "accotp"
+  use Passwordless.Schema, prefix: "otp"
 
   alias Passwordless.Accounts.User
 
@@ -21,7 +21,7 @@ defmodule Passwordless.Accounts.OTP do
     Flop.Schema,
     filterable: [:id], sortable: [:id]
   }
-  schema "user_otps" do
+  schema "otps" do
     field :code, Passwordless.EncryptedBinary
     field :attempts, :integer, default: 1
     field :expires_at, :utc_datetime_usec

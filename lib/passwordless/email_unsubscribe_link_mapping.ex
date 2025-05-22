@@ -3,7 +3,7 @@ defmodule Passwordless.EmailUnsubscribeLinkMapping do
   An email unsubscribe link mapping.
   """
 
-  use Passwordless.Schema, prefix: "emunsub"
+  use Passwordless.Schema, prefix: "email_unsubscribe_link_mapping"
 
   import Ecto.Changeset
   import Ecto.Query

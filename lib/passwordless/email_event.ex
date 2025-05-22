@@ -3,7 +3,7 @@ defmodule Passwordless.EmailEvent do
   Email events like sends, opens and bounces etc.
   """
 
-  use Passwordless.Schema, prefix: "eevent"
+  use Passwordless.Schema, prefix: "email_event"
 
   alias Database.ChangesetExt
   alias Passwordless.EmailMessage

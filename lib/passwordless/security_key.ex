@@ -3,7 +3,7 @@ defmodule Passwordless.SecurityKey do
   A WebAuthn identity.
   """
 
-  use Passwordless.Schema, prefix: "seckey"
+  use Passwordless.Schema, prefix: "security_key"
 
   alias Passwordless.App
   alias Passwordless.User

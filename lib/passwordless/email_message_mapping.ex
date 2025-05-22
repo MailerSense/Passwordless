@@ -3,7 +3,7 @@ defmodule Passwordless.EmailMessageMapping do
   An email message SES mapping.
   """
 
-  use Passwordless.Schema, prefix: "emmsgmap"
+  use Passwordless.Schema, prefix: "email_message_mapping"
 
   import Ecto.Changeset
   import Ecto.Query

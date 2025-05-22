@@ -19,7 +19,8 @@ config :passwordless,
   keywords: [
     "monitoring as code",
     "synthetic monitoring"
-  ]
+  ],
+  logo_placeholders: Enum.map(1..5, &"https://cdn.passwordlesstools.com/logos/logo-#{&1}.webp")
 
 # Configures the repo
 config :passwordless,
