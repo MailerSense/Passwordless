@@ -51,7 +51,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
       Passwordless.create_app(org, %{
         name: Passwordless.config(:app_name),
         settings: %{
-          logo: Passwordless.config(:app_logo),
+          logo: Enum.random(Passwordless.config(:logo_placeholders)),
           website: "https://passwordless.tools",
           display_name: Passwordless.config(:app_name),
           email_tracking: true,

@@ -7,7 +7,7 @@ defmodule Passwordless.Views.ActionTemplateUniqueUser do
   alias Database.Tenant
   alias Passwordless.App
 
-  @primary_key {:action_template_id, Database.PrefixedUUID, prefix: "action", autogenerate: true}
+  @primary_key {:action_template_id, Database.PrefixedUUID, prefix: "action_template", autogenerate: true}
   @timestamps_opts false
   @foreign_key_type Database.PrefixedUUID
 
