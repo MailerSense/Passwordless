@@ -41,6 +41,7 @@ export interface PublicFargateAppProps {
   healthCheckCmd?: string;
   healthCheckPath: string;
   logRetention: RetentionDays;
+  desiredCount: number;
 }
 
 export interface AppContainer {
@@ -76,11 +77,13 @@ export class PublicFargateApp extends Construct {
       healthCheckCmd,
       healthCheckPath,
       logRetention,
+      desiredCount,
     } = props;
 
     this.service = new ApplicationLoadBalancedFargateService(this, name, {
       cluster,
       serviceName: name,
+      desiredCount,
       taskImageOptions: {
         image: container.image,
         command: [container.command],
