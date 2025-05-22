@@ -6,8 +6,8 @@ defmodule Passwordless.Billing.Providers.Stripe do
   use Passwordless.Billing.Providers.Behaviour
 
   alias Passwordless.Billing
-  alias Passwordless.Billing.Customer
-  alias Passwordless.Billing.Subscription
+  alias Passwordless.BillingCustomer
+  alias Passwordless.BillingSubscription
   alias Passwordless.Organizations.Org
   alias Passwordless.Repo
 
@@ -22,7 +22,7 @@ defmodule Passwordless.Billing.Providers.Stripe do
   def checkout_url(%Stripe.Checkout.Session{url: url}), do: url
 
   @impl true
-  def change_plan(%Org{} = org, %Customer{subscription: %Subscription{} = subscription} = customer, items) do
+  def change_plan(%Org{} = org, %BillingCustomer{subscription: %BillingSubscription{} = subscription} = customer, items) do
     with {:ok, %Stripe.Subscription{} = stripe_subscription} <- Stripe.Subscription.retrieve(subscription.provider_id) do
       Stripe.BillingPortal.Session.create(%{
         customer: customer.provider_id,
@@ -46,12 +46,12 @@ defmodule Passwordless.Billing.Providers.Stripe do
   @impl true
   def sync_subscription(%Stripe.Subscription{} = stripe_subscription) do
     case Billing.get_customer_by_provider_id(stripe_subscription.customer) do
-      %Customer{} = customer ->
+      %BillingCustomer{} = customer ->
         subscription_attrs = parse_stripe_subscription(stripe_subscription)
         subscription_items_attrs = Enum.map(stripe_subscription.items, &parse_stripe_subscription_item/1)
 
         case Billing.get_subscription_by_provider_id(stripe_subscription.id) do
-          %Subscription{} = subscription ->
+          %BillingSubscription{} = subscription ->
             with {:ok, subscription} <- Billing.update_subscription(subscription, subscription_attrs),
                  do: Billing.reconcile_subscription_items(subscription, subscription_items_attrs)
 
@@ -79,7 +79,7 @@ defmodule Passwordless.Billing.Providers.Stripe do
 
   defp get_or_create_customer(%Org{} = org) do
     case Repo.one(Customer.get_by_org(org)) do
-      %Customer{} = customer ->
+      %BillingCustomer{} = customer ->
         {:ok, customer}
 
       nil ->
@@ -100,7 +100,7 @@ defmodule Passwordless.Billing.Providers.Stripe do
     end
   end
 
-  defp create_checkout_session(%Org{} = org, %Customer{} = customer, plan) when is_map(plan) do
+  defp create_checkout_session(%Org{} = org, %BillingCustomer{} = customer, plan) when is_map(plan) do
     data =
       case Map.get(plan, :trial_days) do
         trial_days when is_integer(trial_days) and trial_days > 0 ->
@@ -185,7 +185,7 @@ defmodule Passwordless.Billing.Providers.Stripe do
 
   defp canceled_at(%Stripe.Subscription{}), do: nil
 
-  defp return_url(%Customer{} = customer) do
+  defp return_url(%BillingCustomer{} = customer) do
     success_url(customer) <> "&switch_plan=true"
   end
 end

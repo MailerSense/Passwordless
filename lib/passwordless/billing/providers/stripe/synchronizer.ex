@@ -8,7 +8,7 @@ defmodule Passwordless.Billing.Providers.Stripe.Synchronizer do
   alias Passwordless.Activity
   alias Passwordless.Billing
   alias Passwordless.Billing.Providers.Stripe, as: StripeProvider
-  alias Passwordless.Billing.Subscription
+  alias Passwordless.BillingSubscription
   alias Passwordless.Repo
 
   @event_mapping %{
@@ -37,7 +37,7 @@ defmodule Passwordless.Billing.Providers.Stripe.Synchronizer do
 
   # Private
 
-  defp maybe_delete_subscription(:"subscription.deleted", %Subscription{} = subscription) do
+  defp maybe_delete_subscription(:"subscription.deleted", %BillingSubscription{} = subscription) do
     Billing.delete_subscription(subscription)
   end
 

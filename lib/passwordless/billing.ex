@@ -5,10 +5,10 @@ defmodule Passwordless.Billing do
 
   alias Passwordless.Activity
   alias Passwordless.App
-  alias Passwordless.Billing.Customer
-  alias Passwordless.Billing.Subscription
-  alias Passwordless.Billing.SubscriptionItem
+  alias Passwordless.BillingCustomer
   alias Passwordless.BillingItem
+  alias Passwordless.BillingSubscription
+  alias Passwordless.BillingSubscriptionItem
   alias Passwordless.Organizations.Org
   alias Passwordless.Repo
 
@@ -68,30 +68,31 @@ defmodule Passwordless.Billing do
     Subscription |> Repo.get_by(provider_id: provider_id) |> Repo.preload([{:customer, [:org]}, :items])
   end
 
-  def create_subscription(%Customer{} = customer, attrs \\ %{}) do
+  def create_subscription(%BillingCustomer{} = customer, attrs \\ %{}) do
     customer
     |> Ecto.build_assoc(:subscription)
     |> Subscription.changeset(attrs)
     |> Repo.insert()
   end
 
-  def create_subscription_items(%Subscription{} = subscription, items_attrs \\ []) do
+  def create_subscription_items(%BillingSubscription{} = subscription, items_attrs \\ []) do
     results =
       Enum.map(items_attrs, fn item_attrs ->
         subscription
         |> Ecto.build_assoc(:subscription_items)
-        |> SubscriptionItem.changeset(item_attrs)
+        |> BillingSubscriptionItem.changeset(item_attrs)
         |> Repo.insert()
       end)
 
     if Enum.all?(results, &match?({:ok, _}, &1)) do
-      {:ok, %Subscription{subscription | items: Enum.map(results, fn {:ok, %SubscriptionItem{} = i} -> i end)}}
+      {:ok,
+       %BillingSubscription{subscription | items: Enum.map(results, fn {:ok, %BillingSubscriptionItem{} = i} -> i end)}}
     else
       {:error, :subscription_item_insert_failed}
     end
   end
 
-  def reconcile_subscription_items(%Subscription{} = subscription, subscription_items_attrs) do
+  def reconcile_subscription_items(%BillingSubscription{} = subscription, subscription_items_attrs) do
     old_items = Map.new(subscription.items, fn i -> {i.provider_id, {:old, i}} end)
     new_items = Map.new(subscription_items_attrs, fn i -> {i.provider_id, {:new, i}} end)
     diffs = Map.merge(old_items, new_items, fn _id, {:old, old}, {:new, new} -> {:changed, old, new} end)
@@ -100,9 +101,9 @@ defmodule Passwordless.Billing do
       diffs
       |> Map.values()
       |> Enum.map(fn
-        {:new, new} -> {:insert, SubscriptionItem.changeset(%SubscriptionItem{}, new)}
+        {:new, new} -> {:insert, BillingSubscriptionItem.changeset(%BillingSubscriptionItem{}, new)}
         {:old, old} -> {:delete, old}
-        {:changed, old, new} -> {:update, SubscriptionItem.changeset(old, new)}
+        {:changed, old, new} -> {:update, BillingSubscriptionItem.changeset(old, new)}
       end)
       |> Enum.map(fn
         {:insert, changeset} -> {:insert, Repo.insert(changeset)}
@@ -125,20 +126,20 @@ defmodule Passwordless.Billing do
     end
   end
 
-  def update_subscription(%Subscription{} = subscription, attrs \\ %{}) do
+  def update_subscription(%BillingSubscription{} = subscription, attrs \\ %{}) do
     subscription
     |> Subscription.changeset(attrs)
     |> Repo.update()
   end
 
-  def cancel_subscription(%Subscription{} = subscription) do
+  def cancel_subscription(%BillingSubscription{} = subscription) do
     update_subscription(subscription, %{
       status: :canceled,
       canceled_at: DateTime.utc_now()
     })
   end
 
-  def delete_subscription(%Subscription{} = subscription) do
+  def delete_subscription(%BillingSubscription{} = subscription) do
     Repo.transact(fn ->
       with {:ok, subscription} <- Repo.soft_delete(subscription),
            true <- Enum.all?(Enum.map(subscription.items, &Repo.soft_delete/1), &match?({:ok, _}, &1)),
@@ -148,14 +149,14 @@ defmodule Passwordless.Billing do
 
   def has_valid_subscription?(%Org{} = org) do
     case Repo.one(Subscription.get_by_org(org)) do
-      %Subscription{} = subscription -> Subscription.valid?(subscription)
+      %BillingSubscription{} = subscription -> Subscription.valid?(subscription)
       _ -> false
     end
   end
 
   # Private
 
-  defp log_subscription_item_action(action, %Subscription{} = subscription, %SubscriptionItem{} = item) do
+  defp log_subscription_item_action(action, %BillingSubscription{} = subscription, %BillingSubscriptionItem{} = item) do
     log_action =
       case action do
         :insert -> :"subscription_item.created"
@@ -166,7 +167,7 @@ defmodule Passwordless.Billing do
     log_params =
       item
       |> Map.from_struct()
-      |> Map.take(SubscriptionItem.__schema__(:fields))
+      |> Map.take(BillingSubscriptionItem.__schema__(:fields))
       |> Map.put(:billing_subscription, subscription)
 
     Activity.log(log_action, log_params)

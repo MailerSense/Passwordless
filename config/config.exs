@@ -82,7 +82,7 @@ config :passwordless, Oban,
     {Oban.Pro.Plugins.DynamicCron,
      crontab: [
        {"*/15 * * * *", Passwordless.ViewRefresher},
-       {"0 * * * *", Passwordless.Domain.Deleter},
+       {"0 * * * *", Passwordless.Domain.Cleaner},
        {"*/30 * * * *", Passwordless.Domain.Verifier}
      ]}
   ]

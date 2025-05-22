@@ -3,8 +3,6 @@ defmodule Passwordless.Billing.Providers.Behaviour do
   To be implemented by all billing providers.
   """
 
-  alias Passwordless.Billing.Customer
-
   @callback checkout(org :: map(), plan :: map()) :: {:ok, term()} | {:error, term()}
   @callback checkout_url(session :: term()) :: String.t()
   @callback change_plan(customer :: map(), subscription :: map(), plan :: map()) ::
@@ -25,7 +23,9 @@ defmodule Passwordless.Billing.Providers.Behaviour do
     @moduledoc false
     use PasswordlessWeb, :controller
 
-    def success_url(%Customer{id: customer_id}) do
+    alias Passwordless.BillingCustomer
+
+    def success_url(%BillingCustomer{id: customer_id}) do
       url(PasswordlessWeb.Endpoint, ~p"/subscribe/success?customer_id=#{customer_id}")
     end
 

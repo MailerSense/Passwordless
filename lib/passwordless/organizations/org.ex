@@ -9,6 +9,7 @@ defmodule Passwordless.Organizations.Org do
   alias Passwordless.Accounts.User
   alias Passwordless.Activity.Log
   alias Passwordless.App
+  alias Passwordless.BillingCustomer
   alias Passwordless.BillingItem
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
@@ -28,7 +29,7 @@ defmodule Passwordless.Organizations.Org do
 
     field :full_name, :string, virtual: true
 
-    has_one :billing_customer, Billing.Customer
+    has_one :billing_customer, BillingCustomer
 
     has_many :apps, App, preload_order: [asc: :inserted_at]
     has_many :logs, Log, preload_order: [asc: :inserted_at]

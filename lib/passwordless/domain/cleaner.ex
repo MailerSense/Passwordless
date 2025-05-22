@@ -1,4 +1,4 @@
-defmodule Passwordless.Domain.Deleter do
+defmodule Passwordless.Domain.Cleaner do
   @moduledoc """
   Periodically deletes email identities that have not passed AWS SES verification.
   """
@@ -6,6 +6,7 @@ defmodule Passwordless.Domain.Deleter do
   use Oban.Pro.Worker, queue: :domain, max_attempts: 1, tags: ["email", "domains", "deleter"]
 
   alias Passwordless.App
+  alias Passwordless.AppSettings
   alias Passwordless.AWS.Session
   alias Passwordless.Domain
   alias Passwordless.Repo
@@ -17,7 +18,7 @@ defmodule Passwordless.Domain.Deleter do
     Domain
     |> Domain.get_by_state(:aws_failed)
     |> Repo.all()
-    |> Repo.preload(:app)
+    |> Repo.preload([{:app, [:settings]}])
     |> Enum.filter(fn
       %Domain{state: :aws_failed, updated_at: %DateTime{} = updated_at} ->
         Timex.diff(DateTime.utc_now(), updated_at, :hours) > 6
@@ -43,5 +44,10 @@ defmodule Passwordless.Domain.Deleter do
       _ ->
         :ok
     end)
+  end
+
+  # Private
+
+  defp cleanup(%Domain{app: %App{settings: %AppSettings{} = settings} = app} = domain) do
   end
 end
