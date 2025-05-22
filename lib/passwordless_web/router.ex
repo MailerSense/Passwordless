@@ -199,6 +199,7 @@ defmodule PasswordlessWeb.Router do
 
       # Billing
       live "/billing", App.BillingLive.Index, :index
+      live "/billing/item/:id/edit", App.BillingLive.Index, :edit_billing_item
       live "/subscribe/success", App.BillingLive.SubscribeSuccessLive, :index
       live "/subscribe", App.BillingLive.SubscribeLive, :index
 

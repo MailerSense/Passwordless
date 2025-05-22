@@ -124,6 +124,39 @@ defmodule Passwordless.Organizations.OrgSeeder do
       {:ok, _} = Passwordless.create_domain_record(domain, r)
     end
 
+    current_month = DateTime.utc_now()
+    period_start = Timex.beginning_of_month(current_month)
+    period_end = Timex.end_of_month(current_month)
+
+    billing_items = [
+      %{
+        kind: :metered,
+        name: :mau,
+        period_start: period_start,
+        period_end: period_end,
+        amount: 1000,
+        amount_max: 10_000,
+        base_cost: Money.parse!("19.00"),
+        added_cost: Money.new(0),
+        total_cost: Money.parse!("19.00")
+      },
+      %{
+        kind: :metered,
+        name: :emails,
+        period_start: period_start,
+        period_end: period_end,
+        amount: 10_000,
+        amount_max: 100_000,
+        base_cost: Money.new(0),
+        added_cost: Money.new(0),
+        total_cost: Money.new(0)
+      }
+    ]
+
+    for i <- billing_items do
+      {:ok, _} = Passwordless.Billing.create_billing_item(org, app, i)
+    end
+
     {:ok, _tenant} = Tenant.create(app)
 
     templates =

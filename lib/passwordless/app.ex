@@ -12,6 +12,7 @@ defmodule Passwordless.App do
   alias Passwordless.AppSettings
   alias Passwordless.Authenticators
   alias Passwordless.AuthToken
+  alias Passwordless.BillingItem
   alias Passwordless.Domain
   alias Passwordless.EmailMessageMapping
   alias Passwordless.EmailTemplate
@@ -55,6 +56,7 @@ defmodule Passwordless.App do
 
     has_many :media, Media, preload_order: [asc: :inserted_at]
     has_many :domains, Domain, preload_order: [asc: :inserted_at]
+    has_many :billing_items, BillingItem, preload_order: [asc: :inserted_at]
     has_many :action_templates, ActionTemplate, preload_order: [asc: :inserted_at]
     has_many :email_templates, EmailTemplate, preload_order: [asc: :inserted_at]
     has_many :email_message_mappings, EmailMessageMapping, preload_order: [asc: :inserted_at]

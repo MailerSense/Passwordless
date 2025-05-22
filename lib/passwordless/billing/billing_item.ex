@@ -1,19 +1,18 @@
-defmodule Passwordless.Billing.Item do
+defmodule Passwordless.BillingItem do
   @moduledoc """
   The billing item schema.
   """
 
-  use Passwordless.Schema, prefix: "blitem"
+  use Passwordless.Schema, prefix: "billing_item"
+
+  import Ecto.Query
 
   alias Money.Ecto.Amount.Type, as: Cost
   alias Passwordless.App
   alias Passwordless.Organizations.Org
 
-  @kinds ~w(metered)a
-  @names ~w(
-    mau_quota
-    email_quota
-  )a
+  @kinds ~w(metered fixed)a
+  @names ~w(mau emails)a
 
   @derive {
     Jason.Encoder,
@@ -40,6 +39,7 @@ defmodule Passwordless.Billing.Item do
   schema "billing_items" do
     field :kind, Ecto.Enum, values: @kinds
     field :name, Ecto.Enum, values: @names
+    field :full_name, :string, virtual: true
     field :period_start, :utc_datetime_usec
     field :period_end, :utc_datetime_usec
     field :current, :boolean, virtual: true, default: false
@@ -54,6 +54,35 @@ defmodule Passwordless.Billing.Item do
 
     timestamps()
     soft_delete_timestamp()
+  end
+
+  @doc """
+  Put virtual fields.
+  """
+  def put_virtuals(%__MODULE__{period_start: period_start, period_end: period_end} = mod) do
+    current =
+      DateTime.utc_now() in Timex.Interval.new(
+        from: period_start,
+        until: period_end,
+        left_open: false,
+        right_open: false
+      )
+
+    %__MODULE__{mod | current: current, full_name: Keyword.get(translations(), mod.name, mod.name)}
+  end
+
+  @doc """
+  Get by organization.
+  """
+  def get_by_org(query \\ __MODULE__, %Org{} = org) do
+    from q in query, where: q.org_id == ^org.id
+  end
+
+  @doc """
+  Preload app.
+  """
+  def preload_app(query \\ __MODULE__) do
+    from q in query, preload: :app
   end
 
   @fields ~w(
@@ -81,7 +110,6 @@ defmodule Passwordless.Billing.Item do
     |> validate_required(@required_fields)
     |> validate_period()
     |> validate_amounts()
-    |> validate_costs()
     |> assoc_constraint(:app)
     |> assoc_constraint(:org)
   end
@@ -91,7 +119,7 @@ defmodule Passwordless.Billing.Item do
   defp validate_period(changeset) do
     case {get_field(changeset, :period_start), get_field(changeset, :period_end)} do
       {%DateTime{} = a, %DateTime{} = b} ->
-        if DateTime.after?(a, b) do
+        if DateTime.before?(a, b) do
           changeset
         else
           changeset
@@ -116,10 +144,5 @@ defmodule Passwordless.Billing.Item do
     |> validate_number(:amount_max, greater_than_or_equal_to: 0)
   end
 
-  defp validate_costs(changeset) do
-    changeset
-    |> validate_number(:base_cost, greater_than_or_equal_to: 0)
-    |> validate_number(:added_cost, greater_than_or_equal_to: 0)
-    |> validate_number(:total_cost, greater_than_or_equal_to: 0)
-  end
+  defp translations, do: [mau: "Monthly Active Users", emails: "Emails"]
 end

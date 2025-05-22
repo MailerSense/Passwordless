@@ -4,9 +4,11 @@ defmodule Passwordless.Billing do
   import Ecto.Query, warn: false
 
   alias Passwordless.Activity
+  alias Passwordless.App
   alias Passwordless.Billing.Customer
   alias Passwordless.Billing.Subscription
   alias Passwordless.Billing.SubscriptionItem
+  alias Passwordless.BillingItem
   alias Passwordless.Organizations.Org
   alias Passwordless.Repo
 
@@ -18,6 +20,28 @@ defmodule Passwordless.Billing do
 
   def get_customer_by_provider_id(provider_id) when is_binary(provider_id) do
     Customer |> Repo.get_by(provider_id: provider_id) |> Repo.preload(:subscription)
+  end
+
+  ## Billing Items
+
+  def get_billing_item!(%Org{} = org, id) do
+    org
+    |> Ecto.assoc(:billing_items)
+    |> Repo.get!(id)
+    |> Repo.preload(:app)
+    |> BillingItem.put_virtuals()
+  end
+
+  def create_billing_item(%Org{} = org, %App{} = app, attrs \\ %{}) do
+    org
+    |> Ecto.build_assoc(:billing_items)
+    |> Kernel.then(&%BillingItem{&1 | app_id: app.id})
+    |> BillingItem.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def change_billing_item(%BillingItem{} = billing_item, attrs \\ %{}) do
+    BillingItem.changeset(billing_item, attrs)
   end
 
   ## Plan

@@ -356,6 +356,10 @@ defmodule PasswordlessWeb.Helpers do
     "#{format_date(start_date, "%-d %b")} - #{format_date(end_date, "%-d %b %Y")}"
   end
 
+  def format_month_range(%DateTime{} = start_date, %DateTime{} = end_date) do
+    "#{format_date(start_date, "%-d %b")} - #{format_date(end_date, "%-d %b %Y")}"
+  end
+
   def current_month?(%Date{} = month) do
     span_start = Timex.beginning_of_month(month)
     span_end = Timex.end_of_month(month)

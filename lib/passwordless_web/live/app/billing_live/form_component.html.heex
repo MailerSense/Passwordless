@@ -1,0 +1,46 @@
+<div>
+  <% origin = "right" %>
+  <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+    <.form id="manage-billing-item-form" for={@form} phx-target={@myself}>
+      <.field name="app" value={@billing_item.app.name} label={gettext("App")} readonly />
+      <.field field={@form[:full_name]} label={gettext("Name")} readonly />
+      <div class="flex items-center gap-2">
+        <.field
+          name="period"
+          value={format_month_range(@billing_item.period_start, @billing_item.period_end)}
+          label={gettext("Period")}
+          readonly
+          wrapper_class="grow"
+        />
+        <.badge
+          with_dot
+          label={if(@billing_item.current, do: gettext("Current"), else: gettext("Past"))}
+          color={if(@billing_item.current, do: "success", else: "gray")}
+          size="sm"
+        />
+      </div>
+      <.field field={@form[:total_cost]} label={gettext("Estimated charge")} readonly />
+      <.field
+        name="usage"
+        value={
+          gettext("%{used} / %{total}",
+            used: Util.number!(@billing_item.amount),
+            total: Util.number!(@billing_item.amount_max)
+          )
+        }
+        label={gettext("Usage")}
+        readonly
+      />
+    </.form>
+
+    <:actions>
+      <.button
+        size="wide"
+        type="submit"
+        color="light-flat"
+        label={gettext("Cancel")}
+        phx-click={PasswordlessWeb.Components.SlideOver.hide_slide_over(origin)}
+      />
+    </:actions>
+  </.slide_over>
+</div>
