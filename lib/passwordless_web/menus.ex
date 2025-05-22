@@ -130,7 +130,7 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
-  def get_link(:org_invitations = name, _user) do
+  def get_link(:invitations = name, _user) do
     %{
       name: name,
       label: gettext("Invitations"),
@@ -204,7 +204,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Settings"),
-      path: ~p"/app",
+      path: ~p"/apps",
       icon: "remix-settings-2-line",
       link_type: "live_patch"
     }
@@ -381,7 +381,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("Apps"),
-      path: ~p"/app",
+      path: ~p"/apps",
       icon: "remix-instance-line",
       link_type: "live_patch"
     }

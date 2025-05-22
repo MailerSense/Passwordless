@@ -56,13 +56,13 @@ defmodule PasswordlessWeb.App.AppLive.Index do
         {:noreply,
          socket
          |> put_flash(:info, gettext("App deleted successfully."))
-         |> push_navigate(to: ~p"/app")}
+         |> push_navigate(to: ~p"/apps")}
 
       {:error, _} ->
         {:noreply,
          socket
          |> put_toast(:error, gettext("Failed to delete app!"), title: gettext("Error"))
-         |> push_patch(to: ~p"/app")}
+         |> push_patch(to: ~p"/apps")}
     end
   end
 
@@ -70,7 +70,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
   def handle_event("close_slide_over", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app")
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/apps")
      )}
   end
 
@@ -78,13 +78,13 @@ defmodule PasswordlessWeb.App.AppLive.Index do
   def handle_event("close_modal", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/app")
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/apps")
      )}
   end
 
   @impl true
   def handle_event("clear_filters", _params, socket) do
-    {:noreply, push_navigate(socket, to: ~p"/app")}
+    {:noreply, push_navigate(socket, to: ~p"/apps")}
   end
 
   @impl true

@@ -1,7 +1,7 @@
 defmodule Passwordless.Challenge do
   @moduledoc false
 
-  use Passwordless.Schema, prefix: "chlng"
+  use Passwordless.Schema, prefix: "challenge"
 
   import Ecto.Query
 

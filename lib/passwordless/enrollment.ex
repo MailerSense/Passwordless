@@ -3,7 +3,7 @@ defmodule Passwordless.Enrollment do
   An enrollment.
   """
 
-  use Passwordless.Schema, prefix: "enrlmnt"
+  use Passwordless.Schema, prefix: "enrollment"
 
   alias Passwordless.TOTP
   alias Passwordless.User

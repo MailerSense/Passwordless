@@ -3,7 +3,7 @@ defmodule Passwordless.ChallengeToken do
   A challenge token.
   """
 
-  use Passwordless.Schema, prefix: "chlngtk"
+  use Passwordless.Schema, prefix: "challenge_token"
 
   import Ecto.Query
 

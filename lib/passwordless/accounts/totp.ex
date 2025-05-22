@@ -3,13 +3,13 @@ defmodule Passwordless.Accounts.TOTP do
   Defines two factor strategies for accounts
   """
 
-  use Passwordless.Schema, prefix: "acctotp"
+  use Passwordless.Schema, prefix: "totp"
 
   import Ecto.Query, warn: false
 
   alias Passwordless.Accounts.User
 
-  schema "user_totps" do
+  schema "totps" do
     field :secret, :binary, redact: true
     field :code, :string, virtual: true
 

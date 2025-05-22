@@ -3,7 +3,7 @@ defmodule Passwordless.EmailTemplate do
   An email template to be dynamically sent.
   """
 
-  use Passwordless.Schema, prefix: "emtpl"
+  use Passwordless.Schema, prefix: "email_template"
 
   alias Database.ChangesetExt
   alias Passwordless.App

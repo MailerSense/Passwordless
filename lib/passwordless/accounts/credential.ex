@@ -4,13 +4,13 @@ defmodule Passwordless.Accounts.Credential do
   and can be used for social login.
   """
 
-  use Passwordless.Schema, prefix: "acccred"
+  use Passwordless.Schema, prefix: "credential"
 
   alias Passwordless.Accounts.User
 
   @providers ~w(google)a
 
-  schema "user_credentials" do
+  schema "credentials" do
     field :subject, :string
     field :provider, Ecto.Enum, values: @providers
 

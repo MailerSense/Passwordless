@@ -3,7 +3,7 @@ defmodule Passwordless.EmailMessage do
   An email message.
   """
 
-  use Passwordless.Schema, prefix: "emmsg"
+  use Passwordless.Schema, prefix: "email_message"
 
   import Ecto.Query
 

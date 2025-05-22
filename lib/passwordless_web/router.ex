@@ -185,10 +185,10 @@ defmodule PasswordlessWeb.Router do
       live "/team/invitation/:invitation_id/delete", App.TeamLive.Index, :delete_invitation
 
       # App
-      live "/app", App.AppLive.Index, :index
-      live "/app/new", App.AppLive.Index, :new
-      live "/app/:id/edit", App.AppLive.Index, :edit
-      live "/app/:id/delete", App.AppLive.Index, :delete
+      live "/apps", App.AppLive.Index, :index
+      live "/apps/new", App.AppLive.Index, :new
+      live "/apps/:id/edit", App.AppLive.Index, :edit
+      live "/apps/:id/delete", App.AppLive.Index, :delete
 
       # Domain
       live "/domain", App.DomainLive.Index, :index

@@ -613,7 +613,7 @@ defmodule PasswordlessWeb.CoreComponents do
           <span class="line-clamp-1">{app.name}</span>
         </button>
       </.form>
-      <.dropdown_menu_item link_type="live_redirect" to={~p"/app"}>
+      <.dropdown_menu_item link_type="live_redirect" to={~p"/apps"}>
         {gettext("View all apps")}
       </.dropdown_menu_item>
     </.dropdown>

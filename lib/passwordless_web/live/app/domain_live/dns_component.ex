@@ -3,6 +3,7 @@ defmodule PasswordlessWeb.App.DomainLive.DNSComponent do
   use PasswordlessWeb, :live_component
 
   alias Passwordless.Domain
+  alias Passwordless.DomainRecord
 
   @impl true
   def update(%{domain: domain} = assigns, socket) do
@@ -18,6 +19,9 @@ defmodule PasswordlessWeb.App.DomainLive.DNSComponent do
   end
 
   # Private
+
+  defp verified_badge(%DomainRecord{verified: true}), do: {"success", gettext("Verified")}
+  defp verified_badge(%DomainRecord{verified: false}), do: {"warning", gettext("Pending")}
 
   attr :id, :string
   attr :value, :string, required: true

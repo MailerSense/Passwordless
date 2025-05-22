@@ -3,7 +3,7 @@ defmodule Passwordless.EmailTemplateLocale do
   An email template to be dynamically sent.
   """
 
-  use Passwordless.Schema, prefix: "emtplver"
+  use Passwordless.Schema, prefix: "email_template_locale"
 
   alias Database.ChangesetExt
   alias Passwordless.EmailTemplate

@@ -20,7 +20,7 @@ defmodule Passwordless.App do
   alias Passwordless.Media
   alias Passwordless.Organizations.Org
 
-  @states ~w(active)a
+  @states ~w(active suspended)a
 
   @derive {
     Jason.Encoder,
@@ -42,9 +42,9 @@ defmodule Passwordless.App do
     field :state, Ecto.Enum, values: @states, default: :active
 
     has_one :settings, AppSettings, on_replace: :update
+    has_one :auth_token, AuthToken
     has_one :email_domain, Domain, where: [purpose: :email]
     has_one :tracking_domain, Domain, where: [purpose: :tracking]
-    has_one :auth_token, AuthToken
 
     has_one :email_otp, Authenticators.EmailOTP
     has_one :magic_link, Authenticators.MagicLink
@@ -67,6 +67,9 @@ defmodule Passwordless.App do
     soft_delete_timestamp()
   end
 
+  @doc """
+  Legal states.
+  """
   def states, do: @states
 
   @doc """

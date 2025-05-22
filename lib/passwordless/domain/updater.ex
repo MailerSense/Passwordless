@@ -1,4 +1,4 @@
-defmodule Passwordless.Domain.ConfigSetReconciler do
+defmodule Passwordless.Domain.Updater do
   @moduledoc """
   Reconciles the state of local settings with SES configsets
   """

@@ -3,7 +3,7 @@ defmodule Passwordless.ActionToken do
   A action token.
   """
 
-  use Passwordless.Schema, prefix: "acttk"
+  use Passwordless.Schema, prefix: "action_token"
 
   import Ecto.Query
 

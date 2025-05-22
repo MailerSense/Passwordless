@@ -3,7 +3,7 @@ defmodule Passwordless.Identifier do
   An identifier.
   """
 
-  use Passwordless.Schema, prefix: "ident"
+  use Passwordless.Schema, prefix: "identifier"
 
   import Ecto.Query
 
