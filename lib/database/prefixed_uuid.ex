@@ -51,7 +51,7 @@ defmodule Database.PrefixedUUID do
     end
   end
 
-  @slug_regex ~r/^(?<prefix>[a-zA-Z0-9_]+)_(?<id>[a-zA-Z0-9]{22,36})$/
+  @slug_regex ~r/^(?<prefix>[a-z_]+)_(?<id>[a-zA-Z0-9]{22,36})$/
 
   def slug_to_uuid(string) do
     with %{"id" => slug, "prefix" => prefix} <- Regex.named_captures(@slug_regex, string),
