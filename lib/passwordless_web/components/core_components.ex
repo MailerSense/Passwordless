@@ -627,10 +627,6 @@ defmodule PasswordlessWeb.CoreComponents do
       label_icon="remix-building-line"
       placement="right"
     >
-      <.dropdown_menu_item link_type="live_redirect" to={~p"/organization/new"}>
-        <.icon name="remix-add-line" class="w-5 h-5" />
-        {gettext("New Organization")}
-      </.dropdown_menu_item>
       <.form :for={org <- @org_menu_items} for={nil} action={~p"/org/switch"} method="post">
         <.input type="hidden" name="org_id" value={org.id} />
         <button class="pc-dropdown__menu-item">
@@ -638,6 +634,10 @@ defmodule PasswordlessWeb.CoreComponents do
           <span class="line-clamp-1">{org.name}</span>
         </button>
       </.form>
+      <.dropdown_menu_item link_type="live_redirect" to={~p"/organization/new"}>
+        <.icon name="remix-add-line" class="w-5 h-5" />
+        {gettext("New Organization")}
+      </.dropdown_menu_item>
     </.dropdown>
     """
   end

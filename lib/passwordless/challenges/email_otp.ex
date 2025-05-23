@@ -279,5 +279,5 @@ defmodule Passwordless.Challenges.EmailOTP do
     :ok
   end
 
-  defp rate_limit_key(%App{id: id}, %Email{address: address}), do: "email_otp:#{id}:#{address}"
+  defp rate_limit_key(%App{id: id}, %Email{address: address}), do: "email_otp:#{id}:#{:crypto.hash(:sha256, address)}"
 end

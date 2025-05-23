@@ -159,6 +159,19 @@ defmodule Passwordless.Organizations.OrgSeeder do
 
     {:ok, _tenant} = Tenant.create(app)
 
+    {:ok, _app2} =
+      Passwordless.create_full_app(org, %{
+        name: "Demo App",
+        settings: %{
+          logo: Enum.random(Passwordless.config(:logo_placeholders)),
+          website: "https://passwordlesstools.com",
+          display_name: "Demo App",
+          allowlisted_ip_addresses: [
+            %{address: "0.0.0.0/0"}
+          ]
+        }
+      })
+
     templates =
       for name <- @random_actions do
         {:ok, t} =
@@ -195,6 +208,9 @@ defmodule Passwordless.Organizations.OrgSeeder do
     for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(users_count) do
       {:ok, app_user} =
         Passwordless.create_user(app, %{
+          full_name: Faker.Person.name(),
+          first_name: Faker.Person.first_name(),
+          last_name: Faker.Person.last_name(),
           data: %{
             "email" => email,
             "phone" => phone

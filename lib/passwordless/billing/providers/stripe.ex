@@ -78,7 +78,7 @@ defmodule Passwordless.Billing.Providers.Stripe do
   # Private
 
   defp get_or_create_customer(%Org{} = org) do
-    case Repo.one(Customer.get_by_org(org)) do
+    case Repo.one(BillingCustomer.get_by_org(org)) do
       %BillingCustomer{} = customer ->
         {:ok, customer}
 
@@ -94,7 +94,7 @@ defmodule Passwordless.Billing.Providers.Stripe do
 
           org
           |> Ecto.build_assoc(:billing_customer)
-          |> Customer.changeset(attrs)
+          |> BillingCustomer.changeset(attrs)
           |> Repo.insert()
         end
     end

@@ -5,14 +5,12 @@ defmodule Passwordless.Vault do
 
   use Cloak.Vault, otp_app: :passwordless
 
-  alias Passwordless.SecretVault
+  alias Passwordless.SecretManager.Vault
 
   @impl GenServer
   def init(config) do
     config =
-      Keyword.put(config, :ciphers,
-        default: {Cloak.Ciphers.AES.GCM, tag: "AES.GCM.V1", key: SecretVault.get("CLOAK_KEY")}
-      )
+      Keyword.put(config, :ciphers, default: {Cloak.Ciphers.AES.GCM, tag: "AES.GCM.V1", key: Vault.get("CLOAK_KEY")})
 
     {:ok, config}
   end

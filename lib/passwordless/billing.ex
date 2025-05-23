@@ -53,25 +53,25 @@ defmodule Passwordless.Billing do
   ## Subscriptions
 
   def get_subscription(id) when is_binary(id) do
-    Subscription |> Repo.get(id) |> Repo.preload(:items)
+    BillingSubscription |> Repo.get(id) |> Repo.preload(:items)
   end
 
   def get_subscription_by_org(%Org{} = org) do
-    org |> Subscription.get_by_org() |> Repo.preload([{:customer, [:org]}, :items])
+    org |> BillingSubscription.get_by_org() |> Repo.preload([{:customer, [:org]}, :items])
   end
 
   def get_subscription_by_customer_id(customer_id) when is_binary(customer_id) do
-    Subscription |> Repo.get_by(customer_id: customer_id) |> Repo.preload([{:customer, [:org]}, :items])
+    BillingSubscription |> Repo.get_by(customer_id: customer_id) |> Repo.preload([{:customer, [:org]}, :items])
   end
 
   def get_subscription_by_provider_id(provider_id) when is_binary(provider_id) do
-    Subscription |> Repo.get_by(provider_id: provider_id) |> Repo.preload([{:customer, [:org]}, :items])
+    BillingSubscription |> Repo.get_by(provider_id: provider_id) |> Repo.preload([{:customer, [:org]}, :items])
   end
 
   def create_subscription(%BillingCustomer{} = customer, attrs \\ %{}) do
     customer
     |> Ecto.build_assoc(:subscription)
-    |> Subscription.changeset(attrs)
+    |> BillingSubscription.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -128,7 +128,7 @@ defmodule Passwordless.Billing do
 
   def update_subscription(%BillingSubscription{} = subscription, attrs \\ %{}) do
     subscription
-    |> Subscription.changeset(attrs)
+    |> BillingSubscription.changeset(attrs)
     |> Repo.update()
   end
 
@@ -148,8 +148,8 @@ defmodule Passwordless.Billing do
   end
 
   def has_valid_subscription?(%Org{} = org) do
-    case Repo.one(Subscription.get_by_org(org)) do
-      %BillingSubscription{} = subscription -> Subscription.valid?(subscription)
+    case Repo.one(BillingSubscription.get_by_org(org)) do
+      %BillingSubscription{} = subscription -> BillingSubscription.valid?(subscription)
       _ -> false
     end
   end

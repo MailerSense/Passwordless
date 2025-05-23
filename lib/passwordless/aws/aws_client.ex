@@ -1,4 +1,4 @@
-defmodule Passwordless.AWSClient do
+defmodule Passwordless.AWS.Client do
   @moduledoc """
   The Elixir-AWS HTTP client implemented with Finch (our go-to HTTP client).
   """

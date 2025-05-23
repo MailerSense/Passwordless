@@ -13,7 +13,7 @@ defmodule PasswordlessWeb.BillingController do
 
     case Billing.get_customer(current_org) do
       %BillingCustomer{subscription: %BillingSubscription{} = subscription} ->
-        if Subscription.valid?(subscription) do
+        if BillingSubscription.valid?(subscription) do
           conn
           |> put_flash(:error, gettext("There is an existing valid subscription!"))
           |> redirect(to: ~p"/billing")

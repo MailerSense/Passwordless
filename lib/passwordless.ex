@@ -386,10 +386,19 @@ defmodule Passwordless do
   end
 
   def record_email_message_mapping(%App{} = app, %EmailMessage{} = email_message, external_id) do
-    app
-    |> Ecto.build_assoc(:email_message_mappings)
-    |> EmailMessageMapping.changeset(%{external_id: external_id, email_message_id: email_message.id})
-    |> Repo.insert()
+    attrs = %{external_id: external_id, email_message_id: email_message.id}
+
+    changeset =
+      app
+      |> Ecto.build_assoc(:email_message_mappings)
+      |> EmailMessageMapping.changeset(attrs)
+
+    upsert_clause = [
+      on_conflict: {:replace, [:external_id]},
+      conflict_target: [:email_message_id]
+    ]
+
+    Repo.insert(changeset, upsert_clause)
   end
 
   # Authenticators

@@ -1,4 +1,4 @@
-defmodule Passwordless.SecretVault do
+defmodule Passwordless.SecretManager.Vault do
   @moduledoc """
   A central store of secrets fetched from a JSON secret in Passwordless.SecretManager.
   """

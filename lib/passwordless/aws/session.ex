@@ -26,6 +26,6 @@ defmodule Passwordless.AWS.Session do
 
     access_key_id
     |> AWS.Client.create(secret_access_key, token, region)
-    |> AWS.Client.put_http_client({Passwordless.AWSClient, []})
+    |> AWS.Client.put_http_client({Passwordless.AWS.Client, []})
   end
 end
