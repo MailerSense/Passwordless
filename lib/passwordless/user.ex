@@ -26,6 +26,9 @@ defmodule Passwordless.User do
     Jason.Encoder,
     only: [
       :id,
+      :full_name,
+      :first_name,
+      :last_name,
       :language,
       :email,
       :phone,
@@ -76,9 +79,12 @@ defmodule Passwordless.User do
     ]
   }
   schema "users" do
-    field :language, Ecto.Enum, values: Locale.language_codes(), default: :en
     field :data, Passwordless.EncryptedMap
     field :data_text, :string, virtual: true
+    field :language, Ecto.Enum, values: Locale.language_codes(), default: :en
+    field :full_name, :string
+    field :first_name, :string
+    field :last_name, :string
     field :last_action_state, :string, virtual: true
     field :allow_rate, :float, virtual: true
     field :action_all, :integer, virtual: true
@@ -242,7 +248,14 @@ defmodule Passwordless.User do
       }
   end
 
-  @fields ~w(language data data_text)a
+  @fields ~w(
+    data
+    data_text
+    full_name
+    first_name
+    last_name
+    language
+  )a
   @required_fields ~w(language data)a
 
   @doc """
@@ -254,6 +267,9 @@ defmodule Passwordless.User do
     |> validate_required(@required_fields)
     |> validate_text_data()
     |> validate_data()
+    |> validate_string(:full_name)
+    |> validate_string(:first_name)
+    |> validate_string(:last_name)
     |> cast_assoc(:email, with: &Email.changeset/2)
     |> cast_assoc(:phone, with: &Phone.regional_changeset/2)
     |> cast_assoc(:identifier)
@@ -308,6 +324,12 @@ defmodule Passwordless.User do
   end
 
   # Private
+
+  defp validate_string(changeset, field) do
+    changeset
+    |> ChangesetExt.ensure_trimmed(field)
+    |> validate_length(field, min: 1, max: 64)
+  end
 
   defp validate_data(changeset) do
     changeset

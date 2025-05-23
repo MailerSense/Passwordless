@@ -92,8 +92,8 @@ defmodule Passwordless.Activity.Log do
     belongs_to :domain, Domain, type: :binary_id
 
     # Billing
-    belongs_to :billing_customer, Passwordless.Billing.Customer
-    belongs_to :billing_subscription, Passwordless.Billing.Subscription
+    belongs_to :billing_customer, Passwordless.BillingCustomer
+    belongs_to :billing_subscription, Passwordless.BillingSubscription
 
     timestamps(updated_at: false)
   end

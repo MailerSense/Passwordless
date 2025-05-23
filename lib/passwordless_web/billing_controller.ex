@@ -2,8 +2,8 @@ defmodule PasswordlessWeb.BillingController do
   use PasswordlessWeb, :authenticated_controller
 
   alias Passwordless.Billing
-  alias Passwordless.Billing.Customer
-  alias Passwordless.Billing.Subscription
+  alias Passwordless.BillingCustomer
+  alias Passwordless.BillingSubscription
   alias Passwordless.Organizations.Org
 
   @provider Application.compile_env!(:passwordless, :billing_provider)
@@ -12,8 +12,8 @@ defmodule PasswordlessWeb.BillingController do
     %Org{} = current_org = Map.fetch!(conn.assigns, :current_org)
 
     case Billing.get_customer(current_org) do
-      %Customer{subscription: %Subscription{} = subscription} ->
-        if Subscription.valid?(subscription) do
+      %BillingCustomer{subscription: %BillingSubscription{} = subscription} ->
+        if BillingSubscription.valid?(subscription) do
           conn
           |> put_flash(:error, gettext("There is an existing valid subscription!"))
           |> redirect(to: ~p"/billing")

@@ -1,4 +1,4 @@
-defmodule Passwordless.ExAwsClient do
+defmodule Passwordless.AWS.ExAwsClient do
   @moduledoc """
   The ExAws HTTP client implemented with Finch (our go-to HTTP client).
   """

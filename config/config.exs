@@ -58,7 +58,7 @@ config :passwordless, PasswordlessWeb.Endpoint,
 # Configures AWS
 config :ex_aws,
   region: "eu-west-1",
-  http_client: Passwordless.ExAwsClient
+  http_client: Passwordless.AWS.ExAwsClient
 
 # Configures Oban
 config :passwordless, Oban,
@@ -82,7 +82,7 @@ config :passwordless, Oban,
     {Oban.Pro.Plugins.DynamicCron,
      crontab: [
        {"*/15 * * * *", Passwordless.ViewRefresher},
-       {"0 * * * *", Passwordless.Domain.Deleter},
+       {"0 * * * *", Passwordless.Domain.Cleaner},
        {"*/30 * * * *", Passwordless.Domain.Verifier}
      ]}
   ]

@@ -249,13 +249,7 @@ defmodule PasswordlessWeb.Helpers do
   def org_menu_items(%User{} = user) do
     user
     |> Organizations.list_orgs()
-    |> Enum.sort_by(& &1.name, :desc)
-    |> Enum.reject(fn %Org{id: id} ->
-      case user.current_org do
-        %Org{id: ^id} -> true
-        _ -> false
-      end
-    end)
+    |> Enum.sort_by(& &1.inserted_at, :desc)
   end
 
   def org_menu_items(_user), do: []
@@ -263,13 +257,7 @@ defmodule PasswordlessWeb.Helpers do
   def app_menu_items(%User{current_org: %Org{} = org} = user) do
     org
     |> Organizations.list_apps()
-    |> Enum.sort_by(& &1.name, :desc)
-    |> Enum.reject(fn %App{id: id} ->
-      case user.current_app do
-        %App{id: ^id} -> true
-        _ -> false
-      end
-    end)
+    |> Enum.sort_by(& &1.inserted_at, :desc)
   end
 
   def app_menu_items(_user), do: []
@@ -353,6 +341,10 @@ defmodule PasswordlessWeb.Helpers do
     start_date = Timex.beginning_of_month(month)
     end_date = Timex.end_of_month(month)
 
+    "#{format_date(start_date, "%-d %b")} - #{format_date(end_date, "%-d %b %Y")}"
+  end
+
+  def format_month_range(%DateTime{} = start_date, %DateTime{} = end_date) do
     "#{format_date(start_date, "%-d %b")} - #{format_date(end_date, "%-d %b %Y")}"
   end
 

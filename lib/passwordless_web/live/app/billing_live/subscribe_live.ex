@@ -3,7 +3,8 @@ defmodule PasswordlessWeb.App.BillingLive.SubscribeLive do
   use PasswordlessWeb, :live_view
 
   alias Passwordless.Billing
-  alias Passwordless.Billing.Subscription
+  alias Passwordless.BillingCustomer
+  alias Passwordless.BillingSubscription
 
   @provider Application.compile_env!(:passwordless, :billing_provider)
 
@@ -16,7 +17,7 @@ defmodule PasswordlessWeb.App.BillingLive.SubscribeLive do
 
     socket =
       case Billing.get_customer(socket.assigns.current_org) do
-        %Billing.Customer{subscription: %Subscription{} = subscription} = customer ->
+        %BillingCustomer{subscription: %BillingSubscription{} = subscription} = customer ->
           socket
           |> assign(:current_customer, customer)
           |> assign(:current_subscription, subscription)

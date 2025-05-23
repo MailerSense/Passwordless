@@ -124,7 +124,53 @@ defmodule Passwordless.Organizations.OrgSeeder do
       {:ok, _} = Passwordless.create_domain_record(domain, r)
     end
 
+    current_month = DateTime.utc_now()
+    period_start = Timex.beginning_of_month(current_month)
+    period_end = Timex.end_of_month(current_month)
+
+    billing_items = [
+      %{
+        kind: :metered,
+        name: :mau,
+        period_start: period_start,
+        period_end: period_end,
+        amount: 1000,
+        amount_max: 10_000,
+        base_cost: Money.parse!("19.00"),
+        added_cost: Money.new(0),
+        total_cost: Money.parse!("19.00")
+      },
+      %{
+        kind: :metered,
+        name: :emails,
+        period_start: period_start,
+        period_end: period_end,
+        amount: 10_000,
+        amount_max: 100_000,
+        base_cost: Money.new(0),
+        added_cost: Money.new(0),
+        total_cost: Money.new(0)
+      }
+    ]
+
+    for i <- billing_items do
+      {:ok, _} = Passwordless.Billing.create_billing_item(org, app, i)
+    end
+
     {:ok, _tenant} = Tenant.create(app)
+
+    {:ok, _app2} =
+      Passwordless.create_full_app(org, %{
+        name: "Demo App",
+        settings: %{
+          logo: Enum.random(Passwordless.config(:logo_placeholders)),
+          website: "https://passwordlesstools.com",
+          display_name: "Demo App",
+          allowlisted_ip_addresses: [
+            %{address: "0.0.0.0/0"}
+          ]
+        }
+      })
 
     templates =
       for name <- @random_actions do
@@ -162,6 +208,9 @@ defmodule Passwordless.Organizations.OrgSeeder do
     for {email, phone} <- @random_emails |> Stream.zip(@random_phones) |> Enum.take(users_count) do
       {:ok, app_user} =
         Passwordless.create_user(app, %{
+          full_name: Faker.Person.name(),
+          first_name: Faker.Person.first_name(),
+          last_name: Faker.Person.last_name(),
           data: %{
             "email" => email,
             "phone" => phone

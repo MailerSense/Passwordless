@@ -1,14 +1,14 @@
-defmodule Passwordless.Billing.Subscription do
+defmodule Passwordless.BillingSubscription do
   @moduledoc """
   Represents a subscription to a billing plan.
   """
 
-  use Passwordless.Schema, prefix: "blsub"
+  use Passwordless.Schema, prefix: "billing_subscription"
 
   import Ecto.Query
 
-  alias Passwordless.Billing.Customer
-  alias Passwordless.Billing.SubscriptionItem
+  alias Passwordless.BillingCustomer
+  alias Passwordless.BillingSubscriptionItem
   alias Passwordless.Organizations.Org
 
   @stripe_states ~w(
@@ -41,9 +41,9 @@ defmodule Passwordless.Billing.Subscription do
     field :trial_start, :utc_datetime_usec
     field :trial_end, :utc_datetime_usec
 
-    belongs_to :customer, Customer
+    belongs_to :customer, BillingCustomer
 
-    has_many :items, SubscriptionItem, preload_order: [asc: :inserted_at]
+    has_many :items, BillingSubscriptionItem, preload_order: [asc: :inserted_at]
 
     timestamps()
     soft_delete_timestamp()

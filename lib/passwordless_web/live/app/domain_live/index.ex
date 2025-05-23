@@ -87,22 +87,23 @@ defmodule PasswordlessWeb.App.DomainLive.Index do
 
   @impl true
   def handle_event("delete_domain", _params, socket) do
-    case Passwordless.teardown_domains(socket.assigns.current_app) do
-      {:ok, app} ->
+    case Passwordless.delete_and_deregister_email_domain(socket.assigns.current_app) do
+      {:ok, domain} ->
         {:noreply,
          socket
-         |> assign(current_app: app)
          |> put_toast(
            :info,
-           gettext("Domain has been deleted."),
+           gettext("Domain %{domain} has been deleted.", domain: domain.name),
            title: gettext("Success")
          )
          |> push_navigate(to: ~p"/domain")}
 
-      _ ->
+      error ->
         {:noreply,
          socket
-         |> put_toast(:error, gettext("Failed to delete domains!"), title: gettext("Error"))
+         |> put_toast(:error, gettext("Failed to delete domain: %{error}", error: inspect(error)),
+           title: gettext("Error")
+         )
          |> push_patch(to: ~p"/domain")}
     end
   end

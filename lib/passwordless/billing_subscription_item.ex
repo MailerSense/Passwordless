@@ -1,11 +1,11 @@
-defmodule Passwordless.Billing.SubscriptionItem do
+defmodule Passwordless.BillingSubscriptionItem do
   @moduledoc """
   Represents a billable item belonging to a subscription.
   """
 
-  use Passwordless.Schema, prefix: "blsitem"
+  use Passwordless.Schema, prefix: "billing_subscription_item"
 
-  alias Passwordless.Billing.Subscription
+  alias Passwordless.BillingSubscription
 
   @usage_types ~w(licensed metered)a
   @usage_intervals ~w(day month week year)a
@@ -25,7 +25,7 @@ defmodule Passwordless.Billing.SubscriptionItem do
     field :recurring_interval, Ecto.Enum, values: @usage_intervals
     field :recurring_usage_type, Ecto.Enum, values: @usage_types
 
-    belongs_to :subscription, Subscription
+    belongs_to :subscription, BillingSubscription
 
     timestamps()
     soft_delete_timestamp()

@@ -45,69 +45,41 @@
       </div>
     </.box>
 
-    <.simple_table
-      items={[
-        %{
-          id: Uniq.UUID.uuid7(),
-          app: "Super app",
-          name: "MAU quota",
-          period: Date.utc_today(),
-          free_tier: "None",
-          usage: {1000, 1500},
-          estimated_charge: Money.new(1000)
-        },
-        %{
-          id: Uniq.UUID.uuid7(),
-          app: "Super app",
-          name: "SMS quota",
-          free_tier: "100 / day",
-          period: Date.utc_today(),
-          usage: {100, 1500},
-          estimated_charge: Money.new(1000)
-        }
-      ]}
-      count={2}
-      title={gettext("Breakdown")}
-    >
+    <.simple_table items={@billing_items} title={gettext("Breakdown")}>
       <:if_empty>
         {gettext("No %{models} found", models: gettext("billing items"))}
       </:if_empty>
       <:col :let={item} field={:app}>
-        {Util.truncate(item.app)}
+        {Util.truncate(item.app.name)}
       </:col>
-      <:col field={:name} />
+      <:col field={:full_name} label={gettext("Name")} />
       <:col :let={item} field={:period}>
-        {format_month_range(item.period)}
+        {format_month_range(item.period_start, item.period_end)}
       </:col>
-      <:col :let={item} field={:state}>
+      <:col :let={item} field={:current}>
         <% {label, color} =
-          if current_month?(item.period),
+          if item.current,
             do: {gettext("Current"), "success"},
             else: {gettext("Past"), "gray"} %>
 
-        <.badge label={label} color={color} size="sm" />
+        <.badge with_dot label={label} color={color} size="sm" />
       </:col>
 
       <:col :let={item} field={:usage}>
         <div class="flex items-center gap-2">
-          <.progress
-            color="primary"
-            value={elem(item.usage, 0)}
-            max={elem(item.usage, 1)}
-            class="min-w-36"
-          />
+          <.progress color="primary" value={item.amount} max={item.amount_max} class="min-w-36" />
 
           {gettext("%{used} / %{total}",
-            used: Util.number!(elem(item.usage, 0)),
-            total: Util.number!(elem(item.usage, 1))
+            used: Util.number!(item.amount),
+            total: Util.number!(item.amount_max)
           )}
         </div>
       </:col>
-      <:col field={:estimated_charge} label={gettext("Estimated Charge")} />
+      <:col field={:total_cost} label={gettext("Estimated Charge")} />
       <:col actions></:col>
       <:actions :let={item}>
         <.icon_button
-          to={~p"/billing/{@item}/edit"}
+          to={~p"/billing/item/#{item}/edit"}
           size="sm"
           icon="custom-edit"
           color="light"
@@ -136,3 +108,19 @@
     </.simple_table>
   </div>
 </.layout>
+
+<%= case @live_action do %>
+  <% :edit_billing_item -> %>
+    <.live_component
+      id={@live_action}
+      title={@page_title}
+      subtitle={@page_subtitle}
+      billing_item={@billing_item}
+      module={PasswordlessWeb.App.BillingLive.FormComponent}
+      return_to={apply_filters(@filters, @meta, ~p"/billing")}
+      live_action={@live_action}
+      current_org={@current_org}
+      current_user={@current_user}
+    />
+  <% _ -> %>
+<% end %>

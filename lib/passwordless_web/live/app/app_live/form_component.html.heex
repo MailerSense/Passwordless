@@ -26,7 +26,8 @@
         <.field
           type="url"
           field={settings[:website]}
-          placeholder={gettext("e.g. https://gmail.com")}
+          prefix={gettext("https://")}
+          placeholder={gettext("youapp.com")}
           autocomplete="url"
           required
         />
@@ -36,8 +37,10 @@
           autocomplete="organization"
           required
         />
-        <.field field={settings[:primary_color]} type="color" required />
-        <.field field={settings[:background_color]} type="color" required />
+        <div class="grid gap-6 grid-cols-1 xl:grid-cols-2 ">
+          <.field field={settings[:primary_color]} type="color" required wrapper_class="mb-0!" />
+          <.field field={settings[:background_color]} type="color" required wrapper_class="mb-0!" />
+        </div>
       </.inputs_for>
     </.form>
 

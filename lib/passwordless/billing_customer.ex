@@ -1,13 +1,13 @@
-defmodule Passwordless.Billing.Customer do
+defmodule Passwordless.BillingCustomer do
   @moduledoc """
   A customer is something that has a subscription to a product.
   """
 
-  use Passwordless.Schema, prefix: "blcust"
+  use Passwordless.Schema, prefix: "billing_customer"
 
   import Ecto.Query
 
-  alias Passwordless.Billing.Subscription
+  alias Passwordless.BillingSubscription
   alias Passwordless.Organizations.Org
 
   @providers ~w(stripe)a
@@ -20,7 +20,7 @@ defmodule Passwordless.Billing.Customer do
     field :provider, Ecto.Enum, values: @providers
     field :provider_id, :string
 
-    has_one :subscription, Subscription
+    has_one :subscription, BillingSubscription
 
     belongs_to :org, Org
 

@@ -8,7 +8,7 @@ defmodule Passwordless.Billing.Providers.Stripe.WebhookHandler do
   alias Passwordless.Activity
   alias Passwordless.Billing
   alias Passwordless.Billing.Providers.Stripe.Synchronizer
-  alias Passwordless.Billing.Subscription
+  alias Passwordless.BillingSubscription
   alias Passwordless.Repo
 
   @doc """
@@ -60,7 +60,7 @@ defmodule Passwordless.Billing.Providers.Stripe.WebhookHandler do
     payload = %{stripe_subscription_event: type}
 
     Repo.transact(fn ->
-      with %Subscription{} = subscription <- Billing.get_subscription_by_provider_id(object.id),
+      with %BillingSubscription{} = subscription <- Billing.get_subscription_by_provider_id(object.id),
            {:ok, _log} <-
              Activity.log(:"subscription.updated", Map.put(payload, :billing_subscription, subscription)),
            do: {:ok, subscription}

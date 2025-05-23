@@ -369,6 +369,16 @@ defmodule Passwordless do
     end)
   end
 
+  def delete_and_deregister_email_domain(%App{} = app) do
+    with {:ok, domain} <- get_fallback_domain(app, :email),
+         {:ok, _domain} <-
+           %{domain_id: domain.id}
+           |> Passwordless.Domain.Deleter.new()
+           |> Oban.Pro.Relay.async()
+           |> Oban.Pro.Relay.await(:timer.seconds(15)),
+         do: {:ok, domain}
+  end
+
   # Email Messages
 
   def get_email_message(%App{} = app, id) when is_binary(id) do
@@ -376,10 +386,19 @@ defmodule Passwordless do
   end
 
   def record_email_message_mapping(%App{} = app, %EmailMessage{} = email_message, external_id) do
-    app
-    |> Ecto.build_assoc(:email_message_mappings)
-    |> EmailMessageMapping.changeset(%{external_id: external_id, email_message_id: email_message.id})
-    |> Repo.insert()
+    attrs = %{external_id: external_id, email_message_id: email_message.id}
+
+    changeset =
+      app
+      |> Ecto.build_assoc(:email_message_mappings)
+      |> EmailMessageMapping.changeset(attrs)
+
+    upsert_clause = [
+      on_conflict: {:replace, [:external_id]},
+      conflict_target: [:email_message_id]
+    ]
+
+    Repo.insert(changeset, upsert_clause)
   end
 
   # Authenticators

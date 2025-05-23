@@ -39,7 +39,7 @@ defmodule PasswordlessWeb.App.AppLive.Index do
     new_app =
       current_org
       |> Ecto.build_assoc(:apps)
-      |> Kernel.then(&%App{&1 | settings: %AppSettings{}})
+      |> Kernel.then(&%App{&1 | settings: %AppSettings{logo: Enum.random(Passwordless.config(:logo_placeholders))}})
 
     {:noreply,
      socket

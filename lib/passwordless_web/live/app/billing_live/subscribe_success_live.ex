@@ -3,7 +3,8 @@ defmodule PasswordlessWeb.App.BillingLive.SubscribeSuccessLive do
   use PasswordlessWeb, :live_view
 
   alias Passwordless.Billing
-  alias Passwordless.Billing.Subscription
+  alias Passwordless.BillingCustomer
+  alias Passwordless.BillingSubscription
 
   @impl true
   def mount(_params, _session, socket) do
@@ -14,7 +15,7 @@ defmodule PasswordlessWeb.App.BillingLive.SubscribeSuccessLive do
 
     socket =
       case Billing.get_customer(socket.assigns.current_org) do
-        %Billing.Customer{subscription: %Subscription{} = subscription} = customer ->
+        %BillingCustomer{subscription: %BillingSubscription{} = subscription} = customer ->
           socket
           |> assign(:current_customer, customer)
           |> assign(:current_subscription, subscription)
