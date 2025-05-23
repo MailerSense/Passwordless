@@ -369,6 +369,16 @@ defmodule Passwordless do
     end)
   end
 
+  def delete_and_deregister_email_domain(%App{} = app) do
+    with {:ok, domain} <- get_fallback_domain(app, :email),
+         {:ok, _domain} <-
+           %{domain_id: domain.id}
+           |> Passwordless.Domain.Deleter.new()
+           |> Oban.Pro.Relay.async()
+           |> Oban.Pro.Relay.await(:timer.seconds(15)),
+         do: {:ok, domain}
+  end
+
   # Email Messages
 
   def get_email_message(%App{} = app, id) when is_binary(id) do
