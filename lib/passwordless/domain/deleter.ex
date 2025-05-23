@@ -1,6 +1,6 @@
 defmodule Passwordless.Domain.Deleter do
   @moduledoc """
-  Creates SES domain identities with EasyDKIM verification and configures SES ConfigurationSets.
+  Deletes SES domain identities with EasyDKIM verification and configures SES ConfigurationSets.
   """
   use Oban.Pro.Worker, queue: :domain, max_attempts: 1, tags: ["domain", "deleter"]
 
@@ -80,7 +80,7 @@ defmodule Passwordless.Domain.Deleter do
          do: Passwordless.update_app_settings(settings, %{email_event_destination: nil})
   end
 
-  defp delete_event_destination(%AWS.Client{} = client, %App{settings: %AppSettings{} = settings}), do: {:ok, settings}
+  defp delete_event_destination(%AWS.Client{} = _client, %App{settings: %AppSettings{} = settings}), do: {:ok, settings}
 
   defp delete_topic_subscription(%AWS.Client{} = client, %App{
          settings: %AppSettings{email_event_topic_subscription_arn: email_event_topic_subscription_arn} = settings
@@ -93,7 +93,7 @@ defmodule Passwordless.Domain.Deleter do
          do: Passwordless.update_app_settings(settings, %{email_event_topic_subscription_arn: nil})
   end
 
-  defp delete_topic_subscription(%AWS.Client{} = client, %App{settings: %AppSettings{} = settings}) do
+  defp delete_topic_subscription(%AWS.Client{} = _client, %App{settings: %AppSettings{} = settings}) do
     {:ok, settings}
   end
 
