@@ -154,6 +154,10 @@ config :passwordless, :content_security_policy,
         "http://localhost:#{String.to_integer(System.get_env("PORT", "4000"))}"
       ],
       config_env() != :prod
+    )
+    |> append_if(
+      "https://#{System.get_env("CDN_HOST")}",
+      config_env() == :prod
     ),
   img_src: [
     "https:",
