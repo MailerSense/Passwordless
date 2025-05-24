@@ -78,7 +78,7 @@ defmodule PasswordlessWeb.Helpers do
         name: :user_pools,
         label: "User pools",
         icon: "remix-folders-line",
-        path: ~p"/user-pools",
+        path: ~p"/users/pools",
         link_type: "live_patch"
       }
     ]

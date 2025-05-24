@@ -38,7 +38,7 @@ defmodule PasswordlessWeb.App.UserPoolLive.Index do
   def handle_event("close_modal", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/user-pools")
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/users/pools")
      )}
   end
 
@@ -46,13 +46,13 @@ defmodule PasswordlessWeb.App.UserPoolLive.Index do
   def handle_event("close_slide_over", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/user-pools")
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/users/pools")
      )}
   end
 
   @impl true
   def handle_event("clear_filters", _params, socket) do
-    {:noreply, push_navigate(socket, to: ~p"/user-pools")}
+    {:noreply, push_navigate(socket, to: ~p"/users/pools")}
   end
 
   @impl true
@@ -65,9 +65,9 @@ defmodule PasswordlessWeb.App.UserPoolLive.Index do
 
     to =
       if filtered? do
-        ~p"/user-pools?#{build_filter_params(socket.assigns.meta, filter_params)}"
+        ~p"/users/pools?#{build_filter_params(socket.assigns.meta, filter_params)}"
       else
-        ~p"/user-pools"
+        ~p"/users/pools"
       end
 
     {:noreply, push_patch(socket, to: to)}
@@ -83,13 +83,13 @@ defmodule PasswordlessWeb.App.UserPoolLive.Index do
         {:noreply,
          socket
          |> put_flash(:info, gettext("User deleted successfully."))
-         |> push_patch(to: ~p"/user-pools")}
+         |> push_patch(to: ~p"/users/pools")}
 
       {:error, _} ->
         {:noreply,
          socket
          |> put_toast(:error, gettext("Failed to delete user!"), title: gettext("Error"))
-         |> push_patch(to: ~p"/user-pools")}
+         |> push_patch(to: ~p"/users/pools")}
     end
   end
 

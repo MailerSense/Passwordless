@@ -143,10 +143,10 @@ defmodule PasswordlessWeb.Router do
       live "/users/:id/delete", App.UserLive.Index, :delete
 
       # User Pools
-      live "/user-pools", App.UserPoolLive.Index, :index
-      live "/user-pools/new", App.UserPoolLive.Index, :new
-      live "/user-pools/:id/edit", App.UserPoolLive.Index, :edit
-      live "/user-pools/:id/delete", App.UserPoolLive.Index, :delete
+      live "/users/pools", App.UserPoolLive.Index, :index
+      live "/users/pools/new", App.UserPoolLive.Index, :new
+      live "/users/pools/:id/edit", App.UserPoolLive.Index, :edit
+      live "/users/pools/:id/delete", App.UserPoolLive.Index, :delete
 
       # Actions
       live "/actions", App.ActionLive.Index, :index

@@ -163,7 +163,7 @@ defmodule PasswordlessWeb.Menus do
     %{
       name: name,
       label: gettext("User pools"),
-      path: ~p"/user-pools",
+      path: ~p"/users/pools",
       icon: "remix-user-line",
       link_type: "live_patch"
     }
