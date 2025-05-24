@@ -22,7 +22,11 @@ defmodule Passwordless.Billing.Providers.Stripe do
   def checkout_url(%Stripe.Checkout.Session{url: url}), do: url
 
   @impl true
-  def change_plan(%Org{} = org, %BillingCustomer{subscription: %BillingSubscription{} = subscription} = customer, items) do
+  def change_plan(
+        %Org{} = org,
+        %BillingCustomer{billing_subscription: %BillingSubscription{} = subscription} = customer,
+        items
+      ) do
     with {:ok, %Stripe.Subscription{} = stripe_subscription} <- Stripe.Subscription.retrieve(subscription.provider_id) do
       Stripe.BillingPortal.Session.create(%{
         customer: customer.provider_id,

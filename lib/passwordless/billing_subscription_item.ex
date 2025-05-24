@@ -25,7 +25,7 @@ defmodule Passwordless.BillingSubscriptionItem do
     field :recurring_interval, Ecto.Enum, values: @usage_intervals
     field :recurring_usage_type, Ecto.Enum, values: @usage_types
 
-    belongs_to :subscription, BillingSubscription
+    belongs_to :billing_subscription, BillingSubscription
 
     timestamps()
     soft_delete_timestamp()
@@ -40,7 +40,7 @@ defmodule Passwordless.BillingSubscriptionItem do
     provider_product_id
     recurring_interval
     recurring_usage_type
-    subscription_id
+    billing_subscription_id
   )a
   @required_fields ~w(
     name
@@ -48,7 +48,7 @@ defmodule Passwordless.BillingSubscriptionItem do
     provider_id
     provider_price_id
     provider_product_id
-    subscription_id
+    billing_subscription_id
   )a
 
   @doc """
@@ -59,6 +59,6 @@ defmodule Passwordless.BillingSubscriptionItem do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> unique_constraint(:provider_id)
-    |> assoc_constraint(:subscription)
+    |> assoc_constraint(:billing_subscription)
   end
 end

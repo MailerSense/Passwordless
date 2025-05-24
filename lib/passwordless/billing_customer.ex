@@ -20,7 +20,7 @@ defmodule Passwordless.BillingCustomer do
     field :provider, Ecto.Enum, values: @providers
     field :provider_id, :string
 
-    has_one :subscription, BillingSubscription
+    has_one :billing_subscription, BillingSubscription
 
     belongs_to :org, Org
 

@@ -165,14 +165,18 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :trial_start, :utc_datetime_usec
       add :trial_end, :utc_datetime_usec
 
-      add :customer_id, references(:billing_customers, type: :uuid, on_delete: :delete_all),
-        null: false
+      add :billing_customer_id,
+          references(:billing_customers, type: :uuid, on_delete: :delete_all),
+          null: false
 
       timestamps()
       soft_delete_column()
     end
 
-    create unique_index(:billing_subscriptions, [:customer_id], where: "deleted_at is null")
+    create unique_index(:billing_subscriptions, [:billing_customer_id],
+             where: "deleted_at is null"
+           )
+
     create unique_index(:billing_subscriptions, [:provider_id], where: "deleted_at is null")
 
     create table(:billing_subscription_items, primary_key: false) do
@@ -187,7 +191,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       add :recurring_interval, :string
       add :recurring_usage_type, :string
 
-      add :subscription_id,
+      add :billing_subscription_id,
           references(:billing_subscriptions, type: :uuid, on_delete: :delete_all),
           null: false
 
@@ -195,7 +199,7 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       soft_delete_column()
     end
 
-    create index(:billing_subscription_items, [:subscription_id])
+    create index(:billing_subscription_items, [:billing_subscription_id])
     create unique_index(:billing_subscription_items, [:provider_id], where: "deleted_at is null")
 
     ## Apps
