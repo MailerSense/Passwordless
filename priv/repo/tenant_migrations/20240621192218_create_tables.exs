@@ -484,5 +484,7 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
     create index(:events, [:user_id])
     create index(:events, [:action_id])
     create index(:events, [:enrollment_id])
+
+    execute "create index events_inserted_at_brin_idx on #{prefix()}.events using brin (inserted_at);"
   end
 end

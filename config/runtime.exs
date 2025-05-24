@@ -140,6 +140,7 @@ config :passwordless, :content_security_policy,
   default_src: append_if(["'self'"], "https://#{System.get_env("CDN_HOST")}", config_env() == :prod),
   connect_src:
     [
+      "*.sentry.io",
       "*.amazonaws.com",
       "cdn.jsdelivr.net"
     ]

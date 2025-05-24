@@ -591,6 +591,6 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
     create index(:activity_logs, [:billing_subscription_id])
     create index(:activity_logs, [:domain_id])
 
-    execute ~SQL"CREATE INDEX activity_logs_happened_at_idx ON activity_logs ((happened_at :: date));"
+    execute ~SQL"CREATE INDEX activity_logs_happened_at_idx ON activity_logs USING brin (happened_at);"
   end
 end

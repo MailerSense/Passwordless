@@ -1061,6 +1061,25 @@ defmodule Passwordless do
     |> Repo.insert(prefix: Tenant.to_prefix(app))
   end
 
+  def get_reporting_events(%App{} = app, %Timex.Interval{} = interval, opts \\ []) do
+    Repo.all(
+      from(e in Event,
+        prefix: ^Tenant.to_prefix(app),
+        where:
+          e.inserted_at >= ^interval.from and e.inserted_at <= ^interval.until and not is_nil(e.latitude) and
+            not is_nil(e.longitude),
+        group_by: [e.latitude, e.longitude, e.city],
+        select: %{
+          lat: e.latitude,
+          lng: e.longitude,
+          city: e.city,
+          count: count(e.id)
+        },
+        order_by: [desc: count(e.id)]
+      )
+    )
+  end
+
   # Rules
 
   def get_rule!(%App{} = app, id) do

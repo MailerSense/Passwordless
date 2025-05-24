@@ -17,7 +17,7 @@ defmodule PasswordlessWeb do
   and import those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts uploads images robots.txt site.webmanifest)
+  def static_paths, do: ~w(assets fonts uploads images json robots.txt site.webmanifest)
 
   def controller do
     quote do

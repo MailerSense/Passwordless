@@ -1,6 +1,11 @@
 <.layout current_user={@current_user} current_page={:reports} current_section={:app}>
   <div class="relative overflow-hidden">
-    <div id="globe" phx-hook="GlobeHook"></div>
+    <div
+      id="globe"
+      phx-hook="GlobeHook"
+      data-countries-source={static_url(PasswordlessWeb.Endpoint, ~p"/json/countries.geojson")}
+    >
+    </div>
     <div class="absolute left-0 top-0 mx-8 my-6">
       <.box padded body_class="flex flex-col gap-4">
         <.live_indicator to={~p"/reports"} />

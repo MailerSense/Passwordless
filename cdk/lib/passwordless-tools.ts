@@ -417,6 +417,7 @@ export class PasswordlessTools extends cdk.Stack {
         "assets/*": albBehavior,
         "images/*": albBehavior,
         "fonts/*": albBehavior,
+        "json/*": albBehavior,
       },
     });
 

@@ -23,8 +23,30 @@ defmodule PasswordlessWeb.App.ReportLive.Index do
   end
 
   @impl true
+  def handle_event("send_geo_data", _params, socket) do
+    app = socket.assigns.current_app
+    today = DateTime.utc_now()
+    span_start = Timex.shift(today, hours: -30)
+    span_end = today
+
+    interval =
+      Timex.Interval.new(
+        from: span_start,
+        until: span_end
+      )
+
+    {:noreply, start_async(socket, :load_geo_data, fn -> Passwordless.get_reporting_events(app, interval) end)}
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_async(:load_geo_data, {:ok, geo_data}, socket) do
+    IO.inspect(geo_data, label: "Geo Data Loaded")
+    {:noreply, push_event(socket, :get_geo_data, %{geo_data: geo_data})}
   end
 
   # Private
