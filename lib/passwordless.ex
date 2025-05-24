@@ -829,6 +829,14 @@ defmodule Passwordless do
     |> Repo.insert(opts)
   end
 
+  # User Pool
+
+  def get_user_pool!(%App{} = app, id) when is_binary(id) do
+    app
+    |> Ecto.assoc(:user_pools)
+    |> Repo.get!(id)
+  end
+
   # Action
 
   def get_action!(%App{} = app, id) do

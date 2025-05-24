@@ -24,6 +24,7 @@ defmodule PasswordlessWeb.Components.Button do
       "success",
       "primary",
       "secondary",
+      "warning",
       "danger",
       "gray",
       "light",

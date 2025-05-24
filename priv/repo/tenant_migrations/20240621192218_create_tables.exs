@@ -22,6 +22,34 @@ defmodule Passwordless.Repo.TenantMigrations.CreateTables do
       soft_delete_column()
     end
 
+    ## User Pools
+
+    create table(:user_pools, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :name, :string, null: false
+      add :alias, :string, null: false
+
+      timestamps()
+      soft_delete_column()
+    end
+
+    create unique_index(:user_pools, [:alias], where: "deleted_at is null")
+
+    ## User Pools
+
+    create table(:user_pool_memberships, primary_key: false) do
+      add :id, :uuid, primary_key: true
+
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
+      add :user_pool_id, references(:user_pools, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create index(:user_pool_memberships, [:user_id])
+    create index(:user_pool_memberships, [:user_pool_id])
+    create unique_index(:user_pool_memberships, [:user_id, :user_pool_id])
+
     ## Action Templates
 
     create table(:action_templates, primary_key: false) do

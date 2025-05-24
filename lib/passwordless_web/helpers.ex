@@ -65,6 +65,25 @@ defmodule PasswordlessWeb.Helpers do
 
   def event_badge(_event), do: {nil, "info"}
 
+  def user_menu_items do
+    [
+      %{
+        name: :users,
+        label: "Users",
+        icon: "remix-user-line",
+        path: ~p"/users",
+        link_type: "live_patch"
+      },
+      %{
+        name: :user_pools,
+        label: "User pools",
+        icon: "remix-folders-line",
+        path: ~p"/user-pools",
+        link_type: "live_patch"
+      }
+    ]
+  end
+
   def embed_menu_items do
     [
       %{

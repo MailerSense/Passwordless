@@ -1,16 +1,9 @@
-<.layout current_user={@current_user} current_page={:users} current_section={:app}>
+<.layout current_user={@current_user} current_page={:user_pools} current_section={:app}>
   <div class="flex flex-col gap-6 px-8 py-6">
     <.page_header title={gettext("Users")}>
       <div class="flex gap-3">
         <.button
-          to={apply_filters(@filters, @meta, ~p"/users/import")}
-          color="light"
-          label={gettext("Import")}
-          icon="remix-download-line"
-          link_type="live_patch"
-        />
-        <.button
-          to={apply_filters(@filters, @meta, ~p"/users/new")}
+          to={apply_filters(@filters, @meta, ~p"/user-pools/new")}
           color="primary"
           label={gettext("Create")}
           icon="remix-add-circle-line"
@@ -19,16 +12,16 @@
       </div>
     </.page_header>
     <div>
-      <.tab_menu menu_items={@menu_items} current_tab={:users} />
+      <.tab_menu menu_items={@menu_items} current_tab={:user_pools} />
     </div>
     <.data_table
       meta={@meta}
-      items={@users}
-      title={gettext("All users")}
-      search_placeholder={gettext("Search by email or user ID")}
+      items={@user_pools}
+      title={gettext("All user pools")}
+      search_placeholder={gettext("Search by name or alias")}
       show_clear_button={false}
     >
-      <:if_empty>{gettext("No %{models} found", models: gettext("users"))}</:if_empty>
+      <:if_empty>{gettext("No %{models} found", models: gettext("user pools"))}</:if_empty>
       <:col field={:search} searchable filterable={[:==]} />
       <:col :let={user} field={:email} sortable>
         <div class="flex items-center gap-3">
@@ -86,7 +79,7 @@
       id={@live_action}
       title={@page_title}
       subtitle={@page_subtitle}
-      user={%User{}}
+      user_pool={%UserPool{}}
       module={PasswordlessWeb.App.UserLive.FormComponent}
       live_action={@live_action}
       current_org={@current_org}
@@ -132,16 +125,5 @@
         />
       </div>
     </.modal>
-  <% :import -> %>
-    <.live_component
-      id={@live_action}
-      title={@page_title}
-      subtitle={@page_subtitle}
-      module={PasswordlessWeb.App.UserLive.ImportComponent}
-      live_action={@live_action}
-      current_org={@current_org}
-      current_user={@current_user}
-      return_to={apply_filters(@filters, @meta, ~p"/users")}
-    />
   <% _ -> %>
 <% end %>

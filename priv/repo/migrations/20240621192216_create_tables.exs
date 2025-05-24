@@ -116,6 +116,8 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
       timestamps()
     end
 
+    create index(:memberships, [:org_id])
+    create index(:memberships, [:user_id])
     create unique_index(:memberships, [:org_id, :user_id])
 
     ## Invitations
