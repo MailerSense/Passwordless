@@ -7,13 +7,15 @@
     <.box card>
       <.form_header title={gettext("Management")} no_margin />
       <.p>
-        User is the main entity in Passwordless. You can create, edit, and delete users. Users can be imported from a CSV file or created manually. Each user has an email address and a unique ID. The email address is used for authentication, while the unique ID is used for identification.
+        {gettext(
+          "User is the main entity in Passwordless. You can create, edit, and delete users. Users can be imported from a CSV file or created manually. Each user has an email address and a unique ID. The email address is used for authentication, while the unique ID is used for identification."
+        )}
       </.p>
       <div class="flex gap-3">
         <.button
           to={apply_filters(@filters, @meta, ~p"/users/new")}
           color="primary"
-          label={gettext("Create")}
+          label={gettext("Create user")}
           icon="remix-add-circle-line"
           link_type="live_patch"
         />

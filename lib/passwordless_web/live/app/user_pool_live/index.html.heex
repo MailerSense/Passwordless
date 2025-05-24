@@ -7,13 +7,15 @@
     <.box card>
       <.form_header title={gettext("Management")} no_margin />
       <.p>
-        User is the main entity in Passwordless. You can create, edit, and delete users. Users can be imported from a CSV file or created manually. Each user has an email address and a unique ID. The email address is used for authentication, while the unique ID is used for identification.
+        {gettext(
+          "User pools allow you to group users together for easier management. You can create, edit, and delete user pools. Each user pool has a name and an alias. The alias is used to identify the user pool in the system. User pools can be used to limit the number of actions a user can perform within a certain period of time."
+        )}
       </.p>
       <div class="flex gap-3">
         <.button
           to={apply_filters(@filters, @meta, ~p"/users/pools/new")}
           color="primary"
-          label={gettext("Create")}
+          label={gettext("Create user pool")}
           icon="remix-add-circle-line"
           link_type="live_patch"
         />
@@ -27,38 +29,37 @@
       show_clear_button={false}
     >
       <:if_empty>{gettext("No %{models} found", models: gettext("user pools"))}</:if_empty>
-      <:col field={:search} searchable filterable={[:==]} />
-      <:col :let={user} field={:email} sortable>
-        <div class="flex items-center gap-3">
-          <.avatar name={user.email.address} color="blue" />
-          {User.email(user)}
+      <:col field={:name} sortable />
+      <:col :let={user_pool} field={:alias} sortable>
+        <.code_line>{user_pool.alias}</.code_line>
+      </:col>
+      <:col :let={user_pool} label={gettext("Added")} field={:inserted_at} sortable>
+        {format_date(user_pool.inserted_at)}
+      </:col>
+      <:col :let={user_pool} field={:user_count} label={gettext("Users")} sortable>
+        <div class="flex items-center gap-2">
+          <.progress
+            label
+            color="primary"
+            value={user_pool.user_count}
+            max={@all_users}
+            label={false}
+            class="flex-grow min-w-16"
+          />
+
+          <span class="pc-progress__label">
+            {gettext("%{used} / %{total}",
+              used: Util.number!(user_pool.user_count),
+              total: Util.number!(@all_users)
+            )}
+          </span>
         </div>
-      </:col>
-
-      <:col :let={user} field={:last_action_state} label={gettext("Last Result")}>
-        <% {badge_label, badge_color} =
-          action_state_badge(%Passwordless.Action{state: user.last_action_state}) %>
-        <.badge with_dot size="sm" label={badge_label} color={badge_color} />
-      </:col>
-
-      <:col :let={actor} label={gettext("Added")} field={:inserted_at} sortable>
-        {format_date(actor.inserted_at)}
-      </:col>
-
-      <:col :let={user} field={:allow_rate} label={gettext("Allow Rate")} sortable>
-        <.progress
-          label
-          color="primary"
-          value={user.action_allow}
-          max={user.action_all}
-          class="flex-grow min-w-16"
-        />
       </:col>
 
       <:col actions></:col>
       <:actions :let={user}>
         <.icon_button
-          to={apply_filters(@filters, @meta, ~p"/users/#{user}/delete")}
+          to={apply_filters(@filters, @meta, ~p"/users/pools/#{user}/delete")}
           size="sm"
           icon="custom-trash"
           color="light"
@@ -66,7 +67,7 @@
           link_type="live_patch"
         />
         <.icon_button
-          to={apply_filters(@filters, @meta, ~p"/users/#{user}/edit")}
+          to={apply_filters(@filters, @meta, ~p"/users/pools/#{user}/edit")}
           size="sm"
           icon="custom-edit"
           color="light"
@@ -85,25 +86,25 @@
       title={@page_title}
       subtitle={@page_subtitle}
       user_pool={%UserPool{}}
-      module={PasswordlessWeb.App.UserLive.FormComponent}
+      module={PasswordlessWeb.App.UserPoolLive.FormComponent}
       live_action={@live_action}
       current_org={@current_org}
       current_app={@current_app}
       current_user={@current_user}
-      return_to={apply_filters(@filters, @meta, ~p"/users")}
+      return_to={apply_filters(@filters, @meta, ~p"/users/pools")}
     />
   <% :edit -> %>
     <.live_component
       id={@live_action}
       title={@page_title}
       subtitle={@page_subtitle}
-      user={@user}
-      module={PasswordlessWeb.App.UserLive.EditComponent}
+      user_pool={@user_pool}
+      module={PasswordlessWeb.App.UserPoolLive.FormComponent}
       live_action={@live_action}
       current_org={@current_org}
       current_app={@current_app}
       current_user={@current_user}
-      return_to={apply_filters(@filters, @meta, ~p"/users")}
+      return_to={apply_filters(@filters, @meta, ~p"/users/pools")}
     />
   <% :delete -> %>
     <.modal
@@ -123,10 +124,12 @@
         <.button
           icon="remix-delete-bin-line"
           size="md"
-          label={gettext("Yes, Delete \"%{user}\"", user: Util.truncate(User.handle(@user)))}
+          label={
+            gettext("Yes, Delete \"%{user_pool}\"", user_pool: Util.truncate(@user_pool.name))
+          }
           color="danger"
-          phx-click="delete_user"
-          phx-value-id={@user.id}
+          phx-click="delete_user_pool"
+          phx-value-id={@user_pool.id}
         />
       </div>
     </.modal>

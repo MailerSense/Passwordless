@@ -30,11 +30,7 @@
         )}
       </.p>
       <div class="flex items-center gap-3 flex-wrap">
-        <.button
-          icon="remix-verified-badge-line"
-          label={gettext("Upgrade")}
-          link_type="live_redirect"
-        />
+        <.button icon="remix-coin-line" label={gettext("Upgrade")} link_type="live_redirect" />
         <.button
           to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
           icon="remix-customer-service-line"
@@ -69,10 +65,12 @@
         <div class="flex items-center gap-2">
           <.progress color="primary" value={item.amount} max={item.amount_max} class="min-w-36" />
 
-          {gettext("%{used} / %{total}",
-            used: Util.number!(item.amount),
-            total: Util.number!(item.amount_max)
-          )}
+          <span class="pc-progress__label">
+            {gettext("%{used} / %{total}",
+              used: Util.number!(item.amount),
+              total: Util.number!(item.amount_max)
+            )}
+          </span>
         </div>
       </:col>
       <:col field={:total_cost} label={gettext("Estimated Charge")} />

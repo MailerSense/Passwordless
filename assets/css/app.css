@@ -1668,7 +1668,7 @@
   /* Progress - label (xl only) */
 
   .pc-progress__label {
-    @apply text-sm font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap;
+    @apply text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap;
   }
 
   /* Progress - sizes */

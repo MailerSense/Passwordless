@@ -15,11 +15,22 @@ defmodule Passwordless.UserPool do
 
   @derive {
     Flop.Schema,
-    sortable: [:id], filterable: [:id]
+    sortable: [:id, :name, :alias, :user_count, :inserted_at],
+    filterable: [:id],
+    adapter_opts: [
+      join_fields: [
+        user_count: [
+          binding: :user_count,
+          field: :user_count,
+          ecto_type: :integer
+        ]
+      ]
+    ]
   }
   schema "user_pools" do
     field :name, :string
     field :alias, :string
+    field :user_count, :integer, virtual: true, default: 0
 
     many_to_many :users, User, join_through: UserPoolMembership, unique: true
 
@@ -31,6 +42,30 @@ defmodule Passwordless.UserPool do
   """
   def get_by_app(query \\ __MODULE__, %App{} = app) do
     from q in query, prefix: ^Tenant.to_prefix(app)
+  end
+
+  @doc """
+  Join the adapter opts.
+  """
+  def join_adapter_opts(query \\ __MODULE__, opts \\ []) do
+    user_count =
+      from upm in UserPoolMembership,
+        prefix: ^Keyword.get(opts, :prefix, "public"),
+        where: upm.user_pool_id == parent_as(:user_pool).id,
+        select: %{
+          user_count: count(upm.id)
+        }
+
+    query =
+      if has_named_binding?(query, :user_pool),
+        do: query,
+        else: from(q in query, as: :user_pool)
+
+    from q in query,
+      left_lateral_join: uc in subquery(user_count),
+      on: true,
+      as: :user_count,
+      select_merge: map(uc, [:user_count])
   end
 
   @fields ~w(name)a

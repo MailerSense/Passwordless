@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-6 px-8 py-6">
     <.page_header title={gettext("Actions")}></.page_header>
     <.box card>
-      <.form_header title={gettext("Management")} no_margin />
+      <.form_header title={gettext("Rule engine")} no_margin />
       <.p>
         Actions are the core of Passwordless. They define what happens when a user interacts with the system. You can create, edit, and delete actions. Actions can be triggered by user events, such as login or registration, and can perform various tasks, such as sending emails or updating user data.
       </.p>
@@ -10,7 +10,7 @@
         <.button
           to={apply_filters(@filters, @meta, ~p"/actions/new")}
           color="primary"
-          label={gettext("Create")}
+          label={gettext("Create action")}
           icon="remix-add-circle-line"
           link_type="live_patch"
         />

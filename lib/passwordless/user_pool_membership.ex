@@ -36,4 +36,16 @@ defmodule Passwordless.UserPoolMembership do
     |> assoc_constraint(:user)
     |> assoc_constraint(:user_pool)
   end
+
+  @doc """
+  A membership changeset to create a new membership.
+  """
+  def insert_changeset(%User{} = user, %UserPool{} = user_pool) do
+    %__MODULE__{}
+    |> change(%{user_id: user.id, user_pool_id: user_pool.id})
+    |> validate_required(@required_fields)
+    |> unique_constraint([:user_id, :user_pool_id])
+    |> assoc_constraint(:user)
+    |> assoc_constraint(:user_pool)
+  end
 end

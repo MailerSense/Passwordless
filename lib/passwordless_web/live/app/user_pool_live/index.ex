@@ -2,6 +2,7 @@ defmodule PasswordlessWeb.App.UserPoolLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
+  alias Database.Tenant
   alias Passwordless.UserPool
   alias PasswordlessWeb.Components.DataTable
 
@@ -26,9 +27,11 @@ defmodule PasswordlessWeb.App.UserPoolLive.Index do
         _ -> nil
       end
 
+    all_users = Passwordless.get_total_users(socket.assigns.current_app)
+
     {:noreply,
      socket
-     |> assign(user_pool: user_pool, menu_items: user_menu_items())
+     |> assign(user_pool: user_pool, all_users: all_users, menu_items: user_menu_items())
      |> assign_user_pools(params)
      |> assign_filters(params)
      |> apply_action(socket.assigns.live_action, user_pool)}
@@ -112,7 +115,7 @@ defmodule PasswordlessWeb.App.UserPoolLive.Index do
       page_title: gettext("Create user pool"),
       page_subtitle:
         gettext(
-          "Every person authenticating with your app will be recorded as a user. A Monthly Active User (MAU) is one that has performed at least two actions in the current month."
+          "User pools are used to group users together. You can create multiple user pools to identify regular users, admins, and other roles. User pools can manage their own allowed authentication methods."
         )
     )
   end
@@ -151,7 +154,8 @@ defmodule PasswordlessWeb.App.UserPoolLive.Index do
 
   defp assign_user_pools(socket, params) when is_map(params) do
     app = socket.assigns.current_app
-    query = UserPool.get_by_app(app)
+    opts = [prefix: Tenant.to_prefix(app)]
+    query = app |> UserPool.get_by_app() |> UserPool.join_adapter_opts(opts)
 
     {user_pools, meta} = DataTable.search(query, params, @data_table_opts)
     assign(socket, user_pools: user_pools, meta: meta)
