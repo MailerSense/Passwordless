@@ -45,7 +45,7 @@
       </div>
     </.box>
 
-    <.simple_table items={@billing_items} title={gettext("Breakdown")}>
+    <.data_table meta={@meta} items={@billing_items} title={gettext("Breakdown")}>
       <:if_empty>
         {gettext("No %{models} found", models: gettext("billing items"))}
       </:if_empty>
@@ -87,7 +87,7 @@
           link_type="live_patch"
         />
       </:actions>
-    </.simple_table>
+    </.data_table>
 
     <.simple_table items={[]} count={0} title={gettext("Invoices")}>
       <:if_empty>

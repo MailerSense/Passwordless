@@ -56,6 +56,9 @@ defmodule Passwordless.BillingSubscription do
     from s in __MODULE__, join: c in assoc(s, :customer), where: c.org_id == ^org.id
   end
 
+  @doc """
+  Check if the provided subscription is valid.
+  """
   def valid?(%__MODULE__{} = subscription) do
     active?(subscription) or trial?(subscription) or grace_period?(subscription)
   end
