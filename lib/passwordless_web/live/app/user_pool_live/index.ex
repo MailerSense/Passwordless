@@ -102,7 +102,7 @@ defmodule PasswordlessWeb.App.UserPoolLive.Index do
 
   defp apply_action(socket, :index, _) do
     assign(socket,
-      page_title: gettext("User Pools"),
+      page_title: gettext("Users"),
       page_subtitle: gettext("Manage your user pools")
     )
   end
