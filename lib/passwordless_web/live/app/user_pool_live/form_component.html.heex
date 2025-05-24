@@ -8,30 +8,21 @@
       phx-submit="save"
       phx-change="validate"
     >
-      <.field field={@form[:full_name]} />
-      <div class="grid gap-6 grid-cols-2 mb-6">
-        <.field field={@form[:first_name]} wrapper_class="mb-0!" />
-        <.field field={@form[:last_name]} wrapper_class="mb-0!" />
-      </div>
+      <.field field={@form[:name]} required />
       <.field
-        field={@form[:language]}
-        type="select"
-        options={@languages}
-        icon_class="pc-select-input__flag"
-        icon_mapping={@flag_mapping}
+        field={@form[:alias]}
+        readonly
+        class="font-mono"
+        disabled
+        copyable
         required
         required_asterix={false}
+        help_text={
+          gettext(
+            "Alias is a unique identifier for the user pool. It can be used in the API to refer to this user pool."
+          )
+        }
       />
-      <.inputs_for :let={email} field={@form[:email]}>
-        <.field
-          type="email"
-          field={email[:email]}
-          label={gettext("Email")}
-          placeholder={gettext("john.doe@company.com")}
-          autocomplete="email"
-        />
-      </.inputs_for>
-      <.field field={@form[:data_text]} type="hidden" value="{}" />
     </.form>
 
     <:actions>

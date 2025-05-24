@@ -19,6 +19,8 @@ defmodule Passwordless.User do
   alias Passwordless.Phone
   alias Passwordless.RecoveryCodes
   alias Passwordless.TOTP
+  alias Passwordless.UserPool
+  alias Passwordless.UserPoolMembership
 
   @languages ~w(en de fr)a
 
@@ -102,6 +104,8 @@ defmodule Passwordless.User do
     has_many :phones, Phone, preload_order: [asc: :inserted_at]
     has_many :actions, Action, preload_order: [asc: :inserted_at]
     has_many :enrollments, Enrollment, preload_order: [asc: :inserted_at]
+
+    many_to_many :user_pools, UserPool, join_through: UserPoolMembership, unique: true
 
     timestamps()
     soft_delete_timestamp()

@@ -1,12 +1,13 @@
-defmodule PasswordlessWeb.App.UserLive.Index do
+defmodule PasswordlessWeb.App.UserPoolLive.Index do
   @moduledoc false
   use PasswordlessWeb, :live_view
 
-  alias Passwordless.User
+  alias Database.Tenant
+  alias Passwordless.UserPool
   alias PasswordlessWeb.Components.DataTable
 
   @data_table_opts [
-    for: User,
+    for: UserPool,
     default_order: %{
       order_by: [:inserted_at],
       order_directions: [:desc]
@@ -20,25 +21,27 @@ defmodule PasswordlessWeb.App.UserLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    user =
+    user_pool =
       case Map.get(params, "id") do
-        id when is_binary(id) -> Passwordless.get_user!(socket.assigns.current_app, id)
+        id when is_binary(id) -> Passwordless.get_user_pool!(socket.assigns.current_app, id)
         _ -> nil
       end
 
+    all_users = Passwordless.get_total_users(socket.assigns.current_app)
+
     {:noreply,
      socket
-     |> assign(user: user, menu_items: user_menu_items())
+     |> assign(user_pool: user_pool, all_users: all_users, menu_items: user_menu_items())
+     |> assign_user_pools(params)
      |> assign_filters(params)
-     |> assign_users(params)
-     |> apply_action(socket.assigns.live_action, user)}
+     |> apply_action(socket.assigns.live_action, user_pool)}
   end
 
   @impl true
   def handle_event("close_modal", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/users")
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/users/pools")
      )}
   end
 
@@ -46,13 +49,13 @@ defmodule PasswordlessWeb.App.UserLive.Index do
   def handle_event("close_slide_over", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/users")
+       to: apply_filters(socket.assigns.filters, socket.assigns.meta, ~p"/users/pools")
      )}
   end
 
   @impl true
   def handle_event("clear_filters", _params, socket) do
-    {:noreply, push_navigate(socket, to: ~p"/users")}
+    {:noreply, push_navigate(socket, to: ~p"/users/pools")}
   end
 
   @impl true
@@ -65,9 +68,9 @@ defmodule PasswordlessWeb.App.UserLive.Index do
 
     to =
       if filtered? do
-        ~p"/users?#{build_filter_params(socket.assigns.meta, filter_params)}"
+        ~p"/users/pools?#{build_filter_params(socket.assigns.meta, filter_params)}"
       else
-        ~p"/users"
+        ~p"/users/pools"
       end
 
     {:noreply, push_patch(socket, to: to)}
@@ -83,13 +86,13 @@ defmodule PasswordlessWeb.App.UserLive.Index do
         {:noreply,
          socket
          |> put_flash(:info, gettext("User deleted successfully."))
-         |> push_patch(to: ~p"/users")}
+         |> push_patch(to: ~p"/users/pools")}
 
       {:error, _} ->
         {:noreply,
          socket
          |> put_toast(:error, gettext("Failed to delete user!"), title: gettext("Error"))
-         |> push_patch(to: ~p"/users")}
+         |> push_patch(to: ~p"/users/pools")}
     end
   end
 
@@ -103,23 +106,23 @@ defmodule PasswordlessWeb.App.UserLive.Index do
   defp apply_action(socket, :index, _) do
     assign(socket,
       page_title: gettext("Users"),
-      page_subtitle: gettext("Manage your users")
+      page_subtitle: gettext("Manage your user pools")
     )
   end
 
   defp apply_action(socket, :new, _) do
     assign(socket,
-      page_title: gettext("Create user"),
+      page_title: gettext("Create user pool"),
       page_subtitle:
         gettext(
-          "Every person authenticating with your app will be recorded as a user. A Monthly Active User (MAU) is one that has performed at least two actions in the current month."
+          "User pools are used to group users together. You can create multiple user pools to identify regular users, admins, and other roles. User pools can manage their own allowed authentication methods."
         )
     )
   end
 
   defp apply_action(socket, :edit, _) do
     assign(socket,
-      page_title: gettext("Edit user"),
+      page_title: gettext("Edit user pool"),
       page_subtitle:
         gettext(
           "Edit this user. You can view their enrolled authenticators and entire history, just scroll down a little."
@@ -127,23 +130,13 @@ defmodule PasswordlessWeb.App.UserLive.Index do
     )
   end
 
-  defp apply_action(socket, :import, _) do
+  defp apply_action(socket, :delete, %UserPool{} = user_pool) do
     assign(socket,
-      page_title: gettext("Import users"),
-      page_subtitle:
-        gettext(
-          "Import existing users from a CSV file. Download our reference CSV template and fill it out with your users."
-        )
-    )
-  end
-
-  defp apply_action(socket, :delete, %User{} = user) do
-    assign(socket,
-      page_title: gettext("Delete user"),
+      page_title: gettext("Delete user pool"),
       page_subtitle:
         gettext(
           "Are you sure you want to delete user \"%{name}\"? This action is irreversible. User will lose access to their TOTPs and other authentication methods.",
-          name: User.handle(user)
+          name: user_pool.name
         )
     )
   end
@@ -159,16 +152,12 @@ defmodule PasswordlessWeb.App.UserLive.Index do
     assign(socket, filters: Map.take(params, ~w(page filters order_by order_directions)))
   end
 
-  defp assign_users(socket, params) when is_map(params) do
+  defp assign_user_pools(socket, params) when is_map(params) do
     app = socket.assigns.current_app
+    opts = [prefix: Tenant.to_prefix(app)]
+    query = app |> UserPool.get_by_app() |> UserPool.join_adapter_opts(opts)
 
-    query =
-      app
-      |> User.get_by_app()
-      |> User.join_adapter_opts(prefix: Database.Tenant.to_prefix(app))
-      |> User.preload_details()
-
-    {users, meta} = DataTable.search(query, params, @data_table_opts)
-    assign(socket, users: users, meta: meta)
+    {user_pools, meta} = DataTable.search(query, params, @data_table_opts)
+    assign(socket, user_pools: user_pools, meta: meta)
   end
 end

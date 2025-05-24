@@ -12,7 +12,7 @@ defmodule PasswordlessWeb.BillingController do
     %Org{} = current_org = Map.fetch!(conn.assigns, :current_org)
 
     case Billing.get_customer(current_org) do
-      %BillingCustomer{subscription: %BillingSubscription{} = subscription} ->
+      %BillingCustomer{billing_subscription: %BillingSubscription{} = subscription} ->
         if BillingSubscription.valid?(subscription) do
           conn
           |> put_flash(:error, gettext("There is an existing valid subscription!"))

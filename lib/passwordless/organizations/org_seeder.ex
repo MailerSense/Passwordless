@@ -202,6 +202,11 @@ defmodule Passwordless.Organizations.OrgSeeder do
         t
       end
 
+    {:ok, user_pool} =
+      Passwordless.create_user_pool(app, %{
+        name: "Default"
+      })
+
     users_count = Keyword.get(opts, :users, 50)
     actions_count = Keyword.get(opts, :actions, 5)
 
@@ -216,6 +221,8 @@ defmodule Passwordless.Organizations.OrgSeeder do
             "phone" => phone
           }
         })
+
+      {:ok, _membership} = Passwordless.join_user_pool(app, user_pool, app_user)
 
       {:ok, _email} =
         Passwordless.add_user_email(app, app_user, %{

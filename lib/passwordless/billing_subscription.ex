@@ -41,7 +41,7 @@ defmodule Passwordless.BillingSubscription do
     field :trial_start, :utc_datetime_usec
     field :trial_end, :utc_datetime_usec
 
-    belongs_to :customer, BillingCustomer
+    belongs_to :billing_customer, BillingCustomer
 
     has_many :items, BillingSubscriptionItem, preload_order: [asc: :inserted_at]
 
@@ -56,6 +56,9 @@ defmodule Passwordless.BillingSubscription do
     from s in __MODULE__, join: c in assoc(s, :customer), where: c.org_id == ^org.id
   end
 
+  @doc """
+  Check if the provided subscription is valid.
+  """
   def valid?(%__MODULE__{} = subscription) do
     active?(subscription) or trial?(subscription) or grace_period?(subscription)
   end
@@ -112,12 +115,12 @@ defmodule Passwordless.BillingSubscription do
     current_period_end
     trial_start
     trial_end
-    customer_id
+    billing_customer_id
   )a
   @required_fields ~w(
     state
     provider_id
-    customer_id
+    billing_customer_id
   )a
 
   @doc """
@@ -128,7 +131,7 @@ defmodule Passwordless.BillingSubscription do
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> unique_constraint(:provider_id)
-    |> unique_constraint(:customer_id)
+    |> unique_constraint(:billing_customer_id)
     |> assoc_constraint(:customer)
   end
 end

@@ -1,7 +1,24 @@
 <.layout current_user={@current_user} current_page={:users} current_section={:app}>
   <div class="flex flex-col gap-6 px-8 py-6">
-    <.page_header title={gettext("Users")}>
+    <.page_header title={gettext("Users")}></.page_header>
+    <div>
+      <.tab_menu menu_items={@menu_items} current_tab={:users} />
+    </div>
+    <.box card>
+      <.form_header title={gettext("Management")} no_margin />
+      <.p>
+        {gettext(
+          "User is the main entity in Passwordless. You can create, edit, and delete users. Users can be imported from a CSV file or created manually. Each user has an email address and a unique ID. The email address is used for authentication, while the unique ID is used for identification."
+        )}
+      </.p>
       <div class="flex gap-3">
+        <.button
+          to={apply_filters(@filters, @meta, ~p"/users/new")}
+          color="primary"
+          label={gettext("Create user")}
+          icon="remix-add-circle-line"
+          link_type="live_patch"
+        />
         <.button
           to={apply_filters(@filters, @meta, ~p"/users/import")}
           color="light"
@@ -9,15 +26,8 @@
           icon="remix-download-line"
           link_type="live_patch"
         />
-        <.button
-          to={apply_filters(@filters, @meta, ~p"/users/new")}
-          color="primary"
-          label={gettext("Create")}
-          icon="remix-add-circle-line"
-          link_type="live_patch"
-        />
       </div>
-    </.page_header>
+    </.box>
     <.data_table
       meta={@meta}
       items={@users}

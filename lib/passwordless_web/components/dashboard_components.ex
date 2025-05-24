@@ -606,7 +606,7 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   def circle_stat(assigns) do
     ~H"""
-    <.box body_class={["flex gap-6", @class]} padded>
+    <.box class={["flex gap-6", @class]} padded>
       <div class="flex flex-col justify-between gap-4">
         <badge class="flex gap-2 items-center">
           <div class={["w-4 h-2 rounded-full", @legend_color_class]}></div>

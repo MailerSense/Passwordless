@@ -30,11 +30,7 @@
         )}
       </.p>
       <div class="flex items-center gap-3 flex-wrap">
-        <.button
-          icon="remix-verified-badge-line"
-          label={gettext("Upgrade")}
-          link_type="live_redirect"
-        />
+        <.button icon="remix-coin-line" label={gettext("Upgrade")} link_type="live_redirect" />
         <.button
           to={"mailto:#{Passwordless.config(:support_email)}?subject=#{gettext("Billing inquiry - %{org}", org: @current_org.name)}"}
           icon="remix-customer-service-line"
@@ -45,7 +41,7 @@
       </div>
     </.box>
 
-    <.simple_table items={@billing_items} title={gettext("Breakdown")}>
+    <.data_table meta={@meta} items={@billing_items} title={gettext("Breakdown")}>
       <:if_empty>
         {gettext("No %{models} found", models: gettext("billing items"))}
       </:if_empty>
@@ -69,10 +65,12 @@
         <div class="flex items-center gap-2">
           <.progress color="primary" value={item.amount} max={item.amount_max} class="min-w-36" />
 
-          {gettext("%{used} / %{total}",
-            used: Util.number!(item.amount),
-            total: Util.number!(item.amount_max)
-          )}
+          <span class="pc-progress__label">
+            {gettext("%{used} / %{total}",
+              used: Util.number!(item.amount),
+              total: Util.number!(item.amount_max)
+            )}
+          </span>
         </div>
       </:col>
       <:col field={:total_cost} label={gettext("Estimated Charge")} />
@@ -87,7 +85,7 @@
           link_type="live_patch"
         />
       </:actions>
-    </.simple_table>
+    </.data_table>
 
     <.simple_table items={[]} count={0} title={gettext("Invoices")}>
       <:if_empty>

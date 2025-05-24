@@ -36,6 +36,8 @@ defmodule Passwordless do
   alias Passwordless.RecoveryCodes
   alias Passwordless.Repo
   alias Passwordless.User
+  alias Passwordless.UserPool
+  alias Passwordless.UserPoolMembership
   alias Passwordless.Views.ActionTemplateUniqueUser
 
   @authenticators [
@@ -827,6 +829,42 @@ defmodule Passwordless do
     |> Ecto.build_assoc(:recovery_codes)
     |> RecoveryCodes.changeset(opts)
     |> Repo.insert(opts)
+  end
+
+  # User Pool
+
+  def get_user_pool!(%App{} = app, id) when is_binary(id) do
+    Repo.get!(UserPool, id, prefix: Tenant.to_prefix(app))
+  end
+
+  def create_user_pool(%App{} = app, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    %UserPool{}
+    |> UserPool.changeset(attrs, opts)
+    |> Repo.insert(opts)
+  end
+
+  def change_user_pool(%App{} = app, %UserPool{} = user_pool, attrs \\ %{}) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    if Ecto.get_meta(user_pool, :state) == :loaded do
+      UserPool.changeset(user_pool, attrs, opts)
+    else
+      UserPool.changeset(user_pool, attrs, opts)
+    end
+  end
+
+  def join_user_pool(%App{} = app, %UserPool{} = user_pool, %User{} = user) do
+    changeset = UserPoolMembership.insert_changeset(user, user_pool)
+
+    upsert_clause = [
+      prefix: Tenant.to_prefix(app),
+      on_conflict: :nothing,
+      conflict_target: [:user_id, :user_pool_id]
+    ]
+
+    Repo.insert(changeset, upsert_clause)
   end
 
   # Action

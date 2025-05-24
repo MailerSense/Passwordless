@@ -34,7 +34,13 @@ defmodule PasswordlessApi.Routes do
         get "/openapi", OpenApiSpex.Plug.RenderSpec, []
       end
 
-      scope "/api/v1", PasswordlessApi do
+      scope "/api/client/v1", PasswordlessApi do
+        pipe_through [
+          :api
+        ]
+      end
+
+      scope "/api/server/v1", PasswordlessApi do
         pipe_through [
           :api,
           :api_authenticated,
@@ -46,7 +52,7 @@ defmodule PasswordlessApi.Routes do
           get "/authenticators", AppController, :authenticators
         end
 
-        scope "/actors" do
+        scope "/users" do
           get "/:id", UserController, :get
         end
 

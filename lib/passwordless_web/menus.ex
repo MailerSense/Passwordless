@@ -159,6 +159,16 @@ defmodule PasswordlessWeb.Menus do
     }
   end
 
+  def get_link(:user_pools = name, _user) do
+    %{
+      name: name,
+      label: gettext("User pools"),
+      path: ~p"/users/pools",
+      icon: "remix-user-line",
+      link_type: "live_patch"
+    }
+  end
+
   def get_link(:actions = name, _user) do
     %{
       name: name,

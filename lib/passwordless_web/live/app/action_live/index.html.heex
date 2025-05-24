@@ -1,7 +1,19 @@
 <.layout current_user={@current_user} current_page={:actions} current_section={:app}>
   <div class="flex flex-col gap-6 px-8 py-6">
-    <.page_header title={gettext("Actions")}>
+    <.page_header title={gettext("Actions")}></.page_header>
+    <.box card>
+      <.form_header title={gettext("Rule engine")} no_margin />
+      <.p>
+        Actions are the core of Passwordless. They define what happens when a user interacts with the system. You can create, edit, and delete actions. Actions can be triggered by user events, such as login or registration, and can perform various tasks, such as sending emails or updating user data.
+      </.p>
       <div class="flex gap-3">
+        <.button
+          to={apply_filters(@filters, @meta, ~p"/actions/new")}
+          color="primary"
+          label={gettext("Create action")}
+          icon="remix-add-circle-line"
+          link_type="live_patch"
+        />
         <.button
           to={apply_filters(@filters, @meta, ~p"/actions/run-test")}
           color="light"
@@ -9,15 +21,8 @@
           icon="remix-play-circle-line"
           link_type="live_patch"
         />
-        <.button
-          to={apply_filters(@filters, @meta, ~p"/actions/new")}
-          color="primary"
-          label={gettext("Create")}
-          icon="remix-add-circle-line"
-          link_type="live_patch"
-        />
       </div>
-    </.page_header>
+    </.box>
     <.data_table
       meta={@meta}
       items={@actions}
@@ -31,7 +36,6 @@
       <:col :let={action} field={:alias} sortable>
         <.code_line>{action.alias}</.code_line>
       </:col>
-      <:col field={:attempts} sortable />
       <:col :let={action} label={gettext("Added")} field={:inserted_at} sortable>
         {format_date(action.inserted_at)}
       </:col>

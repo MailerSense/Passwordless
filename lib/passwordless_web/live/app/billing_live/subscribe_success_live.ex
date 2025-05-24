@@ -15,7 +15,7 @@ defmodule PasswordlessWeb.App.BillingLive.SubscribeSuccessLive do
 
     socket =
       case Billing.get_customer(socket.assigns.current_org) do
-        %BillingCustomer{subscription: %BillingSubscription{} = subscription} = customer ->
+        %BillingCustomer{billing_subscription: %BillingSubscription{} = subscription} = customer ->
           socket
           |> assign(:current_customer, customer)
           |> assign(:current_subscription, subscription)
