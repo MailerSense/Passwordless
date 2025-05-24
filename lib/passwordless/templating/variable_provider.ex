@@ -108,7 +108,7 @@ defimpl Passwordless.Templating.VariableProvider, for: Passwordless.Action do
   Provide the action variables.
   """
   def variables(%Action{} = action) do
-    user = Repo.preload(action, :action_template)
+    action = Repo.preload(action, :action_template)
 
     %{
       "name" => action.action_template.name,

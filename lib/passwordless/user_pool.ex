@@ -7,6 +7,7 @@ defmodule Passwordless.UserPool do
 
   import Ecto.Query
 
+  alias Database.ChangesetExt
   alias Database.Tenant
   alias Passwordless.App
   alias Passwordless.User
