@@ -1305,7 +1305,7 @@ defmodule Passwordless do
     |> ActionTemplateMonthlyStats.get_by_action_template(action_template)
     |> Repo.all()
     |> Enum.map(fn %ActionTemplateMonthlyStats{date_year: year, date_month: month} = stats ->
-      %ActionTemplateMonthlyStats{stats | date: Date.from_erl!({trunc(year), trunc(month), 1})}
+      %ActionTemplateMonthlyStats{stats | date: Date.from_erl!({year, month, 1})}
     end)
     |> Enum.sort_by(& &1.date, :asc)
     |> case do
