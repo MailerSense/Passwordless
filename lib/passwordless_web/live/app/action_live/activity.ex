@@ -31,8 +31,6 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
 
     stats = Passwordless.get_action_performance_stats(current_app, action_template)
 
-    IO.inspect(stats, label: "Action Template Stats")
-
     all_attempts =
       current_app
       |> Passwordless.get_top_actions()
