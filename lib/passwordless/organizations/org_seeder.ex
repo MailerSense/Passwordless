@@ -52,7 +52,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
         name: Passwordless.config(:app_name),
         settings: %{
           logo: Enum.random(Passwordless.config(:logo_placeholders)),
-          website: "https://passwordless.tools",
+          website: "passwordless.tools",
           display_name: Passwordless.config(:app_name),
           email_tracking: true,
           email_configuration_set: "passwordless-tools-app-ses-config-set",
@@ -100,7 +100,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
           sender: "verify",
           sender_name: app.name,
           email_template_id: magic_link_template.id,
-          redirect_urls: [%{url: app.settings.website}]
+          redirect_urls: [%{url: "https://" <> app.settings.website}]
         },
         email_otp: %{
           sender: "verify",
@@ -111,12 +111,12 @@ defmodule Passwordless.Organizations.OrgSeeder do
           issuer_name: app.name
         },
         security_key: %{
-          relying_party_id: URI.parse(app.settings.website).host,
-          expected_origins: [%{url: app.settings.website}]
+          relying_party_id: app.settings.website,
+          expected_origins: [%{url: "https://" <> app.settings.website}]
         },
         passkey: %{
-          relying_party_id: URI.parse(app.settings.website).host,
-          expected_origins: [%{url: app.settings.website}]
+          relying_party_id: app.settings.website,
+          expected_origins: [%{url: "https://" <> app.settings.website}]
         }
       })
 
@@ -164,7 +164,7 @@ defmodule Passwordless.Organizations.OrgSeeder do
         name: "Demo App",
         settings: %{
           logo: Enum.random(Passwordless.config(:logo_placeholders)),
-          website: "https://passwordlesstools.com",
+          website: "passwordlesstools.com",
           display_name: "Demo App",
           allowlisted_ip_addresses: [
             %{address: "0.0.0.0/0"}

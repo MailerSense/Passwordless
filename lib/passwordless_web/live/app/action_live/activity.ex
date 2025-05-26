@@ -29,6 +29,10 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
     action_template = Passwordless.get_action_template!(current_app, id)
     changeset = Passwordless.change_action_template(current_app, action_template)
 
+    stats = Passwordless.get_action_performance_stats(current_app, action_template)
+
+    IO.inspect(stats, label: "Action Template Stats")
+
     all_attempts =
       current_app
       |> Passwordless.get_top_actions()
@@ -46,7 +50,8 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
        action_template: action_template,
        all_attempts: all_attempts,
        unique_users: unique_users,
-       all_users: all_users
+       all_users: all_users,
+       stats: stats
      )
      |> assign_action_form(changeset)
      |> assign_events(params)

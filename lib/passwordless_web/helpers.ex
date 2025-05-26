@@ -60,7 +60,7 @@ defmodule PasswordlessWeb.Helpers do
          "allow" -> "success"
          "timeout" -> "warning"
          "block" -> "danger"
-         _ -> "info"
+         v -> random_color(v)
        end}
 
   def event_badge(_event), do: {nil, "info"}

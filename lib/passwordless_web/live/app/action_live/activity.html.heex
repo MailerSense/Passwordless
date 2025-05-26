@@ -41,7 +41,7 @@
         <.tab_menu menu_items={action_menu_items(@action_template)} current_tab={:activity} />
       </div>
 
-      <.bar_stats />
+      <.bar_stats items={@stats} />
 
       <.box card>
         <.form_header title={gettext("Status breakdown")} no_margin />
@@ -85,7 +85,7 @@
     <.stream_table
       id="events"
       meta={@meta}
-      title={gettext("Recent events")}
+      title={gettext("Recent history")}
       items={@streams.events}
       finished={@finished}
     >

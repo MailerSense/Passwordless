@@ -133,7 +133,7 @@ defmodule PasswordlessWeb.App.ActionLive.Index do
       page_title: gettext("Run test"),
       page_subtitle:
         gettext(
-          "Test your actions by running them against a test user. This way, you can see how the action will behave in a real-world scenario."
+          "Evaluate the bevahiour of your system by simulating an action against a test user. This way, you can see how the action will behave in a real-world scenario."
         )
     )
   end

@@ -125,7 +125,7 @@ defmodule Passwordless.AppSettings do
   end
 
   defp validate_website(changeset) do
-    ChangesetExt.validate_url(changeset, :website)
+    ChangesetExt.validate_domain(changeset, :website)
   end
 
   defp whitelisted_ip_changeset(%__MODULE__.IPAddress{} = ip_address, attrs) do

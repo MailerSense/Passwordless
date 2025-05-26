@@ -62,7 +62,7 @@ defmodule PasswordlessWeb.Components.PageComponents do
   attr :card, :boolean, default: false
   attr :padded, :boolean, default: false
   attr :header, :string, default: nil
-  attr :body_class, :string, default: nil
+  attr :body_class, :any, default: nil
   attr :rest, :global
   slot :inner_block
   slot :actions

@@ -19,7 +19,8 @@ defmodule Passwordless.ViewRefresher do
   ]
 
   @views [
-    {:app, :concurrent, "action_template_unique_users"}
+    {:app, :concurrent, "action_template_unique_users"},
+    {:app, :concurrent, "action_template_monthly_stats"}
   ]
 
   @impl true

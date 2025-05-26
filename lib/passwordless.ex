@@ -38,6 +38,7 @@ defmodule Passwordless do
   alias Passwordless.User
   alias Passwordless.UserPool
   alias Passwordless.UserPoolMembership
+  alias Passwordless.Views.ActionTemplateMonthlyStats
   alias Passwordless.Views.ActionTemplateUniqueUser
 
   @authenticators [
@@ -117,7 +118,7 @@ defmodule Passwordless do
                magic_link: %{
                  sender: "verify",
                  sender_name: app.name,
-                 redirect_urls: [%{url: app.settings.website}],
+                 redirect_urls: [%{url: "https://" <> app.settings.website}],
                  email_template_id: magic_link_template.id
                },
                email_otp: %{
@@ -126,12 +127,12 @@ defmodule Passwordless do
                  email_template_id: email_otp_template.id
                },
                passkey: %{
-                 relying_party_id: URI.parse(app.settings.website).host,
-                 expected_origins: [%{url: app.settings.website}]
+                 relying_party_id: app.settings.website,
+                 expected_origins: [%{url: "https://" <> app.settings.website}]
                },
                security_key: %{
-                 relying_party_id: URI.parse(app.settings.website).host,
-                 expected_origins: [%{url: app.settings.website}]
+                 relying_party_id: app.settings.website,
+                 expected_origins: [%{url: "https://" <> app.settings.website}]
                },
                totp: %{
                  issuer_name: app.name
@@ -855,6 +856,14 @@ defmodule Passwordless do
     end
   end
 
+  def update_user_pool(%App{} = app, %UserPool{} = user_pool, attrs) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    user_pool
+    |> UserPool.changeset(attrs, opts)
+    |> Repo.update(opts)
+  end
+
   def join_user_pool(%App{} = app, %UserPool{} = user_pool, %User{} = user) do
     changeset = UserPoolMembership.insert_changeset(user, user_pool)
 
@@ -1288,5 +1297,60 @@ defmodule Passwordless do
       fn -> get_app_mau_count(app, date) end,
       ttl: :timer.hours(1)
     )
+  end
+
+  def get_action_performance_stats(%App{} = app, %ActionTemplate{} = action_template) do
+    ActionTemplateMonthlyStats
+    |> ActionTemplateMonthlyStats.get_by_app(app)
+    |> ActionTemplateMonthlyStats.get_by_action_template(action_template)
+    |> Repo.all()
+    |> Enum.map(fn %ActionTemplateMonthlyStats{date_year: year, date_month: month} = stats ->
+      %ActionTemplateMonthlyStats{stats | date: Date.from_erl!({trunc(year), trunc(month), 1})}
+    end)
+    |> Enum.sort_by(& &1.date, :asc)
+    |> case do
+      [] ->
+        [
+          %{label: "Attempts", value: 0, change: 0, legend_color_class: "bg-gray-500"},
+          %{label: "Allows", value: 0, change: 0, legend_color_class: "bg-success-500"},
+          %{label: "Blocks", value: 0, change: 0, legend_color_class: "bg-danger-500"}
+        ]
+
+      [%ActionTemplateMonthlyStats{blocks: blocks, attempts: attempts, allows: allows}] ->
+        [
+          %{label: "Attempts", value: attempts, change: 0, legend_color_class: "bg-gray-500"},
+          %{label: "Allows", value: allows, change: 0, legend_color_class: "bg-success-500"},
+          %{label: "Blocks", value: blocks, change: 0, legend_color_class: "bg-danger-500"}
+        ]
+
+      [%ActionTemplateMonthlyStats{} = a, %ActionTemplateMonthlyStats{} = b] ->
+        Enum.map(
+          [
+            attempts: {"Attempts", "bg-gray-500"},
+            allows: {"Allows", "bg-success-500"},
+            blocks: {"Blocks", "bg-danger-500"}
+          ],
+          fn {key, {label, color}} ->
+            change = if a[key] == 0, do: 0.0, else: (b[key] - a[key]) / a[key]
+            %{label: label, value: b[key], change: change, legend_color_class: color}
+          end
+        )
+
+      [_, %ActionTemplateMonthlyStats{} = a, %ActionTemplateMonthlyStats{} = b] ->
+        Enum.map(
+          [
+            attempts: {"Attempts", "bg-gray-500"},
+            allows: {"Allows", "bg-success-500"},
+            blocks: {"Blocks", "bg-danger-500"}
+          ],
+          fn {key, {label, color}} ->
+            change = if a[key] == 0, do: 0.0, else: (b[key] - a[key]) / a[key]
+            %{label: label, value: b[key], change: change, legend_color_class: color}
+          end
+        )
+
+      _ ->
+        0
+    end
   end
 end

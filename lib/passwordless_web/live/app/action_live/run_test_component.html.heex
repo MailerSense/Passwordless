@@ -1,6 +1,9 @@
 <div>
   <% origin = "right" %>
   <.slide_over title={@title} subtitle={@subtitle} origin={origin}>
+    <.alert color="warning" with_icon>
+      {gettext("Tests are coming soon.")}
+    </.alert>
     <:actions>
       <.button
         size="wide"
