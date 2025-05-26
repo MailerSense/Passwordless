@@ -31,11 +31,11 @@ defmodule Passwordless.ViewRefresher do
             (
               case_result =
                 case m do
-                  :sequential -> ~SQL"REFRESH MATERIALIZED VIEW VIEW;"
-                  :concurrent -> ~SQL"REFRESH MATERIALIZED VIEW CONCURRENTLY VIEW;"
+                  :sequential -> ~SQL"REFRESH MATERIALIZED VIEW view_name;"
+                  :concurrent -> ~SQL"REFRESH MATERIALIZED VIEW CONCURRENTLY view_name;"
                 end
 
-              String.replace(case_result, "view", v)
+              String.replace(case_result, "view_name", v)
             )
 
     schema_queries =
@@ -45,13 +45,13 @@ defmodule Passwordless.ViewRefresher do
             (
               case_result =
                 case m do
-                  :sequential -> ~SQL"REFRESH MATERIALIZED VIEW prefix.view;"
-                  :concurrent -> ~SQL"REFRESH MATERIALIZED VIEW CONCURRENTLY prefix.view;"
+                  :sequential -> ~SQL"REFRESH MATERIALIZED VIEW prefix.view_name;"
+                  :concurrent -> ~SQL"REFRESH MATERIALIZED VIEW CONCURRENTLY prefix.view_name;"
                 end
 
               case_result
               |> String.replace("prefix", u)
-              |> String.replace("view", v)
+              |> String.replace("view_name", v)
             )
 
     (public_queries ++ schema_queries)
