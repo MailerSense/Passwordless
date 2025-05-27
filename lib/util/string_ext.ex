@@ -2,22 +2,6 @@ defmodule Util.StringExt do
   # Copied from https://github.com/ikeikeikeike/phoenix_html_simplified_helpers/blob/master/lib/phoenix_html_simplified_helpers/truncate.ex
   @moduledoc false
 
-  def variable_name(name) when is_binary(name) do
-    name
-    |> String.trim()
-    |> String.replace(~r/[^A-Za-z0-9_]+/, "")
-    |> String.upcase()
-  end
-
-  def variable_name(_), do: nil
-
-  def condense(string) do
-    string
-    |> String.split(~r/\r?\n/)
-    |> Enum.reject(&(String.trim(&1) == ""))
-    |> Enum.join("\n")
-  end
-
   def truncate(text, options \\ []) do
     len = options[:length] || 30
     omi = options[:omission] || "..."
@@ -42,6 +26,8 @@ defmodule Util.StringExt do
         "#{String.slice(text, 0, stop)}#{omi}"
     end
   end
+
+  # Private
 
   defp rindex(text, str, offset) do
     text = String.slice(text, 0, offset)

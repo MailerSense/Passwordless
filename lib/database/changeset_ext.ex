@@ -329,13 +329,6 @@ defmodule Database.ChangesetExt do
   end
 
   @doc """
-  Ensure the variable name is in the correct format.
-  """
-  def ensure_variable_notation(%Ecto.Changeset{} = changeset, field) do
-    update_change(changeset, field, &Util.StringExt.variable_name/1)
-  end
-
-  @doc """
   Create a soft delete changeset.
   """
   def soft_delete(struct_or_changeset) do
