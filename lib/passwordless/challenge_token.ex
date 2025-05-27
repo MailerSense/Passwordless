@@ -37,8 +37,6 @@ defmodule Passwordless.ChallengeToken do
     timestamps()
   end
 
-  def hash(%__MODULE__{key_hash: key_hash}), do: key_hash
-
   @doc """
   Get by app.
   """

@@ -3,7 +3,7 @@ defmodule Passwordless.AppSettings do
   An app contains passwordless resources.
   """
 
-  use Passwordless.Schema, prefix: "settings"
+  use Passwordless.Schema, prefix: "app_settings"
 
   alias Database.ChangesetExt
   alias Passwordless.App

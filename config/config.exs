@@ -66,12 +66,11 @@ config :passwordless, Oban,
   prefix: "oban",
   queues: [
     default: 100,
+    queues: [local_limit: 50, global_limit: 200],
     mailer: [local_limit: 10, global_limit: 20, rate_limit: [allowed: 200, period: {1, :minute}]],
     domain: [local_limit: 20, global_limit: 20, rate_limit: [allowed: 30, period: {1, :minute}]],
-    executor: [local_limit: 10, global_limit: 20],
-    scheduler: [local_limit: 10, global_limit: 10],
-    statistics: [local_limit: 10, global_limit: 10],
-    queue_processor: [local_limit: 50, global_limit: 200]
+    billing: [local_limit: 10, global_limit: 10],
+    statistics: [local_limit: 10, global_limit: 10]
   ],
   engine: Oban.Pro.Engines.Smart,
   notifier: Oban.Notifiers.PG,
@@ -83,7 +82,8 @@ config :passwordless, Oban,
      crontab: [
        {"*/15 * * * *", Passwordless.ViewRefresher},
        {"0 * * * *", Passwordless.Domain.Cleaner},
-       {"*/30 * * * *", Passwordless.Domain.Verifier}
+       {"*/30 * * * *", Passwordless.Domain.Verifier},
+       {"0 * * * *", Passwordless.Billing.Bookkeeper}
      ]}
   ]
 

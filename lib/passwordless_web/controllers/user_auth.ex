@@ -130,7 +130,7 @@ defmodule PasswordlessWeb.UserAuth do
     |> disconnect_tokens()
   end
 
-  def user_session_topic(%Token{} = token), do: "users_sessions:#{Base.url_encode64(Token.hash(token))}"
+  def user_session_topic(%Token{} = token), do: "users_sessions:#{Base.url_encode64(token.key_hash)}"
 
   @doc """
   Authenticates the user by looking into the session.

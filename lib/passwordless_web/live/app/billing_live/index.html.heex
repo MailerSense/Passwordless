@@ -87,6 +87,42 @@
       </:actions>
     </.data_table>
 
+    <.box card>
+      <.form_header title={gettext("Usage limit")} no_margin />
+      <.p>
+        {gettext(
+          "You can set a monthly spending limit (e.g. %{amount}) for your organization. This cap is shared across all apps in %{org}. If you reach this limit, certain functionalities like enrolling new users or sending email may be paused to not incur any further costs.",
+          amount: Money.parse!("100.00"),
+          org: @current_org.name
+        )}
+      </.p>
+      <.inputs_for :let={settings} field={@form[:settings]}>
+        <.form
+          id="edit-org-billing-form"
+          for={@form}
+          phx-submit="save_org"
+          phx-change="validate_org"
+        >
+          <.field
+            type="checkbox"
+            field={settings[:usage_limit_enabled]}
+            label={gettext("Enabled")}
+          />
+          <.field
+            :if={@usage_limit_enabled}
+            field={settings[:usage_limit]}
+            label={gettext("Monthly limit")}
+            label_sr_only={true}
+            prefix={gettext("Limit spending to")}
+            suffix={gettext("per month")}
+            placeholder={gettext("your limit (e.g. 100 USD)")}
+            required
+            required_asterix={false}
+          />
+        </.form>
+      </.inputs_for>
+    </.box>
+
     <.simple_table items={[]} count={0} title={gettext("Invoices")}>
       <:if_empty>
         {gettext("No %{models} found", models: gettext("invoices"))}

@@ -44,8 +44,6 @@ defmodule Passwordless.ActionToken do
     timestamps()
   end
 
-  def hash(%__MODULE__{key_hash: key_hash}), do: key_hash
-
   @doc """
   Get expiry time for the given kind.
   """

@@ -104,7 +104,6 @@ defmodule Passwordless.App do
     |> cast_assoc(:settings)
     |> validate_required(@required_fields)
     |> validate_string(:name)
-    |> cast_assoc(:settings)
     |> assoc_constraint(:org)
   end
 

@@ -5,6 +5,8 @@ defmodule Passwordless.Organizations.Org do
 
   use Passwordless.Schema, prefix: "org"
 
+  import Ecto.Query
+
   alias Database.ChangesetExt
   alias Passwordless.Accounts.User
   alias Passwordless.Activity.Log
@@ -13,6 +15,7 @@ defmodule Passwordless.Organizations.Org do
   alias Passwordless.BillingItem
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
+  alias Passwordless.Organizations.OrgSettings
 
   @tags ~w(admin system default)a
   @states ~w(active)a
@@ -27,8 +30,7 @@ defmodule Passwordless.Organizations.Org do
     field :state, Ecto.Enum, values: @states, default: :active
     field :tags, {:array, Ecto.Enum}, values: @tags, default: []
 
-    field :full_name, :string, virtual: true
-
+    has_one :settings, OrgSettings, on_replace: :update
     has_one :billing_customer, BillingCustomer
 
     has_many :apps, App, preload_order: [asc: :inserted_at]
@@ -43,8 +45,18 @@ defmodule Passwordless.Organizations.Org do
     soft_delete_timestamp()
   end
 
+  @doc """
+  Check is the organization is an admin.
+  """
   def admin?(%__MODULE__{tags: tags}) do
     Enum.member?(tags, :admin)
+  end
+
+  @doc """
+  Preload settings.
+  """
+  def preload_settings(query \\ __MODULE__) do
+    from q in query, preload: :settings
   end
 
   @fields ~w(
@@ -61,6 +73,7 @@ defmodule Passwordless.Organizations.Org do
   def changeset(org, attrs \\ %{}, _opts \\ []) do
     org
     |> cast(attrs, @fields)
+    |> cast_assoc(:settings)
     |> validate_required(@required_fields)
     |> validate_name()
     |> validate_email()

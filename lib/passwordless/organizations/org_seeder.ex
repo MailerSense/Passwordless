@@ -44,7 +44,11 @@ defmodule Passwordless.Organizations.OrgSeeder do
       Organizations.create_org_with_owner(user, %{
         tags: [:system, :default, :admin],
         name: "OpenTide GmbH",
-        email: "passwordless@opentide.com"
+        email: "passwordless@opentide.com",
+        settings: %{
+          usage_limit_enabled: false,
+          usage_limit: Money.parse!("100.00")
+        }
       })
 
     {:ok, app} =

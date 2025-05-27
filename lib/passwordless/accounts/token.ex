@@ -69,8 +69,6 @@ defmodule Passwordless.Accounts.Token do
     {raw, signed, ttl}
   end
 
-  def hash(%__MODULE__{key_hash: key_hash}), do: key_hash
-
   @fields ~w(key email context user_id)a
   @required_fields @fields -- [:email]
 
