@@ -1,6 +1,6 @@
-defmodule Passwordless.SwearJarDenylist do
+defmodule Passwordless.SwearJarBlocklist do
   @moduledoc """
-  Loads the swear word denylists.
+  Loads the swear word blocklist.
   """
 
   for file <-
@@ -23,7 +23,7 @@ defmodule Passwordless.SwearJarDenylist do
       |> Regex.compile!("iu")
 
     @doc """
-    Provides a regex for checking the #{name} denylist
+    Provides a regex for checking the #{name} blocklist
     """
     def unquote(name)(), do: unquote(Macro.escape(regex))
   end

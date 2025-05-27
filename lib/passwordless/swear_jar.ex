@@ -3,7 +3,7 @@ defmodule Passwordless.SwearJar do
   A simple profanity detector.
   """
 
-  @english Passwordless.SwearJarDenylist.english()
+  @english Passwordless.SwearJarBlocklist.english()
 
   @doc """
   Checks if the given string contains any profane words based on the provided regex.
