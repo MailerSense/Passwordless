@@ -13,6 +13,18 @@ defmodule Passwordless.MagicLinkMapping do
 
   @size 16
 
+  @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :magic_link_id,
+      :inserted_at
+    ]
+  }
+  @derive {
+    Flop.Schema,
+    filterable: [:id], sortable: [:id]
+  }
   schema "magic_link_mappings" do
     field :key, Passwordless.EncryptedBinary, redact: true
     field :key_hash, Passwordless.HashedBinary, redact: true

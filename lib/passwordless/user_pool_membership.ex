@@ -9,6 +9,16 @@ defmodule Passwordless.UserPoolMembership do
   alias Passwordless.UserPool
 
   @derive {
+    Jason.Encoder,
+    only: [
+      :id,
+      :user_id,
+      :user_pool_id,
+      :inserted_at,
+      :updated_at
+    ]
+  }
+  @derive {
     Flop.Schema,
     sortable: [:id], filterable: [:id]
   }

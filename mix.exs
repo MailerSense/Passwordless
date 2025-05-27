@@ -183,9 +183,6 @@ defmodule Passwordless.MixProject do
       {:aws, "~> 1.0"},
       {:ex_aws, "~> 2.5"},
       {:ex_aws_s3, "~> 2.5"},
-      {:ex_aws_kms, "~> 2.4"},
-      {:ex_aws_ses, "~> 2.4"},
-      {:ex_aws_sns, "~> 2.3"},
       {:ex_aws_secretsmanager, "~> 2.0"},
       {:aws_rds_castore, "~> 1.2"},
 

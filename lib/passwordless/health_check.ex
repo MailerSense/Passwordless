@@ -100,7 +100,7 @@ defmodule Passwordless.HealthCheck do
 
   ## Examples
 
-      iex> Api.HealthCheck.repo?(MyRepo)
+      iex> HealthCheck.repo?(MyRepo)
       :ok
 
   """
@@ -127,7 +127,7 @@ defmodule Passwordless.HealthCheck do
 
   ## Examples
 
-      iex> Api.HealthCheck.alive?(&give_pid/0)
+      iex> HealthCheck.alive?(&give_pid/0)
       :ok
 
   """
@@ -149,10 +149,8 @@ defmodule Passwordless.HealthCheck do
 
   # Private
 
-  # Schedule another check
   defp tick, do: Process.send_after(self(), :tick, @tick_interval)
 
-  # Perform the checks asynchronously
   defp all_pass?(checks) do
     checks
     |> Task.async_stream(& &1.())
@@ -162,7 +160,7 @@ defmodule Passwordless.HealthCheck do
     end)
   end
 
-  def get_result(kind) when kind in [:readiness, :liveness] do
+  defp get_result(kind) when kind in [:readiness, :liveness] do
     key = {__MODULE__, kind}
 
     case :ets.lookup(@table, key) do
@@ -171,5 +169,5 @@ defmodule Passwordless.HealthCheck do
     end
   end
 
-  def put_result(kind, value) when kind in [:readiness, :liveness], do: :ets.insert(@table, {{__MODULE__, kind}, value})
+  defp put_result(kind, value) when kind in [:readiness, :liveness], do: :ets.insert(@table, {{__MODULE__, kind}, value})
 end

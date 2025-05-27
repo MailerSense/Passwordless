@@ -108,7 +108,7 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.MagicLink do
     do: {gettext("Press button"), gettext("Ask user to click a button to confirm the action")}
 
   defp behaviour_translation(:short_code),
-    do: {gettext("Short code"), gettext("Ask user to type a short-code they were shown when the link was sent")}
+    do: {gettext("Short code"), gettext("Ask user to type a short-code they were shown in your app")}
 
   defp save_magic_link(socket, params) do
     opts = [domain: socket.assigns[:domain]]

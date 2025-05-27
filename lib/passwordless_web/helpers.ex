@@ -9,14 +9,12 @@ defmodule PasswordlessWeb.Helpers do
   alias Passwordless.Accounts.User
   alias Passwordless.Action
   alias Passwordless.ActionTemplate
-  alias Passwordless.Activity.Log
   alias Passwordless.App
   alias Passwordless.AuthToken
   alias Passwordless.Challenge
   alias Passwordless.EmailTemplate
   alias Passwordless.Event
   alias Passwordless.Organizations
-  alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
 
   def action_state_info(%Action{} = action),
@@ -382,10 +380,6 @@ defmodule PasswordlessWeb.Helpers do
     Timex.today() in interval
   end
 
-  def user_added(%Membership{inserted_at: %DateTime{} = inserted_at}), do: format_date_time(inserted_at)
-
-  def user_added(%Membership{}), do: ""
-
   def admin?(%User{} = user), do: User.admin?(user)
   def admin?(_user), do: false
 
@@ -397,24 +391,6 @@ defmodule PasswordlessWeb.Helpers do
     rose
     cyan
   )
-
-  def translate_action(action) do
-    Phoenix.Naming.humanize(action)
-  end
-
-  def log_source(nil), do: gettext("Dashboard")
-  def log_source("api"), do: gettext("API")
-  def log_source(source) when is_atom(source), do: Phoenix.Naming.humanize(Atom.to_string(source))
-  def log_source(source) when is_binary(source), do: Phoenix.Naming.humanize(source)
-  def log_source(_), do: "-"
-
-  def log_source_badge(nil = source), do: {log_source(source), "blue"}
-
-  def log_source_badge(source),
-    do: {log_source(source), Enum.at(@common_colors, :erlang.phash2(source, length(@common_colors)))}
-
-  def log_action_badge(%Log{action: action}),
-    do: {translate_action(action), Enum.at(@common_colors, :erlang.phash2(action, length(@common_colors)))}
 
   def random_color(term), do: Enum.at(@common_colors, :erlang.phash2(term, length(@common_colors)))
 

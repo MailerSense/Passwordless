@@ -78,20 +78,20 @@ defmodule Passwordless.Email.EventDecoder do
   defp get_message_by_external_id(_), do: {:error, :message_not_found}
 
   defp guard_sending_reputation(%App{} = app, %EmailMessage{} = message, %EmailEvent{} = email_event) do
-    case Repo.preload(message, [:email, :domain]) do
-      %EmailMessage{email: %Email{} = email, domain: %Domain{} = domain} ->
-        case event_verdict(email_event) do
-          {:suspend, reason} ->
+    case event_verdict(email_event) do
+      {:suspend, reason} ->
+        case Repo.preload(message, [:email, :domain]) do
+          %EmailMessage{email: %Email{} = email, domain: %Domain{} = domain} ->
             with {:ok, _} <- Passwordless.opt_email_out(app, email, reason),
                  {:ok, _} <- maybe_suspend_app(app, domain),
                  do: {:ok, email_event}
 
-          :pass ->
-            {:ok, email_event}
+          _ ->
+            {:error, :message_not_complete}
         end
 
-      _ ->
-        {:error, :message_not_complete}
+      :pass ->
+        {:ok, email_event}
     end
   end
 

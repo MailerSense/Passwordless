@@ -346,20 +346,20 @@ defmodule Passwordless.Organizations.OrgSeeder do
       },
       %{
         kind: :cname,
-        name: "6gofkzgsmtm3puhejogwvpq4hdulyhbt._domainkey.#{subdomain}",
-        value: "6gofkzgsmtm3puhejogwvpq4hdulyhbt.dkim.amazonses.com",
+        name: "ohqnir4o3l5ljrieju7dbhl7ebgfhe33._domainkey.#{subdomain}",
+        value: "ohqnir4o3l5ljrieju7dbhl7ebgfhe33.dkim.amazonses.com",
         verified: true
       },
       %{
         kind: :cname,
-        name: "4pjglljley3rptdd6x6jiukdffssnfj4._domainkey.#{subdomain}",
-        value: "4pjglljley3rptdd6x6jiukdffssnfj4.dkim.amazonses.com",
+        name: "mkkms6l5kgseaiiwf57467xsagwukdqj._domainkey.#{subdomain}",
+        value: "mkkms6l5kgseaiiwf57467xsagwukdqj.dkim.amazonses.com",
         verified: true
       },
       %{
         kind: :cname,
-        name: "vons5ikwlowq2o4k53modgl3wtfi4eqd._domainkey.#{subdomain}",
-        value: "vons5ikwlowq2o4k53modgl3wtfi4eqd.dkim.amazonses.com",
+        name: "6kqfzzeainccuqcvbl33twq2owz7isee._domainkey.#{subdomain}",
+        value: "6kqfzzeainccuqcvbl33twq2owz7isee.dkim.amazonses.com",
         verified: true
       }
     ]

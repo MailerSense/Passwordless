@@ -1,6 +1,6 @@
-defmodule Passwordless.SwearJarDenylist do
+defmodule Passwordless.SwearJarBlocklist do
   @moduledoc """
-  Loads the swear word denylists.
+  Loads the swear word blocklist.
   """
 
   for file <-
@@ -16,14 +16,14 @@ defmodule Passwordless.SwearJarDenylist do
       |> File.read!()
       |> String.split("\n")
       |> Stream.map(&String.trim/1)
-      |> Stream.filter(fn line -> line != "" end)
+      |> Stream.filter(&Util.present?/1)
       |> Stream.map(&String.replace(&1, ~r/^"\s*|\s*"$/, ""))
       |> Enum.map_join("|", &Regex.escape/1)
       |> Kernel.then(&"\\b(?:#{&1})\\b")
       |> Regex.compile!("iu")
 
     @doc """
-    Provides a regex for checking the #{name} denylist
+    Provides a regex for checking the #{name} blocklist
     """
     def unquote(name)(), do: unquote(Macro.escape(regex))
   end
