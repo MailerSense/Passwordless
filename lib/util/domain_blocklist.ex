@@ -10,7 +10,6 @@ defmodule Util.DomainBlocklist do
            |> Stream.map(&String.trim/1)
            |> Stream.map(&String.downcase/1)
            |> Stream.reject(&String.starts_with?(&1, "#"))
-           |> Stream.reject(&match?({:error, _}, Domainatrex.parse(&1)))
            |> MapSet.new()
 
   @doc """
