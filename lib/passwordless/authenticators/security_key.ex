@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.SecurityKey do
   An security key authenticator.
   """
 
-  use Passwordless.Schema, prefix: "seckey"
+  use Passwordless.Schema, prefix: "security_key"
 
   alias Database.ChangesetExt
   alias Passwordless.App

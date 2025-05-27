@@ -1,6 +1,6 @@
 defmodule Passwordless.ActionToken do
   @moduledoc """
-  A action token.
+  A token authenticating some part of the action flow.
   """
 
   use Passwordless.Schema, prefix: "action_token"

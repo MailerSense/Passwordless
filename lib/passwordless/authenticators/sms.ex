@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.SMS do
   An SMS authenticator.
   """
 
-  use Passwordless.Schema, prefix: "smsotp"
+  use Passwordless.Schema, prefix: "sms"
 
   alias Passwordless.App
 

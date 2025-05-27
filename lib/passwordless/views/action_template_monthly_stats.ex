@@ -1,5 +1,7 @@
 defmodule Passwordless.Views.ActionTemplateMonthlyStats do
-  @moduledoc false
+  @moduledoc """
+  Materialized view for month-to-month comparizon of action performance.
+  """
   use Ecto.Schema
 
   import Ecto.Query

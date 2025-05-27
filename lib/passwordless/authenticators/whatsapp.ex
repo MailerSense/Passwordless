@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.WhatsApp do
   A WhatsApp authenticator.
   """
 
-  use Passwordless.Schema, prefix: "wtsappotp"
+  use Passwordless.Schema, prefix: "whatsapp"
 
   alias Passwordless.App
 

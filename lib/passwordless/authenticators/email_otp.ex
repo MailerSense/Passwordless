@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.EmailOTP do
   An Email authenticator.
   """
 
-  use Passwordless.Schema, prefix: "emailotp"
+  use Passwordless.Schema, prefix: "email_otp"
 
   alias Database.ChangesetExt
   alias Passwordless.App

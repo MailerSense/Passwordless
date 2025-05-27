@@ -1,5 +1,7 @@
 defmodule Passwordless.Challenge do
-  @moduledoc false
+  @moduledoc """
+  Authentication challenge that a user must complete to proceed.
+  """
 
   use Passwordless.Schema, prefix: "challenge"
 

@@ -1,5 +1,8 @@
 defmodule Passwordless.Views.ActionTemplateUniqueUser do
-  @moduledoc false
+  @moduledoc """
+  Materialized view for getting an approximate unique user count for an action.
+  """
+
   use Ecto.Schema
 
   import Ecto.Query

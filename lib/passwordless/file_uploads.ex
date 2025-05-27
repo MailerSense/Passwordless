@@ -1,5 +1,7 @@
 defmodule Passwordless.FileUploads do
-  @moduledoc false
+  @moduledoc """
+  Centralizes file upload functionalities.
+  """
 
   @adapter :passwordless
            |> Application.compile_env!(:file_uploads)
