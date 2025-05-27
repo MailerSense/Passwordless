@@ -5,6 +5,7 @@ defmodule Passwordless.Domain.Verifier do
 
   use Oban.Pro.Worker, queue: :domain, max_attempts: 1, tags: ["email", "domains", "verifier"]
 
+  alias Passwordless.AWS.Session
   alias Passwordless.Domain
   alias Passwordless.DomainRecord
   alias Passwordless.Repo
@@ -69,9 +70,9 @@ defmodule Passwordless.Domain.Verifier do
       domain_name = DomainRecord.domain_name(domain, record)
 
       case Util.DNS.resolve(domain_name, record.kind) do
-        records when is_list(records) ->
+        resolved when is_list(resolved) ->
           verified =
-            Enum.any?(records, &match_record(%DomainRecord{record | name: domain_name}, &1))
+            Enum.any?(resolved, &match_record(%DomainRecord{record | name: domain_name}, &1))
 
           if record.verified != verified do
             [DomainRecord.changeset(record, %{verified: verified}) | changesets]
@@ -86,18 +87,18 @@ defmodule Passwordless.Domain.Verifier do
   end
 
   defp verify_ses(domains) do
-    with {:ok, %{body: %{verification_attributes: attrs}}} when is_map(attrs) <-
-           domains
-           |> Enum.map(& &1.name)
-           |> ExAws.SES.get_identity_verification_attributes()
-           |> ExAws.request() do
+    client = Session.get_client!()
+    params = %{"Identities" => Enum.map(domains, & &1.name)}
+
+    with {:ok, %{"VerificationAttributes" => attrs}, _} when is_map(attrs) <-
+           AWS.SES.get_identity_verification_attributes(client, params) do
       changesets =
         Enum.reduce(domains, [], fn %Domain{} = domain, changesets ->
           with {:ok, %{"VerificationStatus" => status}} when is_binary(status) <-
                  Map.fetch(attrs, domain.name),
                {:ok, new_state} <- Map.fetch(Domain.aws_verification_states(), status),
                true <- new_state != domain.state do
-            [Domain.changeset(domain, %{state: new_state}) | changesets]
+            [Domain.state_changeset(domain, %{state: new_state}) | changesets]
           else
             _ -> changesets
           end

@@ -88,12 +88,12 @@ defmodule Passwordless.Domain do
   @doc """
   Get the envelope address for the domain.
   """
-  def envelope(%__MODULE__{name: name}), do: "email.#{name}"
+  def envelope(%__MODULE__{name: name}), do: "envelope.#{name}"
 
   @doc """
   Get the envelope subdomain for the domain.
   """
-  def envelope_subdomain(%__MODULE__{} = domain), do: "email.#{subdomain(domain)}"
+  def envelope_subdomain(%__MODULE__{} = domain), do: "envelope.#{subdomain(domain)}"
 
   @doc """
   Get the domain name.

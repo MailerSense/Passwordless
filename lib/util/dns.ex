@@ -6,7 +6,12 @@ defmodule Util.DNS do
   def resolve(domain, record \\ :a, timeout \\ :timer.seconds(5)) when is_binary(domain) and record in @record_types do
     with {:ok, rec} <- :inet_res.resolve(to_charlist(domain), :in, record, [], timeout),
          {:dns_rec, _header, _query, records, _whut1, _whut2} when is_list(records) <- rec do
-      Enum.map(records, &decode_resource/1)
+      records
+      |> Enum.map(&decode_resource/1)
+      |> Enum.filter(fn
+        {^record, _domain, _ttl, _value} -> true
+        _ -> false
+      end)
     end
   end
 

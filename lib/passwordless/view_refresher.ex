@@ -58,7 +58,7 @@ defmodule Passwordless.ViewRefresher do
     |> Task.async_stream(&Ecto.Adapters.SQL.query(Repo, &1), @task_opts)
     |> Stream.each(fn
       {:ok, {:ok, result}} ->
-        Logger.error("Refreshed view: #{inspect(result)}")
+        Logger.debug("Refreshed view: #{inspect(result)}")
 
       {:ok, {:error, error}} ->
         Logger.error("Failed to refresh view: #{inspect(error)}")

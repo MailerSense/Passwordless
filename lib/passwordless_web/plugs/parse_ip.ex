@@ -10,7 +10,6 @@ defmodule PasswordlessWeb.Plugs.ParseIP do
   def parse_ip(%Plug.Conn{assigns: %{current_user_ip: _}} = conn, _opts), do: conn
 
   def parse_ip(%Plug.Conn{} = conn, _opts) do
-    x_plausible_ip = List.first(get_req_header(conn, "x-plausible-ip"), "")
     cf_connecting_ip = List.first(get_req_header(conn, "cf-connecting-ip"), "")
     x_forwarded_for = List.first(get_req_header(conn, "x-forwarded-for"), "")
     b_forwarded_for = List.first(get_req_header(conn, "b-forwarded-for"), "")
@@ -18,9 +17,6 @@ defmodule PasswordlessWeb.Plugs.ParseIP do
 
     remote_ip =
       cond do
-        byte_size(x_plausible_ip) > 0 ->
-          x_plausible_ip |> clean_ip() |> ensure_ip()
-
         byte_size(cf_connecting_ip) > 0 ->
           cf_connecting_ip |> clean_ip() |> ensure_ip()
 
