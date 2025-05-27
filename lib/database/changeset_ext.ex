@@ -229,7 +229,7 @@ defmodule Database.ChangesetExt do
 
   def validate_profanities(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
     validate_change(changeset, field, fn ^field, value ->
-      case Passwordless.Expletive.profanities(value) do
+      case Passwordless.SwearJar.profanities(value) do
         [_ | _] = list ->
           [{field, "let's keep it professional, please :) - " <> Enum.join(list, ", ")}]
 

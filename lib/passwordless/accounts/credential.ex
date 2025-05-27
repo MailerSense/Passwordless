@@ -1,7 +1,6 @@
 defmodule Passwordless.Accounts.Credential do
   @moduledoc """
-  Credentials represent a proof of identity for a user
-  and can be used for social login.
+  Credentials represent a proof of identity for a user and can be used for social login.
   """
 
   use Passwordless.Schema, prefix: "credential"
