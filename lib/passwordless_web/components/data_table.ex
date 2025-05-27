@@ -480,8 +480,8 @@ defmodule PasswordlessWeb.Components.DataTable do
   defp to_query(%Flop{filters: filters} = flop, opts) do
     filter_map =
       filters
-      |> Stream.filter(fn filter -> filter.value != nil end)
-      |> Stream.with_index()
+      |> Enum.filter(&Util.present?(&1.value))
+      |> Enum.with_index()
       |> Map.new(fn {filter, index} ->
         {index, Map.from_struct(filter)}
       end)
