@@ -3,7 +3,7 @@ defmodule Passwordless.AppSettings do
   An app contains passwordless resources.
   """
 
-  use Passwordless.Schema, prefix: "settings"
+  use Passwordless.Schema, prefix: "app_settings"
 
   alias Database.ChangesetExt
   alias Passwordless.App
@@ -125,7 +125,7 @@ defmodule Passwordless.AppSettings do
   end
 
   defp validate_website(changeset) do
-    ChangesetExt.validate_url(changeset, :website)
+    ChangesetExt.validate_domain(changeset, :website)
   end
 
   defp whitelisted_ip_changeset(%__MODULE__.IPAddress{} = ip_address, attrs) do

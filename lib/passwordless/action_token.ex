@@ -1,6 +1,6 @@
 defmodule Passwordless.ActionToken do
   @moduledoc """
-  A action token.
+  A token authenticating some part of the action flow.
   """
 
   use Passwordless.Schema, prefix: "action_token"
@@ -43,8 +43,6 @@ defmodule Passwordless.ActionToken do
 
     timestamps()
   end
-
-  def hash(%__MODULE__{key_hash: key_hash}), do: key_hash
 
   @doc """
   Get expiry time for the given kind.

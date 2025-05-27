@@ -1,5 +1,7 @@
 defmodule Database.Tenant do
-  @moduledoc false
+  @moduledoc """
+  Basic support for path-prefix multitenancy.
+  """
 
   import SqlFmt.Helpers
 

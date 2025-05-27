@@ -606,7 +606,7 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   def circle_stat(assigns) do
     ~H"""
-    <.box class={["flex gap-6", @class]} padded>
+    <.box body_class={["flex gap-6", @class]} padded>
       <div class="flex flex-col justify-between gap-4">
         <badge class="flex gap-2 items-center">
           <div class={["w-4 h-2 rounded-full", @legend_color_class]}></div>
@@ -652,21 +652,68 @@ defmodule PasswordlessWeb.DashboardComponents do
     """
   end
 
+  attr :items, :list, default: [], doc: "labels your dropdown option"
+
   def bar_stats(assigns) do
     ~H"""
     <.box body_class="flex items-center gap-2 divide-x divide-gray-200 dark:divide-gray-700/40">
-      <div :for={i <- 1..3} class="flex flex-col grow p-6">
-        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Value {i}</span>
-        <div class="flex gap-2 items-center justify-between">
-          <span class="text-xl xl:text-2xl font-semibold text-gray-900 dark:text-white">
-            9.6K
-          </span>
-          <span class="text-xs font-bold flex gap-1 items-center text-success-600 dark:text-success-400">
-            <.icon name="remix-arrow-up-fill" class="w-4 h-4" /><span>60.1%</span>
-          </span>
-        </div>
-      </div>
+      <.bar_stat :for={item <- @items} {item} />
     </.box>
+    """
+  end
+
+  attr :label, :string, required: true, doc: "labels your dropdown option"
+  attr :value, :integer, required: true, doc: "labels your dropdown option"
+  attr :change, :float, required: true, doc: "labels your dropdown option"
+  attr :legend_color_class, :string, required: true, doc: "labels your dropdown option"
+
+  def bar_stat(assigns) do
+    assigns =
+      assign(assigns, %{
+        has_data?: trunc(assigns[:change]) != 0,
+        change_class:
+          cond do
+            trunc(assigns[:change]) == 0 ->
+              "text-gray-500 dark:text-gray-400"
+
+            assigns[:change] > 0 ->
+              "text-success-600 dark:text-success-400"
+
+            true ->
+              "text-danger-600 dark:text-danger-400"
+          end,
+        change_icon:
+          cond do
+            trunc(assigns[:change]) == 0 ->
+              "remix-bar-chart-line"
+
+            assigns[:change] > 0 ->
+              "remix-arrow-up-fill"
+
+            true ->
+              "remix-arrow-down-fill"
+          end
+      })
+
+    ~H"""
+    <div class="flex flex-col grow p-6">
+      <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{@label}</span>
+
+      <div class="flex gap-2 items-center justify-between">
+        <span class="text-xl xl:text-2xl font-semibold text-gray-900 dark:text-white">
+          {Util.number!(@value, format: :short)}
+        </span>
+        <span class={["text-xs font-bold flex gap-1 items-center", @change_class]}>
+          <.icon name={@change_icon} class="w-4 h-4" />
+          <span :if={@has_data?}>
+            {Float.round(@change * 100)}% this month
+          </span>
+          <span :if={not @has_data?}>
+            {gettext("Can't compare to last month")}
+          </span>
+        </span>
+      </div>
+    </div>
     """
   end
 

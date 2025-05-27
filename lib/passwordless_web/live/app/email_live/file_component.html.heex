@@ -11,12 +11,15 @@
     <div class="p-3 rounded-lg items-center gap-3 xl:gap-6 inline-flex hover:bg-gray-100 dark:hover:bg-gray-700 w-full">
       <button
         :if={Enum.empty?(@uploads.new_media.entries)}
-        class="p-2 xl:p-5 rounded-lg border-2 border-primary-200 dark:border-primary-600 justify-center items-center flex"
+        class="p-2 xl:p-5 rounded-lg border-2 border-primary-200 dark:border-primary-700 justify-center items-center flex"
         phx-click={JS.dispatch("click", to: "##{@uploads.new_media.ref}")}
         phx-drop-target={@uploads.new_media.ref}
         type="button"
       >
-        <.icon name="remix-add-line" class="w-8 h-8 text-primary-600 flex-shrink-0" />
+        <.icon
+          name="remix-add-line"
+          class="w-8 h-8 text-primary-600 dark:text-primary-300 flex-shrink-0"
+        />
       </button>
 
       <%= unless Enum.empty?(@uploads.new_media.entries) do %>
@@ -31,7 +34,7 @@
       <% end %>
 
       <div class="flex flex-col items-start gap-1 shrink">
-        <div class="text-primary-500 dark:text-primary-600 text-base font-semibold line-clamp-1 break-all">
+        <div class="text-primary-500 dark:text-primary-400 text-base font-semibold line-clamp-1 break-all">
           {if Enum.empty?(@uploads.new_media.entries),
             do: gettext("Upload a new file"),
             else: hd(@uploads.new_media.entries).client_name}

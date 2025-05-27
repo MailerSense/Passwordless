@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.RecoveryCodes do
   An recovery codes authenticator.
   """
 
-  use Passwordless.Schema, prefix: "reccodes"
+  use Passwordless.Schema, prefix: "recovery_codes"
 
   alias Passwordless.App
 

@@ -54,8 +54,14 @@ defmodule Passwordless.Accounts.User do
     soft_delete_timestamp()
   end
 
+  @doc """
+  Returns a list of all valid user states.
+  """
   def states, do: @states
 
+  @doc """
+  Checks if the user is an admin.
+  """
   def admin?(%__MODULE__{current_org: %Org{} = org, current_membership: %Membership{} = membership} = user) do
     active?(user) and
       confirmed?(user) and

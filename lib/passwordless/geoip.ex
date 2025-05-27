@@ -1,5 +1,8 @@
 defmodule Passwordless.GeoIP do
-  @moduledoc false
+  @moduledoc """
+  Map public IP addresses to their geographical origin.
+  """
+
   @db :passwordless
       |> :code.priv_dir()
       |> Path.join("geoip/GeoLite2-City.mmdb")

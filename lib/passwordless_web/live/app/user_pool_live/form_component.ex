@@ -30,12 +30,41 @@ defmodule PasswordlessWeb.App.UserPoolLive.FormComponent do
 
   @impl true
   def handle_event("save", %{"user_pool" => user_pool_params}, socket) do
-    {:noreply, socket}
+    save_user_pool(socket, user_pool_params)
   end
 
   # Private
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     assign(socket, form: to_form(changeset))
+  end
+
+  defp save_user_pool(%{assigns: %{live_action: :new}} = socket, user_pool_params) do
+    case Passwordless.create_user_pool(socket.assigns.current_app, user_pool_params) do
+      {:ok, _user_pool} ->
+        {:noreply,
+         socket
+         |> put_toast(:info, gettext("User pool created."), title: gettext("Success"))
+         |> push_patch(to: socket.assigns.return_to)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
+  end
+
+  defp save_user_pool(%{assigns: %{live_action: :edit}} = socket, user_pool_params) do
+    app = socket.assigns.current_app
+    user_pool = socket.assigns.user_pool
+
+    case Passwordless.update_user_pool(app, user_pool, user_pool_params) do
+      {:ok, _user_pool} ->
+        {:noreply,
+         socket
+         |> put_toast(:info, gettext("User pool updated."), title: gettext("Success"))
+         |> push_patch(to: socket.assigns.return_to)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
   end
 end

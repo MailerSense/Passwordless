@@ -1,5 +1,7 @@
 defmodule Passwordless.ActionStatistic do
-  @moduledoc false
+  @moduledoc """
+  An auxiliary schema to keep track of action status breakdown for an action template.
+  """
 
   use Passwordless.Schema, prefix: "action_template"
 

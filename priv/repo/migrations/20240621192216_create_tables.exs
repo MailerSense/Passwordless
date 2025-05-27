@@ -104,6 +104,20 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create unique_index(:orgs, [:email], where: "deleted_at is null")
 
+    ## Org settings
+
+    create table(:org_settings, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :usage_limit_enabled, :boolean, null: false, default: false
+      add :usage_limit, :integer, null: false
+
+      add :org_id, references(:orgs, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:org_settings, [:org_id])
+
     ## Memberships
 
     create table(:memberships, primary_key: false) do

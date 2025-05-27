@@ -47,6 +47,13 @@ defmodule Helpers do
   end
 end
 
+views = [
+  "action_template_unique_users",
+  "action_template_monthly_stats"
+]
+
 for t <- Tenant.all(Repo) do
-  Ecto.Adapters.SQL.query(Repo, "REFRESH MATERIALIZED VIEW CONCURRENTLY #{t}.action_template_unique_users;")
+  for v <- views do
+    Ecto.Adapters.SQL.query(Repo, "REFRESH MATERIALIZED VIEW CONCURRENTLY #{t}.#{v};")
+  end
 end

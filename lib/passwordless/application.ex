@@ -1,5 +1,7 @@
 defmodule Passwordless.Application do
-  @moduledoc false
+  @moduledoc """
+  The main entrypoint for the Passwordless application.
+  """
 
   use Application
 

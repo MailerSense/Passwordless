@@ -1,5 +1,8 @@
 defmodule Passwordless.HashedBinary do
-  @moduledoc false
+  @moduledoc """
+  Produces and stores a hash of the provided binary.
+  """
+
   use Cloak.Ecto.HMAC, otp_app: :passwordless
 
   alias Passwordless.SecretManager.Vault

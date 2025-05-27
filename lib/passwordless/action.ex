@@ -52,33 +52,25 @@ defmodule Passwordless.Action do
     timestamps()
   end
 
+  @doc """
+  Returns a list of all possible action states.
+  """
   def states, do: @states
 
+  @doc """
+  Returns a list of action states that are considered final (non-pending).
+  """
   def final_states, do: @states -- [:pending]
 
+  @doc """
+  Generates a PubSub topic string for an app.
+  """
   def topic_for(%App{} = app), do: "#{prefix()}:#{app.id}"
 
+  @doc """
+  Returns the standard preload associations for actions.
+  """
   def preloads, do: [{:user, [:totps, :email, :emails, :phone, :phones]}, {:challenge, [:email_message]}, :events]
-
-  def readable_name(%__MODULE__{action_template: %ActionTemplate{name: name}}), do: Recase.to_sentence(name)
-
-  def assign_first_event(%__MODULE__{events: [_ | _] = events}) do
-    events
-    |> Enum.sort_by(& &1.inserted_at, :asc)
-    |> Enum.find(fn %Event{city: city, country: country} ->
-      is_binary(city) and is_binary(country)
-    end)
-  end
-
-  def first_event(%__MODULE__{events: [_ | _] = events}) do
-    events
-    |> Enum.sort_by(& &1.inserted_at, :asc)
-    |> Enum.find(fn %Event{city: city, country: country} ->
-      is_binary(city) and is_binary(country)
-    end)
-  end
-
-  def first_event(%__MODULE__{}), do: nil
 
   @doc """
   Get by app.

@@ -15,11 +15,12 @@ defmodule Passwordless.ViewRefresher do
   @task_opts [
     ordered: false,
     timeout: :timer.minutes(5),
-    max_concurrency: 10
+    max_concurrency: 20
   ]
 
   @views [
-    {:app, :concurrent, "action_template_unique_users"}
+    {:app, :concurrent, "action_template_unique_users"},
+    {:app, :concurrent, "action_template_monthly_stats"}
   ]
 
   @impl true
@@ -30,11 +31,11 @@ defmodule Passwordless.ViewRefresher do
             (
               case_result =
                 case m do
-                  :sequential -> ~SQL"REFRESH MATERIALIZED VIEW VIEW;"
-                  :concurrent -> ~SQL"REFRESH MATERIALIZED VIEW CONCURRENTLY VIEW;"
+                  :sequential -> ~SQL"REFRESH MATERIALIZED VIEW view_name;"
+                  :concurrent -> ~SQL"REFRESH MATERIALIZED VIEW CONCURRENTLY view_name;"
                 end
 
-              String.replace(case_result, "view", v)
+              String.replace(case_result, "view_name", v)
             )
 
     schema_queries =
@@ -44,23 +45,26 @@ defmodule Passwordless.ViewRefresher do
             (
               case_result =
                 case m do
-                  :sequential -> ~SQL"REFRESH MATERIALIZED VIEW prefix.view;"
-                  :concurrent -> ~SQL"REFRESH MATERIALIZED VIEW CONCURRENTLY prefix.view;"
+                  :sequential -> ~SQL"REFRESH MATERIALIZED VIEW prefix.view_name;"
+                  :concurrent -> ~SQL"REFRESH MATERIALIZED VIEW CONCURRENTLY prefix.view_name;"
                 end
 
               case_result
               |> String.replace("prefix", u)
-              |> String.replace("view", v)
+              |> String.replace("view_name", v)
             )
 
     (public_queries ++ schema_queries)
     |> Task.async_stream(&Ecto.Adapters.SQL.query(Repo, &1), @task_opts)
     |> Stream.each(fn
-      {:ok, _} ->
-        :ok
+      {:ok, {:ok, result}} ->
+        Logger.error("Refreshed view: #{inspect(result)}")
+
+      {:ok, {:error, error}} ->
+        Logger.error("Failed to refresh view: #{inspect(error)}")
 
       {:error, error} ->
-        Logger.error("Failed to refresh view: #{inspect(error)}")
+        Logger.error("Some unforseen error when refreshing view: #{inspect(error)}")
     end)
     |> Stream.run()
 

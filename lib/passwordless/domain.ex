@@ -192,10 +192,16 @@ defmodule Passwordless.Domain do
   def verified_by_aws?(%__MODULE__{state: :aws_success}), do: true
   def verified_by_aws?(%__MODULE__{}), do: false
 
+  @doc """
+  Get domains by state.
+  """
   def get_by_state(query \\ __MODULE__, state) do
     from q in query, where: q.state == ^state
   end
 
+  @doc """
+  Get domains that are not verified.
+  """
   def get_not_verified(query \\ __MODULE__) do
     from q in query, where: not q.verified
   end

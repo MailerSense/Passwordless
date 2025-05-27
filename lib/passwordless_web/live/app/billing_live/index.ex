@@ -6,6 +6,7 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
   alias Passwordless.BillingItem
   alias Passwordless.Locale.Number, as: NumberLocale
   alias Passwordless.Organizations.Org
+  alias Passwordless.Repo
   alias PasswordlessWeb.Components.DataTable
 
   @data_table_opts [
@@ -33,11 +34,16 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
+    org = Repo.preload(socket.assigns[:current_org], :settings)
+    changeset = Passwordless.Organizations.change_org(org)
+
     {:noreply,
      socket
+     |> assign(current_org: org)
      |> assign_filters(params)
      |> assign_stats()
      |> assign_billing_items(params)
+     |> assign_form(changeset)
      |> apply_action(socket.assigns.live_action)}
   end
 
@@ -60,6 +66,16 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
   @impl true
   def handle_event("clear_filters", _params, socket) do
     {:noreply, push_navigate(socket, to: ~p"/billing")}
+  end
+
+  @impl true
+  def handle_event("validate_org", %{"org" => org_params}, socket) do
+    save_org(socket, org_params)
+  end
+
+  @impl true
+  def handle_event("save_org", %{"org" => org_params}, socket) do
+    save_org(socket, org_params)
   end
 
   @impl true
@@ -116,5 +132,28 @@ defmodule PasswordlessWeb.App.BillingLive.Index do
     apps = socket.assigns.current_org |> Passwordless.Organizations.list_apps() |> Enum.map(& &1.name)
 
     assign(socket, apps: apps, user_count: users, mau_count: mau)
+  end
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    settings = Ecto.Changeset.get_field(changeset, :settings)
+
+    socket
+    |> assign(form: to_form(changeset))
+    |> assign(usage_limit_enabled: settings.usage_limit_enabled)
+  end
+
+  defp save_org(socket, org_params) do
+    case Passwordless.Organizations.update_org(socket.assigns.current_org, org_params) do
+      {:ok, org} ->
+        socket =
+          socket
+          |> assign(current_org: org)
+          |> assign_form(Passwordless.Organizations.change_org(org))
+
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
   end
 end

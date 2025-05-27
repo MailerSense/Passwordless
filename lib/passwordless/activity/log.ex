@@ -3,7 +3,7 @@ defmodule Passwordless.Activity.Log do
   The log of activity on key entities in the system.
   """
 
-  use Passwordless.Schema, prefix: "actlog"
+  use Passwordless.Schema, prefix: "log"
 
   import Ecto.Query
 

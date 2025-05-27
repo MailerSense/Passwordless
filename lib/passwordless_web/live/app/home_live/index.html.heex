@@ -135,18 +135,6 @@
         <% end %>
       </:col>
 
-      <:col :let={event} label={gettext("Device")} field={:device}>
-        <%= case event do %>
-          <% %Event{device_type: device_type} when is_binary(device_type) -> %>
-            <div class="flex items-center gap-2">
-              <.icon name={device_type_to_icon(device_type)} class="w-5 h-5" /> {Recase.to_sentence(
-                device_type
-              )}
-            </div>
-          <% _ -> %>
-        <% end %>
-      </:col>
-
       <:col :let={event} label={gettext("Last Seen")} field={:inserted_at}>
         {Timex.from_now(event.inserted_at)}
       </:col>

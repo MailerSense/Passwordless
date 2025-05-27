@@ -1,5 +1,7 @@
 defmodule Passwordless.ActionTemplate do
-  @moduledoc false
+  @moduledoc """
+  Action template expresses the rules and effects that can be applied to actions.
+  """
 
   use Passwordless.Schema, prefix: "action_template"
 

@@ -3,7 +3,7 @@ defmodule Passwordless.Authenticators.MagicLink do
   A magic link authenticator.
   """
 
-  use Passwordless.Schema, prefix: "maglink"
+  use Passwordless.Schema, prefix: "magic_link"
 
   alias Database.ChangesetExt
   alias Passwordless.App

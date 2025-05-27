@@ -1,11 +1,6 @@
 defmodule Passwordless.BackgroundTask do
   @moduledoc """
   Run a function in a separate process parallel to the current one. Useful for things that take a bit of time but you want to send a response back quickly.
-
-  Passwordless.BackgroundTask.run(fn ->
-    do_some_time_instensive_stuff()
-  end)
-
   """
 
   @timeout :timer.seconds(10)

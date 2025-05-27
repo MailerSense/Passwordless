@@ -46,6 +46,11 @@ defmodule Passwordless.AuthToken do
     soft_delete_timestamp()
   end
 
+  @doc """
+  Returns a list of all available permissions for auth tokens.
+
+  These permissions control what operations an auth token can perform.
+  """
   def permissions, do: @permissions_flat
 
   @doc """

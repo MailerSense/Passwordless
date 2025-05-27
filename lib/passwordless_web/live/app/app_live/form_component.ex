@@ -28,9 +28,21 @@ defmodule PasswordlessWeb.App.AppLive.FormComponent do
     app_name = get_in(app_params, ["name"])
 
     app_params =
-      app_params
-      |> put_in(["settings", "display_name"], app_name)
-      |> put_in(["settings", "allowlisted_ip_addresses"], [%{address: "0.0.0.0/0"}])
+      if socket.assigns.live_action == :new do
+        app_params
+        |> put_in(
+          ["settings", "website"],
+          (app_name
+           |> String.downcase()
+           |> String.replace(~r/\s+/, "")
+           |> String.replace(~r/[\p{P}\p{S}]/, "")
+           |> String.trim()) <> ".com"
+        )
+        |> put_in(["settings", "display_name"], app_name)
+        |> put_in(["settings", "allowlisted_ip_addresses"], [%{address: "0.0.0.0/0"}])
+      else
+        app_params
+      end
 
     changeset =
       socket.assigns.app

@@ -1,5 +1,7 @@
 defmodule Passwordless.Challenge do
-  @moduledoc false
+  @moduledoc """
+  Authentication challenge that a user must complete to proceed.
+  """
 
   use Passwordless.Schema, prefix: "challenge"
 
@@ -113,10 +115,24 @@ defmodule Passwordless.Challenge do
     timestamps()
   end
 
+  @doc """
+  Returns a list of all supported challenge kinds.
+  """
   def kinds, do: @kinds
+
+  @doc """
+  Returns a list of all possible challenge states.
+  """
   def states, do: @states
+
+  @doc """
+  Returns the initial state for a given challenge machine type.
+  """
   def starting_state!(machine), do: Keyword.fetch!(@starting_states, machine)
 
+  @doc """
+  Determines if a challenge has been successfully validated.
+  """
   def validated?(%__MODULE__{state: state}) when state in @end_states, do: true
   def validated?(_), do: false
 

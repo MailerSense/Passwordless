@@ -1,5 +1,7 @@
 defmodule Passwordless.Accounts.OTP do
-  @moduledoc false
+  @moduledoc """
+  One Time Password for internal account system.
+  """
 
   use Passwordless.Schema, prefix: "otp"
 
