@@ -227,9 +227,6 @@ config :backpex,
   translator_function: {PasswordlessWeb.CoreComponents, :translate_backpex},
   error_translator_function: {PasswordlessWeb.CoreComponents, :translate_error}
 
-config :ua_inspector,
-  database_path: Path.expand("../priv/uainspector", __DIR__)
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

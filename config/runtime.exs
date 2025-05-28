@@ -15,6 +15,9 @@ config :stripity_stripe,
 
 config :passwordless, :stripe_production_mode, System.get_env("STRIPE_PRODUCTION_MODE") == "true"
 
+config :ua_inspector,
+  database_path: Application.app_dir(:passwordless, "priv/uainspector")
+
 if config_env() == :prod do
   postgres_user = System.get_env("POSTGRES_USER") || raise "env variable POSTGRES_USER is missing"
 
