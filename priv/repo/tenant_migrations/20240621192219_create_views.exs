@@ -36,6 +36,10 @@ defmodule Passwordless.Repo.TenantMigrations.CreateViews do
               ) AS allows,
               COUNT(*) FILTER (
                 WHERE
+                  a.state = 'timeout'
+              ) AS timeouts,
+              COUNT(*) FILTER (
+                WHERE
                   a.state = 'block'
               ) AS blocks,
               DATE_PART('year', a.inserted_at :: date) :: int AS date_year,

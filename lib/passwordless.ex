@@ -1311,23 +1311,23 @@ defmodule Passwordless do
     |> case do
       [] ->
         [
-          %{label: "Attempts", value: 0, change: 0, legend_color_class: "bg-gray-500"},
           %{label: "Allows", value: 0, change: 0, legend_color_class: "bg-success-500"},
+          %{label: "Timeouts", value: 0, change: 0, legend_color_class: "bg-warning-500"},
           %{label: "Blocks", value: 0, change: 0, legend_color_class: "bg-danger-500"}
         ]
 
-      [%ActionTemplateMonthlyStats{blocks: blocks, attempts: attempts, allows: allows}] ->
+      [%ActionTemplateMonthlyStats{blocks: blocks, timeouts: timeouts, allows: allows}] ->
         [
-          %{label: "Attempts", value: attempts, change: 0, legend_color_class: "bg-gray-500"},
           %{label: "Allows", value: allows, change: 0, legend_color_class: "bg-success-500"},
+          %{label: "Timeouts", value: timeouts, change: 0, legend_color_class: "bg-warning-500"},
           %{label: "Blocks", value: blocks, change: 0, legend_color_class: "bg-danger-500"}
         ]
 
       [%ActionTemplateMonthlyStats{} = a, %ActionTemplateMonthlyStats{} = b] ->
         Enum.map(
           [
-            attempts: {"Attempts", "bg-gray-500"},
             allows: {"Allows", "bg-success-500"},
+            timeouts: {"Timeouts", "bg-warning-500"},
             blocks: {"Blocks", "bg-danger-500"}
           ],
           fn {key, {label, color}} ->
@@ -1339,8 +1339,8 @@ defmodule Passwordless do
       [_, %ActionTemplateMonthlyStats{} = a, %ActionTemplateMonthlyStats{} = b] ->
         Enum.map(
           [
-            attempts: {"Attempts", "bg-gray-500"},
             allows: {"Allows", "bg-success-500"},
+            timeouts: {"Timeouts", "bg-warning-500"},
             blocks: {"Blocks", "bg-danger-500"}
           ],
           fn {key, {label, color}} ->
