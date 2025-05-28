@@ -1,6 +1,7 @@
 import { scaleSequentialSqrt } from "d3-scale";
 import { interpolateYlOrRd } from "d3-scale-chromatic";
 import Globe, { GlobeInstance } from "globe.gl";
+
 import { Hook, makeHook } from "./typed-hook";
 
 interface GeoData {

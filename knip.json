@@ -1,0 +1,20 @@
+{
+	"$schema": "https://unpkg.com/knip@latest/schema.json",
+	"workspaces": {
+		"packages/*": {
+			"entry": ["src/index.ts"],
+			"project": "**/*.{js,ts,jsx,tsx}",
+			"ignoreDependencies": ["typescript"],
+			"ignore": ["**/*.spec.{js,ts}", "**/*.test.{js,ts}", "**/dist/**"]
+		}
+	},
+	"ignoreWorkspaces": ["cdk/*"],
+	"rules": {
+		"exports": "warn",
+		"types": "warn",
+		"dependencies": "error",
+		"files": "warn"
+	},
+	"ignoreExportsUsedInFile": true,
+	"ignoreBinaries": ["turbo", "biome", "rslib"]
+}

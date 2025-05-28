@@ -63,7 +63,7 @@ function doAnimations(
   const ts = [];
   let toasts = Array.from(
     document.querySelectorAll<HTMLElement>(
-      '#toast-group [phx-hook="LiveToast"]',
+      "#toast-group [phx-hook=\"LiveToast\"]",
     ),
   )
     .map((t) => {
