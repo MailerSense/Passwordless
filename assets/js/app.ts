@@ -109,9 +109,7 @@ const initScheme = () => {
 
 (window as any).initScheme = initScheme;
 
-try {
-	initScheme();
-} catch (_error) {}
+initScheme();
 
 function getRandomInt(min: number, max: number): number {
 	const minCeiled = Math.ceil(min);
