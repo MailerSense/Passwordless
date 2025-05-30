@@ -57,7 +57,7 @@ export class Redirect extends Construct {
 			comment: `Redirect to ${toDomain} from ${fromDomains.join(", ")}`,
 		});
 
-		fromDomains.forEach((domainName) => {
+		for (const domainName of fromDomains) {
 			const hash = md5hash(domainName).slice(0, 6);
 			const aliasProps = {
 				zone,
@@ -67,6 +67,6 @@ export class Redirect extends Construct {
 
 			new ARecord(this, `redirect-alias-${hash}`, aliasProps);
 			new AaaaRecord(this, `redirect-alias-six-${hash}`, aliasProps);
-		});
+		}
 	}
 }

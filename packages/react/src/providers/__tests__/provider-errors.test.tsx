@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-react";
 
 import { useConsentManager } from "../../hooks/use-consent-manager";
-import { ConsentManagerProvider } from "../consent-manager-provider";
+import { PasswordlessProvider } from "../passwordless-provider";
 import { setupMocks } from "./test-helpers";
 
 // Setup common mocks
@@ -85,14 +85,14 @@ describe("ConsentManagerProvider Error Handling", () => {
 		};
 
 		const { getByTestId } = render(
-			<ConsentManagerProvider
+			<PasswordlessProvider
 				options={{
 					mode: "c15t",
 					backendURL: "/api/c15t",
 				}}
 			>
 				<ErrorDetectingComponent />
-			</ConsentManagerProvider>
+			</PasswordlessProvider>
 		);
 
 		// Verify component renders even with errors

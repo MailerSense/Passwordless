@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 import { renderHook } from "vitest-browser-react";
 
-import { ConsentManagerProvider } from "~/providers/consent-manager-provider";
+import { PasswordlessProvider } from "~/providers/passwordless-provider";
 import { useConsentManager } from "../use-consent-manager";
 
 // Mock the c15t package
@@ -39,7 +39,7 @@ describe("useConsentManager", () => {
 	test("returns consent state and methods when used within provider", () => {
 		const { result } = renderHook(() => useConsentManager(), {
 			wrapper: ({ children }) => (
-				<ConsentManagerProvider
+				<PasswordlessProvider
 					options={{
 						mode: "offline",
 						react: {
@@ -48,7 +48,7 @@ describe("useConsentManager", () => {
 					}}
 				>
 					{children}
-				</ConsentManagerProvider>
+				</PasswordlessProvider>
 			),
 		});
 
@@ -59,7 +59,7 @@ describe("useConsentManager", () => {
 	test("provides manager object when configured", () => {
 		const { result } = renderHook(() => useConsentManager(), {
 			wrapper: ({ children }) => (
-				<ConsentManagerProvider
+				<PasswordlessProvider
 					options={{
 						mode: "offline",
 						react: {
@@ -68,7 +68,7 @@ describe("useConsentManager", () => {
 					}}
 				>
 					{children}
-				</ConsentManagerProvider>
+				</PasswordlessProvider>
 			),
 		});
 

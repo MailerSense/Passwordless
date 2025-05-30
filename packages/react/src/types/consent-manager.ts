@@ -58,7 +58,7 @@ export interface ReactUIOptions {
 /**
  * Extended configuration options for the React consent manager
  */
-export type ConsentManagerOptions = CoreOptions & {
+export type PasswordlessOptions = CoreOptions & {
 	/**
 	 * React-specific UI configuration options
 	 */
@@ -75,7 +75,7 @@ export type ConsentManagerOptions = CoreOptions & {
  *
  * @public
  */
-export interface ConsentManagerProviderProps {
+export interface PasswordlessProviderProps {
 	/**
 	 * React children to render within the provider.
 	 */
@@ -85,5 +85,5 @@ export interface ConsentManagerProviderProps {
 	 * Configuration options for the consent manager.
 	 * This includes core, React, store, and translation settings.
 	 */
-	options: ConsentManagerOptions;
+	options: PasswordlessOptions;
 }

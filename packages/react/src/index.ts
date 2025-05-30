@@ -5,7 +5,7 @@ export { ConsentManagerWidget } from "./components/consent-manager-widget/consen
 export type { ConsentManagerWidgetProps } from "./components/consent-manager-widget/types";
 export { ConsentManagerDialog } from "./components/consent-manager-dialog/consent-manager-dialog";
 export type { ConsentManagerDialogProps } from "./components/consent-manager-dialog/consent-manager-dialog";
-export { ConsentManagerProvider } from "./providers/consent-manager-provider";
+export { PasswordlessProvider as ConsentManagerProvider } from "./providers/passwordless-provider";
 
 // Export hooks
 export { useConsentManager } from "./hooks/use-consent-manager";
@@ -26,6 +26,6 @@ export {
 
 // Export types
 export type {
-	ConsentManagerProviderProps,
-	ConsentManagerOptions,
+	PasswordlessProviderProps as ConsentManagerProviderProps,
+	PasswordlessOptions as ConsentManagerOptions,
 } from "./types/consent-manager";

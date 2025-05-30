@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { expect } from "vitest";
 import { render } from "vitest-browser-react";
 
-import { ConsentManagerProvider } from "~/providers/consent-manager-provider";
+import { PasswordlessProvider } from "~/providers/passwordless-provider";
 import type { ThemeValue } from "~/types/theme";
 
 interface ComponentStyles {
@@ -38,7 +38,7 @@ export async function testComponentStyles({
 }: ComponentStyles) {
 	// Render the component with the ConsentManagerProvider
 	const { container } = render(
-		<ConsentManagerProvider
+		<PasswordlessProvider
 			options={{
 				mode: "offline",
 				react: {
@@ -47,7 +47,7 @@ export async function testComponentStyles({
 			}}
 		>
 			{component}
-		</ConsentManagerProvider>
+		</PasswordlessProvider>
 	);
 
 	// Wait for rendering to complete

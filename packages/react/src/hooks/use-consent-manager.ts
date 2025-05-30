@@ -5,7 +5,7 @@
 
 import { useContext } from "react";
 
-import { ConsentStateContext } from "../context/consent-manager-context";
+import { ConsentStateContext } from "../context/passwordless-context";
 
 /**
  * Hook for accessing and managing consent state.

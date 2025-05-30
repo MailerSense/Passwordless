@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-react";
 
 import { useConsentManager } from "../../hooks/use-consent-manager";
-import { ConsentManagerProvider } from "../consent-manager-provider";
+import { PasswordlessProvider } from "../passwordless-provider";
 import { setupMocks } from "./test-helpers";
 
 // Setup common mocks
@@ -102,7 +102,7 @@ describe("ConsentManagerProvider Context Values", () => {
 		};
 
 		const { getByTestId } = render(
-			<ConsentManagerProvider
+			<PasswordlessProvider
 				options={{
 					mode: "offline",
 					react: {
@@ -111,7 +111,7 @@ describe("ConsentManagerProvider Context Values", () => {
 				}}
 			>
 				<ConsumerComponent />
-			</ConsentManagerProvider>
+			</PasswordlessProvider>
 		);
 
 		// Advance timers to allow all async operations to complete
@@ -134,7 +134,7 @@ describe("ConsentManagerProvider Context Values", () => {
 		const onConsentSet = vi.fn();
 
 		render(
-			<ConsentManagerProvider
+			<PasswordlessProvider
 				options={{
 					mode: "offline",
 					callbacks: {
@@ -143,7 +143,7 @@ describe("ConsentManagerProvider Context Values", () => {
 				}}
 			>
 				<div>Test</div>
-			</ConsentManagerProvider>
+			</PasswordlessProvider>
 		);
 
 		// Advance timers to allow all async operations to complete

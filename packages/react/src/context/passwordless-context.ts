@@ -11,7 +11,7 @@ import { createContext } from "react";
 /**
  * The context value provided by ConsentManagerProvider.
  */
-export interface ConsentStateContextValue {
+export interface PasswordlessContextValue {
 	/**
 	 * Current consent management state
 	 */
@@ -37,5 +37,5 @@ export interface ConsentStateContextValue {
  * Context for sharing consent management state across components.
  */
 export const ConsentStateContext = createContext<
-	ConsentStateContextValue | undefined
+	PasswordlessContextValue | undefined
 >(undefined);

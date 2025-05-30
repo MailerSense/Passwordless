@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { render } from "vitest-browser-react";
 
 import { ConsentManagerDialog } from "~/components/consent-manager-dialog/consent-manager-dialog";
-import { ConsentManagerProvider } from "~/providers/consent-manager-provider";
-import type { ConsentManagerOptions } from "~/types/consent-manager";
+import { PasswordlessProvider } from "~/providers/passwordless-provider";
+import type { PasswordlessOptions } from "~/types/consent-manager";
 import { CookieBanner } from "../cookie-banner";
 
 // Create a mutable showPopup value we can control
@@ -50,7 +50,7 @@ Object.defineProperty(window, "localStorage", {
 });
 
 // Default consent manager options
-const defaultOptions: ConsentManagerOptions = {
+const defaultOptions: PasswordlessOptions = {
 	mode: "offline",
 };
 
@@ -66,10 +66,10 @@ describe("CookieBanner E2E Tests", () => {
 
 	test("should show cookie banner on first visit", async () => {
 		render(
-			<ConsentManagerProvider options={defaultOptions}>
+			<PasswordlessProvider options={defaultOptions}>
 				<CookieBanner />
 				<ConsentManagerDialog />
-			</ConsentManagerProvider>
+			</PasswordlessProvider>
 		);
 
 		const element = document.body.querySelector(
@@ -99,10 +99,10 @@ describe("CookieBanner E2E Tests", () => {
 
 	test("should accept all cookies when clicking Accept All", async () => {
 		render(
-			<ConsentManagerProvider options={defaultOptions}>
+			<PasswordlessProvider options={defaultOptions}>
 				<CookieBanner />
 				<ConsentManagerDialog />
-			</ConsentManagerProvider>
+			</PasswordlessProvider>
 		);
 
 		// Click accept all button
@@ -129,10 +129,10 @@ describe("CookieBanner E2E Tests", () => {
 
 	test("should reject non-essential cookies when clicking Reject All", async () => {
 		render(
-			<ConsentManagerProvider options={defaultOptions}>
+			<PasswordlessProvider options={defaultOptions}>
 				<CookieBanner />
 				<ConsentManagerDialog />
-			</ConsentManagerProvider>
+			</PasswordlessProvider>
 		);
 
 		// Click reject all button
@@ -165,10 +165,10 @@ describe("CookieBanner E2E Tests", () => {
 
 	test("should open consent manager dialog when clicking Customize", async () => {
 		render(
-			<ConsentManagerProvider options={defaultOptions}>
+			<PasswordlessProvider options={defaultOptions}>
 				<CookieBanner />
 				<ConsentManagerDialog />
-			</ConsentManagerProvider>
+			</PasswordlessProvider>
 		);
 
 		// Click customize button
@@ -230,10 +230,10 @@ describe("CookieBanner E2E Tests", () => {
 
 	test("should be keyboard accessible", async () => {
 		render(
-			<ConsentManagerProvider options={defaultOptions}>
+			<PasswordlessProvider options={defaultOptions}>
 				<CookieBanner />
 				<ConsentManagerDialog />
-			</ConsentManagerProvider>
+			</PasswordlessProvider>
 		);
 
 		// Focus should start on first interactive element
@@ -260,10 +260,10 @@ describe("CookieBanner E2E Tests", () => {
 
 	test("should handle scroll lock properly", async () => {
 		render(
-			<ConsentManagerProvider options={defaultOptions}>
+			<PasswordlessProvider options={defaultOptions}>
 				<CookieBanner scrollLock />
 				<ConsentManagerDialog />
-			</ConsentManagerProvider>
+			</PasswordlessProvider>
 		);
 
 		// Check if overlay is present when scrollLock is true

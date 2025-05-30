@@ -2,14 +2,14 @@ import type { Translations } from "c15t";
 import { describe, expect, test } from "vitest";
 import { renderHook } from "vitest-browser-react";
 
-import { ConsentManagerProvider } from "~/providers/consent-manager-provider";
+import { PasswordlessProvider } from "~/providers/passwordless-provider";
 import { useTranslations } from "../use-translations";
 
 describe("useTranslations", () => {
 	test("returns English translations by default", () => {
 		const { result } = renderHook(() => useTranslations(), {
 			wrapper: ({ children }) => (
-				<ConsentManagerProvider
+				<PasswordlessProvider
 					options={{
 						mode: "offline",
 						react: {
@@ -18,7 +18,7 @@ describe("useTranslations", () => {
 					}}
 				>
 					{children}
-				</ConsentManagerProvider>
+				</PasswordlessProvider>
 			),
 		});
 
@@ -39,7 +39,7 @@ describe("useTranslations", () => {
 	test("returns German translations instead of English when German is selected", () => {
 		const { result } = renderHook(() => useTranslations(), {
 			wrapper: ({ children }) => (
-				<ConsentManagerProvider
+				<PasswordlessProvider
 					options={{
 						mode: "offline",
 						react: {
@@ -75,7 +75,7 @@ describe("useTranslations", () => {
 					}}
 				>
 					{children}
-				</ConsentManagerProvider>
+				</PasswordlessProvider>
 			),
 		});
 
@@ -107,7 +107,7 @@ describe("useTranslations", () => {
 
 		const { result } = renderHook(() => useTranslations(), {
 			wrapper: ({ children }) => (
-				<ConsentManagerProvider
+				<PasswordlessProvider
 					options={{
 						mode: "offline",
 						react: {
@@ -117,7 +117,7 @@ describe("useTranslations", () => {
 					}}
 				>
 					{children}
-				</ConsentManagerProvider>
+				</PasswordlessProvider>
 			),
 		});
 
@@ -136,7 +136,7 @@ describe("useTranslations", () => {
 	test("falls back to English when selected language is not available", () => {
 		const { result } = renderHook(() => useTranslations(), {
 			wrapper: ({ children }) => (
-				<ConsentManagerProvider
+				<PasswordlessProvider
 					options={{
 						mode: "offline",
 						react: {
@@ -148,7 +148,7 @@ describe("useTranslations", () => {
 					}}
 				>
 					{children}
-				</ConsentManagerProvider>
+				</PasswordlessProvider>
 			),
 		});
 
@@ -167,7 +167,7 @@ describe("useTranslations", () => {
 	test("Custom English instead of English when German is selected", () => {
 		const { result } = renderHook(() => useTranslations(), {
 			wrapper: ({ children }) => (
-				<ConsentManagerProvider
+				<PasswordlessProvider
 					options={{
 						mode: "offline",
 						react: {
@@ -203,7 +203,7 @@ describe("useTranslations", () => {
 					}}
 				>
 					{children}
-				</ConsentManagerProvider>
+				</PasswordlessProvider>
 			),
 		});
 

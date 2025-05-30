@@ -12,11 +12,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
 	ConsentStateContext,
-	type ConsentStateContextValue,
-} from "../context/consent-manager-context";
+	type PasswordlessContextValue,
+} from "../context/passwordless-context";
 import { GlobalThemeContext } from "../context/theme-context";
 import { useColorScheme } from "../hooks/use-color-scheme";
-import type { ConsentManagerProviderProps } from "../types/consent-manager";
+import type { PasswordlessProviderProps } from "../types/consent-manager";
 
 /**
  * Provider component for consent management functionality.
@@ -45,10 +45,10 @@ import type { ConsentManagerProviderProps } from "../types/consent-manager";
  *
  * @public
  */
-export function ConsentManagerProvider({
+export function PasswordlessProvider({
 	children,
 	options,
-}: ConsentManagerProviderProps) {
+}: PasswordlessProviderProps) {
 	// Extract and memoize stable options
 	const {
 		mode,
@@ -220,7 +220,7 @@ export function ConsentManagerProvider({
 	useColorScheme(colorScheme);
 
 	// Create consent context value - without theme properties
-	const consentContextValue = useMemo<ConsentStateContextValue>(() => {
+	const consentContextValue = useMemo<PasswordlessContextValue>(() => {
 		if (!consentStore) {
 			throw new Error(
 				"Consent store must be initialized before creating context value"
