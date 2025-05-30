@@ -1,18 +1,18 @@
-import type { AllConsentNames, ConsentType } from 'c15t';
+import type { AllConsentNames, ConsentType } from "c15t";
 import {
 	type ComponentPropsWithoutRef,
 	type ComponentRef,
 	type Ref,
 	forwardRef,
 	useCallback,
-} from 'react';
+} from "react";
 
-import { Box, type BoxProps } from '~/components/shared/primitives/box';
-import * as RadixAccordion from '~/components/shared/ui/accordion';
-import * as RadixSwitch from '~/components/shared/ui/switch';
-import { useConsentManager } from '~/hooks/use-consent-manager';
-import { useTranslations } from '~/hooks/use-translations';
-import styles from '../consent-manager-widget.module.css';
+import { Box, type BoxProps } from "~/components/shared/primitives/box";
+import * as RadixAccordion from "~/components/shared/ui/accordion";
+import * as RadixSwitch from "~/components/shared/ui/switch";
+import { useConsentManager } from "~/hooks/use-consent-manager";
+import { useTranslations } from "~/hooks/use-translations";
+import styles from "../consent-manager-widget.module.css";
 
 /**
  * Accordion Trigger Component
@@ -72,7 +72,7 @@ const ConsentManagerWidgetAccordionItems = () => {
 
 	function formatConsentName(name: AllConsentNames) {
 		return name
-			.replace(/_/g, ' ')
+			.replace(/_/g, " ")
 			.replace(/\b\w/g, (c: string) => c.toUpperCase());
 	}
 
@@ -110,12 +110,12 @@ const ConsentManagerWidgetAccordionItems = () => {
 					}
 					disabled={consent.disabled}
 					theme={{
-						root: { themeKey: 'widget.switch', className: styles.switch },
+						root: { themeKey: "widget.switch", className: styles.switch },
 						thumb: {
-							themeKey: 'widget.switch.thumb',
+							themeKey: "widget.switch.thumb",
 							className: styles.switchThumb,
 						},
-						track: { themeKey: 'widget.switch.track' },
+						track: { themeKey: "widget.switch.track" },
 					}}
 					data-testid={`consent-manager-widget-switch-${consent.name}`}
 				/>
@@ -123,11 +123,11 @@ const ConsentManagerWidgetAccordionItems = () => {
 			<ConsentManagerWidgetAccordionContent
 				theme={{
 					content: {
-						themeKey: 'widget.accordion.content',
+						themeKey: "widget.accordion.content",
 						className: styles.accordionContent,
 					},
 					contentInner: {
-						themeKey: 'widget.accordion.content-inner',
+						themeKey: "widget.accordion.content-inner",
 					},
 				}}
 				data-testid={`consent-manager-widget-accordion-content-${consent.name}`}

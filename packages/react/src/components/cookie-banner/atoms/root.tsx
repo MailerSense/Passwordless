@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
 	type CSSProperties,
@@ -8,16 +8,16 @@ import {
 	forwardRef,
 	useEffect,
 	useState,
-} from 'react';
-import { createPortal } from 'react-dom';
+} from "react";
+import { createPortal } from "react-dom";
 
-import { LocalThemeContext } from '~/context/theme-context';
-import { useConsentManager } from '~/hooks/use-consent-manager';
-import { useStyles } from '~/hooks/use-styles';
-import type { CSSPropertiesWithVars } from '~/types/theme';
-import styles from '../cookie-banner.module.css';
-import type { CookieBannerTheme } from '../theme';
-import { Overlay } from './overlay';
+import { LocalThemeContext } from "~/context/theme-context";
+import { useConsentManager } from "~/hooks/use-consent-manager";
+import { useStyles } from "~/hooks/use-styles";
+import type { CSSPropertiesWithVars } from "~/types/theme";
+import styles from "../cookie-banner.module.css";
+import type { CookieBannerTheme } from "../theme";
+import { Overlay } from "./overlay";
 
 /**
  * Props for the root component of the CookieBanner.
@@ -246,8 +246,8 @@ const CookieBannerRootChildren = forwardRef<
 			} else {
 				const animationDurationMs = Number.parseInt(
 					getComputedStyle(document.documentElement).getPropertyValue(
-						'--banner-animation-duration'
-					) || '200',
+						"--banner-animation-duration"
+					) || "200",
 					10
 				);
 				const timer = setTimeout(() => {
@@ -259,7 +259,7 @@ const CookieBannerRootChildren = forwardRef<
 
 		// Apply styles from the CookieBanner context and merge with local styles.
 		// Uses the 'content' style key for consistent theming.
-		const contentStyle = useStyles('banner.root', {
+		const contentStyle = useStyles("banner.root", {
 			baseClassName: [styles.root, styles.bottomLeft],
 			style: style as CSSPropertiesWithVars<Record<string, never>>,
 			className: className || forwardedClassName,
@@ -283,8 +283,8 @@ const CookieBannerRootChildren = forwardRef<
 
 		// Create a final class name that respects the noStyle flag
 		const finalClassName = noStyle
-			? contentStyle.className || ''
-			: `${contentStyle.className || ''} ${isVisible ? styles.bannerVisible : styles.bannerHidden}`;
+			? contentStyle.className || ""
+			: `${contentStyle.className || ""} ${isVisible ? styles.bannerVisible : styles.bannerHidden}`;
 
 		// Only render when the banner should be shown
 		return showPopup
@@ -307,7 +307,7 @@ const CookieBannerRootChildren = forwardRef<
 	}
 );
 
-CookieBannerRootChildren.displayName = 'CookieBannerRootChildren';
+CookieBannerRootChildren.displayName = "CookieBannerRootChildren";
 
 const Root = CookieBannerRoot;
 

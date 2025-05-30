@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react';
+import type { SVGProps } from "react";
 
 interface C15TIconProps {
 	title?: string;
@@ -6,8 +6,8 @@ interface C15TIconProps {
 }
 
 export const C15TIcon = ({
-	title = 'c15t',
-	titleId = 'c15t',
+	title = "c15t",
+	titleId = "c15t",
 	...props
 }: SVGProps<SVGSVGElement> & C15TIconProps) => (
 	<svg
@@ -32,8 +32,8 @@ export const C15TIcon = ({
 
 // Consent logo for c15t.dev domain
 export const ConsentLogo = ({
-	title = 'Consent',
-	titleId = 'consent-logo',
+	title = "Consent",
+	titleId = "consent-logo",
 	...props
 }: SVGProps<SVGSVGElement> & C15TIconProps) => (
 	<svg

@@ -9,25 +9,25 @@ import { Region } from "../lib/util/region";
 
 const env = process.env.DEPLOYMENT_ENV;
 const app = new cdk.App({
-  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
-    appId: "passwordless-tools",
-    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
-    imageAssetVersionCount: 10,
-  }),
+	defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+		appId: "passwordless-tools",
+		stagingBucketEncryption: BucketEncryption.S3_MANAGED,
+		imageAssetVersionCount: 10,
+	}),
 });
 
 const certificates = new PasswordlessToolsCertificates(
-  app,
-  `${env}-certificate-stack`,
-  {
-    env: { region: "us-east-1" },
-    crossRegionReferences: true,
-  },
+	app,
+	`${env}-certificate-stack`,
+	{
+		env: { region: "us-east-1" },
+		crossRegionReferences: true,
+	}
 );
 
 const _stack = new PasswordlessTools(app, `${env}-stack`, {
-  env: { region: "eu-west-1" },
-  region: Region.EU,
-  certificates,
-  crossRegionReferences: true,
+	env: { region: "eu-west-1" },
+	region: Region.EU,
+	certificates,
+	crossRegionReferences: true,
 });

@@ -1,7 +1,7 @@
-import { type Ref, forwardRef } from 'react';
+import { type Ref, forwardRef } from "react";
 
-import { ConsentButton } from '~/components/shared/primitives/button';
-import type { ConsentButtonProps } from '~/components/shared/primitives/button.types';
+import { ConsentButton } from "~/components/shared/primitives/button";
+import type { ConsentButtonProps } from "~/components/shared/primitives/button.types";
 
 /**
  * Button to accept all available cookies.

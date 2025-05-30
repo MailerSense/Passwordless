@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useContext } from 'react';
+import { useContext } from "react";
 
-import { GlobalThemeContext, LocalThemeContext } from '~/context/theme-context';
+import { GlobalThemeContext, LocalThemeContext } from "~/context/theme-context";
 
 /**
  * Hook to access the current theme context.
@@ -48,10 +48,10 @@ function deepMerge<T extends Record<string, unknown>>(
 		if (source[key] !== undefined) {
 			if (
 				source[key] &&
-				typeof source[key] === 'object' &&
+				typeof source[key] === "object" &&
 				!Array.isArray(source[key]) &&
 				target[key] &&
-				typeof target[key] === 'object'
+				typeof target[key] === "object"
 			) {
 				result[key] = deepMerge(
 					target[key] as Record<string, unknown>,
@@ -71,7 +71,7 @@ export const useTheme = () => {
 	const localContext = useContext(LocalThemeContext);
 
 	if (!globalContext) {
-		throw new Error('Theme components must be used within Theme.Root');
+		throw new Error("Theme components must be used within Theme.Root");
 	}
 
 	// Deep merge the entire context, with local taking precedence

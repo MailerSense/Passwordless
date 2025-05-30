@@ -4,8 +4,8 @@ import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import {
 	Architecture,
 	Code,
-	Function as LambdaFunction,
 	Handler,
+	Function as LambdaFunction,
 	Runtime,
 } from "aws-cdk-lib/aws-lambda";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";

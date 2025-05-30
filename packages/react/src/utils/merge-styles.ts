@@ -1,5 +1,5 @@
-import type { ClassNameStyle, ThemeValue } from '~/types/theme';
-import { cnExt } from '~/utils/cn';
+import type { ClassNameStyle, ThemeValue } from "~/types/theme";
+import { cnExt } from "~/utils/cn";
 
 /**
  * Merges two styles objects, handling theme values and style properties.
@@ -16,10 +16,10 @@ export function mergeStyles(
 	const getThemeValue = (
 		style: ThemeValue | undefined
 	): ThemeValue | undefined => {
-		if (typeof style === 'string' || style === undefined) {
+		if (typeof style === "string" || style === undefined) {
 			return style;
 		}
-		if ('className' in style || 'style' in style || 'noStyle' in style) {
+		if ("className" in style || "style" in style || "noStyle" in style) {
 			return style;
 		}
 		return undefined;
@@ -30,8 +30,8 @@ export function mergeStyles(
 
 	// If either style has noStyle, return empty styles
 	if (
-		(typeof s1 === 'object' && s1?.noStyle) ||
-		(typeof s2 === 'object' && s2?.noStyle)
+		(typeof s1 === "object" && s1?.noStyle) ||
+		(typeof s2 === "object" && s2?.noStyle)
 	) {
 		return {
 			className: undefined,
@@ -40,15 +40,15 @@ export function mergeStyles(
 	}
 
 	const className = cnExt([
-		typeof s1 === 'string' ? s1 : s1?.className,
-		typeof s2 === 'string' ? s2 : s2?.className,
-		typeof s1 === 'object' && s1?.baseClassName,
-		typeof s2 === 'object' && s2?.baseClassName,
+		typeof s1 === "string" ? s1 : s1?.className,
+		typeof s2 === "string" ? s2 : s2?.className,
+		typeof s1 === "object" && s1?.baseClassName,
+		typeof s2 === "object" && s2?.baseClassName,
 	]);
 
 	const style = {
-		...(typeof s1 === 'object' && s1?.style),
-		...(typeof s2 === 'object' && s2?.style),
+		...(typeof s1 === "object" && s1?.style),
+		...(typeof s2 === "object" && s2?.style),
 	};
 
 	return {

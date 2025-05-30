@@ -1,4 +1,4 @@
-import { type RefObject, useEffect, useRef } from 'react';
+import { type RefObject, useEffect, useRef } from "react";
 
 /**
  * Hook that manages focus trapping within a container.
@@ -45,7 +45,7 @@ export function useFocusTrap(
 
 		// Tab key event handler
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key !== 'Tab' || !containerRef.current) {
+			if (e.key !== "Tab" || !containerRef.current) {
 				return;
 			}
 
@@ -69,13 +69,13 @@ export function useFocusTrap(
 			}
 		};
 
-		document.addEventListener('keydown', handleKeyDown);
+		document.addEventListener("keydown", handleKeyDown);
 
 		return () => {
-			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener("keydown", handleKeyDown);
 
 			// Restore focus when trap is disabled
-			if (previousFocusRef.current && 'focus' in previousFocusRef.current) {
+			if (previousFocusRef.current && "focus" in previousFocusRef.current) {
 				setTimeout(() => previousFocusRef.current?.focus(), 0);
 			}
 		};
@@ -88,14 +88,14 @@ export function useFocusTrap(
  */
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
 	const selector = [
-		'a[href]:not([disabled])',
-		'button:not([disabled])',
-		'textarea:not([disabled])',
-		'input:not([disabled])',
-		'select:not([disabled])',
-		'[contenteditable]',
+		"a[href]:not([disabled])",
+		"button:not([disabled])",
+		"textarea:not([disabled])",
+		"input:not([disabled])",
+		"select:not([disabled])",
+		"[contenteditable]",
 		'[tabindex]:not([tabindex="-1"])',
-	].join(',');
+	].join(",");
 
 	return Array.from(container.querySelectorAll<HTMLElement>(selector)).filter(
 		(el) => el.offsetWidth > 0 && el.offsetHeight > 0

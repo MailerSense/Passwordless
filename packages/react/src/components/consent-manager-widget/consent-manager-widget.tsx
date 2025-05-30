@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import { useTranslations } from '~/hooks/use-translations';
+import { useTranslations } from "~/hooks/use-translations";
 import {
 	BrandingFooter,
 	DialogFooter,
-} from '../consent-manager-dialog/atoms/dialog-card';
+} from "../consent-manager-dialog/atoms/dialog-card";
 import {
 	ConsentManagerWidgetAccordion,
 	ConsentManagerWidgetAccordionItems,
-} from './atoms/accordion';
+} from "./atoms/accordion";
 import {
 	ConsentManagerWidgetAcceptAllButton,
 	ConsentManagerWidgetRejectButton,
 	ConsentManagerWidgetSaveButton,
-} from './atoms/button';
+} from "./atoms/button";
 import {
 	ConsentManagerWidgetFooter,
 	ConsentManagerWidgetFooterSubGroup,
-} from './atoms/footer';
-import { ConsentManagerWidgetRoot } from './atoms/root';
-import type { ConsentManagerWidgetProps } from './types';
+} from "./atoms/footer";
+import { ConsentManagerWidgetRoot } from "./atoms/root";
+import type { ConsentManagerWidgetProps } from "./types";
 
 /**
  * The main consent management widget component.

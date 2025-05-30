@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Component, type ErrorInfo, type ReactNode } from "react";
 
 /**
  * Props for the ErrorBoundary component.
@@ -74,7 +74,7 @@ export class ErrorBoundary extends Component<
 
 	render() {
 		if (this.state.hasError) {
-			if (typeof this.props.fallback === 'function') {
+			if (typeof this.props.fallback === "function") {
 				// biome-ignore lint/style/noNonNullAssertion: <explanation>
 				return this.props.fallback(this.state.error!, this.state.errorInfo!);
 			}

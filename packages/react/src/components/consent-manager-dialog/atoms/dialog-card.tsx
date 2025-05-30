@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * @packageDocumentation
@@ -6,15 +6,15 @@
  * Built with accessibility and customization in mind, following GDPR, CCPA, and other privacy regulation requirements.
  */
 
-import { type ReactNode, type Ref, forwardRef } from 'react';
+import { type ReactNode, type Ref, forwardRef } from "react";
 
-import { ConsentManagerWidget } from '~/components/consent-manager-widget/consent-manager-widget';
-import { Box, type BoxProps } from '~/components/shared/primitives/box';
-import { C15TIcon, ConsentLogo } from '~/components/shared/ui/logo';
-import { useConsentManager } from '~/hooks';
-import { useTranslations } from '~/hooks/use-translations';
-import type { ClassNameStyle } from '~/types/theme';
-import styles from '../consent-manager-dialog.module.css';
+import { ConsentManagerWidget } from "~/components/consent-manager-widget/consent-manager-widget";
+import { Box, type BoxProps } from "~/components/shared/primitives/box";
+import { C15TIcon, ConsentLogo } from "~/components/shared/ui/logo";
+import { useConsentManager } from "~/hooks";
+import { useTranslations } from "~/hooks/use-translations";
+import type { ClassNameStyle } from "~/types/theme";
+import styles from "../consent-manager-dialog.module.css";
 
 /**
  * Props for the DialogCard and related components
@@ -66,7 +66,7 @@ const DialogCard = forwardRef<HTMLDivElement, DialogCardProps>(
  * - Should be the first child of DialogCard
  * - Styled according to the theme configuration
  */
-const DialogHeader = forwardRef<HTMLDivElement, Omit<BoxProps, 'themeKey'>>(
+const DialogHeader = forwardRef<HTMLDivElement, Omit<BoxProps, "themeKey">>(
 	({ children, ...props }, ref) => {
 		return (
 			<Box
@@ -93,7 +93,7 @@ const DialogHeader = forwardRef<HTMLDivElement, Omit<BoxProps, 'themeKey'>>(
  */
 const DialogHeaderTitle = forwardRef<
 	HTMLDivElement,
-	Omit<BoxProps, 'themeKey'>
+	Omit<BoxProps, "themeKey">
 >(({ children, ...props }, ref) => {
 	return (
 		<Box
@@ -119,7 +119,7 @@ const DialogHeaderTitle = forwardRef<
  */
 const DialogHeaderDescription = forwardRef<
 	HTMLDivElement,
-	Omit<BoxProps, 'themeKey'>
+	Omit<BoxProps, "themeKey">
 >(({ children, ...props }, ref) => {
 	return (
 		<Box
@@ -143,7 +143,7 @@ const DialogHeaderDescription = forwardRef<
  * - Supports custom content and styling
  * - Handles user interactions with privacy settings
  */
-const DialogContent = forwardRef<HTMLDivElement, Omit<BoxProps, 'themeKey'>>(
+const DialogContent = forwardRef<HTMLDivElement, Omit<BoxProps, "themeKey">>(
 	({ children, ...props }, ref) => {
 		return (
 			<Box
@@ -174,7 +174,7 @@ const DialogFooter = forwardRef<HTMLDivElement, BoxProps>(
 			<Box
 				ref={ref as Ref<HTMLDivElement>}
 				className={styles.footer}
-				themeKey={themeKey || 'dialog.footer'}
+				themeKey={themeKey || "dialog.footer"}
 				{...props}
 				data-testid="consent-manager-dialog-footer"
 			>
@@ -191,7 +191,7 @@ export const BrandingFooter = () => {
 	const consentManager = useConsentManager();
 
 	const refParam =
-		typeof window !== 'undefined' ? `?ref=${window.location.hostname}` : '';
+		typeof window !== "undefined" ? `?ref=${window.location.hostname}` : "";
 
 	return (
 		<a
@@ -202,7 +202,7 @@ export const BrandingFooter = () => {
 					: `https://c15t.com${refParam}`
 			}
 		>
-			Secured by{' '}
+			Secured by{" "}
 			{consentManager.isConsentDomain ? (
 				<ConsentLogo className={styles.brandingConsent} />
 			) : (

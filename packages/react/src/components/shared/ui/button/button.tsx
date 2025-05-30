@@ -1,29 +1,29 @@
-import { Slot } from '@radix-ui/react-slot';
+import { Slot } from "@radix-ui/react-slot";
 import {
 	type ButtonHTMLAttributes,
 	type ElementType,
 	type ReactElement,
 	forwardRef,
 	useId,
-} from 'react';
+} from "react";
 
-import type { PolymorphicComponentProps } from '../../libs/polymorphic';
-import { recursiveCloneChildren } from '../../libs/recursive-clone-children';
-import styles from './button.module.css';
+import type { PolymorphicComponentProps } from "../../libs/polymorphic";
+import { recursiveCloneChildren } from "../../libs/recursive-clone-children";
+import styles from "./button.module.css";
 
 /**
  * Constants for component display names
  * @internal
  */
-const BUTTON_ROOT_NAME = 'ButtonRoot';
-const BUTTON_ICON_NAME = 'ButtonIcon';
+const BUTTON_ROOT_NAME = "ButtonRoot";
+const BUTTON_ICON_NAME = "ButtonIcon";
 
 /**
  * Button variant types
  */
-export type ButtonVariant = 'primary' | 'neutral';
-export type ButtonMode = 'filled' | 'stroke' | 'lighter' | 'ghost';
-export type ButtonSize = 'medium' | 'small' | 'xsmall' | 'xxsmall';
+export type ButtonVariant = "primary" | "neutral";
+export type ButtonMode = "filled" | "stroke" | "lighter" | "ghost";
+export type ButtonSize = "medium" | "small" | "xsmall" | "xxsmall";
 
 /**
  * Button variants props interface
@@ -45,9 +45,9 @@ export interface ButtonIconProps extends Record<string, unknown> {
  * Helper function to generate button classes based on variants
  */
 export const buttonVariants = ({
-	variant = 'primary',
-	mode = 'filled',
-	size = 'medium',
+	variant = "primary",
+	mode = "filled",
+	size = "medium",
 }: ButtonVariantsProps = {}) => {
 	const rootClasses = [styles.button, styles[`button-${size}`]];
 
@@ -55,26 +55,26 @@ export const buttonVariants = ({
 		`${ButtonVariant}-${ButtonMode}`,
 		keyof typeof styles
 	> = {
-		'primary-filled': 'button-primary-filled',
-		'primary-stroke': 'button-primary-stroke',
-		'primary-lighter': 'button-primary-lighter',
-		'primary-ghost': 'button-primary-ghost',
-		'neutral-filled': 'button-neutral-filled',
-		'neutral-stroke': 'button-neutral-stroke',
-		'neutral-lighter': 'button-neutral-lighter',
-		'neutral-ghost': 'button-neutral-ghost',
+		"primary-filled": "button-primary-filled",
+		"primary-stroke": "button-primary-stroke",
+		"primary-lighter": "button-primary-lighter",
+		"primary-ghost": "button-primary-ghost",
+		"neutral-filled": "button-neutral-filled",
+		"neutral-stroke": "button-neutral-stroke",
+		"neutral-lighter": "button-neutral-lighter",
+		"neutral-ghost": "button-neutral-ghost",
 	};
 
 	rootClasses.push(styles[compoundMap[`${variant}-${mode}`]]);
 
-	const iconClasses = [styles['button-icon']];
+	const iconClasses = [styles["button-icon"]];
 
 	return {
 		root: (options?: { class?: string }) => {
-			return [...rootClasses, options?.class].filter(Boolean).join(' ');
+			return [...rootClasses, options?.class].filter(Boolean).join(" ");
 		},
 		icon: (options?: { class?: string }) => {
-			return [...iconClasses, options?.class].filter(Boolean).join(' ');
+			return [...iconClasses, options?.class].filter(Boolean).join(" ");
 		},
 	};
 };
@@ -130,17 +130,17 @@ const ButtonRoot = forwardRef<HTMLButtonElement, ButtonRootProps>(
 		forwardedRef
 	) => {
 		const uniqueId = useId();
-		const Component = asChild ? Slot : 'button';
+		const Component = asChild ? Slot : "button";
 
 		// Only apply button variants if noStyle is false
 		const variantClasses = noStyle
-			? ''
+			? ""
 			: buttonVariants({ variant, mode, size }).root();
 
 		// Always include custom className
 		const finalClassName = [variantClasses, className]
 			.filter(Boolean)
-			.join(' ');
+			.join(" ");
 
 		// Create shared props object that can be safely passed to recursiveCloneChildren
 		const cloneableProps: RecursiveCloneableProps = {
@@ -194,7 +194,7 @@ function ButtonIcon<T extends ElementType>({
 	className,
 	...rest
 }: PolymorphicComponentProps<T, ButtonIconProps>) {
-	const Component = as || 'div';
+	const Component = as || "div";
 	const { icon } = buttonVariants({
 		variant: variant as ButtonVariant | undefined,
 		mode: mode as ButtonMode | undefined,

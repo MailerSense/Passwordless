@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Slot } from '@radix-ui/react-slot';
-import { type HTMLAttributes, forwardRef } from 'react';
+import { Slot } from "@radix-ui/react-slot";
+import { type HTMLAttributes, forwardRef } from "react";
 
-import { useStyles } from '~/hooks/use-styles';
-import type { ExtendThemeKeys } from '~/types/theme';
+import { useStyles } from "~/hooks/use-styles";
+import type { ExtendThemeKeys } from "~/types/theme";
 
 /**
  * Props for the description text component of the CookieBanner.
@@ -13,7 +13,7 @@ import type { ExtendThemeKeys } from '~/types/theme';
  * @public
  */
 export interface BoxProps
-	extends Omit<HTMLAttributes<HTMLDivElement>, 'style'>,
+	extends Omit<HTMLAttributes<HTMLDivElement>, "style">,
 		ExtendThemeKeys {
 	asChild?: boolean;
 }
@@ -64,9 +64,9 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>(
 			style,
 		});
 
-		const Comp = asChild ? Slot : 'div';
+		const Comp = asChild ? Slot : "div";
 		return <Comp ref={ref} {...props} {...descriptionStyle} />;
 	}
 );
 
-Box.displayName = 'Box';
+Box.displayName = "Box";

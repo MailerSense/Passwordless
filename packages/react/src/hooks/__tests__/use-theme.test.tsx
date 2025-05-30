@@ -1,25 +1,25 @@
-import { describe, expect, test } from 'vitest';
-import { renderHook } from 'vitest-browser-react';
+import { describe, expect, test } from "vitest";
+import { renderHook } from "vitest-browser-react";
 
-import { GlobalThemeContext, LocalThemeContext } from '~/context/theme-context';
-import type { ThemeValue } from '~/types/theme';
-import { useTheme } from '../use-theme';
+import { GlobalThemeContext, LocalThemeContext } from "~/context/theme-context";
+import type { ThemeValue } from "~/types/theme";
+import { useTheme } from "../use-theme";
 
 type TestTheme = {
 	noStyle: boolean;
 	theme: {
-		'dialog.root': ThemeValue;
-		'dialog.title'?: ThemeValue;
-		'dialog.content'?: ThemeValue;
+		"dialog.root": ThemeValue;
+		"dialog.title"?: ThemeValue;
+		"dialog.content"?: ThemeValue;
 	};
 };
 
-describe('useTheme', () => {
-	test('returns global theme when no local theme is provided', () => {
+describe("useTheme", () => {
+	test("returns global theme when no local theme is provided", () => {
 		const globalTheme: TestTheme = {
 			noStyle: false,
 			theme: {
-				'dialog.root': 'global-style',
+				"dialog.root": "global-style",
 			},
 		};
 
@@ -34,19 +34,19 @@ describe('useTheme', () => {
 		expect(result.current).toEqual(globalTheme);
 	});
 
-	test('merges global and local themes correctly', () => {
+	test("merges global and local themes correctly", () => {
 		const globalTheme: TestTheme = {
 			noStyle: false,
 			theme: {
-				'dialog.root': 'global-style',
-				'dialog.title': 'global-title',
+				"dialog.root": "global-style",
+				"dialog.title": "global-title",
 			},
 		};
 
 		const localTheme: Partial<TestTheme> = {
 			theme: {
-				'dialog.root': 'local-style',
-				'dialog.content': 'local-content',
+				"dialog.root": "local-style",
+				"dialog.content": "local-content",
 			},
 		};
 
@@ -63,25 +63,25 @@ describe('useTheme', () => {
 		expect(result.current).toEqual<TestTheme>({
 			noStyle: false,
 			theme: {
-				'dialog.root': 'local-style',
-				'dialog.title': 'global-title',
-				'dialog.content': 'local-content',
+				"dialog.root": "local-style",
+				"dialog.title": "global-title",
+				"dialog.content": "local-content",
 			},
 		});
 	});
 
-	test('local theme takes precedence over global theme', () => {
+	test("local theme takes precedence over global theme", () => {
 		const globalTheme: TestTheme = {
 			noStyle: false,
 			theme: {
-				'dialog.root': 'global-style',
+				"dialog.root": "global-style",
 			},
 		};
 
 		const localTheme: TestTheme = {
 			noStyle: true,
 			theme: {
-				'dialog.root': 'local-style',
+				"dialog.root": "local-style",
 			},
 		};
 
@@ -96,7 +96,7 @@ describe('useTheme', () => {
 		});
 
 		const theme = result.current as TestTheme;
-		expect(theme.theme['dialog.root']).toBe('local-style');
+		expect(theme.theme["dialog.root"]).toBe("local-style");
 		expect(theme.noStyle).toBe(true);
 	});
 });

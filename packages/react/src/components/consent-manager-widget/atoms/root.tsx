@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * @packageDocumentation
@@ -6,14 +6,14 @@
  * Implements context provider pattern with theme support and state management.
  */
 
-import type { FC, ReactNode } from 'react';
+import type { FC, ReactNode } from "react";
 
-import { Box } from '~/components/shared/primitives/box';
+import { Box } from "~/components/shared/primitives/box";
 import {
 	LocalThemeContext,
 	type ThemeContextValue,
-} from '~/context/theme-context';
-import type { ConsentManagerWidgetTheme } from '../theme';
+} from "~/context/theme-context";
+import type { ConsentManagerWidgetTheme } from "../theme";
 
 /**
  * Props for the ConsentManagerWidgetRoot component.

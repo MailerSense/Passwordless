@@ -1,9 +1,9 @@
-import type { ComponentRef, HTMLAttributes, MouseEvent } from 'react';
+import type { ComponentRef, HTMLAttributes, MouseEvent } from "react";
 
-import type { ExtendThemeKeys } from '~/types/theme';
-import type { CSSVariables } from '~/types/theme';
+import type { ExtendThemeKeys } from "~/types/theme";
+import type { CSSVariables } from "~/types/theme";
 
-export type ConsentButtonElement = ComponentRef<'button'>;
+export type ConsentButtonElement = ComponentRef<"button">;
 
 /**
  * Props for CookieBanner button components.
@@ -11,7 +11,7 @@ export type ConsentButtonElement = ComponentRef<'button'>;
  * @public
  */
 export interface ConsentButtonProps
-	extends Omit<HTMLAttributes<HTMLButtonElement>, 'style'>,
+	extends Omit<HTMLAttributes<HTMLButtonElement>, "style">,
 		ExtendThemeKeys<CSSVariables> {
 	/**
 	 * @remarks

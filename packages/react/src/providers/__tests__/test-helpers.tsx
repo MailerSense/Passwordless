@@ -1,15 +1,15 @@
 // test-helpers.ts - Common mock setup
-import type { ContractsInputs, ContractsOutputs } from 'c15t';
-import { beforeEach, vi } from 'vitest';
+import type { ContractsInputs, ContractsOutputs } from "c15t";
+import { beforeEach, vi } from "vitest";
 
-import { type ConsentManagerOptions, useConsentManager } from '~/index';
+import { type ConsentManagerOptions, useConsentManager } from "~/index";
 
-export type SetConsentRequestBody = ContractsInputs['consent']['post'];
-export type SetConsentResponse = ContractsOutputs['consent']['post'];
+export type SetConsentRequestBody = ContractsInputs["consent"]["post"];
+export type SetConsentResponse = ContractsOutputs["consent"]["post"];
 export type ShowConsentBannerResponse =
-	ContractsOutputs['consent']['showBanner'];
-export type VerifyConsentRequestBody = ContractsInputs['consent']['verify'];
-export type VerifyConsentResponse = ContractsOutputs['consent']['verify'];
+	ContractsOutputs["consent"]["showBanner"];
+export type VerifyConsentRequestBody = ContractsInputs["consent"]["verify"];
+export type VerifyConsentResponse = ContractsOutputs["consent"]["verify"];
 
 export function setupMocks() {
 	// Mock fetch globally
@@ -28,8 +28,8 @@ export function setupMocks() {
 	});
 
 	// Mock c15t module
-	vi.mock('c15t', async () => {
-		const originalModule = await vi.importActual('c15t');
+	vi.mock("c15t", async () => {
+		const originalModule = await vi.importActual("c15t");
 
 		return {
 			...(originalModule as object),
@@ -37,10 +37,10 @@ export function setupMocks() {
 				// Call the mock for tracking
 				mockConfigureConsentManager(options);
 
-				const backendURL = options.backendURL || '';
+				const backendURL = options.backendURL || "";
 
 				// Only register fetch calls for c15t mode
-				if (options.mode === 'c15t') {
+				if (options.mode === "c15t") {
 					// Create a client that will track fetch calls
 					return {
 						getCallbacks: () => options.callbacks,
@@ -49,7 +49,7 @@ export function setupMocks() {
 							if (!fetchCallMap.has(backendURL)) {
 								// Make the mock fetch call that the test expects
 								mockFetch(`${backendURL}/show-consent-banner`, {
-									headers: { 'Content-Type': 'application/json' },
+									headers: { "Content-Type": "application/json" },
 								});
 								// Mark this URL as called
 								fetchCallMap.set(backendURL, true);
@@ -77,7 +77,7 @@ export function setupMocks() {
 				}
 
 				// For offline mode
-				if (options.mode === 'offline') {
+				if (options.mode === "offline") {
 					return {
 						getCallbacks: () => options.callbacks,
 						showConsentBanner: async () => ({
@@ -102,7 +102,7 @@ export function setupMocks() {
 				}
 
 				// For custom mode
-				if (options.mode === 'custom' && 'endpointHandlers' in options) {
+				if (options.mode === "custom" && "endpointHandlers" in options) {
 					const handlers = options.endpointHandlers;
 					return {
 						getCallbacks: () => options.callbacks,
@@ -148,7 +148,7 @@ export const TestConsumer = () => {
 	const consentManager = useConsentManager();
 	return (
 		<div data-testid="consumer">
-			{consentManager.showPopup ? 'Show' : 'Hide'}
+			{consentManager.showPopup ? "Show" : "Hide"}
 		</div>
 	);
 };

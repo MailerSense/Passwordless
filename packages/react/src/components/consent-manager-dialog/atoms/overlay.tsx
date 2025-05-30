@@ -4,15 +4,15 @@
  * Implements accessible modal behavior with animation support.
  */
 
-import clsx from 'clsx';
-import { type FC, useEffect, useState } from 'react';
+import clsx from "clsx";
+import { type FC, useEffect, useState } from "react";
 
-import { useConsentManager } from '~/hooks/use-consent-manager';
-import { useScrollLock } from '~/hooks/use-scroll-lock';
-import { useStyles } from '~/hooks/use-styles';
-import { useTheme } from '~/hooks/use-theme';
-import type { ThemeValue } from '~/types/theme';
-import styles from '../consent-manager-dialog.module.css';
+import { useConsentManager } from "~/hooks/use-consent-manager";
+import { useScrollLock } from "~/hooks/use-scroll-lock";
+import { useStyles } from "~/hooks/use-styles";
+import { useTheme } from "~/hooks/use-theme";
+import type { ThemeValue } from "~/types/theme";
+import styles from "../consent-manager-dialog.module.css";
 
 /**
  * Props for the Overlay component.
@@ -100,8 +100,8 @@ const ConsentManagerDialogOverlay: FC<OverlayProps> = ({
 		} else {
 			const animationDurationMs = Number.parseInt(
 				getComputedStyle(document.documentElement).getPropertyValue(
-					'--dialog-animation-duration'
-				) || '200',
+					"--dialog-animation-duration"
+				) || "200",
 				10
 			);
 			const timer = setTimeout(() => {
@@ -112,10 +112,10 @@ const ConsentManagerDialogOverlay: FC<OverlayProps> = ({
 	}, [open, isPrivacyDialogOpen, disableAnimation]);
 
 	// Get custom className from style prop
-	const customClassName = typeof style === 'string' ? style : style?.className;
+	const customClassName = typeof style === "string" ? style : style?.className;
 
 	// Apply theme styles
-	const theme = useStyles('dialog.overlay', {
+	const theme = useStyles("dialog.overlay", {
 		baseClassName: !(isThemeNoStyle || noStyle) && styles.overlay,
 		className: customClassName,
 		noStyle: isThemeNoStyle || noStyle,
@@ -143,7 +143,7 @@ const ConsentManagerDialogOverlay: FC<OverlayProps> = ({
 	return shouldLockScroll ? (
 		<div
 			style={
-				typeof style === 'object' && 'style' in style
+				typeof style === "object" && "style" in style
 					? { ...theme.style, ...style.style }
 					: theme.style
 			}

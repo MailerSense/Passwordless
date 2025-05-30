@@ -4,24 +4,24 @@
  * Implements accessible, customizable components following GDPR and CCPA requirements.
  */
 
-import { type Ref, type RefObject, forwardRef, useRef } from 'react';
+import { type Ref, type RefObject, forwardRef, useRef } from "react";
 
-import { useFocusTrap } from '~/hooks/use-focus-trap';
-import { useTheme } from '~/hooks/use-theme';
-import { Box, type BoxProps } from '../shared/primitives/box';
-import { ConsentButton } from '../shared/primitives/button';
-import type { ConsentButtonProps } from '../shared/primitives/button.types';
-import styles from './cookie-banner.module.css';
+import { useFocusTrap } from "~/hooks/use-focus-trap";
+import { useTheme } from "~/hooks/use-theme";
+import { Box, type BoxProps } from "../shared/primitives/box";
+import { ConsentButton } from "../shared/primitives/button";
+import type { ConsentButtonProps } from "../shared/primitives/button.types";
+import styles from "./cookie-banner.module.css";
 
-const COOKIE_BANNER_TITLE_NAME = 'CookieBannerTitle';
-const COOKIE_BANNER_DESCRIPTION_NAME = 'CookieBannerDescription';
-const COOKIE_BANNER_FOOTER_NAME = 'CookieBannerFooter';
-const COOKIE_BANNER_CARD_NAME = 'CookieBannerCard';
-const COOKIE_BANNER_HEADER_NAME = 'CookieBannerHeader';
-const COOKIE_BANNER_FOOTER_SUB_GROUP_NAME = 'CookieBannerFooterSubGroup';
-const COOKIE_BANNER_REJECT_BUTTON_NAME = 'CookieBannerRejectButton';
-const COOKIE_BANNER_CUSTOMIZE_BUTTON_NAME = 'CookieBannerCustomizeButton';
-const COOKIE_BANNER_ACCEPT_BUTTON_NAME = 'CookieBannerAcceptButton';
+const COOKIE_BANNER_TITLE_NAME = "CookieBannerTitle";
+const COOKIE_BANNER_DESCRIPTION_NAME = "CookieBannerDescription";
+const COOKIE_BANNER_FOOTER_NAME = "CookieBannerFooter";
+const COOKIE_BANNER_CARD_NAME = "CookieBannerCard";
+const COOKIE_BANNER_HEADER_NAME = "CookieBannerHeader";
+const COOKIE_BANNER_FOOTER_SUB_GROUP_NAME = "CookieBannerFooterSubGroup";
+const COOKIE_BANNER_REJECT_BUTTON_NAME = "CookieBannerRejectButton";
+const COOKIE_BANNER_CUSTOMIZE_BUTTON_NAME = "CookieBannerCustomizeButton";
+const COOKIE_BANNER_ACCEPT_BUTTON_NAME = "CookieBannerAcceptButton";
 
 /**
  * Title component for the cookie banner.
@@ -39,7 +39,7 @@ const COOKIE_BANNER_ACCEPT_BUTTON_NAME = 'CookieBannerAcceptButton';
  */
 const CookieBannerTitle = forwardRef<
 	HTMLDivElement,
-	Omit<BoxProps, 'themeKey'>
+	Omit<BoxProps, "themeKey">
 >(({ children, ...props }, ref) => {
 	return (
 		<Box
@@ -72,7 +72,7 @@ CookieBannerTitle.displayName = COOKIE_BANNER_TITLE_NAME;
  */
 const CookieBannerDescription = forwardRef<
 	HTMLDivElement,
-	Omit<BoxProps, 'themeKey'>
+	Omit<BoxProps, "themeKey">
 >(({ children, ...props }, ref) => {
 	return (
 		<Box
@@ -106,7 +106,7 @@ CookieBannerDescription.displayName = COOKIE_BANNER_DESCRIPTION_NAME;
  */
 const CookieBannerFooter = forwardRef<
 	HTMLDivElement,
-	Omit<BoxProps, 'themeKey'>
+	Omit<BoxProps, "themeKey">
 >(({ children, ...props }, ref) => {
 	return (
 		<Box
@@ -139,7 +139,7 @@ CookieBannerFooter.displayName = COOKIE_BANNER_FOOTER_NAME;
  * </CookieBannerCard>
  * ```
  */
-const CookieBannerCard = forwardRef<HTMLDivElement, Omit<BoxProps, 'themeKey'>>(
+const CookieBannerCard = forwardRef<HTMLDivElement, Omit<BoxProps, "themeKey">>(
 	({ children, ...props }, ref) => {
 		const { trapFocus } = useTheme();
 		const localRef = useRef<HTMLDivElement>(null);
@@ -156,8 +156,8 @@ const CookieBannerCard = forwardRef<HTMLDivElement, Omit<BoxProps, 'themeKey'>>(
 				baseClassName={styles.card}
 				data-testid="cookie-banner-card"
 				themeKey="banner.card"
-				aria-modal={shouldTrapFocus ? 'true' : undefined}
-				role={shouldTrapFocus ? 'dialog' : undefined}
+				aria-modal={shouldTrapFocus ? "true" : undefined}
+				role={shouldTrapFocus ? "dialog" : undefined}
 				{...props}
 			>
 				{children}
@@ -177,7 +177,7 @@ CookieBannerCard.displayName = COOKIE_BANNER_CARD_NAME;
  */
 const CookieBannerHeader = forwardRef<
 	HTMLDivElement,
-	Omit<BoxProps, 'themeKey'>
+	Omit<BoxProps, "themeKey">
 >(({ children, ...props }, ref) => {
 	return (
 		<Box
@@ -203,7 +203,7 @@ CookieBannerHeader.displayName = COOKIE_BANNER_HEADER_NAME;
  */
 const CookieBannerFooterSubGroup = forwardRef<
 	HTMLDivElement,
-	Omit<BoxProps, 'themeKey'>
+	Omit<BoxProps, "themeKey">
 >(({ children, ...props }, ref) => {
 	return (
 		<Box

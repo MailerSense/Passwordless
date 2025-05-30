@@ -1,12 +1,12 @@
-import { describe, expect, test, vi } from 'vitest';
-import { renderHook } from 'vitest-browser-react';
+import { describe, expect, test, vi } from "vitest";
+import { renderHook } from "vitest-browser-react";
 
-import { ConsentManagerProvider } from '~/providers/consent-manager-provider';
-import { useConsentManager } from '../use-consent-manager';
+import { ConsentManagerProvider } from "~/providers/consent-manager-provider";
+import { useConsentManager } from "../use-consent-manager";
 
 // Mock the c15t package
-vi.mock('c15t', async () => {
-	const originalModule = await vi.importActual('c15t');
+vi.mock("c15t", async () => {
+	const originalModule = await vi.importActual("c15t");
 
 	return {
 		...(originalModule as object),
@@ -35,13 +35,13 @@ vi.mock('c15t', async () => {
 	};
 });
 
-describe('useConsentManager', () => {
-	test('returns consent state and methods when used within provider', () => {
+describe("useConsentManager", () => {
+	test("returns consent state and methods when used within provider", () => {
 		const { result } = renderHook(() => useConsentManager(), {
 			wrapper: ({ children }) => (
 				<ConsentManagerProvider
 					options={{
-						mode: 'offline',
+						mode: "offline",
 						react: {
 							noStyle: false,
 						},
@@ -53,15 +53,15 @@ describe('useConsentManager', () => {
 		});
 
 		expect(result.current).toBeDefined();
-		expect(typeof result.current.showPopup).toBe('boolean');
+		expect(typeof result.current.showPopup).toBe("boolean");
 	});
 
-	test('provides manager object when configured', () => {
+	test("provides manager object when configured", () => {
 		const { result } = renderHook(() => useConsentManager(), {
 			wrapper: ({ children }) => (
 				<ConsentManagerProvider
 					options={{
-						mode: 'offline',
+						mode: "offline",
 						react: {
 							noStyle: false,
 						},

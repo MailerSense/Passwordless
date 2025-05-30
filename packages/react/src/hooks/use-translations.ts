@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import type { Translations } from 'c15t';
-import { defaultTranslationConfig } from 'c15t';
-import { useMemo } from 'react';
+import type { Translations } from "c15t";
+import { defaultTranslationConfig } from "c15t";
+import { useMemo } from "react";
 
-import { useConsentManager } from './use-consent-manager';
+import { useConsentManager } from "./use-consent-manager";
 /**
  * Hook for accessing translations in the current language.
  *
@@ -35,7 +35,7 @@ export function useTranslations(): Translations {
 	const { translationConfig } = useConsentManager();
 
 	return useMemo(() => {
-		const { translations = {}, defaultLanguage = 'en' } = translationConfig;
+		const { translations = {}, defaultLanguage = "en" } = translationConfig;
 
 		// Return translations for the default language, falling back to English if needed
 		const selectedTranslations = translations[defaultLanguage];
@@ -54,16 +54,16 @@ export function useTranslations(): Translations {
 
 // Type guard to check if a value is a valid Translations object
 function isTranslations(value: unknown): value is Translations {
-	if (!value || typeof value !== 'object') {
+	if (!value || typeof value !== "object") {
 		return false;
 	}
 
 	const obj = value as Record<string, unknown>;
 	const hasRequiredKeys =
-		'cookieBanner' in obj &&
-		'consentManagerDialog' in obj &&
-		'consentTypes' in obj &&
-		'common' in obj;
+		"cookieBanner" in obj &&
+		"consentManagerDialog" in obj &&
+		"consentTypes" in obj &&
+		"common" in obj;
 
 	return hasRequiredKeys;
 }

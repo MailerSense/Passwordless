@@ -13,160 +13,160 @@ import { domainLookupMap, lookupMap, rootDomainLookupMap } from "./util/lookup";
 import { Region } from "./util/region";
 
 export class PasswordlessToolsCertificates extends cdk.Stack {
-  public cdn: Record<Region, Record<Environment, Certificate>>;
-  public com: Record<Region, Record<Environment, Certificate>>;
-  public appCdn: Record<Region, Record<Environment, Certificate>>;
-  public tracking: Record<Region, Record<Environment, Certificate>>;
-  public mainCert: Certificate;
-  public wwwCert: Certificate;
-  public comCert: Certificate;
+	public cdn: Record<Region, Record<Environment, Certificate>>;
+	public com: Record<Region, Record<Environment, Certificate>>;
+	public appCdn: Record<Region, Record<Environment, Certificate>>;
+	public tracking: Record<Region, Record<Environment, Certificate>>;
+	public mainCert: Certificate;
+	public wwwCert: Certificate;
+	public comCert: Certificate;
 
-  public constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+	public constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+		super(scope, id, props);
 
-    const env = process.env.DEPLOYMENT_ENV
-      ? (process.env.DEPLOYMENT_ENV as Environment)
-      : Environment.DEV;
+		const env = process.env.DEPLOYMENT_ENV
+			? (process.env.DEPLOYMENT_ENV as Environment)
+			: Environment.DEV;
 
-    const removalPolicy =
-      env == Environment.PROD
-        ? cdk.RemovalPolicy.DESTROY
-        : cdk.RemovalPolicy.DESTROY;
+		const removalPolicy =
+			env === Environment.PROD
+				? cdk.RemovalPolicy.DESTROY
+				: cdk.RemovalPolicy.DESTROY;
 
-    const envLookup = lookupMap[env];
+		const envLookup = lookupMap[env];
 
-    const zone = PublicHostedZone.fromHostedZoneAttributes(
-      this,
-      `${env}-app-zone`,
-      {
-        zoneName: envLookup.hostedZone.name,
-        hostedZoneId: envLookup.hostedZone.id,
-      },
-    );
+		const zone = PublicHostedZone.fromHostedZoneAttributes(
+			this,
+			`${env}-app-zone`,
+			{
+				zoneName: envLookup.hostedZone.name,
+				hostedZoneId: envLookup.hostedZone.id,
+			}
+		);
 
-    const comZone = PublicHostedZone.fromHostedZoneAttributes(
-      this,
-      `${env}-app-come-zone`,
-      {
-        zoneName: envLookup.hostedZoneCom.name,
-        hostedZoneId: envLookup.hostedZoneCom.id,
-      },
-    );
+		const comZone = PublicHostedZone.fromHostedZoneAttributes(
+			this,
+			`${env}-app-come-zone`,
+			{
+				zoneName: envLookup.hostedZoneCom.name,
+				hostedZoneId: envLookup.hostedZoneCom.id,
+			}
+		);
 
-    this.cdn = {} as Record<Region, Record<Environment, Certificate>>;
-    this.com = {} as Record<Region, Record<Environment, Certificate>>;
-    this.appCdn = {} as Record<Region, Record<Environment, Certificate>>;
-    this.tracking = {} as Record<Region, Record<Environment, Certificate>>;
+		this.cdn = {} as Record<Region, Record<Environment, Certificate>>;
+		this.com = {} as Record<Region, Record<Environment, Certificate>>;
+		this.appCdn = {} as Record<Region, Record<Environment, Certificate>>;
+		this.tracking = {} as Record<Region, Record<Environment, Certificate>>;
 
-    for (const [region, value] of Object.entries(domainLookupMap)) {
-      const reg = region as Region;
-      const { cdn, com, appCdn, tracking } = value[env];
+		for (const [region, value] of Object.entries(domainLookupMap)) {
+			const reg = region as Region;
+			const { cdn, com, appCdn, tracking } = value[env];
 
-      if (!this.cdn[reg]) {
-        this.cdn[reg] = {} as Record<Environment, Certificate>;
-      }
+			if (!this.cdn[reg]) {
+				this.cdn[reg] = {} as Record<Environment, Certificate>;
+			}
 
-      if (!this.com[reg]) {
-        this.com[reg] = {} as Record<Environment, Certificate>;
-      }
+			if (!this.com[reg]) {
+				this.com[reg] = {} as Record<Environment, Certificate>;
+			}
 
-      if (!this.appCdn[reg]) {
-        this.appCdn[reg] = {} as Record<Environment, Certificate>;
-      }
+			if (!this.appCdn[reg]) {
+				this.appCdn[reg] = {} as Record<Environment, Certificate>;
+			}
 
-      if (!this.tracking[reg]) {
-        this.tracking[reg] = {} as Record<Environment, Certificate>;
-      }
+			if (!this.tracking[reg]) {
+				this.tracking[reg] = {} as Record<Environment, Certificate>;
+			}
 
-      const cdnName = `${reg}-${env}-cdn-certificate`;
-      this.cdn[reg][env] = new Certificate(this, cdnName, {
-        name: cdnName,
-        zone: comZone,
-        domain: cdn.domain,
-      });
+			const cdnName = `${reg}-${env}-cdn-certificate`;
+			this.cdn[reg][env] = new Certificate(this, cdnName, {
+				name: cdnName,
+				zone: comZone,
+				domain: cdn.domain,
+			});
 
-      const comName = `${reg}-${env}-com-certificate`;
-      this.com[reg][env] = new Certificate(this, comName, {
-        name: comName,
-        zone: comZone,
-        domain: com.domain,
-      });
+			const comName = `${reg}-${env}-com-certificate`;
+			this.com[reg][env] = new Certificate(this, comName, {
+				name: comName,
+				zone: comZone,
+				domain: com.domain,
+			});
 
-      const appCdnName = `${reg}-${env}-app-cdn-certificate`;
-      this.appCdn[reg][env] = new Certificate(this, appCdnName, {
-        name: appCdnName,
-        zone,
-        domain: appCdn.domain,
-      });
+			const appCdnName = `${reg}-${env}-app-cdn-certificate`;
+			this.appCdn[reg][env] = new Certificate(this, appCdnName, {
+				name: appCdnName,
+				zone,
+				domain: appCdn.domain,
+			});
 
-      const trackingName = `${reg}-${env}-tracking-certificate`;
-      this.tracking[reg][env] = new Certificate(this, trackingName, {
-        name: trackingName,
-        zone: comZone,
-        domain: tracking.domain,
-      });
-    }
+			const trackingName = `${reg}-${env}-tracking-certificate`;
+			this.tracking[reg][env] = new Certificate(this, trackingName, {
+				name: trackingName,
+				zone: comZone,
+				domain: tracking.domain,
+			});
+		}
 
-    const rootDomains = rootDomainLookupMap[env];
+		const rootDomains = rootDomainLookupMap[env];
 
-    const mainName = `${env}-main-certificate`;
-    this.mainCert = new Certificate(this, mainName, {
-      name: mainName,
-      zone,
-      domain: rootDomains.main.domain,
-    });
+		const mainName = `${env}-main-certificate`;
+		this.mainCert = new Certificate(this, mainName, {
+			name: mainName,
+			zone,
+			domain: rootDomains.main.domain,
+		});
 
-    const wwwName = `${env}-www-certificate`;
-    this.wwwCert = new Certificate(this, wwwName, {
-      name: wwwName,
-      zone,
-      domain: rootDomains.www.domain,
-    });
+		const wwwName = `${env}-www-certificate`;
+		this.wwwCert = new Certificate(this, wwwName, {
+			name: wwwName,
+			zone,
+			domain: rootDomains.www.domain,
+		});
 
-    const comName = `${env}-com-certificate`;
-    this.comCert = new Certificate(this, comName, {
-      name: comName,
-      zone: comZone,
-      domain: rootDomains.com.domain,
-    });
+		const comName = `${env}-com-certificate`;
+		this.comCert = new Certificate(this, comName, {
+			name: comName,
+			zone: comZone,
+			domain: rootDomains.com.domain,
+		});
 
-    const comToMain = "com-to-main";
-    const _comRedirect = new Redirect(this, comToMain, {
-      name: comToMain,
-      zone: comZone,
-      cert: this.comCert.certificate,
-      toDomain: rootDomains.main.domain,
-      fromDomains: [rootDomains.com.domain],
-      removalPolicy,
-    });
+		const comToMain = "com-to-main";
+		const _comRedirect = new Redirect(this, comToMain, {
+			name: comToMain,
+			zone: comZone,
+			cert: this.comCert.certificate,
+			toDomain: rootDomains.main.domain,
+			fromDomains: [rootDomains.com.domain],
+			removalPolicy,
+		});
 
-    const wwwToMain = "www-to-main";
-    const _wwwRedirect = new Redirect(this, wwwToMain, {
-      name: wwwToMain,
-      zone,
-      cert: this.mainCert.certificate,
-      toDomain: rootDomains.main.domain,
-      fromDomains: [rootDomains.www.domain],
-      removalPolicy,
-    });
+		const wwwToMain = "www-to-main";
+		const _wwwRedirect = new Redirect(this, wwwToMain, {
+			name: wwwToMain,
+			zone,
+			cert: this.mainCert.certificate,
+			toDomain: rootDomains.main.domain,
+			fromDomains: [rootDomains.www.domain],
+			removalPolicy,
+		});
 
-    const cdnBucketName = `${env}-global-bucket`;
-    const cdnBucket = new PrivateBucket(this, cdnBucketName, {
-      name: cdnBucketName,
-      removalPolicy,
-    });
+		const cdnBucketName = `${env}-global-bucket`;
+		const cdnBucket = new PrivateBucket(this, cdnBucketName, {
+			name: cdnBucketName,
+			removalPolicy,
+		});
 
-    const cdnName = `${env}-global-cdn`;
-    const _cdn = new CDN(this, cdnName, {
-      name: cdnName,
-      zone: comZone,
-      cert: this.comCert.certificate,
-      domain: rootDomains.cdn.domain,
-      defaultBehavior: {
-        origin: S3BucketOrigin.withOriginAccessControl(cdnBucket.bucket),
-        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      },
-      additionalBehaviors: {},
-    });
-  }
+		const cdnName = `${env}-global-cdn`;
+		const _cdn = new CDN(this, cdnName, {
+			name: cdnName,
+			zone: comZone,
+			cert: this.comCert.certificate,
+			domain: rootDomains.cdn.domain,
+			defaultBehavior: {
+				origin: S3BucketOrigin.withOriginAccessControl(cdnBucket.bucket),
+				viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+			},
+			additionalBehaviors: {},
+		});
+	}
 }

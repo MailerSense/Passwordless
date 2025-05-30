@@ -5,7 +5,7 @@ import {
 	type ReactNode,
 	cloneElement,
 	isValidElement,
-} from 'react';
+} from "react";
 
 /**
  * Recursively clones React children, adding additional props to components with matched display names.
@@ -30,7 +30,7 @@ export function recursiveCloneChildren(
 			return child;
 		}
 
-		const displayName = (child.type as ComponentType)?.displayName || '';
+		const displayName = (child.type as ComponentType)?.displayName || "";
 		const newProps = displayNames.includes(displayName) ? additionalProps : {};
 
 		const childProps = (child as ReactElement<Record<string, unknown>>).props;

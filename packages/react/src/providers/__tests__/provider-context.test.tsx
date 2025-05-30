@@ -1,18 +1,18 @@
-import type { ConsentManagerOptions } from 'c15t';
+import type { ConsentManagerOptions } from "c15t";
 // consent-manager-provider.context.test.tsx - Test context values
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render } from 'vitest-browser-react';
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { render } from "vitest-browser-react";
 
-import { useConsentManager } from '../../hooks/use-consent-manager';
-import { ConsentManagerProvider } from '../consent-manager-provider';
-import { setupMocks } from './test-helpers';
+import { useConsentManager } from "../../hooks/use-consent-manager";
+import { ConsentManagerProvider } from "../consent-manager-provider";
+import { setupMocks } from "./test-helpers";
 
 // Setup common mocks
 const { mockConfigureConsentManager } = setupMocks();
 
 // Mock c15t module directly in this test file
-vi.mock('c15t', async () => {
-	const originalModule = await vi.importActual('c15t');
+vi.mock("c15t", async () => {
+	const originalModule = await vi.importActual("c15t");
 
 	return {
 		...(originalModule as object),
@@ -50,9 +50,9 @@ vi.mock('c15t', async () => {
 const modifyContextShowPopup = vi.fn();
 
 // Mock the useConsentManager hook
-vi.mock('../../hooks/use-consent-manager', async () => {
+vi.mock("../../hooks/use-consent-manager", async () => {
 	const originalModule = await vi.importActual(
-		'../../hooks/use-consent-manager'
+		"../../hooks/use-consent-manager"
 	);
 
 	return {
@@ -72,7 +72,7 @@ vi.mock('../../hooks/use-consent-manager', async () => {
 	};
 });
 
-describe('ConsentManagerProvider Context Values', () => {
+describe("ConsentManagerProvider Context Values", () => {
 	beforeEach(() => {
 		vi.resetAllMocks();
 		vi.useFakeTimers();
@@ -83,7 +83,7 @@ describe('ConsentManagerProvider Context Values', () => {
 		vi.useRealTimers();
 	});
 
-	it('should provide correct context values to children', async () => {
+	it("should provide correct context values to children", async () => {
 		const ConsumerComponent = () => {
 			const context = useConsentManager();
 			return (
@@ -92,7 +92,7 @@ describe('ConsentManagerProvider Context Values', () => {
 						{Boolean(context.manager).toString()}
 					</div>
 					<div data-testid="show-popup">
-						{context.showPopup ? 'true' : 'false'}
+						{context.showPopup ? "true" : "false"}
 					</div>
 					<div data-testid="debug-state">
 						{JSON.stringify({ showPopup: context.showPopup })}
@@ -104,9 +104,9 @@ describe('ConsentManagerProvider Context Values', () => {
 		const { getByTestId } = render(
 			<ConsentManagerProvider
 				options={{
-					mode: 'offline',
+					mode: "offline",
 					react: {
-						theme: { 'banner.root': 'dark' },
+						theme: { "banner.root": "dark" },
 					},
 				}}
 			>
@@ -123,20 +123,20 @@ describe('ConsentManagerProvider Context Values', () => {
 		// Wait for values to be available (with generous timeout)
 		await vi.waitFor(
 			() => {
-				expect(getByTestId('has-manager')).toHaveTextContent('true');
-				expect(getByTestId('show-popup')).toHaveTextContent('true');
+				expect(getByTestId("has-manager")).toHaveTextContent("true");
+				expect(getByTestId("show-popup")).toHaveTextContent("true");
 			},
 			{ timeout: 3000 }
 		);
 	});
 
-	it('should execute callbacks when provided', async () => {
+	it("should execute callbacks when provided", async () => {
 		const onConsentSet = vi.fn();
 
 		render(
 			<ConsentManagerProvider
 				options={{
-					mode: 'offline',
+					mode: "offline",
 					callbacks: {
 						onConsentSet,
 					},
@@ -163,8 +163,8 @@ describe('ConsentManagerProvider Context Values', () => {
 
 		if (mockCall) {
 			const options = mockCall[0];
-			expect(options).toHaveProperty('callbacks');
-			expect(options.callbacks).toHaveProperty('onConsentSet', onConsentSet);
+			expect(options).toHaveProperty("callbacks");
+			expect(options.callbacks).toHaveProperty("onConsentSet", onConsentSet);
 		}
 	});
 });

@@ -1,38 +1,38 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
-module.exports = function ({ matchComponents, theme }) {
-  let iconsDir = path.join(__dirname, "./vendor/browser");
-  let values = {};
+module.exports = ({ matchComponents, theme }) => {
+	const iconsDir = path.join(__dirname, "./vendor/browser");
+	const values = {};
 
-  fs.readdirSync(iconsDir).map((file) => {
-    if (path.extname(file) !== ".svg") {
-      return;
-    }
+	fs.readdirSync(iconsDir).map((file) => {
+		if (path.extname(file) !== ".svg") {
+			return;
+		}
 
-    let name = path.basename(file, ".svg");
-    values[name] = { name, fullPath: path.join(iconsDir, file) };
-  });
+		const name = path.basename(file, ".svg");
+		values[name] = { name, fullPath: path.join(iconsDir, file) };
+	});
 
-  matchComponents(
-    {
-      browser: ({ name, fullPath }) => {
-        let content = fs
-          .readFileSync(fullPath)
-          .toString()
-          .replace(/\r?\n|\r/g, "");
+	matchComponents(
+		{
+			browser: ({ name, fullPath }) => {
+				const content = fs
+					.readFileSync(fullPath)
+					.toString()
+					.replace(/\r?\n|\r/g, "");
 
-        return {
-          [`--browser-${name}`]: `url('data:image/svg+xml;utf8,${encodeURIComponent(
-            content,
-          )}')`,
-          background: `var(--browser-${name}) no-repeat`,
-          display: "inline-block",
-          width: theme("spacing.5"),
-          height: theme("spacing.5"),
-        };
-      },
-    },
-    { values },
-  );
+				return {
+					[`--browser-${name}`]: `url('data:image/svg+xml;utf8,${encodeURIComponent(
+						content
+					)}')`,
+					background: `var(--browser-${name}) no-repeat`,
+					display: "inline-block",
+					width: theme("spacing.5"),
+					height: theme("spacing.5"),
+				};
+			},
+		},
+		{ values }
+	);
 };

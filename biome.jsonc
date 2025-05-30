@@ -23,7 +23,8 @@
 			"correctness": {
 				"noUndeclaredDependencies": "off",
 				"useImportExtensions": "off",
-				"noNodejsModules": "off"
+				"noNodejsModules": "off",
+				"noUnknownProperty": "off"
 			},
 			"nursery": {
 				"all": true,
@@ -31,6 +32,8 @@
 				"noCommonJs": "off",
 				"noProcessEnv": "off",
 				"noSecrets": "off",
+				"noUnknownPseudoClass": "off",
+				"noDescendingSpecificity": "off",
 				"useComponentExportOnlyModules": "off",
 				"useConsistentMemberAccessibility": "off",
 				"useExplicitType": "off",
@@ -66,6 +69,7 @@
 				"useNamingConvention": "off"
 			},
 			"suspicious": {
+				"noExplicitAny": "off",
 				"noReactSpecificProps": "off",
 				"noArrayIndexKey": "off",
 				"noMisleadingCharacterClass": "off"

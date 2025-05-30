@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * A customizable cookie consent banner component with compound components pattern.
@@ -23,12 +23,12 @@ export {
 	Switch,
 	AccordionItems,
 	AccordionItem,
-} from './atoms/accordion';
+} from "./atoms/accordion";
 
 export {
 	Root,
 	ConsentManagerWidgetRoot,
-} from './atoms/root';
+} from "./atoms/root";
 
 export {
 	AcceptAllButton,
@@ -39,13 +39,13 @@ export {
 	ConsentManagerWidgetCustomizeButton,
 	ConsentManagerWidgetSaveButton,
 	ConsentManagerWidgetRejectButton,
-} from './atoms/button';
+} from "./atoms/button";
 
 export {
 	ConsentManagerWidgetFooter,
 	ConsentManagerWidgetFooterSubGroup,
 	Footer,
 	FooterSubGroup,
-} from './atoms/footer';
+} from "./atoms/footer";
 
-export type { ConsentManagerWidgetTheme } from './theme';
+export type { ConsentManagerWidgetTheme } from "./theme";

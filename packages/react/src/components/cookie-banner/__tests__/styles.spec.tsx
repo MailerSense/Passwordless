@@ -1,22 +1,22 @@
-import { defaultTranslationConfig } from 'c15t';
-import { expect, test } from 'vitest';
-import { vi } from 'vitest';
+import { defaultTranslationConfig } from "c15t";
+import { expect, test } from "vitest";
+import { vi } from "vitest";
 
-import { CookieBanner } from '~/components/cookie-banner/cookie-banner';
-import type { ThemeValue } from '~/types/theme';
-import testComponentStyles from '~/utils/test-helpers';
-import buttonStyles from '../../shared/ui/button/button.module.css';
-import styles from '../cookie-banner.module.css';
-import type { CookieBannerTheme } from '../theme';
+import { CookieBanner } from "~/components/cookie-banner/cookie-banner";
+import type { ThemeValue } from "~/types/theme";
+import testComponentStyles from "~/utils/test-helpers";
+import buttonStyles from "../../shared/ui/button/button.module.css";
+import styles from "../cookie-banner.module.css";
+import type { CookieBannerTheme } from "../theme";
 
-vi.mock('~/hooks/use-consent-manager', () => ({
+vi.mock("~/hooks/use-consent-manager", () => ({
 	useConsentManager: () => ({
 		showPopup: true,
 		...vi.fn(),
 	}),
 }));
 
-vi.mock('~/hooks/use-translations', () => ({
+vi.mock("~/hooks/use-translations", () => ({
 	useTranslations: () => defaultTranslationConfig.translations.en,
 }));
 
@@ -28,63 +28,63 @@ type ComponentTestCase = {
 
 const ALL_COMPONENTS: ComponentTestCase[] = [
 	{
-		testId: 'cookie-banner-root',
-		themeKey: 'banner.root',
-		styles: 'custom-root',
+		testId: "cookie-banner-root",
+		themeKey: "banner.root",
+		styles: "custom-root",
 	},
 	{
-		testId: 'cookie-banner-card',
-		themeKey: 'banner.card',
-		styles: 'custom-card',
+		testId: "cookie-banner-card",
+		themeKey: "banner.card",
+		styles: "custom-card",
 	},
 	{
-		testId: 'cookie-banner-header',
-		themeKey: 'banner.header.root',
-		styles: 'custom-header',
+		testId: "cookie-banner-header",
+		themeKey: "banner.header.root",
+		styles: "custom-header",
 	},
 	{
-		testId: 'cookie-banner-title',
-		themeKey: 'banner.header.title',
-		styles: 'custom-title',
+		testId: "cookie-banner-title",
+		themeKey: "banner.header.title",
+		styles: "custom-title",
 	},
 	{
-		testId: 'cookie-banner-description',
-		themeKey: 'banner.header.description',
-		styles: 'custom-description',
+		testId: "cookie-banner-description",
+		themeKey: "banner.header.description",
+		styles: "custom-description",
 	},
 	{
-		testId: 'cookie-banner-footer',
-		themeKey: 'banner.footer',
-		styles: 'custom-footer',
+		testId: "cookie-banner-footer",
+		themeKey: "banner.footer",
+		styles: "custom-footer",
 	},
 	{
-		testId: 'cookie-banner-footer-sub-group',
-		themeKey: 'banner.footer.sub-group',
-		styles: 'custom-footer-sub-group',
+		testId: "cookie-banner-footer-sub-group",
+		themeKey: "banner.footer.sub-group",
+		styles: "custom-footer-sub-group",
 	},
 	{
-		testId: 'cookie-banner-overlay',
-		themeKey: 'banner.overlay',
-		styles: 'custom-overlay',
+		testId: "cookie-banner-overlay",
+		themeKey: "banner.overlay",
+		styles: "custom-overlay",
 	},
 	{
-		testId: 'cookie-banner-reject-button',
-		themeKey: 'banner.footer.reject-button',
-		styles: 'custom-reject-button',
+		testId: "cookie-banner-reject-button",
+		themeKey: "banner.footer.reject-button",
+		styles: "custom-reject-button",
 	},
 	{
-		testId: 'cookie-banner-customize-button',
-		themeKey: 'banner.footer.customize-button',
-		styles: 'custom-customize-button',
+		testId: "cookie-banner-customize-button",
+		themeKey: "banner.footer.customize-button",
+		styles: "custom-customize-button",
 	},
 	{
-		testId: 'cookie-banner-accept-button',
-		themeKey: 'banner.footer.accept-button',
-		styles: 'custom-accept-button',
+		testId: "cookie-banner-accept-button",
+		themeKey: "banner.footer.accept-button",
+		styles: "custom-accept-button",
 	},
 ];
 
-test('should apply string classNames from theme prop to all banner elements', async () => {
+test("should apply string classNames from theme prop to all banner elements", async () => {
 	const test = (
 		<CookieBanner
 			scrollLock
@@ -107,11 +107,11 @@ test('should apply string classNames from theme prop to all banner elements', as
 	});
 });
 
-test('should apply className and style objects from theme prop to all banner elements', async () => {
+test("should apply className and style objects from theme prop to all banner elements", async () => {
 	const style = {
-		backgroundColor: '#ffffff',
-		padding: '20px',
-		border: '1px solid #000000',
+		backgroundColor: "#ffffff",
+		padding: "20px",
+		border: "1px solid #000000",
 	} as const;
 
 	const testCases = ALL_COMPONENTS.map(({ testId, themeKey, styles }) => ({
@@ -149,7 +149,7 @@ test('should apply className and style objects from theme prop to all banner ele
 	});
 });
 
-test('should remove default styles but keep custom classNames when top-level noStyle prop is true', async () => {
+test("should remove default styles but keep custom classNames when top-level noStyle prop is true", async () => {
 	const test = (
 		<CookieBanner
 			scrollLock
@@ -174,7 +174,7 @@ test('should remove default styles but keep custom classNames when top-level noS
 	});
 });
 
-test('should remove default styles but keep custom classNames when theme object provides noStyle: true', async () => {
+test("should remove default styles but keep custom classNames when theme object provides noStyle: true", async () => {
 	const testCases = ALL_COMPONENTS.reduce(
 		(acc, { themeKey, styles }) => {
 			acc[themeKey] = { className: styles, noStyle: true };
@@ -194,16 +194,16 @@ test('should remove default styles but keep custom classNames when theme object 
 	});
 });
 
-test('should correctly apply styles when theme prop uses mixed string and object formats', async () => {
+test("should correctly apply styles when theme prop uses mixed string and object formats", async () => {
 	const mixedTheme: CookieBannerTheme = {
-		'banner.root': {
-			className: 'custom-root',
+		"banner.root": {
+			className: "custom-root",
 			style: {
-				backgroundColor: 'rgb(255, 255, 255)',
-				padding: '16px',
+				backgroundColor: "rgb(255, 255, 255)",
+				padding: "16px",
 			},
 		},
-		'banner.header.title': 'custom-title',
+		"banner.header.title": "custom-title",
 	};
 
 	const test = <CookieBanner scrollLock theme={mixedTheme} />;
@@ -212,35 +212,35 @@ test('should correctly apply styles when theme prop uses mixed string and object
 		component: test,
 		testCases: [
 			{
-				testId: 'cookie-banner-root',
+				testId: "cookie-banner-root",
 				styles: {
-					className: 'custom-root',
+					className: "custom-root",
 					style: {
-						backgroundColor: 'rgb(255, 255, 255)',
-						padding: '16px',
+						backgroundColor: "rgb(255, 255, 255)",
+						padding: "16px",
 					},
 				},
 			},
 			{
-				testId: 'cookie-banner-title',
-				styles: 'custom-title',
+				testId: "cookie-banner-title",
+				styles: "custom-title",
 			},
 		],
 	});
 });
 
-test('should handle empty strings and empty style objects in theme prop gracefully', async () => {
+test("should handle empty strings and empty style objects in theme prop gracefully", async () => {
 	const edgeCaseTheme: CookieBannerTheme = {
-		'banner.root': '',
-		'banner.card': '',
-		'banner.header.root': '',
-		'banner.header.title': '',
-		'banner.header.description': '',
-		'banner.footer': {
-			className: '',
+		"banner.root": "",
+		"banner.card": "",
+		"banner.header.root": "",
+		"banner.header.title": "",
+		"banner.header.description": "",
+		"banner.footer": {
+			className: "",
 			style: {
-				margin: '0',
-				padding: '0',
+				margin: "0",
+				padding: "0",
 			},
 		},
 	};
@@ -251,20 +251,20 @@ test('should handle empty strings and empty style objects in theme prop graceful
 		component: test,
 		testCases: [
 			{
-				testId: 'cookie-banner-root',
-				styles: '',
+				testId: "cookie-banner-root",
+				styles: "",
 			},
 			{
-				testId: 'cookie-banner-title',
-				styles: '',
+				testId: "cookie-banner-title",
+				styles: "",
 			},
 			{
-				testId: 'cookie-banner-footer',
+				testId: "cookie-banner-footer",
 				styles: {
-					className: '',
+					className: "",
 					style: {
-						margin: '0',
-						padding: '0',
+						margin: "0",
+						padding: "0",
 					},
 				},
 			},
@@ -272,8 +272,8 @@ test('should handle empty strings and empty style objects in theme prop graceful
 	});
 });
 
-test('Custom classes override base layer styles', async () => {
-	const styleElement = document.createElement('style');
+test("Custom classes override base layer styles", async () => {
+	const styleElement = document.createElement("style");
 	styleElement.textContent = `
 		.custom-banner-background {
 			background-color: rgb(255, 0, 0) !important;
@@ -285,8 +285,8 @@ test('Custom classes override base layer styles', async () => {
 	document.head.appendChild(styleElement);
 
 	const customTheme: CookieBannerTheme = {
-		'banner.card': 'custom-banner-background',
-		'banner.header.title': 'custom-banner-text',
+		"banner.card": "custom-banner-background",
+		"banner.header.title": "custom-banner-text",
 	};
 
 	const test = <CookieBanner theme={customTheme} />;
@@ -295,12 +295,12 @@ test('Custom classes override base layer styles', async () => {
 		component: test,
 		testCases: [
 			{
-				testId: 'cookie-banner-card',
-				styles: 'custom-banner-background',
+				testId: "cookie-banner-card",
+				styles: "custom-banner-background",
 			},
 			{
-				testId: 'cookie-banner-title',
-				styles: 'custom-banner-text',
+				testId: "cookie-banner-title",
+				styles: "custom-banner-text",
 			},
 		],
 	});
@@ -309,16 +309,16 @@ test('Custom classes override base layer styles', async () => {
 	const title = document.querySelector('[data-testid="cookie-banner-title"]');
 
 	if (!card || !title) {
-		throw new Error('Required elements not found in the document');
+		throw new Error("Required elements not found in the document");
 	}
 
-	expect(getComputedStyle(card).backgroundColor).toBe('rgb(255, 0, 0)');
-	expect(getComputedStyle(title).color).toBe('rgb(0, 255, 0)');
+	expect(getComputedStyle(card).backgroundColor).toBe("rgb(255, 0, 0)");
+	expect(getComputedStyle(title).color).toBe("rgb(0, 255, 0)");
 
 	document.head.removeChild(styleElement);
 });
 
-test('Base layer styles are applied when no custom classes are provided', async () => {
+test("Base layer styles are applied when no custom classes are provided", async () => {
 	const test = <CookieBanner />;
 
 	await testComponentStyles({
@@ -330,15 +330,15 @@ test('Base layer styles are applied when no custom classes are provided', async 
 	const title = document.querySelector('[data-testid="cookie-banner-title"]');
 
 	if (!card || !title) {
-		throw new Error('Required elements not found in the document');
+		throw new Error("Required elements not found in the document");
 	}
 
-	expect(getComputedStyle(card).backgroundColor).toBe('rgb(255, 255, 255)');
-	expect(getComputedStyle(title).color).toBe('rgb(23, 23, 23)');
+	expect(getComputedStyle(card).backgroundColor).toBe("rgb(255, 255, 255)");
+	expect(getComputedStyle(title).color).toBe("rgb(23, 23, 23)");
 });
 
-test('Multiple custom classes can be applied and override base layer', async () => {
-	const styleElement = document.createElement('style');
+test("Multiple custom classes can be applied and override base layer", async () => {
+	const styleElement = document.createElement("style");
 	styleElement.textContent = `
 		.custom-padding {
 			padding: 32px !important;
@@ -350,7 +350,7 @@ test('Multiple custom classes can be applied and override base layer', async () 
 	document.head.appendChild(styleElement);
 
 	const customTheme: CookieBannerTheme = {
-		'banner.card': 'custom-padding custom-border',
+		"banner.card": "custom-padding custom-border",
 	};
 
 	const test = <CookieBanner theme={customTheme} />;
@@ -359,8 +359,8 @@ test('Multiple custom classes can be applied and override base layer', async () 
 		component: test,
 		testCases: [
 			{
-				testId: 'cookie-banner-card',
-				styles: 'custom-padding custom-border',
+				testId: "cookie-banner-card",
+				styles: "custom-padding custom-border",
 			},
 		],
 	});
@@ -368,72 +368,72 @@ test('Multiple custom classes can be applied and override base layer', async () 
 	const card = document.querySelector('[data-testid="cookie-banner-card"]');
 
 	if (!card) {
-		throw new Error('Required elements not found in the document');
+		throw new Error("Required elements not found in the document");
 	}
 
-	expect(getComputedStyle(card).padding).toBe('32px');
-	expect(getComputedStyle(card).border).toBe('2px solid rgb(0, 0, 255)');
+	expect(getComputedStyle(card).padding).toBe("32px");
+	expect(getComputedStyle(card).border).toBe("2px solid rgb(0, 0, 255)");
 
 	document.head.removeChild(styleElement);
 });
 
-test('All cookie banner components should have their base classes applied', async () => {
+test("All cookie banner components should have their base classes applied", async () => {
 	const test = <CookieBanner />;
 
 	const baseClasses = {
-		root: styles.root || '',
-		card: styles.card || '',
-		header: styles.header || '',
-		title: styles.title || '',
-		description: styles.description || '',
-		footer: styles.footer || '',
-		footerSubGroup: styles.footerSubGroup || '',
-		rejectButton: `${buttonStyles.button} ${buttonStyles['button-small']} ${buttonStyles['button-neutral-stroke']}`,
-		customizeButton: `${buttonStyles.button} ${buttonStyles['button-small']} ${buttonStyles['button-neutral-stroke']}`,
-		acceptButton: `${buttonStyles.button} ${buttonStyles['button-small']} ${buttonStyles['button-primary-stroke']}`,
+		root: styles.root || "",
+		card: styles.card || "",
+		header: styles.header || "",
+		title: styles.title || "",
+		description: styles.description || "",
+		footer: styles.footer || "",
+		footerSubGroup: styles.footerSubGroup || "",
+		rejectButton: `${buttonStyles.button} ${buttonStyles["button-small"]} ${buttonStyles["button-neutral-stroke"]}`,
+		customizeButton: `${buttonStyles.button} ${buttonStyles["button-small"]} ${buttonStyles["button-neutral-stroke"]}`,
+		acceptButton: `${buttonStyles.button} ${buttonStyles["button-small"]} ${buttonStyles["button-primary-stroke"]}`,
 	};
 
 	await testComponentStyles({
 		component: test,
 		testCases: [
 			{
-				testId: 'cookie-banner-root',
+				testId: "cookie-banner-root",
 				styles: baseClasses.root,
 			},
 			{
-				testId: 'cookie-banner-card',
+				testId: "cookie-banner-card",
 				styles: baseClasses.card,
 			},
 			{
-				testId: 'cookie-banner-header',
+				testId: "cookie-banner-header",
 				styles: baseClasses.header,
 			},
 			{
-				testId: 'cookie-banner-title',
+				testId: "cookie-banner-title",
 				styles: baseClasses.title,
 			},
 			{
-				testId: 'cookie-banner-description',
+				testId: "cookie-banner-description",
 				styles: baseClasses.description,
 			},
 			{
-				testId: 'cookie-banner-footer',
+				testId: "cookie-banner-footer",
 				styles: baseClasses.footer,
 			},
 			{
-				testId: 'cookie-banner-footer-sub-group',
+				testId: "cookie-banner-footer-sub-group",
 				styles: baseClasses.footerSubGroup,
 			},
 			{
-				testId: 'cookie-banner-reject-button',
+				testId: "cookie-banner-reject-button",
 				styles: baseClasses.rejectButton,
 			},
 			{
-				testId: 'cookie-banner-customize-button',
+				testId: "cookie-banner-customize-button",
 				styles: baseClasses.customizeButton,
 			},
 			{
-				testId: 'cookie-banner-accept-button',
+				testId: "cookie-banner-accept-button",
 				styles: baseClasses.acceptButton,
 			},
 		],
@@ -441,6 +441,6 @@ test('All cookie banner components should have their base classes applied', asyn
 
 	// Also verify that none of the base classes are empty strings
 	for (const [key, value] of Object.entries(baseClasses)) {
-		expect(value, `Base class for ${key} should not be empty`).not.toBe('');
+		expect(value, `Base class for ${key} should not be empty`).not.toBe("");
 	}
 });

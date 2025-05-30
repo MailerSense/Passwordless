@@ -1,9 +1,9 @@
-import type { ReactNode } from 'react';
-import { expect } from 'vitest';
-import { render } from 'vitest-browser-react';
+import type { ReactNode } from "react";
+import { expect } from "vitest";
+import { render } from "vitest-browser-react";
 
-import { ConsentManagerProvider } from '~/providers/consent-manager-provider';
-import type { ThemeValue } from '~/types/theme';
+import { ConsentManagerProvider } from "~/providers/consent-manager-provider";
+import type { ThemeValue } from "~/types/theme";
 
 interface ComponentStyles {
 	component: ReactNode;
@@ -40,7 +40,7 @@ export async function testComponentStyles({
 	const { container } = render(
 		<ConsentManagerProvider
 			options={{
-				mode: 'offline',
+				mode: "offline",
 				react: {
 					noStyle,
 				},
@@ -65,7 +65,6 @@ export async function testComponentStyles({
 		const element = elementInContainer || elementInBody;
 
 		if (!element) {
-			console.warn(`Element with testId "${testId}" not found in DOM`);
 			// We don't fail the test if the element isn't found - this helps with debugging
 			expect(true).toBe(true);
 			continue;
@@ -75,7 +74,7 @@ export async function testComponentStyles({
 		expect(element).toBeTruthy();
 
 		// Basic className check
-		if (typeof styles === 'string' && styles) {
+		if (typeof styles === "string" && styles) {
 			// For string styles, check if the className contains the expected value
 			// With noStyle=true, check for exact match
 			if (noStyle) {
@@ -83,7 +82,7 @@ export async function testComponentStyles({
 			} else {
 				expect(element.className).toContain(styles);
 			}
-		} else if (typeof styles === 'object' && styles?.className) {
+		} else if (typeof styles === "object" && styles?.className) {
 			// For objects with className
 			if (noStyle) {
 				expect(element.className).toBe(styles.className);

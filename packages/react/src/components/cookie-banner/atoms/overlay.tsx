@@ -3,14 +3,14 @@
  * Provides the overlay backdrop component for the CookieBanner.
  */
 
-import clsx from 'clsx';
-import { type HTMLAttributes, forwardRef, useEffect, useState } from 'react';
+import clsx from "clsx";
+import { type HTMLAttributes, forwardRef, useEffect, useState } from "react";
 
-import { useConsentManager } from '~/hooks/use-consent-manager';
-import { useScrollLock } from '~/hooks/use-scroll-lock';
-import { useStyles } from '~/hooks/use-styles';
-import { useTheme } from '~/hooks/use-theme';
-import styles from '../cookie-banner.module.css';
+import { useConsentManager } from "~/hooks/use-consent-manager";
+import { useScrollLock } from "~/hooks/use-scroll-lock";
+import { useStyles } from "~/hooks/use-styles";
+import { useTheme } from "~/hooks/use-theme";
+import styles from "../cookie-banner.module.css";
 
 /**
  * Props for the Overlay component.
@@ -70,8 +70,8 @@ const CookieBannerOverlay = forwardRef<HTMLDivElement, OverlayProps>(
 			} else {
 				const animationDurationMs = Number.parseInt(
 					getComputedStyle(document.documentElement).getPropertyValue(
-						'--banner-animation-duration'
-					) || '200',
+						"--banner-animation-duration"
+					) || "200",
 					10
 				);
 				const timer = setTimeout(() => {
@@ -82,7 +82,7 @@ const CookieBannerOverlay = forwardRef<HTMLDivElement, OverlayProps>(
 		}, [showPopup, disableAnimation]);
 
 		// Apply theme styles
-		const theme = useStyles('banner.overlay', {
+		const theme = useStyles("banner.overlay", {
 			baseClassName: !(contextNoStyle || noStyle) && styles.overlay,
 			className, // Always pass custom className
 			noStyle: contextNoStyle || noStyle,

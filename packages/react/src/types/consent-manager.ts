@@ -6,12 +6,12 @@
 import type {
 	ConsentManagerOptions as CoreOptions,
 	TranslationConfig,
-} from 'c15t';
-import type { ReactNode } from 'react';
+} from "c15t";
+import type { ReactNode } from "react";
 
-import type { ConsentManagerDialogTheme } from '~/components/consent-manager-dialog/theme';
-import type { ConsentManagerWidgetTheme } from '~/components/consent-manager-widget/theme';
-import type { CookieBannerTheme } from '~/components/cookie-banner/theme';
+import type { ConsentManagerDialogTheme } from "~/components/consent-manager-dialog/theme";
+import type { ConsentManagerWidgetTheme } from "~/components/consent-manager-widget/theme";
+import type { CookieBannerTheme } from "~/components/cookie-banner/theme";
 
 /**
  * React-specific configuration options
@@ -46,7 +46,7 @@ export interface ReactUIOptions {
 	 * With this option, you can force the theme to be light, dark or system.
 	 * Otherwise, the theme will be detected if you have '.dark' classname in your document.
 	 */
-	colorScheme?: 'light' | 'dark' | 'system';
+	colorScheme?: "light" | "dark" | "system";
 
 	/**
 	 * Whether to disable default styles.

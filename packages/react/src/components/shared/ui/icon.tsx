@@ -4,7 +4,7 @@ import {
 	type Ref,
 	type SVGProps,
 	forwardRef,
-} from 'react';
+} from "react";
 
 const Icon = (
 	props: SVGProps<SVGSVGElement>,

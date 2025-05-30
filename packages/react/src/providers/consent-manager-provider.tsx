@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
 	type ComplianceRegion,
@@ -7,16 +7,16 @@ import {
 	createConsentManagerStore,
 	defaultTranslationConfig,
 	prepareTranslationConfig,
-} from 'c15t';
-import { useEffect, useMemo, useRef, useState } from 'react';
+} from "c15t";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
 	ConsentStateContext,
 	type ConsentStateContextValue,
-} from '../context/consent-manager-context';
-import { GlobalThemeContext } from '../context/theme-context';
-import { useColorScheme } from '../hooks/use-color-scheme';
-import type { ConsentManagerProviderProps } from '../types/consent-manager';
+} from "../context/consent-manager-context";
+import { GlobalThemeContext } from "../context/theme-context";
+import { useColorScheme } from "../hooks/use-color-scheme";
+import type { ConsentManagerProviderProps } from "../types/consent-manager";
 
 /**
  * Provider component for consent management functionality.
@@ -78,30 +78,30 @@ export function ConsentManagerProvider({
 
 	// Determine if using c15t.dev domain (memoize the calculation)
 	const isConsentDomain = useMemo(() => {
-		if (typeof window === 'undefined') {
+		if (typeof window === "undefined") {
 			return false;
 		}
 
 		return Boolean(
-			(mode === 'c15t' || mode === 'offline') &&
-				(backendURL?.includes('c15t.dev') ||
-					window.location.hostname.includes('c15t.dev'))
+			(mode === "c15t" || mode === "offline") &&
+				(backendURL?.includes("c15t.dev") ||
+					window.location.hostname.includes("c15t.dev"))
 		);
 	}, [mode, backendURL]);
 
 	// Memoize the consent manager to prevent recreation
 	const consentManager = useMemo(() => {
-		if (mode === 'offline') {
+		if (mode === "offline") {
 			return configureConsentManager({
-				mode: 'offline',
+				mode: "offline",
 				callbacks,
 				store,
 			});
 		}
 
-		if (mode === 'custom' && 'endpointHandlers' in options) {
+		if (mode === "custom" && "endpointHandlers" in options) {
 			return configureConsentManager({
-				mode: 'custom',
+				mode: "custom",
 				endpointHandlers: options.endpointHandlers,
 				callbacks,
 				store,
@@ -109,8 +109,8 @@ export function ConsentManagerProvider({
 		}
 
 		return configureConsentManager({
-			mode: 'c15t',
-			backendURL: backendURL || '/api/c15t',
+			mode: "c15t",
+			backendURL: backendURL || "/api/c15t",
 			callbacks,
 			store,
 		});
@@ -195,7 +195,7 @@ export function ConsentManagerProvider({
 		const country =
 			document
 				.querySelector('meta[name="user-country"]')
-				?.getAttribute('content') || 'US';
+				?.getAttribute("content") || "US";
 		setDetectedCountry(country);
 
 		// Subscribe to state changes only once
@@ -223,7 +223,7 @@ export function ConsentManagerProvider({
 	const consentContextValue = useMemo<ConsentStateContextValue>(() => {
 		if (!consentStore) {
 			throw new Error(
-				'Consent store must be initialized before creating context value'
+				"Consent store must be initialized before creating context value"
 			);
 		}
 		return {

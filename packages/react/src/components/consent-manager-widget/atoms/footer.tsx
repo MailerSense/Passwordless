@@ -1,7 +1,7 @@
-import { type Ref, forwardRef } from 'react';
+import { type Ref, forwardRef } from "react";
 
-import { Box, type BoxProps } from '../../shared/primitives/box';
-import styles from '../consent-manager-widget.module.css';
+import { Box, type BoxProps } from "../../shared/primitives/box";
+import styles from "../consent-manager-widget.module.css";
 
 /**
  * Footer component for consent management actions.
@@ -13,7 +13,7 @@ import styles from '../consent-manager-widget.module.css';
  */
 export const ConsentManagerWidgetFooter = forwardRef<
 	HTMLDivElement,
-	Omit<BoxProps, 'themeKey'>
+	Omit<BoxProps, "themeKey">
 >(({ children, ...props }, ref) => {
 	return (
 		<Box

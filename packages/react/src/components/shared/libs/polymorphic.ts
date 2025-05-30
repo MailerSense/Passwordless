@@ -2,7 +2,7 @@ import type {
 	ComponentPropsWithoutRef,
 	ElementType,
 	PropsWithChildren,
-} from 'react';
+} from "react";
 
 type AsProp<T extends ElementType> = {
 	as?: T;

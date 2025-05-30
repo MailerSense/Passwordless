@@ -3,9 +3,9 @@
  * Hook for accessing and managing consent state.
  */
 
-import { useContext } from 'react';
+import { useContext } from "react";
 
-import { ConsentStateContext } from '../context/consent-manager-context';
+import { ConsentStateContext } from "../context/consent-manager-context";
 
 /**
  * Hook for accessing and managing consent state.
@@ -31,7 +31,7 @@ export function useConsentManager() {
 
 	if (context === undefined) {
 		throw new Error(
-			'useConsentManager must be used within a ConsentManagerProvider'
+			"useConsentManager must be used within a ConsentManagerProvider"
 		);
 	}
 

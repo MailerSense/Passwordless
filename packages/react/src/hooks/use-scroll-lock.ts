@@ -3,7 +3,7 @@
  * Provides a reusable hook for managing document scroll locking.
  */
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 /**
  * Hook to manage document scroll locking.
@@ -39,7 +39,7 @@ export function useScrollLock(shouldLock: boolean): void {
 				window.innerWidth - document.documentElement.clientWidth;
 
 			// Lock scrolling and add padding to prevent layout shift
-			document.body.style.overflow = 'hidden';
+			document.body.style.overflow = "hidden";
 			if (scrollbarWidth > 0) {
 				document.body.style.paddingRight = `${scrollbarWidth}px`;
 			}

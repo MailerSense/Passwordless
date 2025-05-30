@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * @packageDocumentation
@@ -6,20 +6,20 @@
  * Implements an accessible, animated modal interface for consent customization.
  */
 
-import clsx from 'clsx';
-import { type FC, type RefObject, useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import clsx from "clsx";
+import { type FC, type RefObject, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import {
 	LocalThemeContext,
 	type ThemeContextValue,
-} from '~/context/theme-context';
-import { useConsentManager } from '~/hooks/use-consent-manager';
-import { useFocusTrap } from '~/hooks/use-focus-trap';
-import { ConsentCustomizationCard } from './atoms/dialog-card';
-import { Overlay } from './atoms/overlay';
-import styles from './consent-manager-dialog.module.css';
-import type { ConsentManagerDialogTheme } from './theme';
+} from "~/context/theme-context";
+import { useConsentManager } from "~/hooks/use-consent-manager";
+import { useFocusTrap } from "~/hooks/use-focus-trap";
+import { ConsentCustomizationCard } from "./atoms/dialog-card";
+import { Overlay } from "./atoms/overlay";
+import styles from "./consent-manager-dialog.module.css";
+import type { ConsentManagerDialogTheme } from "./theme";
 
 /**
  * Props for the ConsentManagerDialog component
@@ -88,8 +88,8 @@ export const ConsentManagerDialog: FC<ConsentManagerDialogProps> = ({
 		} else {
 			const animationDurationMs = Number.parseInt(
 				getComputedStyle(document.documentElement).getPropertyValue(
-					'--dialog-animation-duration'
-				) || '200',
+					"--dialog-animation-duration"
+				) || "200",
 				10
 			);
 			const timer = setTimeout(() => {
@@ -101,7 +101,7 @@ export const ConsentManagerDialog: FC<ConsentManagerDialogProps> = ({
 
 	// Add the useFocusTrap hook
 	const isRefObject =
-		dialogRef && typeof dialogRef === 'object' && 'current' in dialogRef;
+		dialogRef && typeof dialogRef === "object" && "current" in dialogRef;
 	useFocusTrap(
 		(open || consentManager.isPrivacyDialogOpen) && trapFocus,
 		isRefObject ? (dialogRef as RefObject<HTMLElement>) : null

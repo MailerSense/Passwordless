@@ -1,4 +1,4 @@
-import { CfnOutput, RemovalPolicy, aws_ses as ses, Stack } from "aws-cdk-lib";
+import { CfnOutput, RemovalPolicy, Stack, aws_ses as ses } from "aws-cdk-lib";
 import { ICertificate } from "aws-cdk-lib/aws-certificatemanager";
 import { CachePolicy, Distribution } from "aws-cdk-lib/aws-cloudfront";
 import { HttpOrigin } from "aws-cdk-lib/aws-cloudfront-origins";

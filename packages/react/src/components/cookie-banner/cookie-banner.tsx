@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * @packageDocumentation
@@ -6,11 +6,11 @@
  * Implements an accessible, customizable banner following GDPR and CCPA requirements.
  */
 
-import type { FC, ReactNode } from 'react';
+import type { FC, ReactNode } from "react";
 
-import { ConsentButton } from '~/components/shared/primitives/button';
-import { useTranslations } from '~/hooks/use-translations';
-import { CookieBannerRoot } from './atoms/root';
+import { ConsentButton } from "~/components/shared/primitives/button";
+import { useTranslations } from "~/hooks/use-translations";
+import { CookieBannerRoot } from "./atoms/root";
 import {
 	CookieBannerCard,
 	CookieBannerDescription,
@@ -18,9 +18,9 @@ import {
 	CookieBannerFooterSubGroup,
 	CookieBannerHeader,
 	CookieBannerTitle,
-} from './components';
-import { ErrorBoundary } from './error-boundary';
-import type { CookieBannerTheme } from './theme';
+} from "./components";
+import { ErrorBoundary } from "./error-boundary";
+import type { CookieBannerTheme } from "./theme";
 
 /**
  * Props for configuring and customizing the CookieBanner component.

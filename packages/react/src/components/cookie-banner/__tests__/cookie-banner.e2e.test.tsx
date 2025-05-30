@@ -1,18 +1,18 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { render } from 'vitest-browser-react';
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { render } from "vitest-browser-react";
 
-import { ConsentManagerDialog } from '~/components/consent-manager-dialog/consent-manager-dialog';
-import { ConsentManagerProvider } from '~/providers/consent-manager-provider';
-import type { ConsentManagerOptions } from '~/types/consent-manager';
-import { CookieBanner } from '../cookie-banner';
+import { ConsentManagerDialog } from "~/components/consent-manager-dialog/consent-manager-dialog";
+import { ConsentManagerProvider } from "~/providers/consent-manager-provider";
+import type { ConsentManagerOptions } from "~/types/consent-manager";
+import { CookieBanner } from "../cookie-banner";
 
 // Create a mutable showPopup value we can control
 let mockShowPopup = true;
 let mockIsPrivacyDialogOpen = false;
 
-vi.mock('~/hooks/use-consent-manager', async (importOriginal) => {
+vi.mock("~/hooks/use-consent-manager", async (importOriginal) => {
 	const realModule =
-		await importOriginal<typeof import('~/hooks/use-consent-manager')>();
+		await importOriginal<typeof import("~/hooks/use-consent-manager")>();
 	return {
 		useConsentManager: () => ({
 			...realModule.useConsentManager(),
@@ -45,16 +45,16 @@ const localStorageMock = (() => {
 	};
 })();
 
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(window, "localStorage", {
 	value: localStorageMock,
 });
 
 // Default consent manager options
 const defaultOptions: ConsentManagerOptions = {
-	mode: 'offline',
+	mode: "offline",
 };
 
-describe('CookieBanner E2E Tests', () => {
+describe("CookieBanner E2E Tests", () => {
 	beforeEach(() => {
 		// Clear localStorage before each test
 		window.localStorage.clear();
@@ -64,7 +64,7 @@ describe('CookieBanner E2E Tests', () => {
 		vi.clearAllMocks();
 	});
 
-	test('should show cookie banner on first visit', async () => {
+	test("should show cookie banner on first visit", async () => {
 		render(
 			<ConsentManagerProvider options={defaultOptions}>
 				<CookieBanner />
@@ -97,7 +97,7 @@ describe('CookieBanner E2E Tests', () => {
 		).toBeInTheDocument();
 	});
 
-	test('should accept all cookies when clicking Accept All', async () => {
+	test("should accept all cookies when clicking Accept All", async () => {
 		render(
 			<ConsentManagerProvider options={defaultOptions}>
 				<CookieBanner />
@@ -109,7 +109,7 @@ describe('CookieBanner E2E Tests', () => {
 		const acceptButton = document.querySelector(
 			'[data-testid="cookie-banner-accept-button"]'
 		);
-		acceptButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		acceptButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
 		// Banner should disappear
 		await new Promise((resolve) => setTimeout(resolve, 100));
@@ -120,14 +120,14 @@ describe('CookieBanner E2E Tests', () => {
 
 		// Check localStorage for consent
 		const consent = JSON.parse(
-			window.localStorage.getItem('privacy-consent-storage') || '{}'
+			window.localStorage.getItem("privacy-consent-storage") || "{}"
 		);
 
 		expect(consent.consents).toBeTruthy();
-		expect(consent.consentInfo.type).toBe('all');
+		expect(consent.consentInfo.type).toBe("all");
 	});
 
-	test('should reject non-essential cookies when clicking Reject All', async () => {
+	test("should reject non-essential cookies when clicking Reject All", async () => {
 		render(
 			<ConsentManagerProvider options={defaultOptions}>
 				<CookieBanner />
@@ -139,7 +139,7 @@ describe('CookieBanner E2E Tests', () => {
 		const rejectButton = document.querySelector(
 			'[data-testid="cookie-banner-reject-button"]'
 		);
-		rejectButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		rejectButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
 		// Banner should disappear
 		await new Promise((resolve) => setTimeout(resolve, 100));
@@ -150,10 +150,10 @@ describe('CookieBanner E2E Tests', () => {
 
 		// Check localStorage for consent
 		const consent = JSON.parse(
-			window.localStorage.getItem('privacy-consent-storage') || '{}'
+			window.localStorage.getItem("privacy-consent-storage") || "{}"
 		);
 		expect(consent.consents).toBeTruthy();
-		expect(consent.consentInfo.type).toBe('necessary');
+		expect(consent.consentInfo.type).toBe("necessary");
 
 		// Only necessary cookies should be true
 		expect(consent.consents.necessary).toBe(true);
@@ -163,7 +163,7 @@ describe('CookieBanner E2E Tests', () => {
 		expect(consent.consents.measurement).toBe(false);
 	});
 
-	test('should open consent manager dialog when clicking Customize', async () => {
+	test("should open consent manager dialog when clicking Customize", async () => {
 		render(
 			<ConsentManagerProvider options={defaultOptions}>
 				<CookieBanner />
@@ -175,7 +175,7 @@ describe('CookieBanner E2E Tests', () => {
 		const customizeButton = document.querySelector(
 			'[data-testid="cookie-banner-customize-button"]'
 		);
-		customizeButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		customizeButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
 		// Cookie banner should be hidden
 		await new Promise((resolve) => setTimeout(resolve, 100));
@@ -208,12 +208,12 @@ describe('CookieBanner E2E Tests', () => {
 		const marketingSwitch = document.querySelector(
 			'[data-testid="consent-manager-widget-switch-marketing"]'
 		);
-		marketingSwitch?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		marketingSwitch?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
 		const saveButton = document.querySelector(
 			'[data-testid="consent-manager-widget-footer-save-button"]'
 		);
-		saveButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		saveButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
 		// Dialog should close
 		await new Promise((resolve) => setTimeout(resolve, 100));
@@ -221,14 +221,14 @@ describe('CookieBanner E2E Tests', () => {
 
 		// Check localStorage for custom consent
 		const consent = JSON.parse(
-			window.localStorage.getItem('privacy-consent-storage') || '{}'
+			window.localStorage.getItem("privacy-consent-storage") || "{}"
 		);
 		expect(consent.consents).toBeTruthy();
-		expect(consent.consentInfo.type).toBe('custom');
+		expect(consent.consentInfo.type).toBe("custom");
 		expect(consent.consents.marketing).toBe(true);
 	});
 
-	test('should be keyboard accessible', async () => {
+	test("should be keyboard accessible", async () => {
 		render(
 			<ConsentManagerProvider options={defaultOptions}>
 				<CookieBanner />
@@ -258,7 +258,7 @@ describe('CookieBanner E2E Tests', () => {
 		expect(document.activeElement).toBe(acceptButton);
 	});
 
-	test('should handle scroll lock properly', async () => {
+	test("should handle scroll lock properly", async () => {
 		render(
 			<ConsentManagerProvider options={defaultOptions}>
 				<CookieBanner scrollLock />
@@ -275,7 +275,7 @@ describe('CookieBanner E2E Tests', () => {
 		const acceptButton = document.querySelector(
 			'[data-testid="cookie-banner-accept-button"]'
 		);
-		acceptButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		acceptButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
 		// Overlay should be removed
 		await new Promise((resolve) => setTimeout(resolve, 100));

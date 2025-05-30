@@ -2,8 +2,11 @@
 	"name": "assets",
 	"version": "1.0.0",
 	"description": "",
+	"type": "module",
 	"main": "index.js",
 	"scripts": {
+		"fmt": "pnpm biome format --write . && pnpm biome check --formatter-enabled=false --linter-enabled=false --organize-imports-enabled=true --write",
+		"lint": "pnpm biome lint .",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [],

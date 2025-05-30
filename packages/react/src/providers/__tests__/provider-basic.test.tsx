@@ -1,13 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render } from 'vitest-browser-react';
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { render } from "vitest-browser-react";
 
-import { ConsentManagerProvider } from '~/index';
+import { ConsentManagerProvider } from "~/index";
 
 // Mock fetch globally
 const mockFetch = vi.fn();
 window.fetch = mockFetch;
 
-describe('ConsentManagerProvider Basic Request Behavior', () => {
+describe("ConsentManagerProvider Basic Request Behavior", () => {
 	beforeEach(() => {
 		vi.resetAllMocks();
 		// Set up fake timers for timer-related tests
@@ -17,7 +17,7 @@ describe('ConsentManagerProvider Basic Request Behavior', () => {
 		mockFetch.mockResolvedValue(
 			new Response(JSON.stringify({ showConsentBanner: true }), {
 				status: 200,
-				headers: { 'Content-Type': 'application/json' },
+				headers: { "Content-Type": "application/json" },
 			})
 		);
 	});
@@ -28,12 +28,12 @@ describe('ConsentManagerProvider Basic Request Behavior', () => {
 		vi.useRealTimers();
 	});
 
-	it('should only make one initial request for consent banner status', async () => {
+	it("should only make one initial request for consent banner status", async () => {
 		render(
 			<ConsentManagerProvider
 				options={{
-					mode: 'c15t',
-					backendURL: '/api/c15t',
+					mode: "c15t",
+					backendURL: "/api/c15t",
 				}}
 			>
 				<div>Test Component</div>
@@ -46,20 +46,20 @@ describe('ConsentManagerProvider Basic Request Behavior', () => {
 		// Should make one request
 		expect(mockFetch).toHaveBeenCalledTimes(1);
 		expect(mockFetch).toHaveBeenCalledWith(
-			expect.stringContaining('/api/c15t/show-consent-banner'),
+			expect.stringContaining("/api/c15t/show-consent-banner"),
 			expect.any(Object)
 		);
 	});
 
-	it('should not make additional requests when props change but core options remain same', async () => {
+	it("should not make additional requests when props change but core options remain same", async () => {
 		// First, clear any mock calls from previous tests
 		mockFetch.mockClear();
 
 		const { rerender } = render(
 			<ConsentManagerProvider
 				options={{
-					mode: 'offline', // Use offline mode to prevent additional fetches
-					react: { theme: { 'banner.root': 'light' } },
+					mode: "offline", // Use offline mode to prevent additional fetches
+					react: { theme: { "banner.root": "light" } },
 				}}
 			>
 				<div>Light theme</div>
@@ -76,8 +76,8 @@ describe('ConsentManagerProvider Basic Request Behavior', () => {
 		rerender(
 			<ConsentManagerProvider
 				options={{
-					mode: 'offline',
-					react: { theme: { 'banner.root': 'dark' } },
+					mode: "offline",
+					react: { theme: { "banner.root": "dark" } },
 				}}
 			>
 				<div>Dark theme</div>
@@ -91,12 +91,12 @@ describe('ConsentManagerProvider Basic Request Behavior', () => {
 		expect(mockFetch).not.toHaveBeenCalled();
 	});
 
-	it('should make a new request when core options change', async () => {
+	it("should make a new request when core options change", async () => {
 		const { rerender } = render(
 			<ConsentManagerProvider
 				options={{
-					mode: 'c15t',
-					backendURL: '/api/c15t-1', // Use unique URLs to distinguish calls
+					mode: "c15t",
+					backendURL: "/api/c15t-1", // Use unique URLs to distinguish calls
 				}}
 			>
 				<div>First URL</div>
@@ -107,7 +107,7 @@ describe('ConsentManagerProvider Basic Request Behavior', () => {
 		await vi.runAllTimersAsync();
 		expect(mockFetch).toHaveBeenCalledTimes(1);
 		expect(mockFetch).toHaveBeenCalledWith(
-			expect.stringContaining('/api/c15t-1/show-consent-banner'),
+			expect.stringContaining("/api/c15t-1/show-consent-banner"),
 			expect.any(Object)
 		);
 
@@ -118,8 +118,8 @@ describe('ConsentManagerProvider Basic Request Behavior', () => {
 		rerender(
 			<ConsentManagerProvider
 				options={{
-					mode: 'c15t',
-					backendURL: '/api/c15t-2', // Different backend URL
+					mode: "c15t",
+					backendURL: "/api/c15t-2", // Different backend URL
 				}}
 			>
 				<div>Second URL</div>
@@ -132,19 +132,19 @@ describe('ConsentManagerProvider Basic Request Behavior', () => {
 		// Should make a new request with the new URL
 		// expect(mockFetch).toHaveBeenCalledTimes(1); // Removed: Real implementation calls twice
 		expect(mockFetch).toHaveBeenCalledWith(
-			expect.stringContaining('/api/c15t-2/show-consent-banner'),
+			expect.stringContaining("/api/c15t-2/show-consent-banner"),
 			expect.any(Object)
 		);
 	});
 
-	it('should handle rapid re-renders without making duplicate requests', async () => {
+	it("should handle rapid re-renders without making duplicate requests", async () => {
 		// First, clear any mock calls from previous tests
 		mockFetch.mockClear();
 
 		const { rerender } = render(
 			<ConsentManagerProvider
 				options={{
-					mode: 'offline', // Use offline mode to avoid fetch calls
+					mode: "offline", // Use offline mode to avoid fetch calls
 				}}
 			>
 				<div>Counter: 0</div>
@@ -162,7 +162,7 @@ describe('ConsentManagerProvider Basic Request Behavior', () => {
 			rerender(
 				<ConsentManagerProvider
 					options={{
-						mode: 'offline',
+						mode: "offline",
 					}}
 				>
 					<div>Counter: {i}</div>

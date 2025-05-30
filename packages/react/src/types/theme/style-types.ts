@@ -1,7 +1,7 @@
-import type { ClassValue } from 'clsx';
-import type { CSSProperties } from 'react';
+import type { ClassValue } from "clsx";
+import type { CSSProperties } from "react";
 
-import type { AllThemeKeys } from './style-keys';
+import type { AllThemeKeys } from "./style-keys";
 
 /**
  * Represents CSS properties with optional CSS variables

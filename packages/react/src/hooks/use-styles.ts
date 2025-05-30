@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * @packageDocumentation
@@ -6,12 +6,12 @@
  * Implements a flexible styling system that merges theme and component-level styles.
  */
 
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { useTheme } from '~/hooks/use-theme';
-import type { AllThemeKeys } from '~/types/theme';
-import type { ClassNameStyle, ThemeValue } from '~/types/theme';
-import { mergeStyles } from '~/utils/merge-styles';
+import { useTheme } from "~/hooks/use-theme";
+import type { AllThemeKeys } from "~/types/theme";
+import type { ClassNameStyle, ThemeValue } from "~/types/theme";
+import { mergeStyles } from "~/utils/merge-styles";
 
 /**
  * Hook for retrieving and merging styles from theme context and component props.
@@ -49,13 +49,13 @@ export function useStyles(
 	const { noStyle: contextNoStyle, theme } = useTheme();
 
 	const themeNoStyle = Boolean(
-		typeof theme?.[themeKey as keyof typeof theme] === 'object'
+		typeof theme?.[themeKey as keyof typeof theme] === "object"
 			? (theme?.[themeKey as keyof typeof theme] as ClassNameStyle)?.noStyle
 			: false
 	);
 
 	const mergedNoStyle = Boolean(
-		(typeof componentStyle === 'object' && 'noStyle' in componentStyle
+		(typeof componentStyle === "object" && "noStyle" in componentStyle
 			? componentStyle.noStyle
 			: false) ||
 			themeNoStyle ||
@@ -73,7 +73,7 @@ export function useStyles(
 	const initialStyle = useMemo(() => {
 		const initial = {
 			className:
-				typeof componentStyle === 'string'
+				typeof componentStyle === "string"
 					? componentStyle
 					: componentStyle?.className,
 			style: undefined,
@@ -109,7 +109,7 @@ export function useStyles(
 			}
 
 			const noStyleResult =
-				typeof themeStylesObject === 'string'
+				typeof themeStylesObject === "string"
 					? { className: themeStylesObject }
 					: {
 							className: themeStylesObject.className,
@@ -122,7 +122,7 @@ export function useStyles(
 		const finalClassName = Array.from(
 			new Set(
 				[
-					typeof componentStyle === 'string'
+					typeof componentStyle === "string"
 						? componentStyle
 						: componentStyle?.className,
 					finalMergedStyle.className,
@@ -130,7 +130,7 @@ export function useStyles(
 					.filter(Boolean)
 					.flat()
 			)
-		).join(' ');
+		).join(" ");
 
 		return { ...finalMergedStyle, className: finalClassName };
 	}, [finalMergedStyle, mergedNoStyle, themeStylesObject, componentStyle]);
