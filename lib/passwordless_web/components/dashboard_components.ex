@@ -712,7 +712,7 @@ defmodule PasswordlessWeb.DashboardComponents do
             {Float.round(@change * 100)}% this month
           </span>
           <span :if={not @has_data?}>
-            {gettext("Can't compare to last month")}
+            {gettext("No history")}
           </span>
         </span>
       </div>

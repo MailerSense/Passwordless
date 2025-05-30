@@ -1,58 +1,72 @@
 <div class="flex flex-col gap-6">
   <.box card>
-    <.form_header title={gettext("API")} no_margin />
+    <.form_header title={gettext("Installation")} no_margin />
     <.p>
-      You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
+      Before you can use Passwordless, you need to install the SDK in your application. The SDK is currently available for Node.js. We're actively working on the Web Components SDK that will allow you to use Passwordless in any frontend framework.
+    </.p>
+    <.live_component
+      id="installation-intro"
+      module={PasswordlessWeb.Components.MultiCodeBlock}
+      codes={[
+        %{
+          tab: gettext("npm"),
+          language: :bash,
+          code: ~s"""
+          npm install @passwordless/node
+          """
+        },
+        %{
+          tab: gettext("yarn"),
+          language: :bash,
+          code: ~s"""
+          yarn add @passwordless/node
+          """
+        },
+        %{
+          tab: gettext("pnpm"),
+          language: :bash,
+          code: ~s"""
+          pnpm add @passwordless/node
+          """
+        },
+        %{
+          tab: gettext("bun"),
+          language: :bash,
+          code: ~s"""
+          bun add @passwordless/node
+          """
+        }
+      ]}
+    />
+  </.box>
+  <.box card>
+    <.form_header title={gettext("Initialization")} no_margin />
+    <.p>
+      Initialize the Passwordless client by providing your app ID, Secret Key and the data residency region.
     </.p>
     <.live_component
       id="intro-code-block"
       module={PasswordlessWeb.Components.MultiCodeBlock}
       codes={[
         %{
-          tab: gettext("Basic Entities"),
-          language: :asciidoc,
+          tab: gettext("Node.js"),
+          language: :typescript,
           code: ~s"""
-          WebView metrics set up happens like so:
+          import { Passwordless, Region } from "@passwordless/node";
 
-            Startup()
-              │
-              ├────────────┐
-              │            ▼
-              │         query GMS for consent
-              ▼            │
-            Initialize()   │
-              │            ▼
-              │         SetHaveMetricsConsent()
-              │            │
-              │ ┌──────────┘
-              ▼ ▼
-            MaybeStartMetrics()
-              │
-              ▼
-            MetricsService::Start()
-
-          All the named functions in this diagram happen on the UI thread. Querying GMS
-          happens in the background, and the result is posted back to the UI thread, to
-          SetHaveMetricsConsent(). Querying GMS is slow, so SetHaveMetricsConsent()
-          typically happens after Initialize(), but it may happen before.
+          Passwordless.init({
+            appId: "#{@app.id}",
+            appSecretKey: "sk_live_*******",
+            appRegion: Region.EU
+          });
           """
-        },
-        %{
-          tab: gettext("Webhooks"),
-          language: :asciidoc,
-          code: ""
-        },
-        %{
-          tab: gettext("Rules"),
-          language: :asciidoc,
-          code: ""
         }
       ]}
     />
   </.box>
 
   <.box card>
-    <.form_header title={gettext("Email OTP")} no_margin />
+    <.form_header title={gettext("Usage")} no_margin />
     <.p>
       You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
     </.p>
@@ -61,46 +75,21 @@
       module={PasswordlessWeb.Components.MultiCodeBlock}
       codes={[
         %{
-          tab: gettext("Typescript"),
+          tab: gettext("Node.js"),
           language: :typescript,
           code: ~s"""
-          import { Passwordless } from "@passwordless/tools";
+          import { Passwordless } from "@passwordless/node";
 
           const action = Passwordless.authenticate({
-            action: "login",
+            action: "signIn",
             user:  {
-              username: "1234567890",
+              identifiers: [
+                { kind: "username", value: "1234567890" },
+              ],
               emails: [
                 { address: "user@example.com" },
               ],
-            },
-            rules: [
-              {
-                if: true, then: [ { challenge: Passwordless.EMAIL_OTP } ],
-              },
-            ],
-          });
-          """
-        },
-        %{
-          tab: gettext("Typescript2"),
-          language: :typescript,
-          code: ~s"""
-          import { Passwordless } from "@passwordless/tools";
-
-          const action2 = Passwordless.authenticate({
-            action: "login",
-            user:  {
-              username: "1234567890",
-              emails: [
-                { address: "user@example.com" },
-              ],
-            },
-            rules: [
-              {
-                if: true, then: [ { challenge: Passwordless.EMAIL_OTP } ],
-              },
-            ],
+            }
           });
           """
         }
@@ -128,17 +117,5 @@
         """
       }
     />
-  </.box>
-  <.box card>
-    <.form_header title={gettext("Magic link")} no_margin />
-    <.p>
-      You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
-    </.p>
-  </.box>
-  <.box card>
-    <.form_header title={gettext("Time-based OTP")} no_margin />
-    <.p>
-      You start by creating a new action - user login, settings page access, order placement. Passwordless will then decide whether to challenge the user via specified authenticators - Email, OTP, Magic Link etc.
-    </.p>
   </.box>
 </div>

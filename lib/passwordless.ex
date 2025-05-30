@@ -45,6 +45,7 @@ defmodule Passwordless do
     email_otp: Authenticators.EmailOTP,
     magic_link: Authenticators.MagicLink,
     passkey: Authenticators.Passkey,
+    social: Authenticators.Social,
     totp: Authenticators.TOTP,
     recovery_codes: Authenticators.RecoveryCodes
   ]
@@ -482,6 +483,7 @@ defmodule Passwordless do
   crud(:security_key, :security_key, Passwordless.Authenticators.SecurityKey)
   crud(:totp, :totp, Passwordless.Authenticators.TOTP)
   crud(:recovery_codes, :recovery_codes, Passwordless.Authenticators.RecoveryCodes)
+  crud(:social, :social, Passwordless.Authenticators.Social)
 
   # User
 
@@ -910,6 +912,19 @@ defmodule Passwordless do
     |> ActionTemplate.get_by_app(app)
     |> ActionTemplate.join_adapter_opts(opts)
     |> Repo.get!(id)
+  end
+
+  def get_action_template_by_alias(%App{} = app, aliasCode) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    ActionTemplate
+    |> ActionTemplate.get_by_app(app)
+    |> ActionTemplate.join_adapter_opts(opts)
+    |> Repo.get_by(alias: aliasCode)
+    |> case do
+      %ActionTemplate{} = action_template -> {:ok, action_template}
+      nil -> {:error, :not_found}
+    end
   end
 
   def create_action_template(%App{} = app, attrs \\ %{}) do

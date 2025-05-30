@@ -23,7 +23,7 @@
 			"persistent": true
 		},
 		"test": {
-			"dependsOn": ["^build", "transit", "@c15t/vitest-config#build"],
+			"dependsOn": ["^build", "transit"],
 			"outputs": [
 				"coverage/coverage-summary.json",
 				"coverage/coverage-final.json",

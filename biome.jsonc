@@ -27,10 +27,12 @@
 			},
 			"nursery": {
 				"all": true,
+				"noEnum": "off",
 				"noCommonJs": "off",
 				"noProcessEnv": "off",
 				"noSecrets": "off",
 				"useComponentExportOnlyModules": "off",
+				"useConsistentMemberAccessibility": "off",
 				"useExplicitType": "off",
 				"useImportRestrictions": "off",
 				"useConsistentCurlyBraces": "off",
@@ -48,6 +50,7 @@
 				"noReExportAll": "off"
 			},
 			"style": {
+				"useImportType": "off",
 				"noDefaultExport": "off",
 				"noImplicitBoolean": "off",
 				"useExplicitLengthCheck": "off",
@@ -64,7 +67,8 @@
 			},
 			"suspicious": {
 				"noReactSpecificProps": "off",
-				"noArrayIndexKey": "off"
+				"noArrayIndexKey": "off",
+				"noMisleadingCharacterClass": "off"
 			}
 		}
 	},
@@ -81,7 +85,7 @@
 			"lineEnding": "lf",
 			"lineWidth": 80,
 			"quoteProperties": "asNeeded",
-			"quoteStyle": "single",
+			"quoteStyle": "double",
 			"semicolons": "always",
 			"trailingCommas": "es5"
 		}

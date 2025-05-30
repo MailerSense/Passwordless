@@ -1,11 +1,70 @@
 <div class="flex flex-col gap-6">
   <.box card>
-    <.form_header title={gettext("Components")} no_margin />
+    <.form_header title={gettext("Installation")} no_margin />
+    <.p>
+      Before you can use Passwordless, you need to install the SDK in your application. The SDK is currently available for Node.js. We're actively working on the Web Components SDK that will allow you to use Passwordless in any frontend framework.
+    </.p>
+    <.live_component
+      id="installation-intro"
+      module={PasswordlessWeb.Components.MultiCodeBlock}
+      codes={[
+        %{
+          tab: gettext("npm"),
+          language: :bash,
+          code: ~s"""
+          npm install @passwordless/react
+          """
+        },
+        %{
+          tab: gettext("yarn"),
+          language: :bash,
+          code: ~s"""
+          yarn add @passwordless/react
+          """
+        },
+        %{
+          tab: gettext("pnpm"),
+          language: :bash,
+          code: ~s"""
+          pnpm add @passwordless/react
+          """
+        },
+        %{
+          tab: gettext("bun"),
+          language: :bash,
+          code: ~s"""
+          bun add @passwordless/react
+          """
+        }
+      ]}
+    />
+  </.box>
+
+  <.box card>
+    <.form_header title={gettext("Sign in")} no_margin />
     <.p>
       Passwordless provides a set of Web components to help you build your authentication flows. You can use them to create login forms, OTP input fields, and more. The components are designed to be easy to use and customizable.
     </.p>
-    <.alert color="info" with_icon>
-      Web Components are coming soon.
-    </.alert>
+  </.box>
+
+  <.box card>
+    <.form_header title={gettext("Sign up")} no_margin />
+    <.p>
+      Passwordless provides a set of Web components to help you build your authentication flows. You can use them to create login forms, OTP input fields, and more. The components are designed to be easy to use and customizable.
+    </.p>
+  </.box>
+
+  <.box card>
+    <.form_header title={gettext("Authorize")} no_margin />
+    <.p>
+      Passwordless provides a set of Web components to help you build your authentication flows. You can use them to create login forms, OTP input fields, and more. The components are designed to be easy to use and customizable.
+    </.p>
+  </.box>
+
+  <.box card>
+    <.form_header title={gettext("Self service")} no_margin />
+    <.p>
+      Passwordless provides a set of Web components to help you build your authentication flows. You can use them to create login forms, OTP input fields, and more. The components are designed to be easy to use and customizable.
+    </.p>
   </.box>
 </div>

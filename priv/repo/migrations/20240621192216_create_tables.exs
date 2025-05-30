@@ -491,6 +491,17 @@ defmodule Passwordless.Repo.Migrations.CreateTables do
 
     create unique_index(:recovery_codes_authenticators, [:app_id])
 
+    create table(:social_authenticators, primary_key: false) do
+      add :id, :uuid, primary_key: true
+      add :enabled, :boolean, null: false, default: true
+
+      add :app_id, references(:apps, type: :uuid, on_delete: :delete_all), null: false
+
+      timestamps()
+    end
+
+    create unique_index(:social_authenticators, [:app_id])
+
     ## Message mapping
 
     create table(:email_message_mappings, primary_key: false) do

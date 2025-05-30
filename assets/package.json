@@ -1,43 +1,43 @@
 {
-  "name": "assets",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@alpinejs/csp": "^3.14.9",
-    "@codemirror/autocomplete": "^6.18.6",
-    "@codemirror/commands": "^6.8.1",
-    "@codemirror/lang-html": "^6.4.9",
-    "@codemirror/language": "^6.11.0",
-    "@codemirror/state": "^6.5.2",
-    "@codemirror/view": "^6.36.5",
-    "@lezer/highlight": "^1.2.1",
-    "@sentry/browser": "^9.15.0",
-    "@types/sortablejs": "^1.15.8",
-    "codemirror": "^6.0.1",
-    "d3-scale": "^4.0.2",
-    "d3-scale-chromatic": "^3.1.0",
-    "globe.gl": "^2.41.4",
-    "highlight.js": "^11.11.1",
-    "motion": "^12.6.5",
-    "sortablejs": "^1.15.6",
-    "tippy.js": "^6.3.7",
-    "topbar": "^3.0.0"
-  },
-  "devDependencies": {
-    "@types/alpinejs": "^3.13.11",
-    "@types/alpinejs__collapse": "^3.13.4",
-    "@types/alpinejs__persist": "^3.13.4",
-    "@types/d3-scale": "^4.0.9",
-    "@types/d3-scale-chromatic": "^3.1.0",
-    "@types/phoenix": "^1.6.6",
-    "@types/phoenix_live_view": "^1.0.0",
-    "daisyui": "^5.0.19"
-  }
+	"name": "assets",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@alpinejs/csp": "^3.14.9",
+		"@codemirror/autocomplete": "^6.18.6",
+		"@codemirror/commands": "^6.8.1",
+		"@codemirror/lang-html": "^6.4.9",
+		"@codemirror/language": "^6.11.0",
+		"@codemirror/state": "^6.5.2",
+		"@codemirror/view": "^6.36.5",
+		"@lezer/highlight": "^1.2.1",
+		"@sentry/browser": "^9.15.0",
+		"@types/sortablejs": "^1.15.8",
+		"codemirror": "^6.0.1",
+		"d3-scale": "^4.0.2",
+		"d3-scale-chromatic": "^3.1.0",
+		"globe.gl": "^2.41.4",
+		"highlight.js": "^11.11.1",
+		"motion": "^12.6.5",
+		"sortablejs": "^1.15.6",
+		"tippy.js": "^6.3.7",
+		"topbar": "^3.0.0"
+	},
+	"devDependencies": {
+		"@types/alpinejs": "^3.13.11",
+		"@types/alpinejs__collapse": "^3.13.4",
+		"@types/alpinejs__persist": "^3.13.4",
+		"@types/d3-scale": "^4.0.9",
+		"@types/d3-scale-chromatic": "^3.1.0",
+		"@types/phoenix": "^1.6.6",
+		"@types/phoenix_live_view": "^1.0.0",
+		"daisyui": "^5.0.19"
+	}
 }
