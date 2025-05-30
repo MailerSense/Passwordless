@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@source ("../..");
+@source "../..";
 
 @plugin "daisyui";
 @plugin "../heroicon.tailwind.plugin.js";
