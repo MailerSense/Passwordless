@@ -37,7 +37,7 @@
       <:col actions></:col>
       <:actions :let={app}>
         <.icon_button
-          id="remove-app-#{app.id}"
+          id={"remove-app-#{app.id}"}
           to={apply_filters(@filters, @meta, ~p"/apps/#{app}/delete")}
           size="sm"
           icon="custom-trash"

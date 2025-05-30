@@ -45,7 +45,7 @@ defmodule PasswordlessWeb.App.ReportLive.Index do
 
   @impl true
   def handle_async(:load_geo_data, {:ok, geo_data}, socket) do
-    {:noreply, push_event(socket, :get_geo_data, %{geo_data: geo_data})}
+    {:noreply, push_event(socket, :get_geo_data, %{resolution: 30, geo_data: geo_data})}
   end
 
   # Private

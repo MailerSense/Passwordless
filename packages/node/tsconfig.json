@@ -1,0 +1,11 @@
+{
+	"extends": "@passwordless-tools/typescript-config/node.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"~/*": ["./src/*"]
+		}
+	},
+	"include": ["src"],
+	"exclude": ["node_modules"]
+}

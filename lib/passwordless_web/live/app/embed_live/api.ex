@@ -45,6 +45,8 @@ defmodule PasswordlessWeb.App.EmbedLive.API do
           |> assign(app: app)
           |> assign_form(Passwordless.change_app(app))
 
+        send(self(), {:updated_app, app})
+
         {:noreply, socket}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -60,6 +62,8 @@ defmodule PasswordlessWeb.App.EmbedLive.API do
           socket
           |> assign(app: app)
           |> assign_form(Passwordless.change_app(app))
+
+        send(self(), {:updated_app, app})
 
         {:noreply, socket}
 

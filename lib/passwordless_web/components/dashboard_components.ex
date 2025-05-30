@@ -656,9 +656,9 @@ defmodule PasswordlessWeb.DashboardComponents do
 
   def bar_stats(assigns) do
     ~H"""
-    <.box body_class="flex items-center gap-2 divide-x divide-gray-200 dark:divide-gray-700/40">
+    <div class="flex lg:flex-row flex-col lg:items-center gap-6">
       <.bar_stat :for={item <- @items} {item} />
-    </.box>
+    </div>
     """
   end
 
@@ -696,8 +696,11 @@ defmodule PasswordlessWeb.DashboardComponents do
       })
 
     ~H"""
-    <div class="flex flex-col grow p-6">
-      <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{@label}</span>
+    <.box padded class="grow" body_class="flex flex-col gap-4">
+      <badge class="flex gap-2 items-center">
+        <div class={["w-4 h-2 rounded-full", @legend_color_class]}></div>
+        <p class="text-gray-600 dark:text-gray-300 text-xs font-semibold">{@label}</p>
+      </badge>
 
       <div class="flex gap-2 items-center justify-between">
         <span class="text-xl xl:text-2xl font-semibold text-gray-900 dark:text-white">
@@ -709,11 +712,11 @@ defmodule PasswordlessWeb.DashboardComponents do
             {Float.round(@change * 100)}% this month
           </span>
           <span :if={not @has_data?}>
-            {gettext("Can't compare to last month")}
+            {gettext("No history")}
           </span>
         </span>
       </div>
-    </div>
+    </.box>
     """
   end
 

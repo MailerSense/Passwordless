@@ -1,0 +1,28 @@
+{
+	"name": "@passwordless-tools/node",
+	"version": "0.1.0",
+	"type": "module",
+	"scripts": {
+		"build": "rslib build",
+		"check-types": "tsc --noEmit",
+		"check-types:test": "tsc -p tsconfig.test.json",
+		"dev": "rslib build --watch",
+		"fmt": "pnpm biome format --write . && pnpm biome check --formatter-enabled=false --linter-enabled=false --organize-imports-enabled=true --write",
+		"lint": "pnpm biome lint ./src",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@passwordless-tools/typescript-config": "workspace:*",
+		"@types/node": "22.14.1",
+		"typescript": "~5.8.3"
+	}
+}

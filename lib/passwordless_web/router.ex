@@ -167,6 +167,7 @@ defmodule PasswordlessWeb.Router do
       live "/authenticators/security-key", App.AuthenticatorLive.Index, :security_key
       live "/authenticators/totp", App.AuthenticatorLive.Index, :totp
       live "/authenticators/recovery-codes", App.AuthenticatorLive.Index, :recovery_codes
+      live "/authenticators/social", App.AuthenticatorLive.Index, :social
 
       # Email
       live "/emails/:id/:language/edit", App.EmailLive.Edit, :edit

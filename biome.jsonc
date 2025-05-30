@@ -1,0 +1,133 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"formatter": {
+		"enabled": true,
+		"formatWithErrors": true,
+		"indentStyle": "tab",
+		"indentWidth": 2,
+		"lineEnding": "lf",
+		"lineWidth": 80,
+		"attributePosition": "auto"
+	},
+	"organizeImports": { "enabled": true },
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"all": true,
+			"a11y": {
+				"noAutofocus": "off"
+			},
+			"complexity": {
+				"useSimplifiedLogicExpression": "off"
+			},
+			"correctness": {
+				"noUndeclaredDependencies": "off",
+				"useImportExtensions": "off",
+				"noNodejsModules": "off",
+				"noUnknownProperty": "off"
+			},
+			"nursery": {
+				"all": true,
+				"noEnum": "off",
+				"noCommonJs": "off",
+				"noProcessEnv": "off",
+				"noSecrets": "off",
+				"noUnknownPseudoClass": "off",
+				"noDescendingSpecificity": "off",
+				"useComponentExportOnlyModules": "off",
+				"useConsistentMemberAccessibility": "off",
+				"useExplicitType": "off",
+				"useImportRestrictions": "off",
+				"useConsistentCurlyBraces": "off",
+				"useSortedClasses": {
+					"fix": "safe",
+					"level": "error",
+					"options": {
+						"attributes": ["className"],
+						"functions": ["clsx", "cva", "tw", "twMerge", "cn", "twJoin"]
+					}
+				}
+			},
+			"performance": {
+				"noBarrelFile": "off",
+				"noReExportAll": "off"
+			},
+			"style": {
+				"useImportType": "off",
+				"noDefaultExport": "off",
+				"noImplicitBoolean": "off",
+				"useExplicitLengthCheck": "off",
+				"noNamespaceImport": "off",
+				"useFilenamingConvention": {
+					"level": "error",
+					"options": {
+						"requireAscii": true,
+						"filenameCases": ["kebab-case"]
+					}
+				},
+				"useSingleVarDeclarator": "off",
+				"useNamingConvention": "off"
+			},
+			"suspicious": {
+				"noExplicitAny": "off",
+				"noReactSpecificProps": "off",
+				"noArrayIndexKey": "off",
+				"noMisleadingCharacterClass": "off"
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"arrowParentheses": "always",
+			"attributePosition": "auto",
+			"bracketSameLine": false,
+			"bracketSpacing": true,
+			"enabled": true,
+			"indentStyle": "tab",
+			"indentWidth": 2,
+			"jsxQuoteStyle": "double",
+			"lineEnding": "lf",
+			"lineWidth": 80,
+			"quoteProperties": "asNeeded",
+			"quoteStyle": "double",
+			"semicolons": "always",
+			"trailingCommas": "es5"
+		}
+	},
+	"css": {
+		"formatter": {
+			"indentStyle": "tab",
+			"indentWidth": 2,
+			"lineEnding": "lf",
+			"lineWidth": 80,
+			"quoteStyle": "double"
+		},
+		"parser": {
+			"allowWrongLineComments": true,
+			"cssModules": true
+		}
+	},
+	"json": {
+		"formatter": {
+			"enabled": true,
+			"indentStyle": "tab",
+			"indentWidth": 2,
+			"lineEnding": "lf",
+			"lineWidth": 80,
+			"trailingCommas": "none"
+		},
+		"linter": {
+			"enabled": true
+		},
+		"parser": {
+			"allowComments": false,
+			"allowTrailingCommas": false
+		}
+	},
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true,
+		"defaultBranch": "main"
+	}
+}

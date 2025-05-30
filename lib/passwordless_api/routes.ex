@@ -8,12 +8,21 @@ defmodule PasswordlessApi.Routes do
       import PasswordlessApi.Plugs
 
       pipeline :api do
+        plug :parse_ip
         plug :accepts, ["json"]
         plug OpenApiSpex.Plug.PutApiSpec, module: PasswordlessApi.ApiSpec
       end
 
       pipeline :api_authenticated do
         plug :authenticate_api
+      end
+
+      pipeline :api_authenticated_client do
+        plug :authenticate_client_api
+      end
+
+      pipeline :api_rate_limited_client do
+        plug :rate_limit_api, name: "client", limit: 60
       end
 
       pipeline :api_rate_limited do
@@ -36,8 +45,20 @@ defmodule PasswordlessApi.Routes do
 
       scope "/api/client/v1", PasswordlessApi do
         pipe_through [
-          :api
+          :api,
+          :api_authenticated_client,
+          :api_rate_limited_client
         ]
+
+        resources "/app", AppClientController, only: [:index]
+        resources "/action-templates", ActionTemplateController, only: [:show]
+
+        scope "/actions" do
+          pipe_through [
+            :api_rate_limited_actions,
+            :api_idempotent
+          ]
+        end
       end
 
       scope "/api/server/v1", PasswordlessApi do
@@ -56,17 +77,16 @@ defmodule PasswordlessApi.Routes do
           get "/:id", UserController, :get
         end
 
+        resources "/actions", ActionController, only: [:show]
+
         scope "/actions" do
-          get "/:id", ActionController, :get
+          pipe_through [
+            :api_rate_limited_actions,
+            :api_idempotent
+          ]
 
-          scope "/" do
-            pipe_through [
-              :api_rate_limited_actions,
-              :api_idempotent
-            ]
-
-            post "/authenticate", ActionController, :authenticate
-          end
+          post "/query", ActionController, :query
+          post "/authenticate", ActionController, :authenticate
         end
       end
     end

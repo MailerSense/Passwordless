@@ -1,4 +1,7 @@
-@import "tailwindcss" source("../..");
+@import "tailwindcss";
+
+@source ("../..");
+
 @plugin "daisyui";
 @plugin "../heroicon.tailwind.plugin.js";
 @source "../../deps/backpex/**/*.*ex";

@@ -23,6 +23,11 @@ defmodule PasswordlessWeb.App.EmbedLive.Index do
   end
 
   @impl true
+  def handle_info({:updated_app, app}, socket) do
+    {:noreply, assign(socket, current_app: app)}
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end

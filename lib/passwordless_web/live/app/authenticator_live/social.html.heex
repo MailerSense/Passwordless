@@ -1,0 +1,45 @@
+<div class="flex flex-col gap-6">
+  <.form
+    id="edit-social-form"
+    for={@form}
+    phx-target={@myself}
+    phx-submit="save"
+    phx-change="validate"
+    class="flex flex-col gap-6"
+  >
+    <.box padded>
+      <.form_header title={gettext("Social")} />
+      <.p class="mb-6">
+        Social authentication allows users to sign in using their social media accounts. This can simplify the login process and improve user experience by allowing users to use existing accounts.
+      </.p>
+      <.field type="checkbox" field={@form[:enabled]} />
+    </.box>
+    <.simple_table items={[]} count={0} title={gettext("Connectors")}>
+      <:if_empty>
+        {gettext("No %{models} found", models: gettext("connectors"))}
+      </:if_empty>
+      <:col field={:name} body_class="w-full" />
+      <:col actions></:col>
+      <:actions :let={invoice}>
+        <.icon_button
+          to={~p"/billing/#{invoice}/download"}
+          size="sm"
+          icon="custom-edit"
+          color="light"
+          title={gettext("Edit")}
+          link_type="live_patch"
+        />
+      </:actions>
+    </.simple_table>
+    <.box card>
+      <div class="flex">
+        <.a
+          to={~p"/organization/new"}
+          label={gettext("Add new connector")}
+          style="link"
+          link_type="live_redirect"
+        />
+      </div>
+    </.box>
+  </.form>
+</div>

@@ -10,7 +10,8 @@ defmodule PasswordlessWeb.App.AuthenticatorLive.Index do
     passkey: AuthenticatorLive.Passkey,
     security_key: AuthenticatorLive.SecurityKey,
     totp: AuthenticatorLive.TOTP,
-    recovery_codes: AuthenticatorLive.RecoveryCodes
+    recovery_codes: AuthenticatorLive.RecoveryCodes,
+    social: AuthenticatorLive.Social
   ]
 
   @impl true

@@ -2,6 +2,7 @@ defmodule Passwordless.Views.ActionTemplateMonthlyStats do
   @moduledoc """
   Materialized view for month-to-month comparizon of action performance.
   """
+
   use Ecto.Schema
 
   import Ecto.Query
@@ -17,6 +18,7 @@ defmodule Passwordless.Views.ActionTemplateMonthlyStats do
   schema "action_template_monthly_stats" do
     field :attempts, :integer
     field :allows, :integer
+    field :timeouts, :integer
     field :blocks, :integer
     field :date, :date, virtual: true
     field :date_year, :integer

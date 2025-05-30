@@ -1,179 +1,209 @@
 export default class OTP {
-  private emptyChar: string;
-  private _resultRef: any;
-  private container: HTMLElement;
-  private updateTo: HTMLInputElement | null = null;
-  private inputs: HTMLInputElement[];
+	private emptyChar: string;
+	private _resultRef: any;
+	private container: HTMLElement;
+	private updateTo: HTMLInputElement | null = null;
+	private inputs: HTMLInputElement[];
 
-  constructor(
-    elementOrSelector: string | HTMLElement,
-    updateToInput: string | HTMLInputElement | null = null,
-    resultRef: any | null = null,
-  ) {
-    // set default options
-    this.emptyChar = " ";
-    this._resultRef = resultRef;
+	constructor(
+		elementOrSelector: string | HTMLElement,
+		updateToInput: string | HTMLInputElement | null = null,
+		resultRef: any | null = null
+	) {
+		// set default options
+		this.emptyChar = " ";
+		this._resultRef = resultRef;
 
-    if (typeof elementOrSelector === "string")
-      this.container = document.querySelector(elementOrSelector)!;
-    else if (elementOrSelector instanceof HTMLElement)
-      this.container = elementOrSelector;
-    else throw new Error("Invalid argument for constructor.");
+		if (typeof elementOrSelector === "string") {
+			const container = document.querySelector(
+				elementOrSelector
+			) as HTMLElement;
+			if (!container) {
+				throw new Error(`Element not found: ${elementOrSelector}`);
+			}
 
-    if (updateToInput) {
-      if (typeof updateToInput === "string")
-        this.updateTo = document.querySelector(updateToInput) || null;
-      else if (updateToInput instanceof HTMLInputElement)
-        this.updateTo = updateToInput;
-      else this.updateTo = null;
-    }
+			this.container = container;
+		} else if (elementOrSelector instanceof HTMLElement) {
+			this.container = elementOrSelector;
+		} else {
+			throw new Error("Invalid argument for constructor.");
+		}
 
-    this.inputs = Array.from(
-      this.container.querySelectorAll<HTMLInputElement>(
-        "input[type=text], input[type=number], input[type=password]",
-      ),
-    );
+		if (updateToInput) {
+			if (typeof updateToInput === "string") {
+				this.updateTo = document.querySelector(updateToInput) || null;
+			} else if (updateToInput instanceof HTMLInputElement) {
+				this.updateTo = updateToInput;
+			} else {
+				this.updateTo = null;
+			}
+		}
 
-    const inputCount = this.inputs.length;
+		this.inputs = Array.from(
+			this.container.querySelectorAll<HTMLInputElement>(
+				"input[type=text], input[type=number], input[type=password]"
+			)
+		);
 
-    for (let i = 0; i < inputCount; i++) {
-      const input = this.inputs[i];
-      input.addEventListener("input", () => {
-        // if not number, restore value
-        if (Number.isNaN(Number(input.value))) {
-          input.value = input.dataset.otpInputRestore || "";
-          return this._updateValue();
-        }
+		const inputCount = this.inputs.length;
 
-        // if a character is removed, do nothing and save
-        if (input.value.length === 0) return this._saveInputValue(i);
+		for (let i = 0; i < inputCount; i++) {
+			const input = this.inputs[i];
+			input.addEventListener("input", () => {
+				// if not number, restore value
+				if (Number.isNaN(Number(input.value))) {
+					input.value = input.dataset.otpInputRestore || "";
+					return this._updateValue();
+				}
 
-        // if single character, save the value and go to next input (if any)
-        if (input.value.length === 1) {
-          this._saveInputValue(i);
-          this._updateValue();
-          if (i + 1 < inputCount) this.inputs[i + 1].focus();
-          return;
-        }
+				// if a character is removed, do nothing and save
+				if (input.value.length === 0) {
+					return this._saveInputValue(i);
+				}
 
-        // more multiple character entered (eg. pasted),
-        // and it's the last input of the row,
-        // truncate to single character and save
-        if (i === inputCount - 1) return this._setInputValue(i, input.value);
+				// if single character, save the value and go to next input (if any)
+				if (input.value.length === 1) {
+					this._saveInputValue(i);
+					this._updateValue();
+					if (i + 1 < inputCount) {
+						this.inputs[i + 1].focus();
+					}
+					return;
+				}
 
-        // otherwise, put each character to each of the next input
-        const chars = input.value.split("");
+				// more multiple character entered (eg. pasted),
+				// and it's the last input of the row,
+				// truncate to single character and save
+				if (i === inputCount - 1) {
+					return this._setInputValue(i, input.value);
+				}
 
-        for (let pos = 0; pos < chars.length; pos++) {
-          // if length exceeded the number of inputs, stop
-          if (pos + i >= inputCount) break;
+				// otherwise, put each character to each of the next input
+				const chars = input.value.split("");
 
-          // paste value and save
-          this._setInputValue(pos + i, chars[pos]);
-        }
+				for (let pos = 0; pos < chars.length; pos++) {
+					// if length exceeded the number of inputs, stop
+					if (pos + i >= inputCount) {
+						break;
+					}
 
-        // focus the input next to the last pasted character
-        const focus_index = Math.min(inputCount - 1, i + chars.length);
-        this.inputs[focus_index].focus();
-      });
+					// paste value and save
+					this._setInputValue(pos + i, chars[pos]);
+				}
 
-      input.addEventListener("keydown", (e) => {
-        // backspace button
-        if (e.key === "Backspace" && input.value === "" && i !== 0) {
-          this._setInputValue(i - 1, "");
-          this.inputs[i - 1].focus();
-          return;
-        }
+				// focus the input next to the last pasted character
+				const focus_index = Math.min(inputCount - 1, i + chars.length);
+				this.inputs[focus_index].focus();
+			});
 
-        // delete button
-        if (e.key === "Delete" && i !== inputCount - 1) {
-          const selectionStart = input.selectionStart || 0;
+			input.addEventListener("keydown", (e) => {
+				// backspace button
+				if (e.key === "Backspace" && input.value === "" && i !== 0) {
+					this._setInputValue(i - 1, "");
+					this.inputs[i - 1].focus();
+					return;
+				}
 
-          for (let pos = i + selectionStart; pos < inputCount - 1; pos++)
-            this._setInputValue(pos, this.inputs[pos + 1].value);
+				// delete button
+				if (e.key === "Delete" && i !== inputCount - 1) {
+					const selectionStart = input.selectionStart || 0;
 
-          this._setInputValue(inputCount - 1, "");
+					for (let pos = i + selectionStart; pos < inputCount - 1; pos++) {
+						this._setInputValue(pos, this.inputs[pos + 1].value);
+					}
 
-          // restore caret
-          if (input.selectionStart) input.selectionStart = selectionStart;
-          e.preventDefault();
-          return;
-        }
+					this._setInputValue(inputCount - 1, "");
 
-        // left button
-        if (
-          e.key === "ArrowLeft" &&
-          (input.selectionStart == null || input.selectionStart === 0)
-        ) {
-          if (i > 0) {
-            e.preventDefault();
-            this.inputs[i - 1].focus();
-            this.inputs[i - 1].select();
-          }
-          return;
-        }
+					// restore caret
+					if (input.selectionStart) {
+						input.selectionStart = selectionStart;
+					}
+					e.preventDefault();
+					return;
+				}
 
-        // right button
-        if (
-          e.key === "ArrowRight" &&
-          (input.selectionStart == null ||
-            input.selectionEnd === input.value.length)
-        ) {
-          if (i + 1 < inputCount) {
-            e.preventDefault();
-            this.inputs[i + 1].focus();
-            this.inputs[i + 1].select();
-          }
-        }
-      });
-    }
-  }
+				// left button
+				if (
+					e.key === "ArrowLeft" &&
+					(input.selectionStart == null || input.selectionStart === 0)
+				) {
+					if (i > 0) {
+						e.preventDefault();
+						this.inputs[i - 1].focus();
+						this.inputs[i - 1].select();
+					}
+					return;
+				}
 
-  setEmptyChar(char: string): void {
-    this.emptyChar = char;
-  }
+				// right button
+				if (
+					e.key === "ArrowRight" &&
+					(input.selectionStart == null ||
+						input.selectionEnd === input.value.length) &&
+					i + 1 < inputCount
+				) {
+					e.preventDefault();
+					this.inputs[i + 1].focus();
+					this.inputs[i + 1].select();
+				}
+			});
+		}
+	}
 
-  getValue(): string {
-    let value = "";
-    this.inputs.forEach((input) => {
-      value += input.value === "" ? this.emptyChar : input.value;
-    });
-    return value;
-  }
+	setEmptyChar(char: string): void {
+		this.emptyChar = char;
+	}
 
-  setValue(value: number): void {
-    if (Number.isNaN(value)) {
-      console.error("Please enter an integer value.");
-      return;
-    }
+	getValue(): string {
+		let value = "";
+		for (const input of this.inputs) {
+			value += input.value === "" ? this.emptyChar : input.value;
+		}
+		return value;
+	}
 
-    const stringValue = `${value}`;
-    const chars = stringValue.split("");
-    for (let i = 0; i < this.inputs.length; i++)
-      this._setInputValue(i, chars[i] || "");
-  }
+	setValue(value: number): void {
+		if (Number.isNaN(value)) {
+			return;
+		}
 
-  private _setInputValue(index: number, value: string): void {
-    if (Number.isNaN(Number(value)))
-      return console.error("Please enter an integer value.");
+		const stringValue = `${value}`;
+		const chars = stringValue.split("");
+		for (let i = 0; i < this.inputs.length; i++) {
+			this._setInputValue(i, chars[i] || "");
+		}
+	}
 
-    if (!this.inputs[index]) return console.error("Index not found.");
+	private _setInputValue(index: number, value: string): void {
+		if (Number.isNaN(Number(value))) {
+			return;
+		}
 
-    this.inputs[index].value = String(value).substring(0, 1);
-    this._saveInputValue(index);
-    this._updateValue();
-  }
+		if (!this.inputs[index]) {
+			return;
+		}
 
-  private _saveInputValue(index: number, value?: string): void {
-    if (!this.inputs[index]) return console.error("Index not found.");
+		this.inputs[index].value = String(value).substring(0, 1);
+		this._saveInputValue(index);
+		this._updateValue();
+	}
 
-    this.inputs[index].dataset.otpInputRestore =
-      value || this.inputs[index].value;
-  }
+	private _saveInputValue(index: number, value?: string): void {
+		if (!this.inputs[index]) {
+			return;
+		}
 
-  private _updateValue(): void {
-    const value = this.getValue();
-    if (this.updateTo) this.updateTo.value = value;
-    if (this._resultRef) this._resultRef.value = value;
-  }
+		this.inputs[index].dataset.otpInputRestore =
+			value || this.inputs[index].value;
+	}
+
+	private _updateValue(): void {
+		const value = this.getValue();
+		if (this.updateTo) {
+			this.updateTo.value = value;
+		}
+		if (this._resultRef) {
+			this._resultRef.value = value;
+		}
+	}
 }

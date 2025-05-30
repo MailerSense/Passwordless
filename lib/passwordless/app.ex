@@ -52,6 +52,7 @@ defmodule Passwordless.App do
     has_one :security_key, Authenticators.SecurityKey
     has_one :totp, Authenticators.TOTP
     has_one :recovery_codes, Authenticators.RecoveryCodes
+    has_one :social, Authenticators.Social
 
     has_many :media, Media, preload_order: [asc: :inserted_at]
     has_many :domains, Domain, preload_order: [asc: :inserted_at]

@@ -1,0 +1,13 @@
+{
+	"extends": "@passwordless-tools/typescript-config/react-library.json",
+	"compilerOptions": {
+		"moduleResolution": "bundler",
+		"baseUrl": ".",
+		"types": ["@vitest/browser/matchers"],
+		"paths": {
+			"~/*": ["./src/*"]
+		}
+	},
+	"include": ["src"],
+	"exclude": ["node_modules"]
+}

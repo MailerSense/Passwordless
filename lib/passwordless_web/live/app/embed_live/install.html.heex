@@ -9,31 +9,22 @@
       module={PasswordlessWeb.Components.MultiCodeBlock}
       codes={[
         %{
-          tab: gettext("Bash"),
+          tab: gettext("Client API"),
           language: :bash,
           code: ~s"""
-          ## Get Current App
-          curl "#{PasswordlessWeb.Router.Helpers.app_url(PasswordlessWeb.Endpoint, :show)}" \\
-              -H 'Authorization: Bearer #{if @reveal_secret?, do: @secret, else: "sk_live_*******"}'
+          ## Test Client API
+          curl "#{PasswordlessWeb.Router.Helpers.app_client_url(PasswordlessWeb.Endpoint, :index)}" \\
+              -H 'X-Passwordless-App-ID: #{@app.id}'
           """
         },
         %{
-          tab: gettext("Typescript"),
-          language: :typescript,
+          tab: gettext("Server API"),
+          language: :bash,
           code: ~s"""
-          // First, install the SDK
-          // pnpm add @passwordless/tools
-
-          import { Passwordless, Residency } from '@passwordless/tools';
-
-          const secret = process.env.PASSWORDLESS_APP_SECRET;
-          if (!secret) {
-            throw new Error("PASSWORDLESS_APP_SECRET is undefined");
-          }
-
-          const residency = Residency.EU;
-
-          Passwordless.init({ secret, residency });
+          ## Test Server API
+          curl "#{PasswordlessWeb.Router.Helpers.app_url(PasswordlessWeb.Endpoint, :show)}" \\
+              -H 'X-Passwordless-App-ID: #{@app.id}' \\
+              -H 'Authorization: Bearer #{if @reveal_secret?, do: @secret, else: "sk_live_*******"}'
           """
         }
       ]}
@@ -79,7 +70,7 @@
   <.box card>
     <.form_header title={gettext("IP Allowlist")} no_margin />
     <.p>
-      Permit API calls only from predefined IP ranges. If you have static outbound IP addresses, you can allowlist them here.
+      Permit Server API to be accessed only from IP addressess matching the allowlist. If you have static outbound IP addresses, you can allowlist them here.
     </.p>
     <.form
       id="app-security-form"
@@ -172,17 +163,5 @@
         </li>
       </.ul>
     </div>
-  </.box>
-  <.box card>
-    <.form_header title={gettext("Usage")} no_margin />
-    <.p>
-      You can use the Backend API to authenticate your users directly from your own backend. It is perfect for authenticators such a Email, SMS or WhatsApp OTP that do not require UI components.
-    </.p>
-    <.a
-      to={~p"/embed/api"}
-      label={gettext("Read API documentation")}
-      style="link"
-      link_type="live_redirect"
-    />
   </.box>
 </div>

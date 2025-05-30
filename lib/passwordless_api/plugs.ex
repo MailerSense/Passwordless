@@ -29,6 +29,23 @@ defmodule PasswordlessApi.Plugs do
     end
   end
 
+  @client_id "x-passwordless-app-id"
+
+  @doc """
+  Authenticates API requests
+  """
+  def authenticate_client_api(%Plug.Conn{} = conn, _opts) do
+    with ["app" <> _rest = app_id] <- get_req_header(conn, @client_id),
+         %App{} = app <- Repo.get(App, app_id) do
+      assign(conn, :current_app, app)
+    else
+      _ ->
+        conn
+        |> FallbackController.call({:error, :unauthorized})
+        |> halt()
+    end
+  end
+
   @doc """
   Rate limits the API requests.
   """
@@ -62,4 +79,12 @@ defmodule PasswordlessApi.Plugs do
   """
   def get_current_org_id(%Plug.Conn{assigns: %{current_app: %App{org_id: org_id}}}) when is_binary(org_id), do: org_id
   def get_current_org_id(%Plug.Conn{}), do: nil
+
+  @doc """
+  Fetches the current user ip from the connection.
+  """
+  def get_current_user_ip(%Plug.Conn{assigns: %{current_user_ip: current_user_ip}}) when is_binary(current_user_ip),
+    do: current_user_ip
+
+  def get_current_user_ip(%Plug.Conn{}), do: nil
 end

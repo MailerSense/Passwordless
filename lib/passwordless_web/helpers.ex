@@ -100,7 +100,7 @@ defmodule PasswordlessWeb.Helpers do
       },
       %{
         name: :api,
-        label: "API",
+        label: "Server API",
         icon: "remix-code-s-slash-line",
         path: ~p"/embed/api",
         link_type: "live_patch"
@@ -155,6 +155,13 @@ defmodule PasswordlessWeb.Helpers do
         label: "Passkey",
         icon: "remix-fingerprint-line",
         path: ~p"/authenticators/passkey",
+        link_type: "live_patch"
+      },
+      %{
+        name: :social,
+        label: "Social",
+        icon: "remix-thumb-up-line",
+        path: ~p"/authenticators/social",
         link_type: "live_patch"
       },
       %{

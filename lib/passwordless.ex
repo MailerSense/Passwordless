@@ -45,6 +45,7 @@ defmodule Passwordless do
     email_otp: Authenticators.EmailOTP,
     magic_link: Authenticators.MagicLink,
     passkey: Authenticators.Passkey,
+    social: Authenticators.Social,
     totp: Authenticators.TOTP,
     recovery_codes: Authenticators.RecoveryCodes
   ]
@@ -482,6 +483,7 @@ defmodule Passwordless do
   crud(:security_key, :security_key, Passwordless.Authenticators.SecurityKey)
   crud(:totp, :totp, Passwordless.Authenticators.TOTP)
   crud(:recovery_codes, :recovery_codes, Passwordless.Authenticators.RecoveryCodes)
+  crud(:social, :social, Passwordless.Authenticators.Social)
 
   # User
 
@@ -912,6 +914,19 @@ defmodule Passwordless do
     |> Repo.get!(id)
   end
 
+  def get_action_template_by_alias(%App{} = app, aliasCode) do
+    opts = [prefix: Tenant.to_prefix(app)]
+
+    ActionTemplate
+    |> ActionTemplate.get_by_app(app)
+    |> ActionTemplate.join_adapter_opts(opts)
+    |> Repo.get_by(alias: aliasCode)
+    |> case do
+      %ActionTemplate{} = action_template -> {:ok, action_template}
+      nil -> {:error, :not_found}
+    end
+  end
+
   def create_action_template(%App{} = app, attrs \\ %{}) do
     opts = [prefix: Tenant.to_prefix(app)]
 
@@ -1071,22 +1086,38 @@ defmodule Passwordless do
   end
 
   def get_reporting_events(%App{} = app, %Timex.Interval{} = interval, opts \\ []) do
-    Repo.all(
-      from(e in Event,
-        prefix: ^Tenant.to_prefix(app),
-        where:
-          e.inserted_at >= ^interval.from and e.inserted_at <= ^interval.until and not is_nil(e.latitude) and
-            not is_nil(e.longitude),
-        group_by: [e.latitude, e.longitude, e.city],
-        select: %{
-          lat: e.latitude,
-          lng: e.longitude,
-          city: e.city,
-          count: count(e.id)
-        },
-        order_by: [desc: count(e.id)]
+    events =
+      Repo.all(
+        from(e in Event,
+          prefix: ^Tenant.to_prefix(app),
+          where:
+            e.inserted_at >= ^interval.from and e.inserted_at <= ^interval.until and not is_nil(e.latitude) and
+              not is_nil(e.longitude),
+          group_by: [e.latitude, e.longitude, e.city],
+          select: %{
+            lat: e.latitude,
+            lng: e.longitude,
+            city: e.city,
+            count: count(e.id)
+          }
+        )
       )
-    )
+
+    if Enum.empty?(events) do
+      []
+    else
+      max_count = Enum.max_by(events, & &1.count, fn -> 0 end).count
+
+      Enum.map(events, fn event ->
+        %{
+          lat: event.lat,
+          lng: event.lng,
+          city: event.city,
+          count: if(max_count > 0, do: max(Float.round(event.count / max_count, 8), 1.0), else: 0.0),
+          absolute: event.count
+        }
+      end)
+    end
   end
 
   # Rules
@@ -1311,23 +1342,23 @@ defmodule Passwordless do
     |> case do
       [] ->
         [
-          %{label: "Attempts", value: 0, change: 0, legend_color_class: "bg-gray-500"},
           %{label: "Allows", value: 0, change: 0, legend_color_class: "bg-success-500"},
+          %{label: "Timeouts", value: 0, change: 0, legend_color_class: "bg-warning-500"},
           %{label: "Blocks", value: 0, change: 0, legend_color_class: "bg-danger-500"}
         ]
 
-      [%ActionTemplateMonthlyStats{blocks: blocks, attempts: attempts, allows: allows}] ->
+      [%ActionTemplateMonthlyStats{blocks: blocks, timeouts: timeouts, allows: allows}] ->
         [
-          %{label: "Attempts", value: attempts, change: 0, legend_color_class: "bg-gray-500"},
           %{label: "Allows", value: allows, change: 0, legend_color_class: "bg-success-500"},
+          %{label: "Timeouts", value: timeouts, change: 0, legend_color_class: "bg-warning-500"},
           %{label: "Blocks", value: blocks, change: 0, legend_color_class: "bg-danger-500"}
         ]
 
       [%ActionTemplateMonthlyStats{} = a, %ActionTemplateMonthlyStats{} = b] ->
         Enum.map(
           [
-            attempts: {"Attempts", "bg-gray-500"},
             allows: {"Allows", "bg-success-500"},
+            timeouts: {"Timeouts", "bg-warning-500"},
             blocks: {"Blocks", "bg-danger-500"}
           ],
           fn {key, {label, color}} ->
@@ -1339,8 +1370,8 @@ defmodule Passwordless do
       [_, %ActionTemplateMonthlyStats{} = a, %ActionTemplateMonthlyStats{} = b] ->
         Enum.map(
           [
-            attempts: {"Attempts", "bg-gray-500"},
             allows: {"Allows", "bg-success-500"},
+            timeouts: {"Timeouts", "bg-warning-500"},
             blocks: {"Blocks", "bg-danger-500"}
           ],
           fn {key, {label, color}} ->

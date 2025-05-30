@@ -5,8 +5,12 @@ defmodule PasswordlessApi.ActionJSON do
 
   alias Passwordless.Action
 
-  def get(%{action: %Action{} = action}) do
+  def show(%{action: %Action{} = action}) do
     %{action: action}
+  end
+
+  def query(%{result: result}) do
+    %{result: result}
   end
 
   def authenticate(%{action: %Action{} = action}) do

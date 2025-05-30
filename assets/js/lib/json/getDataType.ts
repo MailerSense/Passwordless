@@ -3,7 +3,11 @@
  * @param {*} data
  */
 export default function getDataType(val: any) {
-  if (Array.isArray(val)) return "array";
-  if (val === null) return "null";
-  return typeof val;
+	if (Array.isArray(val)) {
+		return "array";
+	}
+	if (val === null) {
+		return "null";
+	}
+	return typeof val;
 }
