@@ -52,6 +52,13 @@ defmodule PasswordlessApi.Routes do
 
         resources "/app", AppClientController, only: [:index]
         resources "/action-templates", ActionTemplateController, only: [:show]
+
+        scope "/actions" do
+          pipe_through [
+            :api_rate_limited_actions,
+            :api_idempotent
+          ]
+        end
       end
 
       scope "/api/server/v1", PasswordlessApi do
@@ -70,17 +77,16 @@ defmodule PasswordlessApi.Routes do
           get "/:id", UserController, :get
         end
 
+        resources "/actions", ActionController, only: [:show]
+
         scope "/actions" do
-          get "/:id", ActionController, :get
+          pipe_through [
+            :api_rate_limited_actions,
+            :api_idempotent
+          ]
 
-          scope "/" do
-            pipe_through [
-              :api_rate_limited_actions,
-              :api_idempotent
-            ]
-
-            post "/authenticate", ActionController, :authenticate
-          end
+          post "/query", ActionController, :query
+          post "/authenticate", ActionController, :authenticate
         end
       end
     end

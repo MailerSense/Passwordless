@@ -40,7 +40,7 @@
     />
   </.box>
   <.box card>
-    <.form_header title={gettext("Initialization")} no_margin />
+    <.form_header title={gettext("Setup")} no_margin />
     <.p>
       Initialize the Passwordless client by providing your app ID, Secret Key and the data residency region.
     </.p>
@@ -81,7 +81,6 @@
           import { Passwordless } from "@passwordless/node";
 
           const action = Passwordless.authenticate({
-            action: "signIn",
             user:  {
               identifiers: [
                 { kind: "username", value: "1234567890" },
@@ -89,6 +88,11 @@
               emails: [
                 { address: "user@example.com" },
               ],
+            },
+            action: "signIn",
+            device: {
+              userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+              ipAddress: "192.168.0.1",
             }
           });
           """

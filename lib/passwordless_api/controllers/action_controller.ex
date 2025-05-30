@@ -72,10 +72,14 @@ defmodule PasswordlessApi.ActionController do
     end
   end
 
-  def get(%Plug.Conn{} = conn, %{"id" => id}, %App{} = app) do
+  def show(%Plug.Conn{} = conn, %{"id" => id}, %App{} = app) do
     with {:ok, action} <- Passwordless.get_action(app, id) do
-      render(conn, :get, action: action)
+      render(conn, :show, action: action)
     end
+  end
+
+  def query(%Plug.Conn{} = conn, params, %App{} = app) do
+    render(conn, :query, result: nil)
   end
 
   def authenticate(%Plug.Conn{} = conn, params, %App{} = app) do

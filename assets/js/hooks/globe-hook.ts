@@ -1,18 +1,20 @@
 import { scaleSequentialSqrt } from "d3-scale";
-import { interpolateYlOrRd } from "d3-scale-chromatic";
+import { interpolateSpectral } from "d3-scale-chromatic";
 import Globe, { GlobeInstance } from "globe.gl";
-
+import { MeshPhongMaterial } from "three";
 import { Hook, makeHook } from "./typed-hook";
 
 interface GeoData {
 	lat: number;
 	lon: number;
-	count: number;
 	city: string;
+	count: number;
+	absolute: number;
 }
 
 interface GeoPayload {
 	geo_data: GeoData[];
+	resolution: number;
 }
 
 interface Countries {
@@ -25,18 +27,15 @@ class GlobeHook extends Hook {
 	public mounted() {
 		const windowWidth = window.innerWidth;
 		const windowHeight = window.innerHeight;
-		const randomShader = `rgba(120, 140, 110, ${Math.random() / 2 + 0.5})`;
-		const highest = 1;
-		const normalized = 5 / 30;
-		const weightColor = scaleSequentialSqrt(interpolateYlOrRd).domain([
-			0,
-			highest * normalized * 15,
-		]);
+		const randomShader = "rgba(120, 140, 110, 0.5)";
+		const material = new MeshPhongMaterial({
+			color: "hsl(221, 59%, 21%)",
+			transparent: false,
+			opacity: 1,
+		});
 
 		this.globe = new Globe(this.el)
-			.globeImageUrl(
-				"//cdn.jsdelivr.net/npm/three-globe/example/img/earth-day.jpg"
-			)
+			.globeMaterial(material)
 			.backgroundColor("rgba(0,0,0,0)")
 			.showGlobe(true)
 			.showAtmosphere(true)
@@ -49,8 +48,6 @@ class GlobeHook extends Hook {
 			.hexPolygonColor((_e: any) => {
 				return randomShader;
 			})
-			.hexTopColor((d) => weightColor(d.sumWeight))
-			.hexSideColor((d) => weightColor(d.sumWeight))
 			.onGlobeReady(() => {
 				if (!this.globe) {
 					return;
@@ -102,7 +99,19 @@ class GlobeHook extends Hook {
 
 		this.handleEvent("get_geo_data", (data: GeoPayload) => {
 			if (this.globe) {
-				this.globe.hexBinPointsData(data.geo_data);
+				const { geo_data, resolution } = data;
+				const highest =
+					geo_data.reduce((acc, curr) => Math.max(acc, curr.absolute), 0) ?? 1;
+				const normalized = 5 / resolution;
+				const weightColor = scaleSequentialSqrt(interpolateSpectral).domain([
+					0,
+					highest * normalized * 15,
+				]);
+
+				this.globe
+					.hexBinPointsData(geo_data)
+					.hexTopColor((d) => weightColor(d.sumWeight))
+					.hexSideColor((d) => weightColor(d.sumWeight));
 			}
 		});
 
