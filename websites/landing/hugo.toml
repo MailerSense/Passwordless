@@ -1,3 +1,15 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://passwordless.tools/'
 languageCode = 'en-us'
-title = 'My New Hugo Site'
+title = 'Passwordless Tools'
+theme = 'ananke'
+enableRobotsTXT = true
+
+[minify]
+  minifyOutput = true
+  [minify.tdewolff]
+    [minify.tdewolff.html]
+      keepComments = false
+      keepWhitespace = false
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
