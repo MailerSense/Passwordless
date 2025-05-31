@@ -1,6 +1,10 @@
 import { RemovalPolicy } from "aws-cdk-lib";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
-import { ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
+import {
+	OriginRequestPolicy,
+	ResponseHeadersPolicy,
+	ViewerProtocolPolicy,
+} from "aws-cdk-lib/aws-cloudfront";
 import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { PolicyStatement, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { IHostedZone } from "aws-cdk-lib/aws-route53";
@@ -44,6 +48,9 @@ export class StaticWebsite extends Construct {
 			defaultBehavior: {
 				origin: S3BucketOrigin.withOriginAccessControl(bucket.bucket),
 				viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+				originRequestPolicy: OriginRequestPolicy.CORS_S3_ORIGIN,
+				responseHeadersPolicy:
+					ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT,
 			},
 			defaultRootObject: "index.html",
 			additionalBehaviors: {},
