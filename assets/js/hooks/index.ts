@@ -7,7 +7,7 @@ import GlobeHook from "./globe-hook";
 import HighlightHook from "./highlight-hook";
 import HTMLPreviewHook from "./html-preview-hook";
 import JSONHook from "./json-hook";
-import { createLiveToastHook } from "./live-toast";
+import { createLiveToastHook } from "live_toast";
 import OTPHook from "./otp-hook";
 import ProgressInput from "./progress-input";
 import ResetColorSchemeHook from "./reset-color-scheme-hook";
