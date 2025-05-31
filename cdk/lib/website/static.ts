@@ -1,6 +1,9 @@
 import { RemovalPolicy } from "aws-cdk-lib";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
-import { ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
+import {
+	OriginAccessIdentity,
+	ViewerProtocolPolicy,
+} from "aws-cdk-lib/aws-cloudfront";
 import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { IHostedZone } from "aws-cdk-lib/aws-route53";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
@@ -34,6 +37,12 @@ export class StaticWebsite extends Construct {
 			sources: [Source.asset(source)],
 		});
 
+		const oiaName = `${name}-oia`;
+		const oia = new OriginAccessIdentity(this, oiaName, {
+			comment: `OIA for ${name} static website`,
+		});
+		bucket.bucket.grantRead(oia);
+
 		const cdnName = `${name}-cdn`;
 		const _cdn = new CDN(this, cdnName, {
 			name: cdnName,
@@ -41,7 +50,9 @@ export class StaticWebsite extends Construct {
 			cert,
 			domain,
 			defaultBehavior: {
-				origin: S3BucketOrigin.withOriginAccessControl(bucket.bucket),
+				origin: S3BucketOrigin.withOriginAccessIdentity(bucket.bucket, {
+					originAccessIdentity: oia,
+				}),
 				viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
 			},
 			defaultRootObject: "index.html",
