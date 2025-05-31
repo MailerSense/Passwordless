@@ -39,7 +39,7 @@ defmodule Passwordless.ViewRefresher do
             )
 
     schema_queries =
-      for u <- Tenant.all(),
+      for u <- Tenant.all(Passwordless.Repo),
           {_d, m, v} <- Enum.filter(@views, fn {domain, _, _} -> domain == :app end),
           do:
             (
