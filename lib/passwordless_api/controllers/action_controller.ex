@@ -15,13 +15,8 @@ defmodule PasswordlessApi.ActionController do
 
   action_fallback PasswordlessWeb.FallbackController
 
-  operation :authenticate,
-    summary: "Authenticate an action",
-    description: "Authenticate an action",
-    responses: [
-      ok: {"Action", "application/json", Schemas.Action},
-      unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}
-    ]
+  tags ["actions"]
+  security [%{}, %{"passwordless_auth" => ["write:actions", "read:actions"]}]
 
   defmodule AuthenticateAction do
     @moduledoc false
@@ -72,6 +67,17 @@ defmodule PasswordlessApi.ActionController do
     end
   end
 
+  operation :show,
+    summary: "Show an action",
+    description: "Show an action",
+    parameters: [
+      id: [in: :path, description: "Action ID", type: :string, example: "action_12345"]
+    ],
+    responses: [
+      ok: {"Action", "application/json", Schemas.Action},
+      unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}
+    ]
+
   def show(%Plug.Conn{} = conn, %{"id" => id}, %App{} = app) do
     with {:ok, action} <- Passwordless.get_action(app, id) do
       render(conn, :show, action: action)
@@ -81,6 +87,14 @@ defmodule PasswordlessApi.ActionController do
   def query(%Plug.Conn{} = conn, params, %App{} = app) do
     render(conn, :query, result: nil)
   end
+
+  operation :authenticate,
+    summary: "Authenticate an action",
+    description: "Authenticate an action",
+    responses: [
+      ok: {"Action", "application/json", Schemas.Action},
+      unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}
+    ]
 
   def authenticate(%Plug.Conn{} = conn, params, %App{} = app) do
     with {:ok, decoded} <- AuthenticateAction.conform(params) do
@@ -131,9 +145,5 @@ defmodule PasswordlessApi.ActionController do
         render(conn, :authenticate, action: action)
       end
     end
-  end
-
-  def continue(%Plug.Conn{} = conn, params, %App{} = app) do
-    render(conn, :continue, action: nil)
   end
 end

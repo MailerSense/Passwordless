@@ -12,6 +12,9 @@ defmodule PasswordlessApi.AppClientController do
 
   action_fallback PasswordlessWeb.FallbackController
 
+  tags ["apps"]
+  security [%{}, %{"passwordless_auth" => ["read:apps"]}]
+
   operation :index,
     summary: "Show App",
     description: "Show the properties of the current App",

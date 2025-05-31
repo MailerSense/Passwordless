@@ -6,19 +6,12 @@ defmodule PasswordlessApi.UserController do
   use PasswordlessWeb, :authenticated_api_controller
   use OpenApiSpex.ControllerSpecs
 
-  alias OpenApiSpex.Reference
   alias Passwordless.App
-  alias PasswordlessApi.Schemas
 
   action_fallback PasswordlessWeb.FallbackController
 
-  operation :show,
-    summary: "Get a user",
-    description: "Get a user",
-    responses: [
-      ok: {"User", "application/json", Schemas.User},
-      unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}
-    ]
+  tags ["users"]
+  security [%{}, %{"passwordless_auth" => ["read:users"]}]
 
   def get(%Plug.Conn{} = conn, %{"id" => id}, %App{} = app) do
     with {:ok, user} <- Passwordless.lookup_user(app, id) do

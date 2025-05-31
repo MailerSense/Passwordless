@@ -7,10 +7,16 @@ defmodule PasswordlessApi.Routes do
     quote do
       import PasswordlessApi.Plugs
 
-      pipeline :api do
+      pipeline :api_server do
         plug :parse_ip
         plug :accepts, ["json"]
-        plug OpenApiSpex.Plug.PutApiSpec, module: PasswordlessApi.ApiSpec
+        plug OpenApiSpex.Plug.PutApiSpec, module: PasswordlessApi.ServerApiSpec
+      end
+
+      pipeline :api_client do
+        plug :parse_ip
+        plug :accepts, ["json"]
+        plug OpenApiSpex.Plug.PutApiSpec, module: PasswordlessApi.ClientApiSpec
       end
 
       pipeline :api_authenticated do
@@ -37,15 +43,21 @@ defmodule PasswordlessApi.Routes do
         plug OneAndDone.Plug, cache: Passwordless.Cache
       end
 
-      scope "/api" do
-        pipe_through :api
+      scope "/api/client" do
+        pipe_through :api_client
+
+        get "/openapi", OpenApiSpex.Plug.RenderSpec, []
+      end
+
+      scope "/api/server" do
+        pipe_through :api_server
 
         get "/openapi", OpenApiSpex.Plug.RenderSpec, []
       end
 
       scope "/api/client/v1", PasswordlessApi do
         pipe_through [
-          :api,
+          :api_client,
           :api_authenticated_client,
           :api_rate_limited_client
         ]
@@ -63,7 +75,7 @@ defmodule PasswordlessApi.Routes do
 
       scope "/api/server/v1", PasswordlessApi do
         pipe_through [
-          :api,
+          :api_server,
           :api_authenticated,
           :api_rate_limited
         ]

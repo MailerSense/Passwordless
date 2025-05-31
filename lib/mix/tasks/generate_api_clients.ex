@@ -1,0 +1,33 @@
+defmodule Mix.Tasks.GenerateApiClients do
+  @moduledoc false
+
+  use Mix.Task
+
+  @specs [
+    client: PasswordlessApi.ClientApiSpec,
+    server: PasswordlessApi.ServerApiSpec
+  ]
+
+  @doc """
+  Generates API clients for the Passwordless API.
+  """
+  def run(_) do
+    for {name, spec} <- @specs do
+      Mix.Task.rerun("openapi.spec.json", [
+        "--spec",
+        inspect(spec),
+        "--filename",
+        "#{name}.openapi.json",
+        "--start-app",
+        false
+      ])
+
+      File.cp("#{name}.openapi.json", "packages/shared/#{name}.openapi.json", on_conflict: fn _, _ -> true end)
+      File.rm("#{name}.openapi.json")
+
+      System.cmd("pnpm", ["--prefix", "packages/shared", "generate:#{name}-api-ts"], stderr_to_stdout: true)
+
+      File.rm("packages/shared/#{name}.openapi.json")
+    end
+  end
+end
