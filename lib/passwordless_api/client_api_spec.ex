@@ -33,7 +33,7 @@ defmodule PasswordlessApi.ClientApiSpec do
           no_content: no_content_response()
         }
       },
-      tags: [%Tag{name: "server", description: "Server API"}],
+      tags: [%Tag{name: "client", description: "Client API"}],
       paths:
         Router
         |> Paths.from_router()
