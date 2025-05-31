@@ -107,3 +107,6 @@ coverage.json
 target/
 
 *.log
+
+_pagefind/
+out/
