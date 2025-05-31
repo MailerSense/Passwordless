@@ -2,6 +2,7 @@ packages:
   - "cdk"
   - "assets"
   - packages/**
+  - websites/**
 
 ignoredBuiltDependencies:
   - "@prisma/client"

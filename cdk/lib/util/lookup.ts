@@ -122,6 +122,10 @@ export const rootDomainLookupMap = {
 			domain: "www.dev.passwordless.tools",
 			zone: ZoneType.TOOLS,
 		},
+		docs: {
+			domain: "docs.dev.passwordless.tools",
+			zone: ZoneType.TOOLS,
+		},
 	},
 	[Environment.PROD]: {
 		com: {
@@ -138,6 +142,10 @@ export const rootDomainLookupMap = {
 		},
 		www: {
 			domain: "www.passwordless.tools",
+			zone: ZoneType.TOOLS,
+		},
+		docs: {
+			domain: "docs.passwordless.tools",
 			zone: ZoneType.TOOLS,
 		},
 	},

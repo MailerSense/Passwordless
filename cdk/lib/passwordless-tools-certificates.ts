@@ -179,5 +179,15 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
 			domain: rootDomains.main.domain,
 			removalPolicy,
 		});
+
+		const docsName = `${env}-documentation`;
+		const _docs = new StaticWebsite(this, landingPageName, {
+			name: docsName,
+			source: path.join(__dirname, "../../websites/docs/out"),
+			zone,
+			cert: this.mainCert.certificate,
+			domain: rootDomains.docs.domain,
+			removalPolicy,
+		});
 	}
 }

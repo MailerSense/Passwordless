@@ -1,0 +1,74 @@
+# Track Custom Events
+
+The script exposes a global object `window.rybbit` with functions for manual tracking of events.
+
+## Available Functions
+
+### `window.rybbit.event(eventName, properties)`
+
+Tracks a custom event with optional properties.
+
+*   `eventName` (String): The name of the custom event (max 255 characters).
+*   `properties` (Object, Optional): An object containing custom data (max 2KB characters). Only strings numbers are supported as values.
+
+```javascript
+// Track a simple custom event
+window.rybbit.event("Signup Button Clicked");
+
+// Track a custom event with properties
+window.rybbit.event("Item Added To Cart", {
+  itemId: "PROD123",
+  price: 49.99,
+  category: "Clothing"
+});
+```
+
+### `window.rybbit.pageview()`
+
+Tracks a pageview. Useful when `data-track-spa` is set to `"false"` or when you need to manually trigger a pageview.
+
+```javascript
+// Track a pageview
+window.rybbit.pageview();
+```
+
+{/* ### `window.rybbit.trackOutbound(url, text, target)`
+
+Manually tracks outbound link clicks. Useful for programmatic navigation or custom link handling.
+
+*   `url` (String): The full URL of the outbound link.
+*   `text` (String, Optional): The text content of the link.
+*   `target` (String, Optional): The target attribute of the link (defaults to "_self").
+
+```javascript
+// Track a programmatic navigation to an external site
+window.rybbit.trackOutbound("https://example.com", "Example Site", "_blank");
+``` */}
+
+## Typescript Support
+
+Put this as file `rybbit.d.ts` anywhere in your project to avoid having to do `(window as any).rybbit.event()` everywhere.
+
+```typescript
+interface Rybbit {
+    /**
+     * Tracks a page view
+     */
+    pageview: () => void;
+
+    /**
+     * Tracks a custom event
+     * @param name Name of the event
+     * @param properties Optional properties for the event
+     */
+    event: (name: string, properties?: Record<string, any>) => void;
+}
+
+declare global {
+    interface Window {
+        rybbit: Rybbit;
+    }
+}
+
+export {};
+```

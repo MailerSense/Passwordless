@@ -39,7 +39,7 @@ jobs:
         elixir: ["1.18.3"]
     environment: ${{ (github.event.pull_request.base.ref == 'main' && 'main') || 'dev' }}
     steps:
-      - name: Setup Elixir
+      - name: 🏗️ Setup Elixir
         uses: erlef/setup-beam@v1
         env:
           ImageOS: ubuntu24
@@ -47,10 +47,10 @@ jobs:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
 
-      - name: Checkout code
+      - name: ⬇️ Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache deps
+      - name: 🅿️ Cache deps
         id: cache-deps
         uses: actions/cache@v4
         env:
@@ -61,7 +61,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mix-${{ env.cache-name }}-
 
-      - name: Cache compiled build
+      - name: 🧪 Cache compiled build
         id: cache-build
         uses: actions/cache@v4
         env:
@@ -73,22 +73,22 @@ jobs:
             ${{ runner.os }}-mix-${{ env.cache-name }}-
             ${{ runner.os }}-mix-
 
-      - name: Setup private repo
+      - name: 🏗️ Setup private repo
         run: |
           mix hex.repo add oban https://getoban.pro/repo \
             --fetch-public-key SHA256:4/OSKi0NRF91QVVXlGAhb/BIMLnK8NHcx/EWs+aIWPc \
             --auth-key ${{ secrets.OBAN_PRO_AUTH_KEY }}
 
-      - name: Install deps
+      - name: 📦 Install dependencies
         run: mix deps.get
 
-      - name: Compile
+      - name: 🟢 Compile
         run: mix compile
 
-      - name: Format
+      - name: 👀 Format
         run: mix format --check-formatted
 
-      - name: Test
+      - name: 🧹 Test
         run: mix test
   cdk:
     name: Diff CDK on Node ${{matrix.node-version}}
