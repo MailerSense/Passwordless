@@ -181,7 +181,7 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
 		});
 
 		const docsName = `${env}-documentation`;
-		const _docs = new StaticWebsite(this, landingPageName, {
+		const _docs = new StaticWebsite(this, docsName, {
 			name: docsName,
 			source: path.join(__dirname, "../../websites/docs/out"),
 			zone,
