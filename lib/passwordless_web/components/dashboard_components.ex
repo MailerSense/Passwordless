@@ -470,7 +470,7 @@ defmodule PasswordlessWeb.DashboardComponents do
     assigns =
       assign(assigns,
         badge_label: if(assigns[:enabled], do: gettext("Enabled"), else: gettext("Disabled")),
-        badge_color: if(assigns[:enabled], do: "success", else: "gray")
+        badge_color: if(assigns[:enabled], do: "success", else: "danger")
       )
 
     ~H"""

@@ -1,9 +1,9 @@
+import * as path from "node:path";
 import * as cdk from "aws-cdk-lib";
 import { ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
 import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { PublicHostedZone } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
-
 import { CDN } from "./network/cdn";
 import { Certificate } from "./network/certificate";
 import { Redirect } from "./network/redirect";
@@ -11,6 +11,7 @@ import { PrivateBucket } from "./storage/private-bucket";
 import { Environment } from "./util/environment";
 import { domainLookupMap, lookupMap, rootDomainLookupMap } from "./util/lookup";
 import { Region } from "./util/region";
+import { StaticWebsite } from "./website/static";
 
 export class PasswordlessToolsCertificates extends cdk.Stack {
 	public cdn: Record<Region, Record<Environment, Certificate>>;
@@ -167,6 +168,16 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
 				viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
 			},
 			additionalBehaviors: {},
+		});
+
+		const landingPageName = `${env}-landing-page`;
+		const _landingPage = new StaticWebsite(this, landingPageName, {
+			name: landingPageName,
+			source: path.join(__dirname, "../../websites/landing/public"),
+			zone,
+			cert: this.mainCert.certificate,
+			domain: rootDomains.main.domain,
+			removalPolicy,
 		});
 	}
 }
