@@ -1,10 +1,8 @@
 import { RemovalPolicy } from "aws-cdk-lib";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
-import {
-	OriginAccessIdentity,
-	ViewerProtocolPolicy,
-} from "aws-cdk-lib/aws-cloudfront";
+import { ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
 import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
+import { PolicyStatement, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { IHostedZone } from "aws-cdk-lib/aws-route53";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import { Construct } from "constructs";
@@ -37,26 +35,30 @@ export class StaticWebsite extends Construct {
 			sources: [Source.asset(source)],
 		});
 
-		const oiaName = `${name}-oia`;
-		const oia = new OriginAccessIdentity(this, oiaName, {
-			comment: `OIA for ${name} static website`,
-		});
-		bucket.bucket.grantRead(oia);
-
 		const cdnName = `${name}-cdn`;
-		const _cdn = new CDN(this, cdnName, {
+		const cdn = new CDN(this, cdnName, {
 			name: cdnName,
 			zone,
 			cert,
 			domain,
 			defaultBehavior: {
-				origin: S3BucketOrigin.withOriginAccessIdentity(bucket.bucket, {
-					originAccessIdentity: oia,
-				}),
+				origin: S3BucketOrigin.withOriginAccessControl(bucket.bucket),
 				viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
 			},
 			defaultRootObject: "index.html",
 			additionalBehaviors: {},
 		});
+
+		bucket.bucket.addToResourcePolicy(
+			new PolicyStatement({
+				actions: ["s3:GetObject"],
+				principals: [new ServicePrincipal("cloudfront.amazonaws.com")],
+				conditions: {
+					StringEquals: {
+						"aws:SourceArn": cdn.distribution.distributionArn,
+					},
+				},
+			})
+		);
 	}
 }
