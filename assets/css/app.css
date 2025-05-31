@@ -3,6 +3,7 @@
 @import "highlight.js/styles/shades-of-purple.css";
 
 @source "../..";
+@source "../deps/live_toast/lib/**/*.*ex";
 
 @plugin "@tailwindcss/forms";
 @plugin "../custom.tailwind.plugin.js";

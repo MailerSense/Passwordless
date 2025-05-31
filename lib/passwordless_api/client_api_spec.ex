@@ -1,4 +1,4 @@
-defmodule PasswordlessApi.ApiSpec do
+defmodule PasswordlessApi.ClientApiSpec do
   @moduledoc """
   The OpenAPI specification for the Passwordless API.
   """
@@ -12,23 +12,20 @@ defmodule PasswordlessApi.ApiSpec do
   alias OpenApiSpex.Paths
   alias OpenApiSpex.Response
   alias OpenApiSpex.Schema
-  alias OpenApiSpex.SecurityScheme
-  alias OpenApiSpex.Server
-  alias PasswordlessWeb.Endpoint
+  alias OpenApiSpex.Tag
   alias PasswordlessWeb.Router
 
   @impl OpenApi
   def spec do
     open_api = %OpenApi{
       servers: [
-        Server.from_endpoint(Endpoint)
+        %OpenApiSpex.Server{url: "https://eu.passwordless.tools", description: "Production EU API"}
       ],
       info: %Info{
-        title: "Passwordless API",
-        version: "1.0"
+        title: "Passwordless Client API",
+        version: "0.1.0"
       },
       components: %Components{
-        securitySchemes: %{"authorization" => %SecurityScheme{type: "http", scheme: "bearer"}},
         responses: %{
           unauthorised: unauthorised_response(),
           forbidden: forbidden_response(),
@@ -36,7 +33,12 @@ defmodule PasswordlessApi.ApiSpec do
           no_content: no_content_response()
         }
       },
-      paths: Paths.from_router(Router)
+      tags: [%Tag{name: "client", description: "Client API"}],
+      paths:
+        Router
+        |> Paths.from_router()
+        |> Enum.filter(fn {path, _item} -> String.starts_with?(path, "/api/client") end)
+        |> Map.new()
     }
 
     OpenApiSpex.resolve_schema_modules(open_api)

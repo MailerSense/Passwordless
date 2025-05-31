@@ -136,6 +136,7 @@ defmodule Passwordless.MixProject do
       {:drops, "~> 0.2.1"},
       {:ua_inspector, "~> 3.10"},
       {:mmdb2_decoder, "~> 3.0"},
+      {:live_toast, "~> 0.8.0"},
 
       # Markdown
       {:earmark, "~> 1.4"},

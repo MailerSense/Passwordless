@@ -12,9 +12,15 @@ defmodule PasswordlessApi.ActionTemplateController do
 
   action_fallback PasswordlessWeb.FallbackController
 
+  tags ["actions"]
+  security [%{}, %{"passwordless_auth" => ["write:action_templates", "read:action_templates"]}]
+
   operation :show,
     summary: "Show an action template",
     description: "Show an action template",
+    parameters: [
+      id: [in: :path, description: "Action Template ID", type: :string, example: "action_template_12345"]
+    ],
     responses: [
       ok: {"ActionTemplate", "application/json", Schemas.ActionTemplate},
       unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}

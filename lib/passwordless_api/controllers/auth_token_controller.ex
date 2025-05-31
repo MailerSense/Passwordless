@@ -11,6 +11,9 @@ defmodule PasswordlessApi.AuthTokenController do
 
   action_fallback PasswordlessWeb.FallbackController
 
+  tags ["auth"]
+  security [%{}, %{"passwordless_auth" => ["read:auth_tokens"]}]
+
   operation :inspect_auth_token,
     summary: "Inspect API key",
     description: "Inspect the properties of the current API key",

@@ -4,6 +4,7 @@
     corner={:bottom_right}
     connected={assigns[:socket] != nil}
     toasts_sync={assigns[:toasts_sync]}
+    toast_class_fn={&PasswordlessWeb.Toast.toast_class_fn/1}
   />
   <.sentry_user_setter current_user={@current_user} />
   {@inner_content}
