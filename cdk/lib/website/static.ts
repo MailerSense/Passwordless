@@ -59,6 +59,7 @@ export class StaticWebsite extends Construct {
 		bucket.bucket.addToResourcePolicy(
 			new PolicyStatement({
 				actions: ["s3:GetObject"],
+				resources: [bucket.bucket.bucketArn, `${bucket.bucket.bucketArn}/*`],
 				principals: [new ServicePrincipal("cloudfront.amazonaws.com")],
 				conditions: {
 					StringEquals: {
