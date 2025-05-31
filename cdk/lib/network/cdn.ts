@@ -16,6 +16,7 @@ export interface CDNProps {
 	cert: acm.ICertificate;
 	domain: string;
 	defaultBehavior: BehaviorOptions;
+	defaultRootObject?: string;
 	additionalBehaviors: Record<string, BehaviorOptions>;
 	webApplicationFirewall?: CfnWebACL;
 }
@@ -34,6 +35,7 @@ export class CDN extends Construct {
 			cert,
 			domain,
 			defaultBehavior,
+			defaultRootObject,
 			additionalBehaviors,
 			webApplicationFirewall: webApplicationFirewal,
 		} = props;
@@ -43,6 +45,7 @@ export class CDN extends Construct {
 			domainNames: [domain],
 			certificate: cert,
 			defaultBehavior,
+			defaultRootObject,
 			additionalBehaviors,
 		});
 

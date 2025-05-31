@@ -44,6 +44,7 @@ export class StaticWebsite extends Construct {
 				origin: S3BucketOrigin.withOriginAccessControl(bucket.bucket),
 				viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
 			},
+			defaultRootObject: "index.html",
 			additionalBehaviors: {},
 		});
 	}
