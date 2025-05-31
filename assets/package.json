@@ -27,11 +27,11 @@
 		"d3-scale-chromatic": "^3.1.0",
 		"globe.gl": "^2.41.4",
 		"highlight.js": "^11.11.1",
+		"motion": "^12.15.0",
 		"sortablejs": "^1.15.6",
 		"three": "^0.176.0",
 		"tippy.js": "^6.3.7",
-		"topbar": "^3.0.0",
-		"live_toast": "file:../deps/live_toast"
+		"topbar": "^3.0.0"
 	},
 	"devDependencies": {
 		"@types/alpinejs": "^3.13.11",
