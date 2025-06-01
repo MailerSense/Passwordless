@@ -188,7 +188,7 @@ export class PasswordlessToolsCertificates extends cdk.Stack {
 			cert: this.mainCert.certificate,
 			domain: rootDomains.docs.domain,
 			removalPolicy,
-			patchRootObject: false,
+			patchRootObject: true,
 		});
 	}
 }

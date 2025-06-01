@@ -1,4 +1,4 @@
-import { RemovalPolicy } from "aws-cdk-lib";
+import { Duration, RemovalPolicy } from "aws-cdk-lib";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import {
 	LambdaEdgeEventType,
@@ -71,9 +71,9 @@ export class StaticWebsite extends Construct {
 						: []),
 				],
 			},
-			/* defaultRootObject: INDEX, */
+			defaultRootObject: INDEX,
 			additionalBehaviors: {},
-			/* errorResponses: [
+			errorResponses: [
 				{
 					httpStatus: 403,
 					responseHttpStatus: 200,
@@ -86,7 +86,7 @@ export class StaticWebsite extends Construct {
 					responsePagePath: `/${INDEX}`,
 					ttl: Duration.seconds(0),
 				},
-			], */
+			],
 		});
 
 		bucket.bucket.addToResourcePolicy(
