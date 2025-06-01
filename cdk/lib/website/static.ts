@@ -27,6 +27,8 @@ export interface StaticWebsiteProps {
 	patchRootObject?: boolean;
 }
 
+const INDEX = "index.html";
+
 export class StaticWebsite extends Construct {
 	public constructor(scope: Construct, id: string, props: StaticWebsiteProps) {
 		super(scope, id);
@@ -38,7 +40,7 @@ export class StaticWebsite extends Construct {
 		const bucket = new PrivateBucket(this, bucketName, {
 			name: bucketName,
 			removalPolicy,
-			websiteIndexDocument: "index.html",
+			websiteIndexDocument: INDEX,
 		});
 
 		new BucketDeployment(this, "BucketDeployment", {
@@ -69,7 +71,7 @@ export class StaticWebsite extends Construct {
 						: []),
 				],
 			},
-			defaultRootObject: "index.html",
+			defaultRootObject: INDEX,
 			additionalBehaviors: {},
 			errorResponses: [
 				{
