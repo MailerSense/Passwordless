@@ -1,4 +1,4 @@
-import { Duration, RemovalPolicy } from "aws-cdk-lib";
+import { RemovalPolicy } from "aws-cdk-lib";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import {
 	Function as CFFunction,
@@ -74,20 +74,20 @@ export class StaticWebsite extends Construct {
 			},
 			defaultRootObject: INDEX,
 			additionalBehaviors: {},
-			errorResponses: [
-				{
-					httpStatus: 403,
-					responseHttpStatus: 200,
-					responsePagePath: `/${INDEX}`,
-					ttl: Duration.seconds(0),
-				},
-				{
-					httpStatus: 404,
-					responseHttpStatus: 200,
-					responsePagePath: `/${INDEX}`,
-					ttl: Duration.seconds(0),
-				},
-			],
+			/*   errorResponses: [
+        {
+          httpStatus: 403,
+          responseHttpStatus: 200,
+          responsePagePath: `/${INDEX}`,
+          ttl: Duration.seconds(0),
+        },
+        {
+          httpStatus: 404,
+          responseHttpStatus: 200,
+          responsePagePath: `/${INDEX}`,
+          ttl: Duration.seconds(0),
+        },
+      ], */
 		});
 
 		bucket.bucket.addToResourcePolicy(
