@@ -1,4 +1,4 @@
-import { RemovalPolicy } from "aws-cdk-lib";
+import { Duration, RemovalPolicy } from "aws-cdk-lib";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import {
 	Function as CFFunction,
@@ -40,7 +40,6 @@ export class StaticWebsite extends Construct {
 		const bucket = new PrivateBucket(this, bucketName, {
 			name: bucketName,
 			removalPolicy,
-			websiteIndexDocument: INDEX,
 		});
 
 		new BucketDeployment(this, "BucketDeployment", {
@@ -74,20 +73,20 @@ export class StaticWebsite extends Construct {
 			},
 			defaultRootObject: INDEX,
 			additionalBehaviors: {},
-			/*   errorResponses: [
-        {
-          httpStatus: 403,
-          responseHttpStatus: 200,
-          responsePagePath: `/${INDEX}`,
-          ttl: Duration.seconds(0),
-        },
-        {
-          httpStatus: 404,
-          responseHttpStatus: 200,
-          responsePagePath: `/${INDEX}`,
-          ttl: Duration.seconds(0),
-        },
-      ], */
+			errorResponses: [
+				{
+					httpStatus: 403,
+					responseHttpStatus: 200,
+					responsePagePath: `/${INDEX}`,
+					ttl: Duration.seconds(0),
+				},
+				{
+					httpStatus: 404,
+					responseHttpStatus: 200,
+					responsePagePath: `/${INDEX}`,
+					ttl: Duration.seconds(0),
+				},
+			],
 		});
 
 		bucket.bucket.addToResourcePolicy(
@@ -104,7 +103,7 @@ export class StaticWebsite extends Construct {
 		);
 	}
 
-	private patchRootObject(name: string): CFFunction {
+	private patchRootObject(name: string, prefix: string): CFFunction {
 		const functionName = `${name}-patch-root-object`;
 		return new CFFunction(this, functionName, {
 			functionName,
