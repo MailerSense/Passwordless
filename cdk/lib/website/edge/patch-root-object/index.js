@@ -1,0 +1,11 @@
+exports.handler = (event) => {
+	const request = event.request;
+	const uri = request.uri;
+
+	// Check whether the URI is missing a file name.
+	if (uri.endsWith("/")) {
+		request.uri += "index.html";
+	}
+
+	return request;
+};

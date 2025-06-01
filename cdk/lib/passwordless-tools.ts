@@ -415,12 +415,12 @@ export class PasswordlessTools extends cdk.Stack {
 				),
 				viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
 			},
-			additionalBehaviors: {
-				"assets/*": albBehavior,
-				"images/*": albBehavior,
-				"fonts/*": albBehavior,
-				"json/*": albBehavior,
-			},
+			additionalBehaviors: Object.fromEntries(
+				["assets/*", "images/*", "fonts/*", "json/*"].map((path) => [
+					path,
+					albBehavior,
+				])
+			),
 		});
 
 		const _mediaCdn = new CDN(this, `${env}-customer-media-cdn`, {

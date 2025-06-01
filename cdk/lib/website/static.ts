@@ -1,17 +1,21 @@
-import { RemovalPolicy } from "aws-cdk-lib";
+import { Duration, RemovalPolicy } from "aws-cdk-lib";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import {
+	LambdaEdgeEventType,
 	OriginRequestPolicy,
 	ResponseHeadersPolicy,
 	ViewerProtocolPolicy,
+	experimental,
 } from "aws-cdk-lib/aws-cloudfront";
 import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { PolicyStatement, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { Code, IVersion, Runtime } from "aws-cdk-lib/aws-lambda";
 import { IHostedZone } from "aws-cdk-lib/aws-route53";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import { Construct } from "constructs";
 import { CDN } from "../network/cdn";
 import { PrivateBucket } from "../storage/private-bucket";
+import path = require("node:path");
 
 export interface StaticWebsiteProps {
 	name: string;
@@ -20,18 +24,23 @@ export interface StaticWebsiteProps {
 	cert: acm.ICertificate;
 	domain: string;
 	removalPolicy: RemovalPolicy;
+	patchRootObject?: boolean;
 }
+
+const INDEX = "index.html";
 
 export class StaticWebsite extends Construct {
 	public constructor(scope: Construct, id: string, props: StaticWebsiteProps) {
 		super(scope, id);
 
-		const { name, source, zone, cert, domain, removalPolicy } = props;
+		const { name, source, zone, cert, domain, removalPolicy, patchRootObject } =
+			props;
 
 		const bucketName = `${name}-static-website`;
 		const bucket = new PrivateBucket(this, bucketName, {
 			name: bucketName,
 			removalPolicy,
+			websiteIndexDocument: INDEX,
 		});
 
 		new BucketDeployment(this, "BucketDeployment", {
@@ -51,9 +60,33 @@ export class StaticWebsite extends Construct {
 				originRequestPolicy: OriginRequestPolicy.CORS_S3_ORIGIN,
 				responseHeadersPolicy:
 					ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT,
+				edgeLambdas: [
+					...(patchRootObject
+						? [
+								{
+									eventType: LambdaEdgeEventType.VIEWER_REQUEST,
+									functionVersion: this.patchRootObject(name),
+								},
+							]
+						: []),
+				],
 			},
-			defaultRootObject: "index.html",
+			defaultRootObject: INDEX,
 			additionalBehaviors: {},
+			errorResponses: [
+				{
+					httpStatus: 403,
+					responseHttpStatus: 200,
+					responsePagePath: `/${INDEX}`,
+					ttl: Duration.seconds(0),
+				},
+				{
+					httpStatus: 404,
+					responseHttpStatus: 200,
+					responsePagePath: `/${INDEX}`,
+					ttl: Duration.seconds(0),
+				},
+			],
 		});
 
 		bucket.bucket.addToResourcePolicy(
@@ -68,5 +101,19 @@ export class StaticWebsite extends Construct {
 				},
 			})
 		);
+	}
+
+	private patchRootObject(name: string): IVersion {
+		const lambda = new experimental.EdgeFunction(
+			this,
+			`${name}-patch-root-object`,
+			{
+				runtime: Runtime.NODEJS_LATEST,
+				handler: "index.handler",
+				code: Code.fromAsset(path.join(__dirname, "edge/patch-root-object")),
+			}
+		);
+
+		return lambda.currentVersion;
 	}
 }
