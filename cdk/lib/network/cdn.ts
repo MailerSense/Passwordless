@@ -1,5 +1,9 @@
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
-import { BehaviorOptions, Distribution } from "aws-cdk-lib/aws-cloudfront";
+import {
+	BehaviorOptions,
+	Distribution,
+	DistributionProps,
+} from "aws-cdk-lib/aws-cloudfront";
 import {
 	ARecord,
 	AaaaRecord,
@@ -10,16 +14,17 @@ import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
 import { CfnWebACL } from "aws-cdk-lib/aws-wafv2";
 import { Construct } from "constructs";
 
-export interface CDNProps {
+export type CDNProps = {
 	name: string;
 	zone: IHostedZone;
 	cert: acm.ICertificate;
 	domain: string;
-	defaultBehavior: BehaviorOptions;
-	defaultRootObject?: string;
 	additionalBehaviors: Record<string, BehaviorOptions>;
 	webApplicationFirewall?: CfnWebACL;
-}
+} & Pick<
+	DistributionProps,
+	"errorResponses" | "defaultBehavior" | "defaultRootObject"
+>;
 
 export class CDN extends Construct {
 	public readonly distribution: Distribution;
@@ -34,6 +39,7 @@ export class CDN extends Construct {
 			zone,
 			cert,
 			domain,
+			errorResponses,
 			defaultBehavior,
 			defaultRootObject,
 			additionalBehaviors,
@@ -44,6 +50,7 @@ export class CDN extends Construct {
 			webAclId: webApplicationFirewal?.attrArn,
 			domainNames: [domain],
 			certificate: cert,
+			errorResponses,
 			defaultBehavior,
 			defaultRootObject,
 			additionalBehaviors,
