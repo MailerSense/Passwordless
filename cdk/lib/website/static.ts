@@ -38,6 +38,7 @@ export class StaticWebsite extends Construct {
 		const bucket = new PrivateBucket(this, bucketName, {
 			name: bucketName,
 			removalPolicy,
+			websiteIndexDocument: "index.html",
 		});
 
 		new BucketDeployment(this, "BucketDeployment", {

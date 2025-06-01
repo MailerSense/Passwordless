@@ -8,6 +8,7 @@ export interface PrivateBucketProps {
 	cors?: CorsRule[];
 	versioned?: boolean;
 	removalPolicy: RemovalPolicy;
+	websiteIndexDocument?: string;
 }
 
 export class PrivateBucket extends Construct {
@@ -16,11 +17,13 @@ export class PrivateBucket extends Construct {
 	public constructor(scope: Construct, id: string, props: PrivateBucketProps) {
 		super(scope, id);
 
-		const { name, cors, versioned, removalPolicy } = props;
+		const { name, cors, versioned, removalPolicy, websiteIndexDocument } =
+			props;
 
 		this.bucket = new Bucket(this, `${name}-private`, {
 			enforceSSL: true,
 			encryption: BucketEncryption.S3_MANAGED,
+			websiteIndexDocument,
 			removalPolicy,
 			versioned,
 			cors,
