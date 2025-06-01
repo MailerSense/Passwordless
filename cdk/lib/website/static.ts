@@ -77,13 +77,13 @@ export class StaticWebsite extends Construct {
 				{
 					httpStatus: 403,
 					responseHttpStatus: 200,
-					responsePagePath: "/index.html",
+					responsePagePath: `/${INDEX}`,
 					ttl: Duration.seconds(0),
 				},
 				{
 					httpStatus: 404,
 					responseHttpStatus: 200,
-					responsePagePath: "/index.html",
+					responsePagePath: `/${INDEX}`,
 					ttl: Duration.seconds(0),
 				},
 			],
