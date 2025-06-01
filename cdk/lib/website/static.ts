@@ -69,7 +69,6 @@ export class StaticWebsite extends Construct {
 							]
 						: []),
 				],
-				edgeLambdas: [],
 			},
 			defaultRootObject: INDEX,
 			additionalBehaviors: {},

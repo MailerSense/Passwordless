@@ -13,7 +13,7 @@ defmodule PasswordlessApi.UserController do
   tags ["users"]
   security [%{}, %{"passwordless_auth" => ["read:users"]}]
 
-  def get(%Plug.Conn{} = conn, %{"id" => id}, %App{} = app) do
+  def show(%Plug.Conn{} = conn, %{"id" => id}, %App{} = app) do
     with {:ok, user} <- Passwordless.lookup_user(app, id) do
       render(conn, :get, user: user)
     end

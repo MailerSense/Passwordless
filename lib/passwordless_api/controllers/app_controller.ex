@@ -16,7 +16,7 @@ defmodule PasswordlessApi.AppController do
   tags ["apps"]
   security [%{}, %{"passwordless_auth" => ["read:apps"]}]
 
-  operation :show_app,
+  operation :index,
     summary: "Show App",
     description: "Show the properties of the current App",
     responses: [
@@ -24,11 +24,7 @@ defmodule PasswordlessApi.AppController do
       unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}
     ]
 
-  def show(%Plug.Conn{} = conn, _params, %App{} = app) do
-    render(conn, :show, app: Repo.preload(app, :settings))
-  end
-
-  def authenticators(%Plug.Conn{} = conn, _params, %App{} = app) do
-    render(conn, :authenticators, authenticators: Passwordless.list_authenticators(app))
+  def index(%Plug.Conn{} = conn, _params, %App{} = app) do
+    render(conn, :index, app: Repo.preload(app, :settings))
   end
 end
