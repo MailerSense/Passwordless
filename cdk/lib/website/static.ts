@@ -115,6 +115,8 @@ export class StaticWebsite extends Construct {
 
           if (uri.endsWith("/")) {
             request.uri += "index.html";
+          } else if (!uri.includes('.') || !uri.includes('#')) {
+            request.uri += '/index.html';
           }
 
           return request;
