@@ -115,12 +115,12 @@ export class StaticWebsite extends Construct {
 
           if (uri.endsWith("/")) {
             request.uri += "index.html";
-          } else if (!uri.includes('.') || !uri.includes('#')) {
+          } else if (!uri.includes('.')) {
             request.uri += '/index.html';
           }
 
           return request;
-        };
+        }
       `),
 			runtime: FunctionRuntime.JS_2_0,
 		});
