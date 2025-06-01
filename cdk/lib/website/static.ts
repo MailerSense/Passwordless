@@ -103,7 +103,7 @@ export class StaticWebsite extends Construct {
 		);
 	}
 
-	private patchRootObject(name: string, prefix: string): CFFunction {
+	private patchRootObject(name: string): CFFunction {
 		const functionName = `${name}-patch-root-object`;
 		return new CFFunction(this, functionName, {
 			functionName,
