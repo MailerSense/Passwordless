@@ -48,47 +48,7 @@ defmodule PasswordlessApi.ActionController do
     end
   end
 
-  defmodule ContinueAction do
-    @moduledoc false
-    use Drops.Contract
-
-    schema(atomize: true) do
-      %{
-        required(:action) => string(:filled?),
-        required(:data) => %{
-          optional(:code) => string(:filled?)
-        },
-        optional(:track) => %{
-          optional(:device_id) => string(:filled?),
-          optional(:user_agent) => string(:filled?),
-          optional(:ip_address) => string(:filled?)
-        }
-      }
-    end
-  end
-
-  operation :show,
-    summary: "Show an action",
-    description: "Show an action",
-    parameters: [
-      id: [in: :path, description: "Action ID", type: :string, example: "action_12345"]
-    ],
-    responses: [
-      ok: {"Action", "application/json", Schemas.Action},
-      unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}
-    ]
-
-  def show(%Plug.Conn{} = conn, %{"id" => id}, %App{} = app) do
-    with {:ok, action} <- Passwordless.get_action(app, id) do
-      render(conn, :show, action: action)
-    end
-  end
-
-  def query(%Plug.Conn{} = conn, params, %App{} = app) do
-    render(conn, :query, result: nil)
-  end
-
-  operation :authenticate,
+  operation :new,
     summary: "Authenticate an action",
     description: "Authenticate an action",
     responses: [
@@ -96,7 +56,7 @@ defmodule PasswordlessApi.ActionController do
       unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}
     ]
 
-  def authenticate(%Plug.Conn{} = conn, params, %App{} = app) do
+  def new(%Plug.Conn{} = conn, params, %App{} = app) do
     with {:ok, decoded} <- AuthenticateAction.conform(params) do
       user_params = decoded[:user]
 
@@ -145,5 +105,37 @@ defmodule PasswordlessApi.ActionController do
         render(conn, :authenticate, action: action)
       end
     end
+  end
+
+  operation :show,
+    summary: "Show an action",
+    description: "Show an action",
+    parameters: [
+      id: [in: :path, description: "Action ID", type: :string, example: "action_12345"]
+    ],
+    responses: [
+      ok: {"Action", "application/json", Schemas.Action},
+      unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}
+    ]
+
+  def show(%Plug.Conn{} = conn, %{"id" => id}, %App{} = app) do
+    with {:ok, action} <- Passwordless.get_action(app, id) do
+      render(conn, :show, action: action)
+    end
+  end
+
+  operation :update,
+    summary: "Update an action",
+    description: "Update an action",
+    parameters: [
+      id: [in: :path, description: "Action ID", type: :string, example: "action_12345"]
+    ],
+    responses: [
+      ok: {"Action", "application/json", Schemas.Action},
+      unauthorized: %Reference{"$ref": "#/components/responses/unauthorised"}
+    ]
+
+  def update(%Plug.Conn{} = conn, %{"id" => id}, %App{} = app) do
+    {:error, :not_implemented}
   end
 end

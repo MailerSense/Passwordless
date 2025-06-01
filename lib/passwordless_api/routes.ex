@@ -80,16 +80,8 @@ defmodule PasswordlessApi.Routes do
           :api_rate_limited
         ]
 
-        scope "/app" do
-          get "/", AppController, :show
-          get "/authenticators", AppController, :authenticators
-        end
-
-        scope "/users" do
-          get "/:id", UserController, :get
-        end
-
-        resources "/actions", ActionController, only: [:show]
+        resources "/app", AppController, only: [:index]
+        resources "/users", UserController, only: [:show]
 
         scope "/actions" do
           pipe_through [
@@ -97,8 +89,7 @@ defmodule PasswordlessApi.Routes do
             :api_idempotent
           ]
 
-          post "/query", ActionController, :query
-          post "/authenticate", ActionController, :authenticate
+          resources "/", ActionController, only: [:new, :show, :update]
         end
       end
     end

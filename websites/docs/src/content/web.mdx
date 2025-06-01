@@ -39,8 +39,8 @@ rybbit.init({
 
 | Option (`init`)      | Type             | Default | Description                                                                                                                                                             |
 | :------------------- | :--------------- | :------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `analyticsHost`      | `string`         | —       | **Required.** URL of your Rybbit analytics instance (e.g., `https://rybbit.yourdomain.com/api`).                                                                        |
-| `siteId`             | `string \| number` | —       | **Required.** The Site ID for your website obtained from your Rybbit instance.                                                                                        |
+| `analyticsHost`      | `string`         | —       | **Required.** URL of your Passwordless analytics instance (e.g., `https://rybbit.yourdomain.com/api`).                                                                        |
+| `siteId`             | `string \| number` | —       | **Required.** The Site ID for your website obtained from your Passwordless instance.                                                                                        |
 | `debounce`           | `number`         | `500`   | Debounce time in milliseconds for tracking SPA pageviews after route changes. Set to `0` to disable debouncing (track immediately).                                     |
 | `autoTrackPageviews` | `boolean`        | `true`  | If `true`, automatically tracks pageviews on initial load and (if `autoTrackSpaRoutes` is `true`) on SPA navigation.                                                    |
 | `autoTrackSpaRoutes` | `boolean`        | `true`  | If `true` (and `autoTrackPageviews` is `true`), automatically tracks pageviews when browser history changes (`pushState`, `popstate`).                                  |
@@ -184,7 +184,7 @@ These configuration options allow you to control which page paths are tracked an
 
 ### `skipPatterns`
 
-If a page's path (`window.location.pathname`) matches any pattern in the `skipPatterns` array, the pageview event (and any associated data) for that path will **not** be sent to Rybbit.
+If a page's path (`window.location.pathname`) matches any pattern in the `skipPatterns` array, the pageview event (and any associated data) for that path will **not** be sent to Passwordless.
 
 **Examples:**
 

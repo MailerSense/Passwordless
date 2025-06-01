@@ -29,14 +29,41 @@ export type Action = {
     updated_at: string;
 };
 
-export type PasswordlessApiActionControllerAuthenticateData = {
+/**
+ * App
+ * A passwordless application tenant
+ */
+export type App = {
+    /**
+     * The unique identifier for the action
+     */
+    id: string;
+    /**
+     * The timestamp when the app was created
+     */
+    inserted_at: string;
+    /**
+     * The name of the application
+     */
+    name: string;
+    /**
+     * The current state of the app
+     */
+    state: 'active' | 'suspended';
+    /**
+     * The timestamp when the app was last updated
+     */
+    updated_at: string;
+};
+
+export type PasswordlessApiActionControllerNewData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/server/v1/actions/authenticate';
+    url: '/api/server/v1/actions/new';
 };
 
-export type PasswordlessApiActionControllerAuthenticateErrors = {
+export type PasswordlessApiActionControllerNewErrors = {
     /**
      * Unauthorised
      */
@@ -45,23 +72,16 @@ export type PasswordlessApiActionControllerAuthenticateErrors = {
     };
 };
 
-export type PasswordlessApiActionControllerAuthenticateError = PasswordlessApiActionControllerAuthenticateErrors[keyof PasswordlessApiActionControllerAuthenticateErrors];
+export type PasswordlessApiActionControllerNewError = PasswordlessApiActionControllerNewErrors[keyof PasswordlessApiActionControllerNewErrors];
 
-export type PasswordlessApiActionControllerAuthenticateResponses = {
+export type PasswordlessApiActionControllerNewResponses = {
     /**
      * Action
      */
     200: Action;
 };
 
-export type PasswordlessApiActionControllerAuthenticateResponse = PasswordlessApiActionControllerAuthenticateResponses[keyof PasswordlessApiActionControllerAuthenticateResponses];
-
-export type PostApiServerV1ActionsQueryData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/api/server/v1/actions/query';
-};
+export type PasswordlessApiActionControllerNewResponse = PasswordlessApiActionControllerNewResponses[keyof PasswordlessApiActionControllerNewResponses];
 
 export type PasswordlessApiActionControllerShowData = {
     body?: never;
@@ -95,19 +115,96 @@ export type PasswordlessApiActionControllerShowResponses = {
 
 export type PasswordlessApiActionControllerShowResponse = PasswordlessApiActionControllerShowResponses[keyof PasswordlessApiActionControllerShowResponses];
 
-export type GetApiServerV1AppData = {
+export type PasswordlessApiActionControllerUpdate2Data = {
+    body?: never;
+    path: {
+        /**
+         * Action ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/server/v1/actions/{id}';
+};
+
+export type PasswordlessApiActionControllerUpdate2Errors = {
+    /**
+     * Unauthorised
+     */
+    401: {
+        [key: string]: unknown;
+    };
+};
+
+export type PasswordlessApiActionControllerUpdate2Error = PasswordlessApiActionControllerUpdate2Errors[keyof PasswordlessApiActionControllerUpdate2Errors];
+
+export type PasswordlessApiActionControllerUpdate2Responses = {
+    /**
+     * Action
+     */
+    200: Action;
+};
+
+export type PasswordlessApiActionControllerUpdate2Response = PasswordlessApiActionControllerUpdate2Responses[keyof PasswordlessApiActionControllerUpdate2Responses];
+
+export type PasswordlessApiActionControllerUpdateData = {
+    body?: never;
+    path: {
+        /**
+         * Action ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/server/v1/actions/{id}';
+};
+
+export type PasswordlessApiActionControllerUpdateErrors = {
+    /**
+     * Unauthorised
+     */
+    401: {
+        [key: string]: unknown;
+    };
+};
+
+export type PasswordlessApiActionControllerUpdateError = PasswordlessApiActionControllerUpdateErrors[keyof PasswordlessApiActionControllerUpdateErrors];
+
+export type PasswordlessApiActionControllerUpdateResponses = {
+    /**
+     * Action
+     */
+    200: Action;
+};
+
+export type PasswordlessApiActionControllerUpdateResponse = PasswordlessApiActionControllerUpdateResponses[keyof PasswordlessApiActionControllerUpdateResponses];
+
+export type PasswordlessApiAppControllerIndexData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/server/v1/app';
 };
 
-export type GetApiServerV1AppAuthenticatorsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/api/server/v1/app/authenticators';
+export type PasswordlessApiAppControllerIndexErrors = {
+    /**
+     * Unauthorised
+     */
+    401: {
+        [key: string]: unknown;
+    };
 };
+
+export type PasswordlessApiAppControllerIndexError = PasswordlessApiAppControllerIndexErrors[keyof PasswordlessApiAppControllerIndexErrors];
+
+export type PasswordlessApiAppControllerIndexResponses = {
+    /**
+     * App
+     */
+    200: App;
+};
+
+export type PasswordlessApiAppControllerIndexResponse = PasswordlessApiAppControllerIndexResponses[keyof PasswordlessApiAppControllerIndexResponses];
 
 export type GetApiServerV1UsersByIdData = {
     body?: never;

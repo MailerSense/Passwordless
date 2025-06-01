@@ -1,37 +1,18 @@
 export default {
 	index: "",
-	roadmap: "",
-	_3: {
+	_2: {
 		type: "separator",
-		title: "Tracking",
+		title: "Components",
 	},
 	tracker: "",
-	"track-events": "",
-	integrations: "",
-	_4: {
-		type: "separator",
-		title: "Self-hosting",
-	},
-	"self-hosting": "",
-	"self-hosting-advanced": "",
-	"self-hosting-nginx": "",
-	_5: {
+	_3: {
 		type: "separator",
 		title: "SDKs",
 	},
 	web: "",
-	_7: {
+	_4: {
 		type: "separator",
-		title: "Settings",
+		title: "API & Webhooks",
 	},
 	"adding-users": "",
-	"public-site": "",
-	"enhanced-privacy": "",
-	"changing-domains": "",
-	"deleting-sites": "",
-	_8: {
-		type: "separator",
-		title: "Other",
-	},
-	definitions: "",
 };

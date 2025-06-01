@@ -5,7 +5,7 @@ defmodule PasswordlessApi.UserJSON do
 
   alias Passwordless.User
 
-  def get(%{user: %User{} = user}) do
+  def show(%{user: %User{} = user}) do
     %{user: user}
   end
 end
