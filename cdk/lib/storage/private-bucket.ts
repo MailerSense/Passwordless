@@ -1,15 +1,13 @@
-import { RemovalPolicy } from "aws-cdk-lib";
-import { Bucket, BucketEncryption, CorsRule } from "aws-cdk-lib/aws-s3";
+import { Bucket, BucketEncryption, BucketProps } from "aws-cdk-lib/aws-s3";
 import { NagSuppressions } from "cdk-nag";
 import { Construct } from "constructs";
 
-export interface PrivateBucketProps {
+export type PrivateBucketProps = {
 	name: string;
-	cors?: CorsRule[];
-	versioned?: boolean;
-	removalPolicy: RemovalPolicy;
-	websiteIndexDocument?: string;
-}
+} & Pick<
+	BucketProps,
+	"cors" | "versioned" | "removalPolicy" | "websiteIndexDocument"
+>;
 
 export class PrivateBucket extends Construct {
 	public readonly bucket: Bucket;
