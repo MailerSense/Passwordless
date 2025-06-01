@@ -1,21 +1,21 @@
 import { Duration, RemovalPolicy } from "aws-cdk-lib";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import {
-	LambdaEdgeEventType,
+	Function as CFFunction,
+	FunctionCode,
+	FunctionEventType,
+	FunctionRuntime,
 	OriginRequestPolicy,
 	ResponseHeadersPolicy,
 	ViewerProtocolPolicy,
-	experimental,
 } from "aws-cdk-lib/aws-cloudfront";
 import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { PolicyStatement, ServicePrincipal } from "aws-cdk-lib/aws-iam";
-import { Code, IVersion, Runtime } from "aws-cdk-lib/aws-lambda";
 import { IHostedZone } from "aws-cdk-lib/aws-route53";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import { Construct } from "constructs";
 import { CDN } from "../network/cdn";
 import { PrivateBucket } from "../storage/private-bucket";
-import path = require("node:path");
 
 export interface StaticWebsiteProps {
 	name: string;
@@ -60,16 +60,17 @@ export class StaticWebsite extends Construct {
 				originRequestPolicy: OriginRequestPolicy.CORS_S3_ORIGIN,
 				responseHeadersPolicy:
 					ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT,
-				edgeLambdas: [
+				functionAssociations: [
 					...(patchRootObject
 						? [
 								{
-									eventType: LambdaEdgeEventType.VIEWER_REQUEST,
-									functionVersion: this.patchRootObject(name),
+									eventType: FunctionEventType.VIEWER_REQUEST,
+									function: this.patchRootObject(name),
 								},
 							]
 						: []),
 				],
+				edgeLambdas: [],
 			},
 			defaultRootObject: INDEX,
 			additionalBehaviors: {},
@@ -103,17 +104,24 @@ export class StaticWebsite extends Construct {
 		);
 	}
 
-	private patchRootObject(name: string): IVersion {
-		const lambda = new experimental.EdgeFunction(
-			this,
-			`${name}-patch-root-object`,
-			{
-				runtime: Runtime.NODEJS_LATEST,
-				handler: "index.handler",
-				code: Code.fromAsset(path.join(__dirname, "edge/patch-root-object")),
-			}
-		);
+	private patchRootObject(name: string): CFFunction {
+		const functionName = `${name}-patch-root-object`;
+		return new CFFunction(this, functionName, {
+			functionName,
+			comment: "Patch root object to add index.html",
+			code: FunctionCode.fromInline(`
+        function handler(event) {
+          const request = event.request;
+          const uri = request.uri;
 
-		return lambda.currentVersion;
+          if (uri.endsWith("/")) {
+            request.uri += "index.html";
+          }
+
+          return request;
+        };
+      `),
+			runtime: FunctionRuntime.JS_2_0,
+		});
 	}
 }
