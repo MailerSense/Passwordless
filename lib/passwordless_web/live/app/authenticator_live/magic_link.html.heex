@@ -106,7 +106,7 @@
           language: :bash,
           code: ~s"""
           ## Send Magic Link
-          curl -X "POST" "#{PasswordlessWeb.Router.Helpers.action_url(PasswordlessWeb.Endpoint, :authenticate)}" \\
+          curl -X "POST" "#{PasswordlessWeb.Router.Helpers.action_url(PasswordlessWeb.Endpoint, :new)}" \\
               -H 'Authorization: Bearer sk_live_******' \\
               -H 'Idempotency-Key: 123ws' \\
               -H 'Content-Type: application/json; charset=utf-8' \\
@@ -171,7 +171,7 @@
           language: :bash,
           code: ~s"""
           ## Receive Magic Link
-          curl -X "POST" "#{PasswordlessWeb.Router.Helpers.action_url(PasswordlessWeb.Endpoint, :authenticate)}" \\
+          curl -X "POST" "#{PasswordlessWeb.Router.Helpers.action_url(PasswordlessWeb.Endpoint, :new)}" \\
               -H 'Authorization: Bearer sk_live_******' \\
               -H 'Idempotency-Key: 123ws' \\
               -H 'Content-Type: application/json; charset=utf-8' \\

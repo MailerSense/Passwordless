@@ -22,7 +22,7 @@
           language: :bash,
           code: ~s"""
           ## Test Server API
-          curl "#{PasswordlessWeb.Router.Helpers.app_url(PasswordlessWeb.Endpoint, :show)}" \\
+          curl "#{PasswordlessWeb.Router.Helpers.app_url(PasswordlessWeb.Endpoint, :index)}" \\
               -H 'X-Passwordless-App-ID: #{@app.id}' \\
               -H 'Authorization: Bearer #{if @reveal_secret?, do: @secret, else: "sk_live_*******"}'
           """
