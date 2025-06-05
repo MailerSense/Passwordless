@@ -7,10 +7,8 @@ defmodule PasswordlessWeb.Components do
       import PasswordlessWeb.Components.AuthLayoutWide
       import PasswordlessWeb.Components.Avatar
       import PasswordlessWeb.Components.Badge
-      import PasswordlessWeb.Components.BadgeSelect
       import PasswordlessWeb.Components.Button
       import PasswordlessWeb.Components.Card
-      import PasswordlessWeb.Components.ComboBox
       import PasswordlessWeb.Components.Container
       import PasswordlessWeb.Components.DataTable
       import PasswordlessWeb.Components.Dropdown
@@ -25,11 +23,8 @@ defmodule PasswordlessWeb.Components do
       import PasswordlessWeb.Components.PageComponents
       import PasswordlessWeb.Components.Pagination
       import PasswordlessWeb.Components.Progress
-      import PasswordlessWeb.Components.PublicLayout
       import PasswordlessWeb.Components.Rating
-      import PasswordlessWeb.Components.RouteTree
       import PasswordlessWeb.Components.SidebarLayout
-      import PasswordlessWeb.Components.SignInButton
       import PasswordlessWeb.Components.SlideOver
       import PasswordlessWeb.Components.SocialButton
       import PasswordlessWeb.Components.Table

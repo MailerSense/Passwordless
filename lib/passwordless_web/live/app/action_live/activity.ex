@@ -28,7 +28,6 @@ defmodule PasswordlessWeb.App.ActionLive.Activity do
   def handle_params(%{"id" => id} = params, _url, %{assigns: %{current_app: %App{} = current_app}} = socket) do
     action_template = Passwordless.get_action_template!(current_app, id)
     changeset = Passwordless.change_action_template(current_app, action_template)
-
     stats = Passwordless.get_action_performance_stats(current_app, action_template)
 
     all_attempts =

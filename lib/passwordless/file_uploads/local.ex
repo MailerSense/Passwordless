@@ -1,7 +1,7 @@
 defmodule Passwordless.FileUploads.Local do
   @moduledoc false
   def consume_uploaded_entries(socket, upload_name) do
-    Phoenix.LiveView.consume_uploaded_entries(socket, upload_name, fn %{path: path} = data, entry ->
+    Phoenix.LiveView.consume_uploaded_entries(socket, upload_name, fn %{path: path} = _data, entry ->
       destination_path = move_file_into_priv(path, entry.client_name)
       {:ok, {destination_path, entry}}
     end)
