@@ -3,12 +3,13 @@ defmodule Passwordless.Organizations do
   The organizations context.
   """
 
-  alias Database.QueryExt
   alias Passwordless.Accounts.User
   alias Passwordless.Organizations.Invitation
   alias Passwordless.Organizations.Membership
   alias Passwordless.Organizations.Org
   alias Passwordless.Repo
+
+  require Ecto.Query
 
   ## Orgs
 
@@ -169,16 +170,16 @@ defmodule Passwordless.Organizations do
   def get_membership!(%User{} = user, org_id) when is_binary(org_id) do
     user
     |> Membership.get_by_user_and_org_id(org_id)
-    |> QueryExt.preload([:org, :user])
     |> Repo.one!()
+    |> Repo.preload([:org, :user])
     |> Membership.assign_user()
   end
 
   def get_membership!(%Org{} = org, id) when is_binary(id) do
     org
     |> Membership.get_by_org()
-    |> QueryExt.preload([:org, :user])
     |> Repo.get!(id)
+    |> Repo.preload([:org, :user])
     |> Membership.assign_user()
   end
 
