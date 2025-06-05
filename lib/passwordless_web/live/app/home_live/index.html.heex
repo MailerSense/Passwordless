@@ -51,7 +51,7 @@
             language: :bash,
             code: ~s"""
             ## Get Current App
-            curl "#{PasswordlessWeb.Router.Helpers.app_url(PasswordlessWeb.Endpoint, :show)}" \\
+            curl "#{PasswordlessWeb.Router.Helpers.app_url(PasswordlessWeb.Endpoint, :index)}" \\
                 -H 'Authorization: Bearer #{"sk_live_*******"}'
             """
           },

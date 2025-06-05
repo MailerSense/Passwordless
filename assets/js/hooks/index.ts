@@ -1,5 +1,3 @@
-import BackHook from "./back-hook";
-import BadgeSelectHook from "./badge-select-hook";
 import ClipboardHook from "./clipboard-hook";
 import ColorSchemeHook from "./color-scheme-hook";
 import EditorHook from "./editor-hook";
@@ -19,13 +17,11 @@ export default {
 	ClipboardHook,
 	ColorSchemeHook,
 	ResetColorSchemeHook,
-	BadgeSelectHook,
 	TippyHook,
 	ProgressInput,
 	EditorHook,
 	HTMLPreviewHook,
 	HighlightHook,
-	BackHook,
 	JSONHook,
 	OTPHook,
 	SetSentryUserHook,

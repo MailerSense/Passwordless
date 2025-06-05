@@ -1,9 +1,6 @@
 defmodule Database.RepoExt do
   @moduledoc """
-  Extend Repo with some useful functions.
-  Add this line to your repo:
-
-      use Database.RepoExt
+  Utilities for Ecto repos.
   """
 
   defmacro __using__(_) do
@@ -48,38 +45,6 @@ defmodule Database.RepoExt do
         with {outcome, {__MODULE__, :transact, outcome}}
              when outcome in [:ok, :error] <- transaction_result,
              do: outcome
-      end
-
-      def limit(model_or_query, limit \\ 5) do
-        from x in model_or_query, limit: ^limit
-      end
-
-      def order(model_or_query, field \\ :id, direction \\ :desc) do
-        from x in model_or_query, order_by: [{^direction, ^field}]
-      end
-
-      @doc """
-      Retrieves the last object in the database given a schema module.
-      user = Repo.last(User)
-      """
-      def last(model_or_query) do
-        __MODULE__.one(from(x in model_or_query, order_by: [desc: x.id], limit: 1))
-      end
-
-      @doc """
-      Retrieves the first object in the database given a schema module.
-      comment = Repo.first(Comment)
-      """
-      def first(model_or_query, preload \\ []) do
-        __MODULE__.one(from(x in model_or_query, order_by: [asc: x.id], limit: 1, preload: ^preload))
-      end
-
-      @doc """
-      Pass in a queryable and this will count how many are in the database as opposed to fetching them
-      user_count = Repo.count(User)
-      """
-      def count(model_or_query) do
-        __MODULE__.one(from(p in model_or_query, select: count()))
       end
     end
   end

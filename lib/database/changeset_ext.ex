@@ -8,25 +8,6 @@ defmodule Database.ChangesetExt do
   alias Crontab.CronExpression.Parser, as: CronParser
   alias Util.DomainBlocklist
 
-  @redacted "-"
-  @sensitive_keys ~w(
-    name
-    first_name
-    last_name
-    email
-    phone
-    address
-    city
-    state
-    zip
-    password
-    password_confirmation
-    current_password
-    new_password
-    new_password_confirmation
-  )a
-  @sensitive_keys_s Enum.map(@sensitive_keys, &Atom.to_string/1)
-
   @doc """
   Trims the whitespace off both ends of the string.
   "  John Doe " -> "John Doe"
@@ -227,6 +208,9 @@ defmodule Database.ChangesetExt do
     |> validate_state_transition(transitions, states, field)
   end
 
+  @doc """
+  Checks if there are profanities in the given field.
+  """
   def validate_profanities(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
     validate_change(changeset, field, fn ^field, value ->
       case Passwordless.SwearJar.profanities(value) do
@@ -237,13 +221,6 @@ defmodule Database.ChangesetExt do
           []
       end
     end)
-  end
-
-  @doc """
-  Ensure that the personal identifiable information (PIA) is removed from the value.
-  """
-  def ensure_pia_removed(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
-    update_change(changeset, field, &remove_pia/1)
   end
 
   @doc """
@@ -273,6 +250,9 @@ defmodule Database.ChangesetExt do
     |> validate_property_map(field)
   end
 
+  @doc """
+  Validates that the given field is a valid semantic version.
+  """
   def validate_semver(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
     validate_change(changeset, field, fn ^field, version ->
       is_semver? =
@@ -285,6 +265,9 @@ defmodule Database.ChangesetExt do
     end)
   end
 
+  @doc """
+  Validates that the given field is a valid crontab expression.
+  """
   def validate_crontab(%Ecto.Changeset{} = changeset, field) when is_atom(field) do
     validate_change(changeset, field, fn ^field, cron ->
       case CronParser.parse(cron) do
@@ -367,40 +350,6 @@ defmodule Database.ChangesetExt do
 
   defp downcase(nil), do: nil
   defp downcase(str) when is_binary(str), do: String.downcase(str)
-
-  defp remove_pia(value) when is_struct(value), do: remove_pia(Map.from_struct(value))
-
-  defp remove_pia(value) when is_map(value) do
-    Map.new(value, fn {k, v} ->
-      if sensitive?(k),
-        do: {k, @redacted},
-        else: {k, remove_pia(v)}
-    end)
-  end
-
-  defp remove_pia(value) when is_list(value) do
-    Enum.map(value, &remove_pia/1)
-  end
-
-  defp remove_pia(value) when is_function(value) do
-    "<function>"
-  end
-
-  defp remove_pia({:file, name, mime, _content}) do
-    %{file: %{name: name, mime: mime}}
-  end
-
-  defp remove_pia({k, v}) when is_atom(k) or is_binary(k) do
-    if sensitive?(k),
-      do: {k, @redacted},
-      else: {k, remove_pia(v)}
-  end
-
-  defp remove_pia(value), do: value
-
-  defp sensitive?(key) when is_atom(key) and key in @sensitive_keys, do: true
-  defp sensitive?(key) when is_binary(key) and key in @sensitive_keys_s, do: true
-  defp sensitive?(_key), do: false
 
   defp public_ip?(ip_address) do
     case ip_address do

@@ -222,7 +222,7 @@ defmodule Passwordless.MixProject do
         "credo"
       ],
       update_translations: ["gettext.extract --merge"],
-      format_code: ["format", "cmd cargo fmt"],
+      format_code: ["format", "cmd cargo fmt", "cmd pnpm run format"],
 
       # Unlocks unused dependencies (no longer mentioned in the mix.exs file)
       clean_mix_lock: ["deps.unlock --unused"],

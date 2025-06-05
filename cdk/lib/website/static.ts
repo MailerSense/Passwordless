@@ -2,6 +2,7 @@ import { Duration, RemovalPolicy } from "aws-cdk-lib";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import {
 	Function as CFFunction,
+	Distribution,
 	FunctionCode,
 	FunctionEventType,
 	FunctionRuntime,
@@ -11,8 +12,15 @@ import {
 } from "aws-cdk-lib/aws-cloudfront";
 import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { PolicyStatement, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { Code, Runtime } from "aws-cdk-lib/aws-lambda";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { IHostedZone } from "aws-cdk-lib/aws-route53";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
+import {
+	AwsCustomResource,
+	AwsCustomResourcePolicy,
+	PhysicalResourceId,
+} from "aws-cdk-lib/custom-resources";
 import { Construct } from "constructs";
 import { CDN } from "../network/cdn";
 import { PrivateBucket } from "../storage/private-bucket";
@@ -42,7 +50,7 @@ export class StaticWebsite extends Construct {
 			removalPolicy,
 		});
 
-		new BucketDeployment(this, "BucketDeployment", {
+		const deployment = new BucketDeployment(this, "BucketDeployment", {
 			destinationBucket: bucket.bucket,
 			sources: [Source.asset(source)],
 		});
@@ -100,6 +108,8 @@ export class StaticWebsite extends Construct {
 				},
 			})
 		);
+
+		this.invalidateDeployment(name, cdn.distribution, deployment);
 	}
 
 	private patchRootObject(name: string): CFFunction {
@@ -123,5 +133,67 @@ export class StaticWebsite extends Construct {
       `),
 			runtime: FunctionRuntime.JS_2_0,
 		});
+	}
+
+	private invalidateDeployment(
+		name: string,
+		cdn: Distribution,
+		deployment: BucketDeployment
+	): void {
+		const functionName = `${name}-invalidate-lambda`;
+		const invalidateLambda = new NodejsFunction(this, functionName, {
+			functionName,
+			runtime: Runtime.NODEJS_LATEST,
+			handler: "index.handler",
+			code: Code.fromInline(`
+        const { CloudFront } = require('@aws-sdk/client-cloudfront');
+        
+        var cloudfront = new CloudFront();
+        exports.handler = async function(event, context) {
+          await cloudfront.createInvalidation({
+            DistributionId: '${cdn.distributionId}',
+            InvalidationBatch: { 
+              CallerReference: new Date().getTime().toString(),
+              Paths: { 
+                Quantity: 1, 
+                Items: ['/*']
+              }
+            }
+          });
+        };
+      `),
+		});
+
+		cdn.grantCreateInvalidation(invalidateLambda);
+
+		const deploymentDate = new Date().toISOString();
+		const resourceName = `${name}-invalidate-resource`;
+		const physicalName = `${name}-invalidate-resource-${deploymentDate}`;
+
+		const invalidateResource = new AwsCustomResource(this, resourceName, {
+			onCreate: {
+				service: "Lambda",
+				action: "invoke",
+				parameters: {
+					FunctionName: invalidateLambda.functionName,
+				},
+				physicalResourceId: PhysicalResourceId.of(physicalName),
+			},
+			onUpdate: {
+				service: "Lambda",
+				action: "invoke",
+				parameters: {
+					FunctionName: invalidateLambda.functionName,
+				},
+				physicalResourceId: PhysicalResourceId.of(physicalName),
+			},
+			timeout: Duration.minutes(5),
+			policy: AwsCustomResourcePolicy.fromSdkCalls({
+				resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+			}),
+		});
+
+		invalidateResource.node.addDependency(invalidateLambda);
+		invalidateResource.node.addDependency(deployment);
 	}
 }

@@ -43,9 +43,6 @@ defmodule PasswordlessWeb.AdminRoutes do
           live_resources "/orgs", Admin.OrgLive
           live_resources "/users", Admin.UserLive
           live_resources "/memberships", Admin.MembershipLive
-
-          # Activity
-          live "/activity", Admin.ActivityLive.Index, :index
         end
       end
     end

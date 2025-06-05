@@ -5,7 +5,7 @@ defmodule Passwordless.Domain do
 
   use Passwordless.Schema, prefix: "domain"
 
-  import Database.QueryExt
+  import Database.QueryExt, only: [contains: 2]
   import Ecto.Query
 
   alias Database.ChangesetExt

@@ -3,35 +3,6 @@ defmodule Util do
   A set of utility functions for use all over the project.
   """
 
-  @redacted "***"
-  @redacted_keys ~w(
-    _csrf_token
-    _method
-    back
-    raw
-    raw_editable
-    code
-    token
-    value
-    password
-    password_confirmation
-    ciphertext
-    plaintext
-    invoices
-    certificate
-    old_certificate
-    external_id
-    opts
-    data
-    account_owner
-    iban
-    bic_swift
-    tax_id
-    new
-    body
-  )a
-  @redacted_keys_s Enum.map(@redacted_keys, &Atom.to_string/1)
-
   @doc """
   Useful for printing maps onto the page during development. Or passing a map to a hook
   """
@@ -51,38 +22,6 @@ defmodule Util do
   end
 
   def number!(value, _opts), do: value
-
-  @doc """
-  Generate a truncated JSON string from a map or other object.
-  """
-  def to_truncated_json(map) when is_map(map) and map_size(map) > 0 do
-    map
-    |> Map.to_list()
-    |> Enum.sort_by(&elem(&1, 0))
-    |> Enum.take(1)
-    |> Map.new()
-    |> Jason.encode!(pretty: true)
-  end
-
-  def to_truncated_json(obj), do: to_json(obj)
-
-  def string_equals?(a, b) do
-    a =
-      case a do
-        nil -> nil
-        a when is_atom(a) -> Atom.to_string(a)
-        a when is_binary(a) -> a
-      end
-
-    b =
-      case b do
-        nil -> nil
-        b when is_atom(b) -> Atom.to_string(b)
-        b when is_binary(b) -> b
-      end
-
-    a == b
-  end
 
   def id(prefix \\ "el"), do: "#{prefix}-#{:rand.uniform(10_000_000) + 1}"
 
@@ -106,6 +45,35 @@ defmodule Util do
     |> Timex.diff(b, :seconds)
     |> Timex.Duration.from_seconds()
     |> Timex.Format.Duration.Formatters.Humanized.format()
+  end
+
+  @doc """
+  Truncate a string to a given length, optionally using a separator.
+  """
+  def truncate(text, opts \\ []) do
+    len = Keyword.get(opts, :length, 24)
+    omi = Keyword.get(opts, :omission, "...")
+    sep = Keyword.get(opts, :separator)
+
+    cond do
+      !String.valid?(text) ->
+        text
+
+      String.length(text) < len ->
+        text
+
+      true ->
+        len_with_omi = len - String.length(omi)
+
+        stop =
+          if sep do
+            rindex(text, sep, len_with_omi) || len_with_omi
+          else
+            len_with_omi
+          end
+
+        "#{String.slice(text, 0, stop)}#{omi}"
+    end
   end
 
   @doc """
@@ -133,15 +101,8 @@ defmodule Util do
   end
 
   @doc """
-  Imitates .compact in Ruby... removes nil values from an array https://ruby-doc.org/core-1.9.3/Array.html#method-i-compact
-
-  ## Examples
-
-      iex> compact([1, 2, nil, 3, nil, 4])
-      [1, 2, 3, 4]
+  Validate an email address.
   """
-  def compact(list), do: Enum.filter(list, &(!is_nil(&1)))
-
   def email_valid?(email) do
     Util.Email.valid?(email)
   end
@@ -176,14 +137,6 @@ defmodule Util do
     !Blankable.blank?(term)
   end
 
-  @doc "Check if a map has atoms as keys"
-  def map_has_atom_keys?(map) do
-    map
-    |> Map.keys()
-    |> List.first()
-    |> is_atom()
-  end
-
   @doc """
 
   ## Examples
@@ -203,42 +156,9 @@ defmodule Util do
   def trim_downcase(str) when is_binary(str), do: String.downcase(String.trim(str))
   def trim_downcase(str), do: str
 
-  @doc "Useful for when you have an array of strings coming in from a user form"
-  def trim_strings_in_array(array) do
-    array
-    |> Enum.map(&String.trim/1)
-    |> Enum.filter(&present?/1)
-  end
-
   @doc """
-  ## Examples:
-
-      iex> Util.truncate("This is a very long string", 15)
-      "This is a ve..."
+  Convert a unix timestamp in seconds to a DateTime struct.
   """
-  def truncate(text, count \\ 24) do
-    Util.StringExt.truncate(text, length: count)
-  end
-
-  @doc """
-  ## Examples:
-
-      iex> number_with_delimiter(1000)
-      "1,000"
-      iex> number_with_delimiter(1000000)
-      "1,000,000"
-  """
-  def number_with_delimiter(i) when is_binary(i), do: number_with_delimiter(String.to_integer(i))
-
-  def number_with_delimiter(i) when is_integer(i) do
-    i
-    |> Integer.to_charlist()
-    |> Enum.reverse()
-    |> Enum.chunk_every(3, 3, [])
-    |> Enum.join(",")
-    |> String.reverse()
-  end
-
   def unix_to_datetime(datetime_in_seconds) when is_integer(datetime_in_seconds) and datetime_in_seconds > 0 do
     DateTime.from_unix!(datetime_in_seconds)
   end
@@ -425,44 +345,6 @@ defmodule Util do
     |> Enum.join(" ")
   end
 
-  # Sanitizer
-
-  def sanitize(payload) when is_struct(payload), do: sanitize(Map.from_struct(payload))
-
-  def sanitize(payload) when is_map(payload) do
-    Map.new(payload, fn {k, v} ->
-      if sensitive?(k) do
-        {k, @redacted}
-      else
-        {k, sanitize(v)}
-      end
-    end)
-  end
-
-  def sanitize(payload) when is_list(payload) do
-    Enum.map(payload, &sanitize/1)
-  end
-
-  def sanitize(payload) when is_function(payload) do
-    "<function>"
-  end
-
-  def sanitize({k, v}) do
-    if sensitive?(k) do
-      {k, @redacted}
-    else
-      {k, sanitize(v)}
-    end
-  end
-
-  def sanitize(payload), do: payload
-
-  def sensitive?(key) when is_atom(key) and key in @redacted_keys, do: true
-
-  def sensitive?(key) when is_binary(key) and key in @redacted_keys_s, do: true
-
-  def sensitive?(_key), do: false
-
   # Append if
 
   def append_if(list, _value, false), do: list
@@ -535,5 +417,19 @@ defmodule Util do
 
   defp deep_resolve(_key, _left, right) do
     right
+  end
+
+  defp rindex(text, str, offset) do
+    text = String.slice(text, 0, offset)
+    reversed = String.reverse(text)
+    matchword = String.reverse(str)
+
+    case :binary.match(reversed, matchword) do
+      {at, strlen} ->
+        String.length(text) - at - strlen
+
+      :nomatch ->
+        nil
+    end
   end
 end
