@@ -1,23 +1,9 @@
 import { join } from "node:path";
 import * as cdk from "aws-cdk-lib";
 import { Duration, RemovalPolicy, aws_backup as bk } from "aws-cdk-lib";
-import {
-	BehaviorOptions,
-	CachePolicy,
-	OriginRequestPolicy,
-	ResponseHeadersPolicy,
-	ViewerProtocolPolicy,
-} from "aws-cdk-lib/aws-cloudfront";
-import {
-	LoadBalancerV2Origin,
-	S3BucketOrigin,
-} from "aws-cdk-lib/aws-cloudfront-origins";
-import {
-	InstanceClass,
-	InstanceSize,
-	InstanceType,
-	Port,
-} from "aws-cdk-lib/aws-ec2";
+import { ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
+import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
+import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
 	Cluster,
@@ -32,10 +18,7 @@ import * as sm from "aws-cdk-lib/aws-secretsmanager";
 import { PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 
-import {
-	AppContainer,
-	PublicFargateApp,
-} from "./application/public-fargate-app";
+import { AppContainer } from "./application/public-fargate-app";
 import { Backup } from "./database/backup";
 import { Postgres } from "./database/postgres";
 import { Redis } from "./database/redis";
@@ -44,7 +27,6 @@ import { Migration } from "./lambda/migration";
 import { CDN } from "./network/cdn";
 import { Certificate } from "./network/certificate";
 import { VPC } from "./network/vpc";
-import { WAF } from "./network/waf";
 import { PasswordlessToolsCertificates } from "./passwordless-tools-certificates";
 import { ContainerScanning } from "./pattern/container-scanning";
 import { CachedImage } from "./storage/cached-image";
@@ -316,7 +298,7 @@ export class PasswordlessTools extends cdk.Stack {
 			environment: { ...envLookup.appConfig, POOL_SIZE: "10" },
 		});
 
-		const app = new PublicFargateApp(this, appName, {
+		/* 		const app = new PublicFargateApp(this, appName, {
 			name: appName,
 			zone,
 			domain: envLookup.hostedZone.domains.primary,
@@ -376,8 +358,9 @@ export class PasswordlessTools extends cdk.Stack {
 		}
 
 		ses.eventQueue.grantConsumeMessages(app.service.taskDefinition.taskRole);
+ */
 
-		const _waf = new WAF(this, "main-waf", {
+		/* const _waf = new WAF(this, "main-waf", {
 			name: `${appName}-waf`,
 			associationArns: [
 				{
@@ -387,7 +370,7 @@ export class PasswordlessTools extends cdk.Stack {
 			],
 			allowedPathPrefixes: ["/webhook"],
 			blockedPathPrefixes: ["/health"],
-		});
+		}); */
 
 		const emptyAppCDNBucketName = `${env}-empty-app-cdn-bucket`;
 		const emptyAppCDNBucket = new PrivateBucket(this, emptyAppCDNBucketName, {
@@ -395,14 +378,14 @@ export class PasswordlessTools extends cdk.Stack {
 			removalPolicy,
 		});
 
-		const albBehavior: BehaviorOptions = {
+		/* 	const albBehavior: BehaviorOptions = {
 			origin: new LoadBalancerV2Origin(app.service.loadBalancer),
 			viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
 			cachePolicy: CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS_QUERY_STRINGS,
 			originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
 			responseHeadersPolicy:
 				ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT,
-		};
+		}; */
 
 		const _appCdn = new CDN(this, `${env}-app-cdn`, {
 			name: `${appName}-app-cdn`,
@@ -415,12 +398,13 @@ export class PasswordlessTools extends cdk.Stack {
 				),
 				viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
 			},
-			additionalBehaviors: Object.fromEntries(
+			additionalBehaviors: {},
+			/* 	additionalBehaviors: Object.fromEntries(
 				["assets/*", "images/*", "fonts/*", "json/*"].map((path) => [
 					path,
 					albBehavior,
 				])
-			),
+			), */
 		});
 
 		const _mediaCdn = new CDN(this, `${env}-customer-media-cdn`, {

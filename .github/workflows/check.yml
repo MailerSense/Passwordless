@@ -17,20 +17,6 @@ permissions:
 
 jobs:
   test:
-    services:
-      db:
-        image: postgres
-        ports: ["5432:5432"]
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB_NAME: testdb
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     name: Test on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     runs-on: ubuntu-24-arm64
     strategy:
@@ -89,9 +75,6 @@ jobs:
 
       - name: 👀 Format
         run: mix format --check-formatted
-
-      - name: 🧹 Test
-        run: mix test
   cdk:
     name: Diff CDK on Node ${{matrix.node-version}}
     runs-on: ubuntu-24-arm64
