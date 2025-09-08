@@ -18,7 +18,7 @@
 		"@codemirror/lang-html": "^6.4.9",
 		"@codemirror/language": "^6.11.0",
 		"@codemirror/state": "^6.5.2",
-		"@codemirror/view": "^6.36.5",
+		"@codemirror/view": "^6.38.2",
 		"@lezer/highlight": "^1.2.1",
 		"@sentry/browser": "^9.15.0",
 		"@types/sortablejs": "^1.15.8",
