@@ -26,7 +26,7 @@
 		"@aws-cdk/lambda-layer-kubectl-v29": "^2.1.1",
 		"@sindresorhus/slugify": "^2.2.1",
 		"aws-cdk-lib": "^2.189.0",
-		"cdk-nag": "^2.35.68",
+		"cdk-nag": "^2.37.27",
 		"constructs": "^10.4.2",
 		"source-map-support": "^0.5.21",
 		"tldts": "^7.0.0"
