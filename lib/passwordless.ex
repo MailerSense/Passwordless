@@ -286,10 +286,7 @@ defmodule Passwordless do
   def create_and_register_email_domain(%App{} = app, attrs \\ %{}) do
     with {:ok, domain} <- create_email_domain(app, attrs),
          {:ok, _domain} <-
-           %{domain_id: domain.id}
-           |> Passwordless.Domain.Creator.new()
-           |> Oban.Pro.Relay.async()
-           |> Oban.Pro.Relay.await(:timer.seconds(15)),
+           Passwordless.Domain.Creator.new(%{domain_id: domain.id}),
          do: {:ok, domain}
   end
 
@@ -376,10 +373,7 @@ defmodule Passwordless do
   def delete_and_deregister_email_domain(%App{} = app) do
     with {:ok, domain} <- get_fallback_domain(app, :email),
          {:ok, _domain} <-
-           %{domain_id: domain.id}
-           |> Passwordless.Domain.Deleter.new()
-           |> Oban.Pro.Relay.async()
-           |> Oban.Pro.Relay.await(:timer.seconds(15)),
+           Passwordless.Domain.Deleter.new(%{domain_id: domain.id}),
          do: {:ok, domain}
   end
 

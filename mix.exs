@@ -7,7 +7,7 @@ defmodule Passwordless.MixProject do
     [
       app: :passwordless,
       version: @version,
-      elixir: "1.18.3",
+      elixir: "1.18.4",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -157,7 +157,6 @@ defmodule Passwordless.MixProject do
 
       # Jobs / Cron
       {:oban, "~> 2.19"},
-      {:oban_pro, "~> 1.5", repo: "oban"},
       {:oban_web, "~> 2.11"},
       {:gen_stage, "~> 1.2"},
 

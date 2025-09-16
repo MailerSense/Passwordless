@@ -3,7 +3,7 @@ defmodule Passwordless.Billing.Bookkeeper do
   Periodically deletes email identities that have not passed AWS SES verification.
   """
 
-  use Oban.Pro.Worker, queue: :billing, max_attempts: 1, tags: ["billing", "bookkeeper"]
+  use Oban.Worker, queue: :billing, max_attempts: 1, tags: ["billing", "bookkeeper"]
 
   require Logger
 

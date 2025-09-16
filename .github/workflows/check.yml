@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         otp: ["27.3"]
-        elixir: ["1.18.3"]
+        elixir: ["1.18.4"]
     environment: ${{ (github.event.pull_request.base.ref == 'main' && 'main') || 'dev' }}
     steps:
       - name: 🏗️ Setup Elixir

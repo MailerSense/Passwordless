@@ -2,7 +2,7 @@ defmodule Passwordless.Domain.Creator do
   @moduledoc """
   Creates SES domain identities with EasyDKIM verification and configures SES ConfigurationSets.
   """
-  use Oban.Pro.Worker, queue: :domain, max_attempts: 1, tags: ["domain", "creator"]
+  use Oban.Worker, queue: :domain, max_attempts: 1, tags: ["domain", "creator"]
 
   alias Passwordless.App
   alias Passwordless.AppSettings

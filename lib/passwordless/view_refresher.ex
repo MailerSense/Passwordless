@@ -3,7 +3,7 @@ defmodule Passwordless.ViewRefresher do
   Periodically deletes email identities that have not passed AWS SES verification.
   """
 
-  use Oban.Pro.Worker, queue: :statistics, max_attempts: 1, tags: ["database", "view", "refresher"]
+  use Oban.Worker, queue: :statistics, max_attempts: 1, tags: ["database", "view", "refresher"]
 
   import SqlFmt.Helpers
 

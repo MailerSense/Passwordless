@@ -25,6 +25,16 @@ defmodule Passwordless.SwearJarBlocklist do
     @doc """
     Provides a regex for checking the #{name} blocklist
     """
-    def unquote(name)(), do: unquote(Macro.escape(regex))
+    def unquote(name)(),
+      do:
+        unquote(file)
+        |> File.read!()
+        |> String.split("\n")
+        |> Stream.map(&String.trim/1)
+        |> Stream.filter(&Util.present?/1)
+        |> Stream.map(&String.replace(&1, ~r/^"\s*|\s*"$/, ""))
+        |> Enum.map_join("|", &Regex.escape/1)
+        |> Kernel.then(&"\\b(?:#{&1})\\b")
+        |> Regex.compile!("iu")
   end
 end

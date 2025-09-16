@@ -2,7 +2,7 @@ defmodule Passwordless.Domain.Updater do
   @moduledoc """
   Reconciles the state of local settings with SES configsets
   """
-  use Oban.Pro.Worker, queue: :domain, max_attempts: 1, tags: ["config_set", "reconciler"]
+  use Oban.Worker, queue: :domain, max_attempts: 1, tags: ["config_set", "reconciler"]
 
   alias Passwordless.App
   alias Passwordless.AppSettings

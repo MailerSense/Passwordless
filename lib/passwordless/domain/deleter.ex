@@ -2,7 +2,7 @@ defmodule Passwordless.Domain.Deleter do
   @moduledoc """
   Deletes SES domain identities with EasyDKIM verification and configures SES ConfigurationSets.
   """
-  use Oban.Pro.Worker, queue: :domain, max_attempts: 1, tags: ["domain", "deleter"]
+  use Oban.Worker, queue: :domain, max_attempts: 1, tags: ["domain", "deleter"]
 
   alias Database.Tenant
   alias Passwordless.App

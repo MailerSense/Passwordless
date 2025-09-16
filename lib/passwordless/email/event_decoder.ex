@@ -3,7 +3,7 @@ defmodule Passwordless.Email.EventDecoder do
   Decodes email events from SES.
   """
 
-  use Oban.Pro.Worker, queue: :queues, max_attempts: 1, tags: ["event", "decoder"]
+  use Oban.Worker, queue: :queues, max_attempts: 1, tags: ["event", "decoder"]
 
   import Ecto.Query
 

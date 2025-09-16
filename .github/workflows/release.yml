@@ -1,9 +1,11 @@
 name: Release
 on:
-  push:
-    branches:
-      - main
-      - dev
+  release:
+# Don't run for now on pushes
+#  push:
+#    branches:
+#      - main
+#      - dev
 
 env:
   MIX_ENV: prod

@@ -3,7 +3,7 @@ defmodule Passwordless.MailerExecutor do
   This module is responsible for delivering emails using the Mailer module.
   """
 
-  use Oban.Pro.Worker, queue: :mailer, max_attempts: 5, tags: ["mailer", "executor"]
+  use Oban.Worker, queue: :mailer, max_attempts: 5, tags: ["mailer", "executor"]
 
   alias Passwordless.App
   alias Passwordless.Domain

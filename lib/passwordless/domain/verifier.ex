@@ -3,7 +3,7 @@ defmodule Passwordless.Domain.Verifier do
   Verifies email domains by checking SES verification status and associated DNS records.
   """
 
-  use Oban.Pro.Worker, queue: :domain, max_attempts: 1, tags: ["email", "domains", "verifier"]
+  use Oban.Worker, queue: :domain, max_attempts: 1, tags: ["email", "domains", "verifier"]
 
   alias Passwordless.AWS.Session
   alias Passwordless.Domain

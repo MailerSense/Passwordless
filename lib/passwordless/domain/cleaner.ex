@@ -3,7 +3,7 @@ defmodule Passwordless.Domain.Cleaner do
   Periodically deletes email identities that have not passed AWS SES verification.
   """
 
-  use Oban.Pro.Worker, queue: :domain, max_attempts: 1, tags: ["email", "domains", "deleter"]
+  use Oban.Worker, queue: :domain, max_attempts: 1, tags: ["email", "domains", "deleter"]
 
   alias Passwordless.Domain
   alias Passwordless.Domain.Deleter

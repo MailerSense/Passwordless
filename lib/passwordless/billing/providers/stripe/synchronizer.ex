@@ -3,7 +3,7 @@ defmodule Passwordless.Billing.Providers.Stripe.Synchronizer do
   Synchronizes Stripe subscriptions with Passwordless subscriptions.
   """
 
-  use Oban.Pro.Worker, queue: :stripe, max_attempts: 5, tags: ["synchronizer", "stripe"]
+  use Oban.Worker, queue: :stripe, max_attempts: 5, tags: ["synchronizer", "stripe"]
 
   alias Passwordless.Activity
   alias Passwordless.Billing
