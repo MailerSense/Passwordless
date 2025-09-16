@@ -58,7 +58,7 @@ jobs:
         uses: crazy-max/ghaction-github-runtime@v3
 
       - name: 🏗️ Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           audience: sts.amazonaws.com
           aws-region: eu-west-1
